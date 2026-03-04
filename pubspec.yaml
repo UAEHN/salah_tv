@@ -1,0 +1,72 @@
+name: salah_tv
+description: Islamic prayer times display for Android TV / TV Box
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  provider: ^6.1.5+1
+
+  # Persistent key-value storage
+  shared_preferences: ^2.5.4
+
+  # Audio playback for Adhan
+  audioplayers: ^6.5.1
+
+  # Hijri calendar conversion
+  hijri: ^3.0.0
+
+  # Date/time formatting
+  intl: ^0.20.2
+
+  # Arabic fonts (Cairo)
+  
+
+  # Save CSV copy to app directory
+  path_provider: ^2.1.5
+
+  # Pick CSV file from device storage
+  file_picker: ^8.3.7
+
+  # Keep screen awake during app usage
+  wakelock_plus: ^1.2.9
+
+  # HTTP requests for Quran API
+  http: ^1.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/audio/adhan.mp3
+    - assets/audio/dua.mp3
+    - assets/audio/iqama.mp3
+    - assets/csv/prayer_times.csv
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo/Cairo-Regular.ttf
+        - asset: assets/fonts/Cairo/Cairo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Cairo/Cairo-Bold.ttf
+          weight: 700
+    - family: Tajawal
+      fonts:
+        - asset: assets/fonts/Tajawal/Tajawal-Regular.ttf
+        - asset: assets/fonts/Tajawal/Tajawal-Bold.ttf
+          weight: 700
+    - family: Beiruti
+      fonts:
+        - asset: assets/fonts/Beiruti/Beiruti-Regular.ttf
+        - asset: assets/fonts/Beiruti/Beiruti-Bold.ttf
+          weight: 700
