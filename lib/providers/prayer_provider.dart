@@ -19,10 +19,12 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
   String _nextPrayerName = '';
   String _nextPrayerKey = '';
   final Set<String> _adhansToday = {};
+  int _lastLoadedDay = -1; // Issue 6: date-change detection
 
   bool _isAdhanPlaying = false;
   String _currentAdhanPrayerName = '';
   String _currentAdhanPrayerKey = '';
+  int _currentIqamaDelayMin = 0; // Issue 9: snapshot at adhan fire time
   DateTime? _adhanTriggerTime; // exact moment adhan fired — used to anchor iqama countdown
   Timer? _adhanFallbackTimer;
 
@@ -43,16 +45,21 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
   /// Internally paused because adhan/dua/iqama is active. Will auto-resume.
   bool _isQuranPausedForAdhan = false;
 
+  // Issue 2: store subscription so it can be cancelled in dispose()
+  StreamSubscription<void>? _completionSub;
+
   PrayerProvider(this._csvService, this._audioService,
       [AppSettings? settings])
       : _settings = settings ?? const AppSettings() {
-    _audioService.onComplete.listen((_) {
+    // Issue 2: stored subscription; Issue 4: entry guards in each stop method
+    // prevent re-entrant / double-fire from onComplete
+    _completionSub = _audioService.onComplete.listen((_) async {
       if (_isAdhanPlaying) {
-        stopAdhan();
+        await stopAdhan();
       } else if (_isDuaPlaying) {
-        stopDua();
+        await stopDua();
       } else if (_isIqamaPlaying) {
-        stopIqama();
+        await stopIqama();
       }
     });
   }
@@ -79,8 +86,17 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
   /// Called automatically via ChangeNotifierProxyProvider when settings change.
   void updateSettings(AppSettings settings) {
     final oldUrl = _settings.quranReciterServerUrl;
+    final oldCity = _settings.selectedCity;
+    final oldCountry = _settings.selectedCountry;
     _settings = settings;
-    _updateNextPrayer();
+
+    // If city or country changed, switch active city and reload prayer times
+    if (settings.selectedCity != oldCity || settings.selectedCountry != oldCountry) {
+      _csvService.setActiveCity(settings.selectedCity);
+      _loadToday();
+    } else {
+      _updateNextPrayer();
+    }
 
     // If reciter changed while Quran is actively playing, switch immediately
     if (_isQuranPlaying &&
@@ -96,6 +112,7 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
   void start() {
     WidgetsBinding.instance.addObserver(this);
     _now = DateTime.now(); // sync before recovery check
+    _csvService.setActiveCity(_settings.selectedCity);
     _loadToday();
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), _tick);
@@ -108,6 +125,12 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _now = DateTime.now();
+      // Issue 6 + 11: reload if the date changed — catches new day and
+      // timezone changes that shift DateTime.now() to a different calendar day.
+      if (_now.day != _lastLoadedDay) {
+        _adhansToday.clear();
+        _loadToday();
+      }
       _recoverIqamaState();
       notifyListeners();
     }
@@ -123,21 +146,20 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
 
     final prayers = _todayPrayers!.prayersOnly;
 
-    // Find the most recent prayer whose time has passed but was NOT triggered
+    // Find the most recent prayer whose time has passed but was NOT triggered.
+    // Issue 8: mark ALL missed prayers in _adhansToday (not just the latest),
+    // so _checkAdhanTrigger never accidentally re-fires any of them.
     PrayerEntry? missed;
     for (final p in prayers) {
       final key = '${p.key}_${_now.day}';
       if (_adhansToday.contains(key)) continue;
       final timeSince = _now.difference(_adjustedTime(p));
-      // Missed the 2-second live window, but still today
       if (timeSince.inSeconds > 2) {
-        missed = p; // keep iterating to find the latest one
+        _adhansToday.add(key); // mark every missed prayer immediately
+        missed = p;            // keep overwriting — ends up as the latest one
       }
     }
     if (missed == null) return;
-
-    // Mark as triggered so _checkAdhanTrigger never fires it again
-    _adhansToday.add('${missed.key}_${_now.day}');
 
     final iqamaDelayMin = _settings.iqamaDelays[missed.key] ?? 0;
     if (iqamaDelayMin <= 0) return;
@@ -166,14 +188,28 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
 
   void _loadToday() {
     _todayPrayers = _csvService.getToday();
+    _lastLoadedDay = _now.day; // Issue 6: record the day we loaded for
     _updateNextPrayer();
   }
 
   void _tick(Timer t) {
+    final prev = _now;
     _now = DateTime.now();
 
-    // Midnight reset: reload next day's times
-    if (_now.hour == 0 && _now.minute == 0 && _now.second == 0) {
+    // Detect system time change: if the clock jumped by more than 5 seconds
+    // (forward or backward), treat it as a manual time adjustment and reload.
+    final drift = _now.difference(prev).inSeconds;
+    if (drift.abs() > 5) {
+      _adhansToday.clear();
+      _loadToday();
+      _recoverIqamaState();
+      notifyListeners();
+      return;
+    }
+
+    // Issue 6: date-change detection — replaces the fragile == 00:00:00 check
+    // that could be skipped when Timer.periodic drifts on slow hardware.
+    if (_now.day != _lastLoadedDay) {
       _adhansToday.clear();
       _loadToday();
     }
@@ -190,24 +226,34 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
       _iqamaCountdown -= const Duration(seconds: 1);
     } else {
       _isIqamaCountdown = false;
-      _triggerIqama();
+      unawaited(_triggerIqama());
     }
   }
 
-  void _triggerIqama() {
+  // Issue 3: async so we can detect playIqama() failure and skip to Quran
+  // resume immediately rather than waiting for the 4-minute fallback timer.
+  Future<void> _triggerIqama() async {
     _isIqamaPlaying = true;
-    _audioService.playIqama();
     _iqamaFallbackTimer?.cancel();
     _iqamaFallbackTimer = Timer(const Duration(minutes: 4), () {
       if (_isIqamaPlaying) stopIqama();
     });
     notifyListeners();
+    final success = await _audioService.playIqama();
+    if (!success && _isIqamaPlaying) {
+      // Audio failed to start — clean up immediately
+      _iqamaFallbackTimer?.cancel();
+      await stopIqama();
+    }
   }
 
-  void stopIqama() {
+  // Issue 1: async + await stop() before resuming Quran.
+  // Issue 4: entry guard prevents double-call from concurrent onComplete events.
+  Future<void> stopIqama() async {
+    if (!_isIqamaPlaying) return;
     _isIqamaPlaying = false;
     _iqamaFallbackTimer?.cancel();
-    _audioService.stop();
+    await _audioService.stop();
     // Resume Quran after iqama ends
     _resumeQuranAfterAdhan();
     notifyListeners();
@@ -266,70 +312,98 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
       final diff = _now.difference(_adjustedTime(p));
       if (diff.inSeconds >= 0 && diff.inSeconds <= 2) {
         _adhansToday.add(key);
-        _triggerAdhan(p.name, p.key);
+        unawaited(_triggerAdhan(p.name, p.key));
       }
     }
   }
 
-  void _triggerAdhan(String prayerName, String prayerKey) {
+  // Issue 3: async so we can detect playAdhan() failure and clean up
+  // state immediately rather than waiting 4 minutes for the fallback timer.
+  Future<void> _triggerAdhan(String prayerName, String prayerKey) async {
     _isAdhanPlaying = true;
     _currentAdhanPrayerName = prayerName;
     _currentAdhanPrayerKey = prayerKey;
+    _currentIqamaDelayMin = _settings.iqamaDelays[prayerKey] ?? 0; // Issue 9: snapshot
     _adhanTriggerTime = _now; // anchor for iqama countdown calculation
     _isIqamaCountdown = false;
 
     // Pause Quran for adhan/dua/iqama cycle
     _pauseQuranForAdhan();
 
-    _audioService.playAdhan();
-
     // Auto-close after 4 minutes max as a fallback
     _adhanFallbackTimer?.cancel();
     _adhanFallbackTimer = Timer(const Duration(minutes: 4), () {
-      if (_isAdhanPlaying) {
-        stopAdhan();
-      }
+      if (_isAdhanPlaying) stopAdhan();
     });
 
     notifyListeners();
+
+    final success = await _audioService.playAdhan(soundKey: _settings.adhanSound);
+    if (!success && _isAdhanPlaying) {
+      // Audio failed to start — cancel fallback and clean up immediately
+      _adhanFallbackTimer?.cancel();
+      _isAdhanPlaying = false;
+      _resumeQuranAfterAdhan();
+      notifyListeners();
+    }
   }
 
+  // Issue 10: guard against starting a test while a real cycle is active,
+  // and guard against overlapping with the real prayer adhan.
   void testAdhan() {
-    _triggerAdhan(_nextPrayerName, _nextPrayerKey);
+    if (_isAdhanPlaying || _isDuaPlaying || _isIqamaCountdown || _isIqamaPlaying) return;
+    unawaited(_triggerAdhan(_nextPrayerName, _nextPrayerKey));
   }
 
+  // Issue 10: same guard for test iqama.
   void testIqama() {
+    if (_isAdhanPlaying || _isDuaPlaying || _isIqamaCountdown || _isIqamaPlaying) return;
     _iqamaPrayerName = _nextPrayerName;
-    _triggerIqama();
+    unawaited(_triggerIqama());
   }
 
-  void stopAdhan() {
+  // Issue 1: async + await stop() before triggering dua so the stop platform
+  // call fully resolves before playDua() opens the same AudioPlayer.
+  // Issue 4: entry guard prevents double-invocation from concurrent events.
+  Future<void> stopAdhan() async {
+    if (!_isAdhanPlaying) return;
     _isAdhanPlaying = false;
     _adhanFallbackTimer?.cancel();
-    _audioService.stop();
-    // Show dua screen after adhan
-    _triggerDua();
+    await _audioService.stop();
+    // Show dua screen after adhan — fire-and-forget, _triggerDua notifies UI
+    unawaited(_triggerDua());
     notifyListeners();
   }
 
-  void _triggerDua() {
+  // Issue 3: async so we can detect playDua() failure and advance directly
+  // to the iqama countdown rather than leaving _isDuaPlaying=true silently.
+  Future<void> _triggerDua() async {
     _isDuaPlaying = true;
-    _audioService.playDua();
     _duaFallbackTimer?.cancel();
     _duaFallbackTimer = Timer(const Duration(minutes: 5), () {
       if (_isDuaPlaying) stopDua();
     });
     notifyListeners();
+    final success = await _audioService.playDua();
+    if (!success && _isDuaPlaying) {
+      // Audio failed — skip dua and proceed to iqama countdown
+      _duaFallbackTimer?.cancel();
+      await stopDua();
+    }
   }
 
-  void stopDua() {
+  // Issue 1: async + await stop() before starting iqama countdown.
+  // Issue 4: entry guard prevents double-invocation.
+  // Issue 9: use _currentIqamaDelayMin (snapshot) instead of live settings.
+  Future<void> stopDua() async {
+    if (!_isDuaPlaying) return;
     _isDuaPlaying = false;
     _duaFallbackTimer?.cancel();
-    _audioService.stop();
+    await _audioService.stop();
 
     // Start iqama countdown after dua — anchored to adhan trigger time
     // so adhan + dua duration is deducted automatically.
-    final delay = _settings.iqamaDelays[_currentAdhanPrayerKey] ?? 0;
+    final delay = _currentIqamaDelayMin; // Issue 9: snapshotted at adhan fire
     if (delay > 0) {
       _iqamaPrayerName = _currentAdhanPrayerName;
 
@@ -346,7 +420,7 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
         _iqamaCountdown = remaining;
       } else {
         // Iqama window already passed — trigger immediately
-        _triggerIqama();
+        unawaited(_triggerIqama());
       }
     }
     notifyListeners();
@@ -354,8 +428,6 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
 
   // ── Quran control ────────────────────────────────────────────────────────
 
-  /// Toggle Quran on/off from the home screen button.
-  /// [filePath] is the selected reciter's file path from settings.
   /// Toggle Quran streaming on/off.
   /// [serverUrl] is the CDN URL from mp3quran.net API (e.g. 'https://server8.mp3quran.net/maher/')
   void toggleQuran(String? serverUrl) {
@@ -381,10 +453,13 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   /// Resume Quran after iqama ends (internal).
+  /// Issue 7: uses resumeOrRestartQuranPlayer so a timed-out HTTP stream is
+  /// restarted from the current surah rather than silently producing no audio.
   void _resumeQuranAfterAdhan() {
     if (_isQuranPausedForAdhan) {
       _isQuranPausedForAdhan = false;
-      _audioService.resumeQuranPlayer();
+      final serverUrl = _settings.quranReciterServerUrl;
+      _audioService.resumeOrRestartQuranPlayer(serverUrl);
     }
   }
 
@@ -417,6 +492,7 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _completionSub?.cancel(); // Issue 2: cancel to prevent subscription leak
     _timer?.cancel();
     _adhanFallbackTimer?.cancel();
     _duaFallbackTimer?.cancel();

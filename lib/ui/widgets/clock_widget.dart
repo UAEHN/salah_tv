@@ -8,7 +8,14 @@ import '../../providers/settings_provider.dart';
 
 class ClockWidget extends StatelessWidget {
   final AccentPalette palette;
-  const ClockWidget({super.key, required this.palette});
+  final bool compact;
+  final bool tiny;
+  const ClockWidget({
+    super.key,
+    required this.palette,
+    this.compact = false,
+    this.tiny = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +30,17 @@ class ClockWidget extends StatelessWidget {
 
     final tc = ThemeColors.of(settings.isDarkMode);
 
+    final mainSize = tiny
+        ? screenH * 0.045
+        : compact
+            ? screenH * 0.10
+            : screenH * 0.18;
+    final secSize = tiny
+        ? screenH * 0.03
+        : compact
+            ? screenH * 0.05
+            : screenH * 0.08;
+
     return FittedBox(
       fit: BoxFit.scaleDown,
       child: RichText(
@@ -30,17 +48,17 @@ class ClockWidget extends StatelessWidget {
         text: TextSpan(
           text: timeStr,
           style: TextStyle(
-            fontSize: screenH * 0.18,
+            fontSize: mainSize,
             fontWeight: FontWeight.w700,
             color: tc.textPrimary,
-            letterSpacing: 4,
+            letterSpacing: tiny ? 1 : 4,
             height: 1.0,
           ),
           children: [
             TextSpan(
               text: secondsStr,
               style: TextStyle(
-                fontSize: screenH * 0.08,
+                fontSize: secSize,
                 fontWeight: FontWeight.w700,
                 color: tc.textSecondary,
                 height: 1.0,

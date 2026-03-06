@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../../providers/prayer_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../core/app_colors.dart';
+import '../../core/city_translations.dart';
+import '../../services/csv_service.dart';
 import 'prayer_row.dart';
 
 class PrayerPanel extends StatelessWidget {
@@ -38,26 +40,64 @@ class PrayerPanel extends StatelessWidget {
           Container(
             width: double.infinity,
             padding:
-                const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
             decoration: BoxDecoration(
               gradient: palette.gradient,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Column(
               children: [
-                Icon(Icons.mosque_rounded,
-                    color: Colors.white.withValues(alpha: 0.9), size: 26),
-                const SizedBox(width: 10),
-                Text(
-                  'مواقيت الصلاة',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    letterSpacing: 1,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.mosque_rounded,
+                        color: Colors.white.withValues(alpha: 0.9),
+                        size: 26),
+                    const SizedBox(width: 10),
+                    Text(
+                      'مواقيت الصلاة',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ],
                 ),
+                // City badge — shown only for multi-city CSV
+                if (CsvService().isMultiCity) ...[
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.3),
+                          width: 1),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.location_on_rounded,
+                            color: Colors.white.withValues(alpha: 0.9),
+                            size: 13),
+                        const SizedBox(width: 4),
+                        Text(
+                          cityLabel(settings.selectedCity),
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white.withValues(alpha: 0.95),
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

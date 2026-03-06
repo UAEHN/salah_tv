@@ -49,9 +49,25 @@ flutter:
   uses-material-design: true
   assets:
     - assets/audio/adhan.mp3
+    - assets/audio/Raad Al-Kurdi.mp3
     - assets/audio/dua.mp3
     - assets/audio/iqama.mp3
     - assets/csv/prayer_times.csv
+    - assets/csv/uae_prayer_times_2026.csv
+    - assets/csv/oman_prayer_times_2026.csv
+    - assets/csv/saudi_prayer_times_2026.csv
+    - assets/csv/kuwait_prayer_times_2026.csv
+    - assets/csv/qatar_prayer_times_2026.csv
+    - assets/csv/bahrain_prayer_times_2026.csv
+    - assets/csv/egypt_prayer_times_2026.csv
+    - assets/csv/iraq_prayer_times_2026.csv
+    - assets/csv/jordan_prayer_times_2026.csv
+    - assets/csv/lebanon_prayer_times_2026.csv
+    - assets/csv/morocco_prayer_times_2026.csv
+    - assets/csv/palestine_prayer_times_2026.csv
+    - assets/csv/syria_prayer_times_2026.csv
+    - assets/csv/tunisia_prayer_times_2026.csv
+    - assets/csv/yemen_prayer_times_2026.csv
   fonts:
     - family: Cairo
       fonts:

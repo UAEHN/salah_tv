@@ -38,7 +38,8 @@ const List<String> _dayNamesAr = [
 
 class DateWidget extends StatefulWidget {
   final AccentPalette palette;
-  const DateWidget({super.key, required this.palette});
+  final bool compact;
+  const DateWidget({super.key, required this.palette, this.compact = false});
 
   @override
   State<DateWidget> createState() => _DateWidgetState();
@@ -99,7 +100,7 @@ class _DateWidgetState extends State<DateWidget> {
         key: ValueKey(text),
         textAlign: TextAlign.center,
         style: TextStyle(
-          fontSize: screenH * 0.048,
+          fontSize: screenH * (widget.compact ? 0.032 : 0.048),
           fontWeight: FontWeight.w500,
           color: tc.textSecondary,
         ),

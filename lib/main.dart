@@ -27,16 +27,14 @@ void main() async {
   final AppSettings settings = await repo.load();
 
   final csvService = CsvService();
-  await csvService.initialize(settings.csvFilePath);
+  await csvService.initialize(settings.selectedCountry);
 
   final audioService = AudioService();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => SettingsProvider(repo, settings),
-        ),
+        ChangeNotifierProvider(create: (_) => SettingsProvider(repo, settings)),
         // ChangeNotifierProxyProvider ensures PrayerProvider always receives
         // the latest AppSettings whenever the user changes any setting.
         ChangeNotifierProxyProvider<SettingsProvider, PrayerProvider>(

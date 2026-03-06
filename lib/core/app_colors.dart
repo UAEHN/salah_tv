@@ -131,6 +131,11 @@ const Map<String, AccentPalette> kThemePalettes = {
     secondary: Color(0xFF1A6B9C),
     glow:      Color(0x402980B9),
   ),
+  'purple': AccentPalette(
+    primary:   Color(0xFF7C3AED),
+    secondary: Color(0xFF6D28D9),
+    glow:      Color(0x407C3AED),
+  ),
 };
 
 const Map<String, String> kThemeLabels = {
@@ -138,6 +143,7 @@ const Map<String, String> kThemeLabels = {
   'teal':  'فيروزي',
   'gold':  'ذهبي',
   'blue':  'ياقوتي',
+  'purple': 'بنفسجي',
 };
 
 Color getThemeColor(String key) =>

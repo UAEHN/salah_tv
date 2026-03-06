@@ -3,14 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
+import '../../models/app_settings.dart';
 import '../../providers/prayer_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../ui/painters/arabesque_painter.dart';
 import '../widgets/clock_widget.dart';
 import '../widgets/date_widget.dart';
+import '../widgets/hero_card.dart';
+import '../widgets/info_card.dart';
 import '../widgets/iqama_countdown_widget.dart';
 import '../widgets/next_prayer_widget.dart';
+import '../widgets/prayer_card_strip.dart';
 import '../widgets/prayer_panel.dart';
+import '../widgets/top_bar.dart';
 import 'adhan_screen.dart';
 import 'dua_screen.dart';
 import 'iqama_screen.dart';
@@ -43,12 +48,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>().settings;
-    final palette  = getThemePalette(settings.themeColorKey);
-    final tc       = ThemeColors.of(settings.isDarkMode);
-    final screenW  = MediaQuery.of(context).size.width;
-    final screenH  = MediaQuery.of(context).size.height;
+    final palette = getThemePalette(settings.themeColorKey);
+    final tc = ThemeColors.of(settings.isDarkMode);
+    final screenW = MediaQuery.of(context).size.width;
+    final screenH = MediaQuery.of(context).size.height;
 
-    final prayerProv     = context.watch<PrayerProvider>();
+    final prayerProv = context.watch<PrayerProvider>();
     final reciterServerUrl = settings.quranReciterServerUrl;
 
     return PopScope(
@@ -110,131 +115,232 @@ class _HomeScreenState extends State<HomeScreen> {
                   palette: palette,
                 )
               : prayerProv.isDuaPlaying
-                  ? DuaScreen(palette: palette)
-                  : prayerProv.isIqamaPlaying
-                      ? IqamaScreen(
-                          prayerName: prayerProv.iqamaPrayerName,
-                          palette: palette,
-                        )
-                      : Container(
-            decoration: BoxDecoration(gradient: tc.bgGradient),
-            child: Stack(
-              children: [
-                // Islamic geometric pattern
-                Positioned.fill(
-                  child: CustomPaint(
-                    painter: ArabescPainter(color: palette.primary, opacity: 0.05),
-                  ),
-                ),
-
-                // Soft radial gradient overlay from accent
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        center: Alignment.centerRight,
-                        radius: 1.2,
-                        colors: [
-                          palette.glow.withValues(alpha: settings.isDarkMode ? 0.12 : 0.08),
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Main layout: Column with top content + bottom bar
-                Column(
-                  children: [
-                    // === TOP AREA: Prayer panel (left) + Clock/Date/Hadith (right) ===
-                    Expanded(
-                      child: Row(
-                        children: [
-                          // === LEFT PANEL (~30%): Prayer times ===
-                          Container(
-                            width: screenW * 0.30,
-                            margin: EdgeInsets.all(screenH * 0.03),
-                            child: const PrayerPanel(),
+              ? DuaScreen(palette: palette)
+              : prayerProv.isIqamaPlaying
+              ? IqamaScreen(
+                  prayerName: prayerProv.iqamaPrayerName,
+                  palette: palette,
+                )
+              : Container(
+                  decoration: BoxDecoration(gradient: tc.bgGradient),
+                  child: Stack(
+                    children: [
+                      // Islamic geometric pattern
+                      Positioned.fill(
+                        child: CustomPaint(
+                          painter: ArabescPainter(
+                            color: palette.primary,
+                            opacity: 0.05,
                           ),
+                        ),
+                      ),
 
-                          // === RIGHT PANEL (~62%): Clock, date, hadith ===
-                          Expanded(
-                            child: Center(
-                              child: SingleChildScrollView(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: screenW * 0.04,
-                                  vertical: screenH * 0.03,
+                      // Soft radial gradient overlay from accent
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: RadialGradient(
+                              center: Alignment.centerRight,
+                              radius: 1.2,
+                              colors: [
+                                palette.glow.withValues(
+                                  alpha: settings.isDarkMode ? 0.12 : 0.08,
                                 ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.center,
-                                  children: [
-                                    // Large Clock
-                                    ClockWidget(palette: palette),
-
-                                    SizedBox(height: screenH * 0.01),
-
-                                    // Hijri Date
-                                    DateWidget(palette: palette),
-
-                                    SizedBox(height: screenH * 0.04),
-
-                                    // Next Prayer Section
-                                    NextPrayerWidget(palette: palette),
-
-                                    // Quran pill button — hides during iqama countdown
-                                    AnimatedSize(
-                                      duration: const Duration(milliseconds: 350),
-                                      curve: Curves.easeInOut,
-                                      child: (settings.isQuranEnabled &&
-                                              settings.hasQuranReciter &&
-                                              !prayerProv.isIqamaCountdown)
-                                          ? Padding(
-                                              padding: EdgeInsets.only(
-                                                  top: screenH * 0.022),
-                                              child: _HomeQuranButton(
-                                                palette: palette,
-                                                isDarkMode: settings.isDarkMode,
-                                                serverUrl: settings
-                                                    .quranReciterServerUrl,
-                                                focusNode: _quranFocusNode,
-                                                onEscape: () =>
-                                                    _focusNode.requestFocus(),
-                                              ),
-                                            )
-                                          : const SizedBox.shrink(),
-                                    ),
-
-                                    // Iqama Countdown (shown only when active)
-                                    AnimatedSize(
-                                      duration: const Duration(milliseconds: 400),
-                                      curve: Curves.easeInOut,
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          if (prayerProv.isIqamaCountdown)
-                                            SizedBox(height: screenH * 0.025),
-                                          IqamaCountdownWidget(palette: palette),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                                Colors.transparent,
+                              ],
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
 
-                  ],
+                      // Layout switch
+                      settings.layoutStyle == 'modern'
+                          ? _buildModernLayout(
+                              context,
+                              palette,
+                              tc,
+                              prayerProv,
+                              settings,
+                              screenW,
+                              screenH,
+                            )
+                          : _buildClassicLayout(
+                              context,
+                              palette,
+                              tc,
+                              prayerProv,
+                              settings,
+                              screenW,
+                              screenH,
+                            ),
+                    ],
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+
+  // ── Classic layout (original left/right split) ──────────────────────────────
+  Widget _buildClassicLayout(
+    BuildContext context,
+    AccentPalette palette,
+    ThemeColors tc,
+    PrayerProvider prayerProv,
+    AppSettings settings,
+    double screenW,
+    double screenH,
+  ) {
+    return Column(
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              // Left panel: Prayer times
+              Container(
+                width: screenW * 0.30,
+                margin: EdgeInsets.all(screenH * 0.03),
+                child: const PrayerPanel(),
+              ),
+              // Right panel: Clock, date, countdown
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenW * 0.04,
+                      vertical: screenH * 0.03,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ClockWidget(palette: palette),
+                        SizedBox(height: screenH * 0.01),
+                        DateWidget(palette: palette),
+                        SizedBox(height: screenH * 0.04),
+                        NextPrayerWidget(palette: palette),
+                        // Quran button
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 350),
+                          curve: Curves.easeInOut,
+                          child:
+                              (settings.isQuranEnabled &&
+                                  settings.hasQuranReciter &&
+                                  !prayerProv.isIqamaCountdown)
+                              ? Padding(
+                                  padding: EdgeInsets.only(
+                                    top: screenH * 0.022,
+                                  ),
+                                  child: _HomeQuranButton(
+                                    palette: palette,
+                                    isDarkMode: settings.isDarkMode,
+                                    serverUrl: settings.quranReciterServerUrl,
+                                    focusNode: _quranFocusNode,
+                                    onEscape: () => _focusNode.requestFocus(),
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                        // Iqama countdown
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 400),
+                          curve: Curves.easeInOut,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (prayerProv.isIqamaCountdown)
+                                SizedBox(height: screenH * 0.025),
+                              IqamaCountdownWidget(palette: palette),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Modern layout (3-zone vertical) ─────────────────────────────────────────
+  Widget _buildModernLayout(
+    BuildContext context,
+    AccentPalette palette,
+    ThemeColors tc,
+    PrayerProvider prayerProv,
+    AppSettings settings,
+    double screenW,
+    double screenH,
+  ) {
+    return Column(
+      children: [
+        // Top bar
+        TopBar(palette: palette),
+
+        // Main content area
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: screenW * 0.025,
+              vertical: screenH * 0.015,
+            ),
+            child: Row(
+              children: [
+                // Hero card (58%)
+                Expanded(flex: 58, child: const HeroCard()),
+                SizedBox(width: screenW * 0.015),
+                // Info card (38%)
+                Expanded(
+                  flex: 38,
+                  child: InfoCard(
+                    palette: palette,
+                    quranButton:
+                        (settings.isQuranEnabled &&
+                            settings.hasQuranReciter &&
+                            !prayerProv.isIqamaCountdown)
+                        ? _HomeQuranButton(
+                            palette: palette,
+                            isDarkMode: settings.isDarkMode,
+                            serverUrl: settings.quranReciterServerUrl,
+                            focusNode: _quranFocusNode,
+                            onEscape: () => _focusNode.requestFocus(),
+                          )
+                        : null,
+                  ),
                 ),
               ],
             ),
           ),
         ),
-      ),
+
+        // Prayer cards strip
+        SizedBox(
+          height: screenH * 0.33,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: screenH * 0.015),
+            child: const PrayerCardStrip(),
+          ),
+        ),
+
+        // Settings hint
+        Padding(
+          padding: EdgeInsets.only(bottom: screenH * 0.008, left: 24),
+          child: Align(
+            alignment: Alignment.bottomLeft,
+            child: Text(
+              'اضغط OK للإعدادات',
+              style: TextStyle(
+                fontSize: screenH * 0.02,
+                color: tc.textMuted.withValues(alpha: 0.5),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -262,7 +368,7 @@ class _HomeQuranButton extends StatefulWidget {
 
 class _HomeQuranButtonState extends State<_HomeQuranButton>
     with TickerProviderStateMixin {
-  late final AnimationController _rotCtrl;  // border rotation (4s, repeating)
+  late final AnimationController _rotCtrl; // border rotation (4s, repeating)
   late final AnimationController _glowCtrl; // idle↔playing fade (600ms)
   late final Animation<double> _fade;
   bool _focused = false;
@@ -333,7 +439,7 @@ class _HomeQuranButtonState extends State<_HomeQuranButton>
             context.read<PrayerProvider>().toggleQuran(widget.serverUrl),
         child: AnimatedBuilder(
           animation: Listenable.merge([_rotCtrl, _fade]),
-          builder: (_, __) {
+          builder: (_, _) {
             final angle = _rotCtrl.value * 2 * math.pi;
             final pulse = (math.sin(angle * 2) + 1) / 2; // fast glow cycle
             final t = _fade.value; // 0 = idle, 1 = playing
@@ -368,7 +474,9 @@ class _HomeQuranButtonState extends State<_HomeQuranButton>
                 : kTextPrimary.withValues(alpha: 0.80);
             final iconColor = Color.lerp(
               idleIconColor,
-              widget.isDarkMode ? widget.palette.primary : widget.palette.secondary,
+              widget.isDarkMode
+                  ? widget.palette.primary
+                  : widget.palette.secondary,
               t,
             )!;
 
@@ -401,13 +509,15 @@ class _HomeQuranButtonState extends State<_HomeQuranButton>
                         color: widget.isDarkMode
                             ? Colors.white.withValues(alpha: 0.9)
                             : kTextPrimary.withValues(alpha: 0.85),
-                        width: 2)
+                        width: 2,
+                      )
                     : null,
                 boxShadow: shadowAlpha > 0.01
                     ? [
                         BoxShadow(
-                          color: widget.palette.glow
-                              .withValues(alpha: shadowAlpha),
+                          color: widget.palette.glow.withValues(
+                            alpha: shadowAlpha,
+                          ),
                           blurRadius: blurR,
                           spreadRadius: spreadR,
                         ),
@@ -415,8 +525,10 @@ class _HomeQuranButtonState extends State<_HomeQuranButton>
                     : null,
               ),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(28.5),
                   color: innerColor,
@@ -440,8 +552,12 @@ class _HomeQuranButtonState extends State<_HomeQuranButton>
                       'القرآن الكريم',
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.lerp(
-                              FontWeight.w600, FontWeight.w700, t) ??
+                        fontWeight:
+                            FontWeight.lerp(
+                              FontWeight.w600,
+                              FontWeight.w700,
+                              t,
+                            ) ??
                             FontWeight.w600,
                         color: textColor,
                         letterSpacing: 0.5,

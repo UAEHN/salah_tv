@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../models/app_settings.dart';
 import '../services/settings_repository.dart';
+import '../services/csv_service.dart';
 
 class SettingsProvider extends ChangeNotifier {
   final SettingsRepository _repo;
@@ -44,15 +45,6 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateCsvPath(String? path) async {
-    _settings = _settings.copyWith(
-      csvFilePath: path,
-      clearCsvPath: path == null,
-    );
-    await _repo.save(_settings);
-    notifyListeners();
-  }
-
   Future<void> updateHadithText(String text) async {
     _settings = _settings.copyWith(hadithText: text);
     await _repo.save(_settings);
@@ -90,6 +82,33 @@ class SettingsProvider extends ChangeNotifier {
       quranReciterName: name,
       quranReciterServerUrl: serverUrl,
     );
+    await _repo.save(_settings);
+    notifyListeners();
+  }
+
+  Future<void> updateLayoutStyle(String style) async {
+    _settings = _settings.copyWith(layoutStyle: style);
+    await _repo.save(_settings);
+    notifyListeners();
+  }
+
+  Future<void> updateSelectedCountry(String country) async {
+    _settings = _settings.copyWith(selectedCountry: country);
+    await _repo.save(_settings);
+    // Load the new country's CSV into the service asynchronously
+    await CsvService().loadCountry(country);
+    notifyListeners();
+  }
+
+  Future<void> updateSelectedCity(String city) async {
+    _settings = _settings.copyWith(selectedCity: city);
+    await _repo.save(_settings);
+    CsvService().setActiveCity(city);
+    notifyListeners();
+  }
+
+  Future<void> updateAdhanSound(String key) async {
+    _settings = _settings.copyWith(adhanSound: key);
     await _repo.save(_settings);
     notifyListeners();
   }
