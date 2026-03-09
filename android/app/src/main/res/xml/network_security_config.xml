@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Deny cleartext (HTTP) traffic globally -->
+    <base-config cleartextTrafficPermitted="false" />
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+    </domain-config>
+
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">mp3quran.net</domain>
+        <!-- To enable certificate pinning, obtain the SHA-256 pin hashes via:
+             openssl s_client -servername mp3quran.net -connect mp3quran.net:443 | \
+             openssl x509 -pubkey -noout | openssl pkey -pubin -outform der | \
+             openssl dgst -sha256 -binary | openssl enc -base64
+             Then uncomment and replace the placeholder hashes below:
+        <pin-set expiration="2027-06-01">
+            <pin digest="SHA-256">REPLACE_WITH_LEAF_CERT_PIN</pin>
+            <pin digest="SHA-256">REPLACE_WITH_BACKUP_PIN</pin>
+        </pin-set>
+        -->
+    </domain-config>
+</network-security-config>

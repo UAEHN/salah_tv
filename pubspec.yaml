@@ -31,14 +31,14 @@ dependencies:
   # Save CSV copy to app directory
   path_provider: ^2.1.5
 
-  # Pick CSV file from device storage
-  file_picker: ^8.3.7
-
   # Keep screen awake during app usage
   wakelock_plus: ^1.2.9
 
   # HTTP requests for Quran API
   http: ^1.2.2
+
+  # Makkah live stream
+  video_player: ^2.9.3
 
 dev_dependencies:
   flutter_test:
@@ -49,9 +49,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/audio/adhan.mp3
-    - assets/audio/Raad Al-Kurdi.mp3
     - assets/audio/dua.mp3
     - assets/audio/iqama.mp3
+    - assets/audio/adhan2.mp3
     - assets/csv/prayer_times.csv
     - assets/csv/uae_prayer_times_2026.csv
     - assets/csv/oman_prayer_times_2026.csv

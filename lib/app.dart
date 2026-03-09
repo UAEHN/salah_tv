@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'core/app_colors.dart';
-import 'providers/settings_provider.dart';
-import 'ui/screens/home_screen.dart';
-import 'ui/screens/settings_screen.dart';
+import 'features/settings/presentation/settings_provider.dart';
+import 'features/prayer/presentation/screens/home_screen.dart';
+import 'features/settings/presentation/settings_screen.dart';
 
 class SalahTvApp extends StatelessWidget {
   const SalahTvApp({super.key});

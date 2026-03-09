@@ -4,11 +4,12 @@ import 'package:provider/provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'app.dart';
 import 'models/app_settings.dart';
-import 'services/audio_service.dart';
-import 'services/csv_service.dart';
-import 'services/settings_repository.dart';
-import 'providers/prayer_provider.dart';
-import 'providers/settings_provider.dart';
+import 'features/audio/data/audio_service.dart';
+import 'features/prayer/data/csv_service.dart';
+import 'features/quran/data/quran_api_service.dart';
+import 'features/settings/data/settings_repository.dart';
+import 'features/prayer/presentation/prayer_provider.dart';
+import 'features/settings/presentation/settings_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +35,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => SettingsProvider(repo, settings)),
+        ChangeNotifierProvider(create: (_) => SettingsProvider(repo, csvService, QuranApiService(), settings)),
         // ChangeNotifierProxyProvider ensures PrayerProvider always receives
         // the latest AppSettings whenever the user changes any setting.
         ChangeNotifierProxyProvider<SettingsProvider, PrayerProvider>(

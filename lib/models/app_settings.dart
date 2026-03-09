@@ -26,6 +26,10 @@ class AppSettings {
   // Adhan sound selection ('default' or 'raad_al_kurdi')
   final String adhanSound;
 
+  // Makkah live stream
+  final bool isMakkahStreamEnabled;
+  final bool isMakkahStreamAudioEnabled; // false = muted (Quran continues)
+
   const AppSettings({
     this.themeColorKey = 'green',
     this.use24HourFormat = false,
@@ -36,6 +40,8 @@ class AppSettings {
     this.selectedCity = 'Dubai',
     this.layoutStyle = 'modern',
     this.adhanSound = 'default',
+    this.isMakkahStreamEnabled = false,
+    this.isMakkahStreamAudioEnabled = false,
     this.iqamaDelays = const {
       'fajr': 20,
       'dhuhr': 10,
@@ -62,6 +68,16 @@ class AppSettings {
   bool get hasQuranReciter =>
       quranReciterServerUrl.isNotEmpty && quranReciterName.isNotEmpty;
 
+  /// Reject URLs that are not HTTPS on the trusted mp3quran.net CDN.
+  static String _validatedQuranUrl(String url) {
+    if (url.isEmpty) return '';
+    final uri = Uri.tryParse(url);
+    if (uri == null || uri.scheme != 'https' || !uri.host.endsWith('mp3quran.net')) {
+      return '';
+    }
+    return url;
+  }
+
   AppSettings copyWith({
     String? themeColorKey,
     bool? use24HourFormat,
@@ -79,6 +95,8 @@ class AppSettings {
     String? selectedCity,
     String? layoutStyle,
     String? adhanSound,
+    bool? isMakkahStreamEnabled,
+    bool? isMakkahStreamAudioEnabled,
   }) {
     return AppSettings(
       themeColorKey: themeColorKey ?? this.themeColorKey,
@@ -98,6 +116,10 @@ class AppSettings {
       selectedCity: selectedCity ?? this.selectedCity,
       layoutStyle: layoutStyle ?? this.layoutStyle,
       adhanSound: adhanSound ?? this.adhanSound,
+      isMakkahStreamEnabled:
+          isMakkahStreamEnabled ?? this.isMakkahStreamEnabled,
+      isMakkahStreamAudioEnabled:
+          isMakkahStreamAudioEnabled ?? this.isMakkahStreamAudioEnabled,
     );
   }
 
@@ -118,6 +140,8 @@ class AppSettings {
     'selectedCity': selectedCity,
     'layoutStyle': layoutStyle,
     'adhanSound': adhanSound,
+    'isMakkahStreamEnabled': isMakkahStreamEnabled,
+    'isMakkahStreamAudioEnabled': isMakkahStreamAudioEnabled,
   };
 
   factory AppSettings.fromMap(Map<String, dynamic> map) {
@@ -167,7 +191,7 @@ class AppSettings {
           : 'Cairo',
       isQuranEnabled: map['isQuranEnabled'] as bool? ?? false,
       quranReciterName: map['quranReciterName'] as String? ?? '',
-      quranReciterServerUrl: map['quranReciterServerUrl'] as String? ?? '',
+      quranReciterServerUrl: _validatedQuranUrl(map['quranReciterServerUrl'] as String? ?? ''),
       selectedCountry: map['selectedCountry'] as String? ?? 'UAE',
       selectedCity: map['selectedCity'] as String? ?? 'Dubai',
       layoutStyle: const ['classic', 'modern'].contains(map['layoutStyle'])
@@ -176,6 +200,9 @@ class AppSettings {
       adhanSound: const ['default', 'raad_al_kurdi'].contains(map['adhanSound'])
           ? map['adhanSound'] as String
           : 'default',
+      isMakkahStreamEnabled: map['isMakkahStreamEnabled'] as bool? ?? false,
+      isMakkahStreamAudioEnabled:
+          map['isMakkahStreamAudioEnabled'] as bool? ?? false,
     );
   }
 }
