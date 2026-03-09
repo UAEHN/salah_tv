@@ -5,7 +5,6 @@ import 'package:video_player/video_player.dart';
 import '../../../../core/time_formatters.dart';
 import '../../../prayer/presentation/prayer_provider.dart';
 import '../../../settings/presentation/settings_provider.dart';
-import '../../data/makkah_stream_service.dart';
 import '../makkah_stream_controller.dart';
 import 'makkah_video_overlay.dart';
 
@@ -20,13 +19,14 @@ class MakkahHeroContent extends StatefulWidget {
 
 class _MakkahHeroContentState extends State<MakkahHeroContent> {
   late final MakkahStreamController _stream;
-  PrayerProvider? _prayerProv;
-  SettingsProvider? _settingsProv;
+  late final PrayerProvider _prayerProv;
+  bool? _lastAudioEnabled;
 
   @override
   void initState() {
     super.initState();
-    _stream = MakkahStreamController(MakkahStreamService());
+    _stream = MakkahStreamController();
+    _prayerProv = context.read<PrayerProvider>();
     // Defer ExoPlayer init to after the current frame so the Android UI thread
     // is free — prevents the 1–5 s rendering freeze on low-end TV boxes.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -35,30 +35,8 @@ class _MakkahHeroContentState extends State<MakkahHeroContent> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _prayerProv = context.read<PrayerProvider>();
-
-    // Subscribe to SettingsProvider outside of build() to safely call
-    // setMakkahStreamAudioActive() (which calls notifyListeners on PrayerProvider).
-    _settingsProv?.removeListener(_syncAudio);
-    _settingsProv = context.read<SettingsProvider>();
-    _settingsProv!.addListener(_syncAudio);
-
-    _syncAudio();
-  }
-
-  void _syncAudio() {
-    if (!mounted || _settingsProv == null) return;
-    final audioEnabled = _settingsProv!.settings.isMakkahStreamAudioEnabled;
-    _stream.setMuted(!audioEnabled);
-    _prayerProv?.setMakkahStreamAudioActive(audioEnabled);
-  }
-
-  @override
   void dispose() {
-    _settingsProv?.removeListener(_syncAudio);
-    _prayerProv?.setMakkahStreamAudioActive(false);
+    _prayerProv.setMakkahStreamAudioActive(false);
     _stream.dispose();
     super.dispose();
   }
@@ -71,11 +49,15 @@ class _MakkahHeroContentState extends State<MakkahHeroContent> {
 
   @override
   Widget build(BuildContext context) {
-    // Safe: setMuted has an equality guard and never calls notifyListeners.
     final audioEnabled = context.select(
       (SettingsProvider p) => p.settings.isMakkahStreamAudioEnabled,
     );
     _stream.setMuted(!audioEnabled);
+    // Sync Quran pause/resume only when the audio setting actually changes.
+    if (_lastAudioEnabled != audioEnabled) {
+      _lastAudioEnabled = audioEnabled;
+      _prayerProv.setMakkahStreamAudioActive(audioEnabled);
+    }
 
     final prayer = context.watch<PrayerProvider>();
     final screenH = MediaQuery.of(context).size.height;

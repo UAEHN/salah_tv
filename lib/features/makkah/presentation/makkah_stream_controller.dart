@@ -1,19 +1,17 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:video_player/video_player.dart';
-import '../domain/i_makkah_stream_repository.dart';
 
 enum MakkahStreamState { idle, loading, playing, error }
 
 class MakkahStreamController {
-  static const kMakkahVideoId = 'Cm1v4bteXbI';
+  static const kMakkahLiveUrl =
+      'https://cdn-globecast.akamaized.net/live/eds/saudi_quran/hls_roku/index.m3u8';
 
   /// Global flag — HeroCard listens to this to decide whether to strip its border.
   static final ValueNotifier<bool> isStreamPlaying = ValueNotifier(false);
 
-  final IMakkahStreamRepository _repo;
-
-  MakkahStreamController(this._repo);
+  MakkahStreamController();
 
   final ValueNotifier<MakkahStreamState> state = ValueNotifier(
     MakkahStreamState.idle,
@@ -25,22 +23,16 @@ class MakkahStreamController {
 
   Timer? _retryTimer;
   bool _isDisposed = false;
+  bool _isInitializing = false;
 
   Future<void> initialize() async {
-    if (_isDisposed) return;
+    if (_isDisposed || _isInitializing) return;
+    _isInitializing = true;
     _cancelRetry();
     state.value = MakkahStreamState.loading;
 
     try {
-      final url = await _repo.extractStreamUrl(kMakkahVideoId);
-      if (url == null) {
-        debugPrint('[MakkahStream] extraction returned null — retrying');
-        state.value = MakkahStreamState.error;
-        _scheduleRetry();
-        return;
-      }
-      if (_isDisposed) return;
-
+      final url = kMakkahLiveUrl;
       final vc = VideoPlayerController.networkUrl(
         Uri.parse(url),
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
@@ -87,6 +79,8 @@ class MakkahStreamController {
       debugPrint('[MakkahStream] video_player init failed: $e');
       state.value = MakkahStreamState.error;
       _scheduleRetry();
+    } finally {
+      _isInitializing = false;
     }
   }
 
@@ -131,7 +125,6 @@ class MakkahStreamController {
     // Don't dispose state/isMuted — external ValueListenableBuilders may
     // still reference them during the same frame. GC'd with this instance.
     state.value = MakkahStreamState.idle;
-    _repo.dispose();
     await vc?.dispose();
   }
 }

@@ -119,7 +119,9 @@ class PrayerCycleEngine {
         );
       }
     }
-    _onStateChanged();
+    // No _onStateChanged() here — no widget watches _isMakkahStreamAudioActive.
+    // Calling it caused a redundant notifyListeners() rebuild cascade that
+    // starved the 1-second tick timer on slow TV hardware.
   }
 
   /// Called automatically via ChangeNotifierProxyProvider when settings change.
