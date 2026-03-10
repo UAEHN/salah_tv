@@ -4,6 +4,7 @@ import 'core/app_colors.dart';
 import 'features/settings/presentation/settings_provider.dart';
 import 'features/prayer/presentation/screens/home_screen.dart';
 import 'features/settings/presentation/settings_screen.dart';
+import 'features/app_update/presentation/widgets/update_listener_widget.dart';
 
 class SalahTvApp extends StatelessWidget {
   const SalahTvApp({super.key});
@@ -23,23 +24,25 @@ class SalahTvApp extends StatelessWidget {
         brightness: isDark ? Brightness.dark : Brightness.light,
         scaffoldBackgroundColor: tc.bgMain,
         primaryColor: palette.primary,
-        colorScheme: (isDark ? ColorScheme.dark() : ColorScheme.light()).copyWith(
-          primary: palette.primary,
-          secondary: palette.secondary,
-          surface: tc.bgSurface,
-        ),
+        colorScheme: (isDark ? ColorScheme.dark() : ColorScheme.light())
+            .copyWith(
+              primary: palette.primary,
+              secondary: palette.secondary,
+              surface: tc.bgSurface,
+            ),
         fontFamily: settings.fontFamily,
-        textTheme: (isDark ? ThemeData.dark() : ThemeData.light()).textTheme.apply(
-          fontFamily: settings.fontFamily,
-          bodyColor: tc.textPrimary,
-          displayColor: tc.textPrimary,
-        ),
+        textTheme: (isDark ? ThemeData.dark() : ThemeData.light()).textTheme
+            .apply(
+              fontFamily: settings.fontFamily,
+              bodyColor: tc.textPrimary,
+              displayColor: tc.textPrimary,
+            ),
         splashFactory: NoSplash.splashFactory,
         highlightColor: Colors.transparent,
         focusColor: palette.primary.withValues(alpha: 0.3),
       ),
       routes: {
-        '/': (_) => const HomeScreen(),
+        '/': (_) => const UpdateListenerWidget(child: HomeScreen()),
         '/settings': (_) => const SettingsScreen(),
       },
       initialRoute: '/',

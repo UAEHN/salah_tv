@@ -1,6 +1,6 @@
 name: salah_tv
 description: Islamic prayer times display for Android TV / TV Box
-version: 1.0.0+1
+version: 1.0.3+3
 publish_to: none
 
 environment:
@@ -39,11 +39,20 @@ dependencies:
 
   # Makkah live stream
   video_player: ^2.9.3
+  dio: ^5.9.2
+  package_info_plus: ^9.0.0
+  install_plugin_v2: ^1.0.0
+  flutter_bloc: ^9.1.1
+  dartz: ^0.10.1
+  get_it: ^9.2.1
+  injectable: ^2.7.1+4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  build_runner: ^2.12.2
+  injectable_generator: ^2.12.1
 
 flutter:
   uses-material-design: true

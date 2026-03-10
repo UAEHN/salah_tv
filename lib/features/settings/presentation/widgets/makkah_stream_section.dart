@@ -31,7 +31,7 @@ class MakkahStreamSection extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Text(
-              'بث مكة المكرمة المباشر:',
+              'بث قناة الشارقة للقرآن المباشر:',
               style: TextStyle(fontSize: 20, color: tc.textPrimary),
             ),
             const SizedBox(width: 16),

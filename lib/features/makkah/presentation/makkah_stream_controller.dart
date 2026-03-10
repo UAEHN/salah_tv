@@ -6,7 +6,7 @@ enum MakkahStreamState { idle, loading, playing, error }
 
 class MakkahStreamController {
   static const kMakkahLiveUrl =
-      'https://cdn-globecast.akamaized.net/live/eds/saudi_quran/hls_roku/index.m3u8';
+      'https://live.kwikmotion.com/sharjahtvquranlive/shqurantv.smil/playlist.m3u8';
 
   /// Global flag — HeroCard listens to this to decide whether to strip its border.
   static final ValueNotifier<bool> isStreamPlaying = ValueNotifier(false);
@@ -35,6 +35,7 @@ class MakkahStreamController {
       final url = kMakkahLiveUrl;
       final vc = VideoPlayerController.networkUrl(
         Uri.parse(url),
+        formatHint: VideoFormat.hls,
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
 
