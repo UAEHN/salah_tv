@@ -11,8 +11,8 @@ class FontSection extends StatelessWidget {
 
   static const _fonts = [
     ('Cairo', 'كايرو'),
-    ('Tajawal', 'تجوال'),
     ('Beiruti', 'بيروتي'),
+    ('Kufi', 'كوفي'),
   ];
 
   @override
@@ -108,6 +108,34 @@ class LayoutStyleSection extends StatelessWidget {
           isSelected: settings.layoutStyle == 'classic',
           palette: palette,
           onPressed: () => settingsProv.updateLayoutStyle('classic'),
+        ),
+      ],
+    );
+  }
+}
+
+class ClockStyleSection extends StatelessWidget {
+  const ClockStyleSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final settingsProv = context.watch<SettingsProvider>();
+    final settings = settingsProv.settings;
+    final palette = getThemePalette(settings.themeColorKey);
+    return Row(
+      children: [
+        TvFormatButton(
+          label: 'رقمي',
+          isSelected: !settings.isAnalogClock,
+          palette: palette,
+          onPressed: () => settingsProv.updateClockStyle(isAnalog: false),
+        ),
+        const SizedBox(width: 16),
+        TvFormatButton(
+          label: 'تناظري',
+          isSelected: settings.isAnalogClock,
+          palette: palette,
+          onPressed: () => settingsProv.updateClockStyle(isAnalog: true),
         ),
       ],
     );

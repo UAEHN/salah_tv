@@ -1,6 +1,6 @@
 name: salah_tv
 description: Islamic prayer times display for Android TV / TV Box
-version: 1.0.3+3
+version: 1.0.6+6
 publish_to: none
 
 environment:
@@ -61,6 +61,12 @@ flutter:
     - assets/audio/dua.mp3
     - assets/audio/iqama.mp3
     - assets/audio/adhan2.mp3
+    - assets/audio/adhan3.mp3
+    - assets/audio/Fajr.mp3
+    - assets/audio/Dhuhr.mp3
+    - assets/audio/Asr.mp3
+    - assets/audio/Maghrib.mp3
+    - assets/audio/Isha.mp3
     - assets/csv/prayer_times.csv
     - assets/csv/uae_prayer_times_2026.csv
     - assets/csv/oman_prayer_times_2026.csv
@@ -85,11 +91,9 @@ flutter:
           weight: 600
         - asset: assets/fonts/Cairo/Cairo-Bold.ttf
           weight: 700
-    - family: Tajawal
+    - family: Kufi
       fonts:
-        - asset: assets/fonts/Tajawal/Tajawal-Regular.ttf
-        - asset: assets/fonts/Tajawal/Tajawal-Bold.ttf
-          weight: 700
+        - asset: assets/fonts/NotoKufiArabic/NotoKufiArabic-Medium.ttf
     - family: Beiruti
       fonts:
         - asset: assets/fonts/Beiruti/Beiruti-Regular.ttf

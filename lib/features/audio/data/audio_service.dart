@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import '../../../core/adhan_sounds.dart';
 import '../domain/i_audio_repository.dart';
+import 'announcement_service.dart';
 
 class AudioService implements IAudioRepository {
   static final AudioService _instance = AudioService._internal();
@@ -121,6 +122,24 @@ class AudioService implements IAudioRepository {
     _appInitiatedStop = false;
   }
 
+  // ── Pre-alert bell (separate player, fire-and-forget) ────────────────────
+  final AudioPlayer _bellPlayer = AudioPlayer();
+
+  // ── Prayer announcement (separate player, awaited before adhan) ──────────
+  final AnnouncementService _announcement = AnnouncementService();
+
+  @override
+  Future<void> playPrayerAnnouncement(String prayerKey) =>
+      _announcement.play(prayerKey);
+
+  @override
+  Future<void> playPreAlertBell() async {
+    try {
+      await _bellPlayer.setVolume(0.15);
+      await _bellPlayer.play(AssetSource('audio/bell.wav'));
+    } catch (_) {}
+  }
+
   // ── Quran background player (streams from mp3quran.net CDN) ─────────────
   final AudioPlayer _quranPlayer = AudioPlayer();
   String _quranServerUrl = '';
@@ -224,5 +243,7 @@ class AudioService implements IAudioRepository {
     _onCompleteController.close();
     _player.dispose();
     _quranPlayer.dispose();
+    _bellPlayer.dispose();
+    _announcement.dispose();
   }
 }

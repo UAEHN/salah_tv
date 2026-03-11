@@ -55,6 +55,10 @@ class SettingsContentPanel extends StatelessWidget {
         const SettingsSectionTitle(title: 'تنسيق الوقت'),
         const SizedBox(height: 12),
         const TimeFormatSection(),
+        const SizedBox(height: 24),
+        const SettingsSectionTitle(title: 'نوع الساعة'),
+        const SizedBox(height: 12),
+        const ClockStyleSection(),
       ]),
       _slot([const TestSection()]),
     ];

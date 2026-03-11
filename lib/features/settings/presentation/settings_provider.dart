@@ -135,4 +135,10 @@ class SettingsProvider extends ChangeNotifier {
     await _repo.save(_settings);
     notifyListeners();
   }
+
+  Future<void> updateClockStyle({required bool isAnalog}) async {
+    _settings = _settings.copyWith(isAnalogClock: isAnalog);
+    await _repo.save(_settings);
+    notifyListeners();
+  }
 }

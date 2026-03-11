@@ -20,6 +20,9 @@ class PrayerCardStrip extends StatelessWidget {
       final cycle = p.activeCyclePrayerKey;
       return cycle.isNotEmpty ? cycle : p.nextPrayerKey;
     });
+    final isPreAlert = context.select<PrayerProvider, bool>(
+      (p) => p.isPrePrayerAlert,
+    );
     final settings = context.watch<SettingsProvider>().settings;
     final tc = ThemeColors.of(settings.isDarkMode);
     final screenW = MediaQuery.of(context).size.width;
@@ -68,6 +71,7 @@ class PrayerCardStrip extends StatelessWidget {
                 prayer: p,
                 isNext: isNext,
                 isPassed: isPassed,
+                isPreAlert: isNext && isPreAlert,
                 settings: settings,
                 iqamaDelay: delay,
                 adhanOffset: offset,

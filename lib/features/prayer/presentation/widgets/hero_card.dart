@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/time_formatters.dart';
+import '../../../../core/widgets/flip_clock.dart';
 import '../prayer_provider.dart';
 import '../../../settings/presentation/settings_provider.dart';
 import '../../../makkah/presentation/makkah_stream_controller.dart';
@@ -19,6 +20,7 @@ class HeroCard extends StatelessWidget {
     final screenW = MediaQuery.of(context).size.width;
 
     final isIqama = prayerProv.isIqamaCountdown;
+    final isPreAlert = prayerProv.isPrePrayerAlert;
     final isMakkahActive = settings.isMakkahStreamEnabled &&
         !prayerProv.isCycleActive &&
         prayerProv.countdown.inSeconds > 120;
@@ -247,9 +249,12 @@ class _AnimatedCountdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Text(text, style: style),
+    final fontSize = style.fontSize ?? 48.0;
+    return FlipClock(
+      text: text,
+      style: style,
+      digitWidth: fontSize * 0.68,
+      digitHeight: fontSize * 1.22,
     );
   }
 }

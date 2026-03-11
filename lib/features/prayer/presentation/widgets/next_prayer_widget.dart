@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/time_formatters.dart';
+import '../../../../core/widgets/flip_clock.dart';
 import '../prayer_provider.dart';
 import '../../../settings/presentation/settings_provider.dart';
 
@@ -73,14 +73,15 @@ class NextPrayerWidget extends StatelessWidget {
                 size: screenH * 0.035,
               ),
               SizedBox(width: screenW * 0.008),
-              Text(
-                formatCountdown(prayer.countdown),
-                textDirection: TextDirection.ltr,
+              FlipClock(
+                text: formatCountdown(prayer.countdown),
                 style: TextStyle(
                   fontSize: screenH * 0.060,
                   fontWeight: FontWeight.w600,
                   color: tc.textPrimary,
                 ),
+                digitWidth: screenH * 0.060 * 0.68,
+                digitHeight: screenH * 0.060 * 1.22,
               ),
             ],
           ),

@@ -6,6 +6,8 @@ abstract class IAudioRepository {
   Future<bool> playAdhan({String soundKey = 'default'});
   Future<bool> playDua();
   Future<bool> playIqama();
+  Future<void> playPreAlertBell();
+  Future<void> playPrayerAnnouncement(String prayerKey);
   Future<void> stop();
 
   Future<void> playQuranFromServer(String serverUrl);

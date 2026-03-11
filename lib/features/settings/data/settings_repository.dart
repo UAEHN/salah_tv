@@ -28,6 +28,7 @@ class SettingsRepository implements ISettingsRepository {
       'adhanSound': prefs.getString('${_prefix}adhan_sound'),
       'isMakkahStreamEnabled': prefs.getBool('${_prefix}makkah_stream_enabled'),
       'isMakkahStreamAudioEnabled': prefs.getBool('${_prefix}makkah_stream_audio'),
+      'isAnalogClock': prefs.getBool('${_prefix}analog_clock'),
     });
   }
 
@@ -58,5 +59,6 @@ class SettingsRepository implements ISettingsRepository {
     await prefs.setString('${_prefix}adhan_sound', s.adhanSound);
     await prefs.setBool('${_prefix}makkah_stream_enabled', s.isMakkahStreamEnabled);
     await prefs.setBool('${_prefix}makkah_stream_audio', s.isMakkahStreamAudioEnabled);
+    await prefs.setBool('${_prefix}analog_clock', s.isAnalogClock);
   }
 }

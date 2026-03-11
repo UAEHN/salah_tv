@@ -25,9 +25,11 @@ class PrayerCycleEngine {
 
   bool _isAdhanPlaying = false;
   String _currentAdhanPrayerName = '';
-  String _activeCyclePrayerKey = ''; // set when adhan fires, cleared after iqama ends
+  String _activeCyclePrayerKey =
+      ''; // set when adhan fires, cleared after iqama ends
   int _currentIqamaDelayMin = 0; // Issue 9: snapshot at adhan fire time
-  DateTime? _adhanTriggerTime; // exact moment adhan fired — used to anchor iqama countdown
+  DateTime?
+  _adhanTriggerTime; // exact moment adhan fired — used to anchor iqama countdown
   Timer? _adhanFallbackTimer;
 
   bool _isIqamaCountdown = false;
@@ -46,6 +48,14 @@ class PrayerCycleEngine {
 
   /// Internally paused because adhan/dua/iqama is active. Will auto-resume.
   bool _isQuranPausedForAdhan = false;
+
+  // ── Pre-alert bell state ────────────────────────────────────────────────
+  /// Tracks which prayers have already had the bell played (keyed like _adhansToday).
+  final Set<String> _preAlertBellPlayed = {};
+
+  // ── Pre-adhan announcement state ─────────────────────────────────────────
+  /// Tracks which prayers have already had the announcement played.
+  final Set<String> _preAnnouncementPlayed = {};
 
   // ── Makkah stream audio state ────────────────────────────────────────────
   /// True when the Makkah stream is playing with audio (so Quran stays paused).
@@ -97,6 +107,12 @@ class PrayerCycleEngine {
   bool get isCycleActive =>
       _isAdhanPlaying || _isDuaPlaying || _isIqamaCountdown || _isIqamaPlaying;
 
+  /// True when the countdown is within 60 seconds of the next prayer and no cycle is active.
+  bool get isPrePrayerAlert {
+    if (isCycleActive) return false;
+    return _countdown.inSeconds > 0 && _countdown.inSeconds <= 60;
+  }
+
   bool get isMakkahStreamAudioActive => _isMakkahStreamAudioActive;
 
   /// Called by the Makkah stream widget when stream audio starts/stops.
@@ -114,9 +130,7 @@ class PrayerCycleEngine {
       // Always restart (not resume) because ExoPlayer may have caused the
       // audioplayer to lose its paused state via Android audio focus changes.
       if (_isQuranPlaying && !_isQuranPausedForAdhan) {
-        _audioService.restartQuranCurrentSurah(
-          _settings.quranReciterServerUrl,
-        );
+        _audioService.restartQuranCurrentSurah(_settings.quranReciterServerUrl);
       }
     }
     // No _onStateChanged() here — no widget watches _isMakkahStreamAudioActive.
@@ -132,7 +146,8 @@ class PrayerCycleEngine {
     _settings = settings;
 
     // If city or country changed, reset adhan state and reload prayer times
-    if (settings.selectedCity != oldCity || settings.selectedCountry != oldCountry) {
+    if (settings.selectedCity != oldCity ||
+        settings.selectedCountry != oldCountry) {
       _resetAdhanCycleForCityChange();
       _csvService.setActiveCity(settings.selectedCity);
       _loadToday();
@@ -181,7 +196,11 @@ class PrayerCycleEngine {
   void _recoverIqamaState() {
     if (_todayPrayers == null) return;
     // Do not interfere if a cycle is already in progress
-    if (_isAdhanPlaying || _isDuaPlaying || _isIqamaCountdown || _isIqamaPlaying) return;
+    if (_isAdhanPlaying ||
+        _isDuaPlaying ||
+        _isIqamaCountdown ||
+        _isIqamaPlaying)
+      return;
 
     final missed = _markMissedPrayers();
     if (missed == null) return;
@@ -215,7 +234,7 @@ class PrayerCycleEngine {
       final timeSince = _now.difference(_adjustedTime(p));
       if (timeSince.inSeconds > 2) {
         _adhansToday.add(key); // mark every missed prayer immediately
-        missed = p;            // keep overwriting — ends up as the latest one
+        missed = p; // keep overwriting — ends up as the latest one
       }
     }
     return missed;
@@ -274,10 +293,14 @@ class PrayerCycleEngine {
     // that could be skipped when Timer.periodic drifts on slow hardware.
     if (_now.day != _lastLoadedDay) {
       _adhansToday.clear();
+      _preAlertBellPlayed.clear();
+      _preAnnouncementPlayed.clear();
       _loadToday();
     }
 
     _updateNextPrayer();
+    _checkPreAnnouncement();
+    _checkPreAlertBell();
     _checkAdhanTrigger();
     _tickIqama();
     _onStateChanged();
@@ -357,14 +380,35 @@ class PrayerCycleEngine {
       final tomorrowPrayers = _csvService.getTomorrowByKey(tomorrowKey);
       if (tomorrowPrayers != null) {
         final fajrOffset = _settings.adhanOffsets['fajr'] ?? 0;
-        final adjustedFajr =
-            tomorrowPrayers.fajr.add(Duration(minutes: fajrOffset));
+        final adjustedFajr = tomorrowPrayers.fajr.add(
+          Duration(minutes: fajrOffset),
+        );
         final diff = adjustedFajr.difference(_now);
         _countdown = diff.isNegative ? Duration.zero : diff;
       } else {
         _countdown = Duration.zero;
       }
     }
+  }
+
+  /// Play the prayer-name announcement 5 seconds before adhan fires.
+  void _checkPreAnnouncement() {
+    if (isCycleActive) return;
+    final key = '${_nextPrayerKey}_${_now.day}';
+    if (_preAnnouncementPlayed.contains(key)) return;
+    if (_countdown.inSeconds > 0 && _countdown.inSeconds <= 5) {
+      _preAnnouncementPlayed.add(key);
+      unawaited(_audioService.playPrayerAnnouncement(_nextPrayerKey));
+    }
+  }
+
+  /// Play a soft bell once when the countdown enters the 1-minute pre-alert window.
+  void _checkPreAlertBell() {
+    if (!isPrePrayerAlert) return;
+    final key = '${_nextPrayerKey}_${_now.day}';
+    if (_preAlertBellPlayed.contains(key)) return;
+    _preAlertBellPlayed.add(key);
+    _audioService.playPreAlertBell();
   }
 
   void _checkAdhanTrigger() {
@@ -387,7 +431,8 @@ class PrayerCycleEngine {
     _isAdhanPlaying = true;
     _currentAdhanPrayerName = prayerName;
     _activeCyclePrayerKey = prayerKey; // lock card highlight for this prayer
-    _currentIqamaDelayMin = _settings.iqamaDelays[prayerKey] ?? 0; // Issue 9: snapshot
+    _currentIqamaDelayMin =
+        _settings.iqamaDelays[prayerKey] ?? 0; // Issue 9: snapshot
     _adhanTriggerTime = _now; // anchor for iqama countdown calculation
     _isIqamaCountdown = false;
 
@@ -405,7 +450,9 @@ class PrayerCycleEngine {
 
     _onStateChanged();
 
-    final success = await _audioService.playAdhan(soundKey: _settings.adhanSound);
+    final success = await _audioService.playAdhan(
+      soundKey: _settings.adhanSound,
+    );
     if (!success && _isAdhanPlaying) {
       // Audio failed to start — cancel fallback and clean up immediately
       _adhanFallbackTimer?.cancel();
@@ -418,13 +465,21 @@ class PrayerCycleEngine {
   // Issue 10: guard against starting a test while a real cycle is active,
   // and guard against overlapping with the real prayer adhan.
   void testAdhan() {
-    if (_isAdhanPlaying || _isDuaPlaying || _isIqamaCountdown || _isIqamaPlaying) return;
+    if (_isAdhanPlaying ||
+        _isDuaPlaying ||
+        _isIqamaCountdown ||
+        _isIqamaPlaying)
+      return;
     unawaited(_triggerAdhan(_nextPrayerName, _nextPrayerKey));
   }
 
   // Issue 10: same guard for test iqama.
   void testIqama() {
-    if (_isAdhanPlaying || _isDuaPlaying || _isIqamaCountdown || _isIqamaPlaying) return;
+    if (_isAdhanPlaying ||
+        _isDuaPlaying ||
+        _isIqamaCountdown ||
+        _isIqamaPlaying)
+      return;
     _iqamaPrayerName = _nextPrayerName;
     unawaited(_triggerIqama());
   }

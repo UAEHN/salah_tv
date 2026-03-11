@@ -30,18 +30,22 @@ class AppSettings {
   final bool isMakkahStreamEnabled;
   final bool isMakkahStreamAudioEnabled; // false = muted (Quran continues)
 
+  // Clock display style
+  final bool isAnalogClock;
+
   const AppSettings({
     this.themeColorKey = 'green',
     this.use24HourFormat = false,
     this.playAdhan = true,
     this.isDarkMode = false,
-    this.fontFamily = 'Cairo',
+    this.fontFamily = 'Kufi',
     this.selectedCountry = 'UAE',
     this.selectedCity = 'Dubai',
     this.layoutStyle = 'modern',
     this.adhanSound = 'default',
     this.isMakkahStreamEnabled = false,
     this.isMakkahStreamAudioEnabled = false,
+    this.isAnalogClock = false,
     this.iqamaDelays = const {
       'fajr': 20,
       'dhuhr': 10,
@@ -72,7 +76,9 @@ class AppSettings {
   static String _validatedQuranUrl(String url) {
     if (url.isEmpty) return '';
     final uri = Uri.tryParse(url);
-    if (uri == null || uri.scheme != 'https' || !uri.host.endsWith('mp3quran.net')) {
+    if (uri == null ||
+        uri.scheme != 'https' ||
+        !uri.host.endsWith('mp3quran.net')) {
       return '';
     }
     return url;
@@ -97,6 +103,7 @@ class AppSettings {
     String? adhanSound,
     bool? isMakkahStreamEnabled,
     bool? isMakkahStreamAudioEnabled,
+    bool? isAnalogClock,
   }) {
     return AppSettings(
       themeColorKey: themeColorKey ?? this.themeColorKey,
@@ -120,6 +127,7 @@ class AppSettings {
           isMakkahStreamEnabled ?? this.isMakkahStreamEnabled,
       isMakkahStreamAudioEnabled:
           isMakkahStreamAudioEnabled ?? this.isMakkahStreamAudioEnabled,
+      isAnalogClock: isAnalogClock ?? this.isAnalogClock,
     );
   }
 
@@ -142,6 +150,7 @@ class AppSettings {
     'adhanSound': adhanSound,
     'isMakkahStreamEnabled': isMakkahStreamEnabled,
     'isMakkahStreamAudioEnabled': isMakkahStreamAudioEnabled,
+    'isAnalogClock': isAnalogClock,
   };
 
   factory AppSettings.fromMap(Map<String, dynamic> map) {
@@ -186,23 +195,26 @@ class AppSettings {
           '"مَن صامَ رمضانَ ثمَّ أتبعَهُ ستًّا من شوَّالٍ كانَ كصيامِ الدَّهرِ"',
       hadithSource: map['hadithSource'] as String? ?? 'رواه مسلم',
       fontFamily:
-          const ['Cairo', 'Tajawal', 'Beiruti'].contains(map['fontFamily'])
+          const ['Cairo', 'Kufi', 'Beiruti'].contains(map['fontFamily'])
           ? map['fontFamily'] as String
-          : 'Cairo',
+          : 'Kufi',
       isQuranEnabled: map['isQuranEnabled'] as bool? ?? false,
       quranReciterName: map['quranReciterName'] as String? ?? '',
-      quranReciterServerUrl: _validatedQuranUrl(map['quranReciterServerUrl'] as String? ?? ''),
+      quranReciterServerUrl: _validatedQuranUrl(
+        map['quranReciterServerUrl'] as String? ?? '',
+      ),
       selectedCountry: map['selectedCountry'] as String? ?? 'UAE',
       selectedCity: map['selectedCity'] as String? ?? 'Dubai',
       layoutStyle: const ['classic', 'modern'].contains(map['layoutStyle'])
           ? map['layoutStyle'] as String
           : 'modern',
-      adhanSound: const ['default', 'raad_al_kurdi'].contains(map['adhanSound'])
+      adhanSound: const ['default', 'adhan2', 'adhan3'].contains(map['adhanSound'])
           ? map['adhanSound'] as String
           : 'default',
       isMakkahStreamEnabled: map['isMakkahStreamEnabled'] as bool? ?? false,
       isMakkahStreamAudioEnabled:
           map['isMakkahStreamAudioEnabled'] as bool? ?? false,
+      isAnalogClock: map['isAnalogClock'] as bool? ?? false,
     );
   }
 }

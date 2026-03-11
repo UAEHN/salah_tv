@@ -3,5 +3,6 @@
 const kAdhanSounds = [
   (key: 'default', label: 'أذان 1', asset: 'audio/adhan.mp3'),
   (key: 'adhan2', label: 'أذان 2', asset: 'audio/adhan2.mp3'),
+  (key: 'adhan3', label: 'أذان 3', asset: 'audio/adhan3.mp3'),
 ];
   

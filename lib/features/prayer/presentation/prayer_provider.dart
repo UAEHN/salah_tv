@@ -54,6 +54,7 @@ class PrayerProvider extends ChangeNotifier with WidgetsBindingObserver {
   void toggleQuran(String? serverUrl) => _engine.toggleQuran(serverUrl);
 
   bool get isCycleActive => _engine.isCycleActive;
+  bool get isPrePrayerAlert => _engine.isPrePrayerAlert;
   void setMakkahStreamAudioActive(bool value) =>
       _engine.setMakkahStreamAudioActive(value);
 
