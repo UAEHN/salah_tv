@@ -28,7 +28,7 @@ dependencies:
   # Arabic fonts (Cairo)
   
 
-  # Save CSV copy to app directory
+  # App storage path — used by SqliteDbInitializer to locate the DB file
   path_provider: ^2.1.5
 
   # Keep screen awake during app usage
@@ -36,6 +36,10 @@ dependencies:
 
   # HTTP requests for Quran API
   http: ^1.2.2
+
+  # SQLite — prayer times storage (replaces bundled CSVs)
+  sqflite: ^2.4.2
+  path: ^1.9.1
 
   # Makkah live stream
   video_player: ^2.9.3
@@ -53,6 +57,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   build_runner: ^2.12.2
   injectable_generator: ^2.12.1
+  sqflite_common_ffi: ^2.4.0+2
 
 flutter:
   uses-material-design: true
@@ -67,22 +72,7 @@ flutter:
     - assets/audio/Asr.mp3
     - assets/audio/Maghrib.mp3
     - assets/audio/Isha.mp3
-    - assets/csv/prayer_times.csv
-    - assets/csv/uae_prayer_times_2026.csv
-    - assets/csv/oman_prayer_times_2026.csv
-    - assets/csv/saudi_prayer_times_2026.csv
-    - assets/csv/kuwait_prayer_times_2026.csv
-    - assets/csv/qatar_prayer_times_2026.csv
-    - assets/csv/bahrain_prayer_times_2026.csv
-    - assets/csv/egypt_prayer_times_2026.csv
-    - assets/csv/iraq_prayer_times_2026.csv
-    - assets/csv/jordan_prayer_times_2026.csv
-    - assets/csv/lebanon_prayer_times_2026.csv
-    - assets/csv/morocco_prayer_times_2026.csv
-    - assets/csv/palestine_prayer_times_2026.csv
-    - assets/csv/syria_prayer_times_2026.csv
-    - assets/csv/tunisia_prayer_times_2026.csv
-    - assets/csv/yemen_prayer_times_2026.csv
+    - assets/prayer_times.db
   fonts:
     - family: Cairo
       fonts:

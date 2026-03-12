@@ -1,0 +1,33 @@
+# Rule Violations Found
+
+- Files exceed the 150-line limit:
+- `lib/features/prayer/presentation/screens/home_screen.dart` (587 lines)
+- `lib/features/prayer/domain/prayer_cycle_engine.dart` (548 lines)
+- `lib/features/settings/presentation/settings_screen.dart` (280 lines)
+- `lib/models/app_settings.dart` (205 lines)
+- `lib/features/audio/data/audio_service.dart` (220 lines)
+- State management uses Provider/ChangeNotifier instead of BLoC:
+- `lib/features/prayer/presentation/prayer_provider.dart`
+- `lib/features/settings/presentation/settings_provider.dart`
+- Dependency injection is not consistently using `get_it` + `injectable`; services are manually instantiated:
+- `lib/main.dart`
+- Domain layer depends on external packages (disallowed):
+- `lib/features/prayer/domain/prayer_cycle_engine.dart` (`intl`)
+- `lib/features/app_update/domain/usecases/check_update_usecase.dart` (`dartz`, `injectable`)
+- `lib/features/app_update/domain/usecases/download_install_usecase.dart` (`dartz`, `injectable`)
+- `lib/features/app_update/domain/repositories/update_repository.dart` (`dartz`)
+- Data layer does not return `Either<Failure, Success>` as required:
+- `lib/features/settings/data/settings_repository.dart`
+- `lib/features/quran/data/quran_api_service.dart`
+- `lib/features/audio/data/audio_service.dart`
+- `lib/features/prayer/data/sqlite_prayer_repository.dart`
+- Feature-first rule is violated by cross-feature code living outside `lib/features`:
+- `lib/core/app_colors.dart`
+- `lib/models/app_settings.dart`
+- Presentation layer contains business logic (should be zero):
+- `lib/features/prayer/presentation/screens/home_screen.dart`
+- Boolean naming rule violations (not prefixed with `is/has/can`):
+- `lib/features/prayer/presentation/prayer_provider.dart` (`_disposed`)
+- `lib/features/prayer/presentation/screens/home_screen.dart` (`_focused`, `_lastPlaying`)
+- `lib/features/settings/presentation/settings_screen.dart` (`_focused`)
+- `lib/features/makkah/presentation/widgets/makkah_hero_content.dart` (`_lastAudioEnabled`)

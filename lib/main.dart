@@ -5,7 +5,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'app.dart';
 import 'models/app_settings.dart';
 import 'features/audio/data/audio_service.dart';
-import 'features/prayer/data/csv_service.dart';
+import 'features/prayer/data/sqlite_prayer_repository.dart';
 import 'features/quran/data/quran_api_service.dart';
 import 'features/settings/data/settings_repository.dart';
 import 'features/prayer/presentation/prayer_provider.dart';
@@ -32,7 +32,7 @@ void main() async {
   final repo = SettingsRepository();
   final AppSettings settings = await repo.load();
 
-  final csvService = CsvService();
+  final csvService = SqlitePrayerRepository();
   await csvService.initialize(settings.selectedCountry);
 
   final audioService = AudioService();

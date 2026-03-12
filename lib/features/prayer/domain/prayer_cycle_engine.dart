@@ -156,6 +156,23 @@ class PrayerCycleEngine {
       _updateNextPrayer();
     }
 
+    // If iqama delay changed while the countdown is running, recalculate
+    // remaining time from the original adhan trigger anchor.
+    if (_isIqamaCountdown && _adhanTriggerTime != null) {
+      final newDelay = _settings.iqamaDelays[_activeCyclePrayerKey] ?? 0;
+      if (newDelay != _currentIqamaDelayMin) {
+        _currentIqamaDelayMin = newDelay;
+        final elapsed = _now.difference(_adhanTriggerTime!);
+        final remaining = Duration(minutes: newDelay) - elapsed;
+        if (remaining.inSeconds > 0) {
+          _iqamaCountdown = remaining;
+        } else {
+          _isIqamaCountdown = false;
+          unawaited(_triggerIqama());
+        }
+      }
+    }
+
     // If reciter changed while Quran is actively playing, switch immediately
     if (_isQuranPlaying &&
         !_isQuranPausedForAdhan &&
@@ -297,6 +314,10 @@ class PrayerCycleEngine {
       _preAnnouncementPlayed.clear();
       _loadToday();
     }
+
+    // Retry if prayer data was temporarily null while async cache was rebuilding
+    // (e.g. after setActiveCity triggers _refreshCache in the background).
+    if (_todayPrayers == null) _loadToday();
 
     _updateNextPrayer();
     _checkPreAnnouncement();
