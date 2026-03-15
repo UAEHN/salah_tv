@@ -12,7 +12,7 @@
 // Conversion helpers _dateKeyToInt / _intToDateTime handle the bridge.
 
 import 'package:sqflite/sqflite.dart';
-import '../../../models/daily_prayer_times.dart';
+import '../domain/entities/daily_prayer_times.dart';
 
 class SqlitePrayerQueries {
   // ── City / country lookups ────────────────────────────────────────────────

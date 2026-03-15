@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart' hide TextDirection;
-import '../../../../models/daily_prayer_times.dart';
-import '../../../../models/app_settings.dart';
+import '../../domain/entities/daily_prayer_times.dart';
+import '../../../settings/domain/entities/app_settings.dart';
 import '../../../../core/app_colors.dart';
+import 'prayer_time_column.dart';
 
 class PrayerRow extends StatelessWidget {
   final PrayerEntry prayer;
@@ -38,7 +39,6 @@ class PrayerRow extends StatelessWidget {
     final screenH = MediaQuery.of(context).size.height;
 
     // الألوان تعتمد على الوضع فقط — بغض النظر عن لون الثيم
-    final timeColor = tc.textPrimary;
     final nameColor = isNext ? tc.textPrimary : tc.textSecondary;
     final iconColor = isNext ? tc.textPrimary : tc.textMuted;
 
@@ -74,51 +74,14 @@ class PrayerRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Time column (adhan + iqama)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _formatTime(adjustedTime),
-                textDirection: TextDirection.ltr,
-                style: TextStyle(
-                  fontSize: screenH * 0.053,
-                  fontWeight: isNext ? FontWeight.w600 : FontWeight.w400,
-                  color: timeColor,
-                  shadows: isNext
-                      ? [
-                          Shadow(
-                            color: palette.glow.withValues(alpha: 0.35),
-                            blurRadius: 12,
-                          ),
-                        ]
-                      : null,
-                ),
-              ),
-              if (prayer.isCountable) ...[
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'إقامة ',
-                      style: TextStyle(
-                        fontSize: screenH * 0.022,
-                        color: tc.textMuted,
-                      ),
-                    ),
-                    Text(
-                      _formatTime(iqamaTime),
-                      textDirection: TextDirection.ltr,
-                      style: TextStyle(
-                        fontSize: screenH * 0.026,
-                        fontWeight: FontWeight.w400,
-                        color: tc.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ],
+          PrayerTimeColumn(
+            adhanTime: _formatTime(adjustedTime),
+            iqamaTime: _formatTime(iqamaTime),
+            isCountable: prayer.isCountable,
+            isNext: isNext,
+            tc: tc,
+            palette: palette,
+            screenH: screenH,
           ),
           // Prayer name
           Expanded(
@@ -134,31 +97,12 @@ class PrayerRow extends StatelessWidget {
           ),
           SizedBox(width: screenH * 0.022),
           Icon(
-            _getIconForPrayer(prayer.key),
+            prayerIcon(prayer.key),
             size: screenH * 0.042,
             color: iconColor,
           ),
         ],
       ),
     );
-  }
-
-  IconData _getIconForPrayer(String key) {
-    switch (key) {
-      case 'fajr':
-        return Icons.wb_twilight_rounded;
-      case 'sunrise':
-        return Icons.brightness_high_rounded;
-      case 'dhuhr':
-        return Icons.wb_sunny_rounded;
-      case 'asr':
-        return Icons.wb_sunny_outlined;
-      case 'maghrib':
-        return Icons.brightness_4_rounded;
-      case 'isha':
-        return Icons.nights_stay_rounded;
-      default:
-        return Icons.star_rounded;
-    }
   }
 }

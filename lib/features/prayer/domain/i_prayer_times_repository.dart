@@ -1,4 +1,7 @@
-import '../../../models/daily_prayer_times.dart';
+import 'package:dartz/dartz.dart';
+import '../../../core/error/failures.dart';
+import '../../../core/usecases/success.dart';
+import 'entities/daily_prayer_times.dart';
 
 abstract class IPrayerTimesRepository {
   bool get hasData;
@@ -7,9 +10,10 @@ abstract class IPrayerTimesRepository {
   String get activeCity;
   int get totalDays;
 
-  Future<void> initialize(String countryKey);
-  Future<void> loadCountry(String countryKey);
+  Future<Either<Failure, Success>> initialize(String countryKey);
+  Future<Either<Failure, Success>> loadCountry(String countryKey);
   void setActiveCity(String city);
+  // Sync O(1) cache lookups — no Either needed
   DailyPrayerTimes? getToday();
   DailyPrayerTimes? getTomorrowByKey(String key);
 }

@@ -1,10 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:injectable/injectable.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/success.dart';
 import '../repositories/update_repository.dart';
 
-@injectable
 class DownloadInstallUseCase {
   final UpdateRepository repository;
 

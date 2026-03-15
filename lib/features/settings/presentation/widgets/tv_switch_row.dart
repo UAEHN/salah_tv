@@ -20,12 +20,12 @@ class TvSwitchRow extends StatefulWidget {
 }
 
 class _TvSwitchRowState extends State<TvSwitchRow> {
-  bool _focused = false;
+  bool _isFocused = false;
 
   @override
   Widget build(BuildContext context) {
     return Focus(
-      onFocusChange: (f) => setState(() => _focused = f),
+      onFocusChange: (f) => setState(() => _isFocused = f),
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.select ||
@@ -38,24 +38,24 @@ class _TvSwitchRowState extends State<TvSwitchRow> {
       child: GestureDetector(
         onTap: () => widget.onChanged(!widget.value),
         child: AnimatedScale(
-          scale: _focused ? 1.02 : 1.0,
+          scale: _isFocused ? 1.02 : 1.0,
           duration: const Duration(milliseconds: 150),
           curve: Curves.easeOut,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             decoration: BoxDecoration(
-              color: _focused
+              color: _isFocused
                   ? widget.accent.withValues(alpha: 0.13)
                   : Colors.black.withValues(alpha: 0.03),
               border: Border.all(
-                color: _focused
+                color: _isFocused
                     ? widget.accent
                     : widget.accent.withValues(alpha: 0.22),
-                width: _focused ? 3.5 : 1.0,
+                width: _isFocused ? 3.5 : 1.0,
               ),
               borderRadius: BorderRadius.circular(12),
-              boxShadow: _focused
+              boxShadow: _isFocused
                   ? [
                       BoxShadow(
                         color: widget.accent.withValues(alpha: 0.50),

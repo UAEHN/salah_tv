@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
-import '../../../../core/time_formatters.dart';
-import '../../../prayer/presentation/prayer_provider.dart';
+import '../../../prayer/presentation/bloc/prayer_bloc.dart';
+import '../../../prayer/presentation/bloc/prayer_event.dart';
 import '../../../settings/presentation/settings_provider.dart';
 import '../makkah_stream_controller.dart';
 import 'makkah_video_overlay.dart';
+import 'prayer_text_overlay.dart';
 
 /// Replaces [_NextPrayerContent] inside HeroCard when the Makkah stream is
 /// active. Shows the live video with prayer name + countdown overlaid.
@@ -19,14 +21,15 @@ class MakkahHeroContent extends StatefulWidget {
 
 class _MakkahHeroContentState extends State<MakkahHeroContent> {
   late final MakkahStreamController _stream;
-  late final PrayerProvider _prayerProv;
-  bool? _lastAudioEnabled;
+  late final PrayerBloc _prayerBloc;
+  SettingsProvider? _sp;
+  bool? _isLastAudioEnabled;
 
   @override
   void initState() {
     super.initState();
     _stream = MakkahStreamController();
-    _prayerProv = context.read<PrayerProvider>();
+    _prayerBloc = context.read<PrayerBloc>();
     // Defer ExoPlayer init to after the current frame so the Android UI thread
     // is free — prevents the 1–5 s rendering freeze on low-end TV boxes.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -35,8 +38,33 @@ class _MakkahHeroContentState extends State<MakkahHeroContent> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final sp = context.read<SettingsProvider>();
+    if (_sp != sp) {
+      _sp?.removeListener(_syncAudio);
+      _sp = sp;
+      sp.addListener(_syncAudio);
+      _syncAudio();
+    }
+  }
+
+  /// Syncs mute state and notifies BLoC when the audio setting changes.
+  /// Called from a ChangeNotifier listener — never from build().
+  void _syncAudio() {
+    if (!mounted) return;
+    final audioEnabled = _sp!.settings.isMakkahStreamAudioEnabled;
+    _stream.setMuted(!audioEnabled);
+    if (_isLastAudioEnabled != audioEnabled) {
+      _isLastAudioEnabled = audioEnabled;
+      _prayerBloc.add(PrayerMakkahStreamAudioChanged(audioEnabled));
+    }
+  }
+
+  @override
   void dispose() {
-    _prayerProv.setMakkahStreamAudioActive(false);
+    _sp?.removeListener(_syncAudio);
+    _prayerBloc.add(const PrayerMakkahStreamAudioChanged(false));
     _stream.dispose();
     super.dispose();
   }
@@ -44,22 +72,12 @@ class _MakkahHeroContentState extends State<MakkahHeroContent> {
   void _toggleMute(BuildContext context) {
     _stream.toggleMute();
     final isNowMuted = _stream.isMuted.value;
-    context.read<PrayerProvider>().setMakkahStreamAudioActive(!isNowMuted);
+    context.read<PrayerBloc>().add(PrayerMakkahStreamAudioChanged(!isNowMuted));
   }
 
   @override
   Widget build(BuildContext context) {
-    final audioEnabled = context.select(
-      (SettingsProvider p) => p.settings.isMakkahStreamAudioEnabled,
-    );
-    _stream.setMuted(!audioEnabled);
-    // Sync Quran pause/resume only when the audio setting actually changes.
-    if (_lastAudioEnabled != audioEnabled) {
-      _lastAudioEnabled = audioEnabled;
-      _prayerProv.setMakkahStreamAudioActive(audioEnabled);
-    }
-
-    final prayer = context.watch<PrayerProvider>();
+    final prayer = context.watch<PrayerBloc>().state;
     final screenH = MediaQuery.of(context).size.height;
 
     return Focus(
@@ -104,61 +122,13 @@ class _MakkahHeroContentState extends State<MakkahHeroContent> {
                   left: 0,
                   right: 0,
                   bottom: screenH * 0.03,
-                  child: _PrayerTextOverlay(prayer: prayer, screenH: screenH),
+                  child: PrayerTextOverlay(prayer: prayer, screenH: screenH),
                 ),
               ],
             ),
           );
         },
       ),
-    );
-  }
-}
-
-class _PrayerTextOverlay extends StatelessWidget {
-  final PrayerProvider prayer;
-  final double screenH;
-
-  const _PrayerTextOverlay({required this.prayer, required this.screenH});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'الصلاة القادمة',
-          style: TextStyle(
-            fontSize: screenH * 0.038,
-            fontWeight: FontWeight.w400,
-            color: Colors.white.withValues(alpha: 0.8),
-          ),
-        ),
-        Text(
-          prayer.nextPrayerName,
-          style: TextStyle(
-            fontSize: screenH * 0.10,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-            height: 1.1,
-            shadows: const [Shadow(color: Colors.black54, blurRadius: 12)],
-          ),
-        ),
-        SizedBox(height: screenH * 0.005),
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: Text(
-            formatCountdown(prayer.countdown),
-            style: TextStyle(
-              fontSize: screenH * 0.075,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-              letterSpacing: 2,
-              shadows: const [Shadow(color: Colors.black54, blurRadius: 8)],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

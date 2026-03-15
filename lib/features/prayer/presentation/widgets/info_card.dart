@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/city_translations.dart';
 import '../../../settings/presentation/settings_provider.dart';
+import '../bloc/prayer_bloc.dart';
 import 'clock_widget.dart';
 import 'date_widget.dart';
 
@@ -46,10 +48,10 @@ class InfoCard extends StatelessWidget {
           DateWidget(palette: palette, compact: true),
 
           // City badge
-          if (context.read<SettingsProvider>().isMultiCity) ...[
+          if (context.select((PrayerBloc b) => b.state.isMultiCity)) ...[
             SizedBox(height: screenH * 0.015),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
               decoration: BoxDecoration(
                 color: tc.textPrimary.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(20),
@@ -64,13 +66,13 @@ class InfoCard extends StatelessWidget {
                   Icon(
                     Icons.location_on_rounded,
                     color: tc.textSecondary,
-                    size: 14,
+                    size: 12,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     cityLabel(settings.selectedCity),
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: tc.textPrimary,
                     ),
@@ -82,7 +84,7 @@ class InfoCard extends StatelessWidget {
 
           // Quran button
           if (quranButton != null) ...[
-            SizedBox(height: screenH * 0.02),
+            SizedBox(height: screenH * 0.012),
             quranButton!,
           ],
         ],

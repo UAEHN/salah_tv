@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' hide TextDirection;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
-import '../prayer_provider.dart';
+import '../bloc/prayer_bloc.dart';
 import '../../../settings/presentation/settings_provider.dart';
 import 'analog_clock_widget.dart';
 
@@ -44,7 +45,7 @@ class _DigitalClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>().settings;
-    final now = context.watch<PrayerProvider>().now;
+    final now = context.select((PrayerBloc b) => b.state.now);
     final screenH = MediaQuery.of(context).size.height;
     final tc = ThemeColors.of(settings.isDarkMode);
 

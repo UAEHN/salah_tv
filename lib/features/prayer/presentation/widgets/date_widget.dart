@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hijri/hijri_calendar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
-import '../prayer_provider.dart';
+import '../bloc/prayer_bloc.dart';
 import '../../../settings/presentation/settings_provider.dart';
 
 const List<String> _hijriMonthsAr = [
@@ -46,14 +47,14 @@ class DateWidget extends StatefulWidget {
 }
 
 class _DateWidgetState extends State<DateWidget> {
-  bool _showHijri = true;
+  bool _isShowingHijri = true;
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 4), (_) {
-      setState(() => _showHijri = !_showHijri);
+      setState(() => _isShowingHijri = !_isShowingHijri);
     });
   }
 
@@ -69,25 +70,26 @@ class _DateWidgetState extends State<DateWidget> {
     final month = (h.hMonth >= 1 && h.hMonth <= 12)
         ? _hijriMonthsAr[h.hMonth - 1]
         : h.longMonthName;
-    return '$day  ${h.hDay} $month ${h.hYear} هـ';
+    return "$day  ${h.hDay} $month ${h.hYear} هـ";
   }
 
   String _gregorianDate(DateTime d) {
     final day = _dayNamesAr[d.weekday - 1];
     final month = _gregorianMonthsAr[d.month - 1];
-    return '$day  ${d.day} $month ${d.year} م';
+    return "$day  ${d.day} $month ${d.year} م";
   }
 
   @override
   Widget build(BuildContext context) {
-    final now = context.select<PrayerProvider, DateTime>(
-      (p) => DateTime(p.now.year, p.now.month, p.now.day),
+    final now = context.select(
+      (PrayerBloc b) =>
+          DateTime(b.state.now.year, b.state.now.month, b.state.now.day),
     );
     final isDark = context.watch<SettingsProvider>().settings.isDarkMode;
     final tc = ThemeColors.of(isDark);
     final screenH = MediaQuery.of(context).size.height;
 
-    final text = _showHijri ? _hijriDate(now) : _gregorianDate(now);
+    final text = _isShowingHijri ? _hijriDate(now) : _gregorianDate(now);
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 600),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
-import '../../../../models/daily_prayer_times.dart';
-import '../prayer_provider.dart';
+import '../bloc/prayer_bloc.dart';
 import '../../../settings/presentation/settings_provider.dart';
 import 'prayer_card.dart';
 
@@ -11,17 +11,17 @@ class PrayerCardStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final today = context.select<PrayerProvider, DailyPrayerTimes?>(
-      (p) => p.todayPrayers,
+    final today = context.select(
+      (PrayerBloc b) => b.state.todayPrayers,
     );
     // During adhan → dua → iqama countdown → iqama, keep the active prayer
     // highlighted instead of jumping to the next one.
-    final nextKey = context.select<PrayerProvider, String>((p) {
-      final cycle = p.activeCyclePrayerKey;
-      return cycle.isNotEmpty ? cycle : p.nextPrayerKey;
+    final nextKey = context.select((PrayerBloc b) {
+      final cycle = b.state.activeCyclePrayerKey;
+      return cycle.isNotEmpty ? cycle : b.state.nextPrayerKey;
     });
-    final isPreAlert = context.select<PrayerProvider, bool>(
-      (p) => p.isPrePrayerAlert,
+    final isPreAlert = context.select(
+      (PrayerBloc b) => b.state.isPrePrayerAlert,
     );
     final settings = context.watch<SettingsProvider>().settings;
     final tc = ThemeColors.of(settings.isDarkMode);

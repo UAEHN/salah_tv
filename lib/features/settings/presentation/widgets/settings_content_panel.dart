@@ -9,7 +9,7 @@ import 'makkah_stream_section.dart';
 import 'quran_section.dart';
 import 'section_title.dart';
 import 'simple_sections.dart';
-import 'test_close_sections.dart';
+
 
 class SettingsContentPanel extends StatelessWidget {
   final int selectedIndex;
@@ -60,7 +60,6 @@ class SettingsContentPanel extends StatelessWidget {
         const SizedBox(height: 12),
         const ClockStyleSection(),
       ]),
-      _slot([const TestSection()]),
     ];
 
     return IndexedStack(

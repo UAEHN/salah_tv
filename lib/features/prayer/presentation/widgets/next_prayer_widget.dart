@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/time_formatters.dart';
 import '../../../../core/widgets/flip_clock.dart';
-import '../prayer_provider.dart';
+import '../bloc/prayer_bloc.dart';
 import '../../../settings/presentation/settings_provider.dart';
 
 class NextPrayerWidget extends StatelessWidget {
@@ -13,7 +14,7 @@ class NextPrayerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final prayer = context.watch<PrayerProvider>();
+    final prayer = context.watch<PrayerBloc>().state;
     final isDark = context.watch<SettingsProvider>().settings.isDarkMode;
     final tc = ThemeColors.of(isDark);
     final screenH = MediaQuery.of(context).size.height;

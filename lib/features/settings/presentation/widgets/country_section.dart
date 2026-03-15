@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/city_translations.dart';
+import '../../../prayer/presentation/bloc/prayer_bloc.dart';
 import '../settings_provider.dart';
 import '../dialogs/country_picker_dialog.dart';
 import 'tv_button.dart';
@@ -73,9 +75,19 @@ class CountrySection extends StatelessWidget {
         selectedCountry: settingsProv.settings.selectedCountry,
         countries: kCountries,
         onSelected: (countryKey) async {
+          final bloc = context.read<PrayerBloc>();
           await settingsProv.updateSelectedCountry(countryKey);
-          final allCsvCities = settingsProv.availableCities;
-          final filtered = citiesForCountry(countryKey, allCsvCities);
+          final current = bloc.state;
+          var filtered = citiesForCountry(countryKey, current.availableCities);
+          if (filtered.isEmpty) {
+            final state = await bloc.stream
+                .firstWhere((s) => s.availableCities.isNotEmpty)
+                .timeout(
+                  const Duration(seconds: 5),
+                  onTimeout: () => bloc.state,
+                );
+            filtered = citiesForCountry(countryKey, state.availableCities);
+          }
           if (filtered.isNotEmpty &&
               !filtered.contains(settingsProv.settings.selectedCity)) {
             settingsProv.updateSelectedCity(filtered.first);

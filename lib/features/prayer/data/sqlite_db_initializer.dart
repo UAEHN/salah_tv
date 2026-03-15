@@ -18,7 +18,7 @@ class SqliteDbInitializer {
 
   // Increment this whenever you rebuild prayer_times.db with new data.
   // The app compares this against the stored version and re-copies if different.
-  static const _dbVersion = 3;
+  static const _dbVersion = 4;
 
   Future<String> get _dbPath async {
     final dir = await getDatabasesPath();

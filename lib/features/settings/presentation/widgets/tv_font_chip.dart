@@ -25,15 +25,15 @@ class TvFontChip extends StatefulWidget {
 }
 
 class _TvFontChipState extends State<TvFontChip> {
-  bool _focused = false;
+  bool _isFocused = false;
 
   @override
   Widget build(BuildContext context) {
     final isDark = context.watch<SettingsProvider>().settings.isDarkMode;
     final tc = ThemeColors.of(isDark);
-    final isActive = _focused || widget.isSelected;
+    final isActive = _isFocused || widget.isSelected;
     return Focus(
-      onFocusChange: (f) => setState(() => _focused = f),
+      onFocusChange: (f) => setState(() => _isFocused = f),
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.select ||
@@ -46,7 +46,7 @@ class _TvFontChipState extends State<TvFontChip> {
       child: GestureDetector(
         onTap: widget.onPressed,
         child: AnimatedScale(
-          scale: _focused ? 1.06 : 1.0,
+          scale: _isFocused ? 1.06 : 1.0,
           duration: const Duration(milliseconds: 150),
           curve: Curves.easeOut,
           child: AnimatedContainer(
@@ -58,21 +58,21 @@ class _TvFontChipState extends State<TvFontChip> {
                   ? null
                   : widget.palette.primary.withValues(alpha: 0.05),
               border: Border.all(
-                color: _focused
+                color: _isFocused
                     ? Colors.white
                     : widget.isSelected
                         ? widget.palette.primary
                         : widget.palette.primary.withValues(alpha: 0.30),
-                width: _focused ? 3.0 : widget.isSelected ? 2.0 : 1.5,
+                width: _isFocused ? 3.0 : widget.isSelected ? 2.0 : 1.5,
               ),
               borderRadius: BorderRadius.circular(14),
               boxShadow: isActive
                   ? [
                       BoxShadow(
                         color: widget.palette.glow
-                            .withValues(alpha: _focused ? 0.75 : 0.40),
-                        blurRadius: _focused ? 22 : 16,
-                        spreadRadius: _focused ? 4 : 2,
+                            .withValues(alpha: _isFocused ? 0.75 : 0.40),
+                        blurRadius: _isFocused ? 22 : 16,
+                        spreadRadius: _isFocused ? 4 : 2,
                       ),
                     ]
                   : null,

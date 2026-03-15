@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
+import '../../../../core/app_config.dart';
+import '../../../../core/error/failures.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:install_plugin_v2/install_plugin_v2.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -19,17 +21,14 @@ class UpdateRemoteDataSourceImpl implements UpdateRemoteDataSource {
 
   @override
   Future<Map<String, dynamic>> fetchLatestVersion() async {
-    final response = await dio.get(
-      'https://gist.githubusercontent.com/UAEHN/'
-      '0f3dbd6d07c1217e97e414e777a28bd4/raw/app_version.json',
-    );
+    final response = await dio.get(AppConfig.appVersionCheckUrl);
     if (response.statusCode == 200) {
       if (response.data is String) {
         return jsonDecode(response.data) as Map<String, dynamic>;
       }
       return response.data as Map<String, dynamic>;
     } else {
-      throw Exception('Server error');
+      throw const ServerException('Server error');
     }
   }
 
@@ -40,7 +39,7 @@ class UpdateRemoteDataSourceImpl implements UpdateRemoteDataSource {
   ) async {
     final dir = await getExternalStorageDirectory();
     if (dir == null) {
-      throw Exception('External storage not available');
+      throw const StorageException('External storage not available');
     }
     final savePath = '${dir.path}/update.apk';
 

@@ -19,12 +19,12 @@ class TvSmallButton extends StatefulWidget {
 }
 
 class _TvSmallButtonState extends State<TvSmallButton> {
-  bool _focused = false;
+  bool _isFocused = false;
 
   @override
   Widget build(BuildContext context) {
     return Focus(
-      onFocusChange: (f) => setState(() => _focused = f),
+      onFocusChange: (f) => setState(() => _isFocused = f),
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.select ||
@@ -37,7 +37,7 @@ class _TvSmallButtonState extends State<TvSmallButton> {
       child: GestureDetector(
         onTap: widget.onPressed,
         child: AnimatedScale(
-          scale: _focused ? 1.30 : 1.0,
+          scale: _isFocused ? 1.30 : 1.0,
           duration: const Duration(milliseconds: 150),
           curve: Curves.easeOut,
           child: AnimatedContainer(
@@ -45,18 +45,18 @@ class _TvSmallButtonState extends State<TvSmallButton> {
             width: 46,
             height: 46,
             decoration: BoxDecoration(
-              gradient: _focused ? widget.palette.gradient : null,
-              color: _focused
+              gradient: _isFocused ? widget.palette.gradient : null,
+              color: _isFocused
                   ? null
                   : widget.palette.primary.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: _focused
+                color: _isFocused
                     ? Colors.white
                     : widget.palette.primary.withValues(alpha: 0.35),
-                width: _focused ? 2.5 : 1.0,
+                width: _isFocused ? 2.5 : 1.0,
               ),
-              boxShadow: _focused
+              boxShadow: _isFocused
                   ? [
                       BoxShadow(
                         color: widget.palette.glow.withValues(alpha: 0.85),
@@ -68,7 +68,7 @@ class _TvSmallButtonState extends State<TvSmallButton> {
             ),
             child: Icon(
               widget.icon,
-              color: _focused ? Colors.white : widget.palette.primary,
+              color: _isFocused ? Colors.white : widget.palette.primary,
               size: 22,
             ),
           ),

@@ -1,30 +1,33 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../models/quran_reciter.dart';
+import '../../../core/app_config.dart';
+import '../../../core/error/failures.dart';
+import '../domain/entities/quran_reciter.dart';
 import '../domain/i_quran_api_repository.dart';
 
 class QuranApiService implements IQuranApiRepository {
-  static const _apiUrl = 'https://mp3quran.net/api/v3/reciters?language=ar';
+  final Dio _dio;
+
+  QuranApiService(this._dio);
+
   static const _cacheKey = 'quran_api_reciters_cache';
   static const _cacheTsKey = 'quran_api_reciters_ts';
   static const _cacheExpiryMs = 24 * 60 * 60 * 1000; // 24 hours
 
   /// Returns reciters from cache first, then fetches fresh data from API.
-  /// Throws if no cache and network fails.
   @override
-  Future<List<QuranApiReciter>> fetchReciters() async {
-    // 1. Try loading from cache
+  Future<Either<Failure, List<QuranApiReciter>>> fetchReciters() async {
     final cached = await _loadCache();
-    if (cached != null) return cached;
-
-    // 2. Fetch from API
+    if (cached != null) return Right(cached);
     return _fetchFromApi();
   }
 
   /// Force refresh — ignores cache and fetches from API.
   @override
-  Future<List<QuranApiReciter>> refreshReciters() => _fetchFromApi();
+  Future<Either<Failure, List<QuranApiReciter>>> refreshReciters() =>
+      _fetchFromApi();
 
   // ── Private ─────────────────────────────────────────────────────────────
 
@@ -45,30 +48,35 @@ class QuranApiService implements IQuranApiRepository {
     }
   }
 
-  Future<List<QuranApiReciter>> _fetchFromApi() async {
-    final response = await http
-        .get(Uri.parse(_apiUrl))
-        .timeout(const Duration(seconds: 20));
-
-    if (response.statusCode != 200) {
-      throw Exception('فشل الاتصال بالخادم (${response.statusCode})');
-    }
-
-    // Save to cache
+  Future<Either<Failure, List<QuranApiReciter>>> _fetchFromApi() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_cacheKey, response.body);
-      await prefs.setInt(
-          _cacheTsKey, DateTime.now().millisecondsSinceEpoch);
-    } catch (_) {}
+      final response = await _dio.get<Map<String, dynamic>>(
+        AppConfig.quranReciterApiUrl,
+        options: Options(receiveTimeout: const Duration(seconds: 20)),
+      );
 
-    final Map<String, dynamic> data;
-    try {
-      data = jsonDecode(response.body) as Map<String, dynamic>;
-    } on FormatException {
-      throw Exception('استجابة غير صالحة من الخادم');
+      if (response.statusCode != 200 || response.data == null) {
+        return Left(
+          ServerFailure('فشل الاتصال بالخادم (${response.statusCode})'),
+        );
+      }
+
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(_cacheKey, jsonEncode(response.data));
+        await prefs.setInt(_cacheTsKey, DateTime.now().millisecondsSinceEpoch);
+      } catch (_) {}
+
+      try {
+        return Right(_parseReciters(response.data!));
+      } on FormatException {
+        return const Left(ServerFailure('استجابة غير صالحة من الخادم'));
+      }
+    } on DioException catch (e) {
+      return Left(ServerFailure('خطأ في الاتصال: $e'));
+    } catch (e) {
+      return Left(ServerFailure('خطأ في الاتصال: $e'));
     }
-    return _parseReciters(data);
   }
 
   List<QuranApiReciter> _parseReciters(Map<String, dynamic> data) {
@@ -87,11 +95,13 @@ class QuranApiService implements IQuranApiRepository {
       }
       if (serverUrl == null || serverUrl.isEmpty) continue;
 
-      result.add(QuranApiReciter(
-        id: (r['id'] as num).toInt(),
-        nameAr: r['name'] as String? ?? '',
-        serverUrl: serverUrl,
-      ));
+      result.add(
+        QuranApiReciter(
+          id: (r['id'] as num).toInt(),
+          nameAr: r['name'] as String? ?? '',
+          serverUrl: serverUrl,
+        ),
+      );
     }
 
     return result;

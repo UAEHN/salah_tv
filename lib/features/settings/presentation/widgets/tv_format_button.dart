@@ -23,16 +23,16 @@ class TvFormatButton extends StatefulWidget {
 }
 
 class _TvFormatButtonState extends State<TvFormatButton> {
-  bool _focused = false;
+  bool _isFocused = false;
 
   @override
   Widget build(BuildContext context) {
     final tc = ThemeColors.of(
       context.watch<SettingsProvider>().settings.isDarkMode,
     );
-    final isActive = _focused || widget.isSelected;
+    final isActive = _isFocused || widget.isSelected;
     return Focus(
-      onFocusChange: (f) => setState(() => _focused = f),
+      onFocusChange: (f) => setState(() => _isFocused = f),
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.select ||
@@ -45,7 +45,7 @@ class _TvFormatButtonState extends State<TvFormatButton> {
       child: GestureDetector(
         onTap: widget.onPressed,
         child: AnimatedScale(
-          scale: _focused ? 1.06 : 1.0,
+          scale: _isFocused ? 1.06 : 1.0,
           duration: const Duration(milliseconds: 150),
           curve: Curves.easeOut,
           child: AnimatedContainer(
@@ -54,13 +54,13 @@ class _TvFormatButtonState extends State<TvFormatButton> {
             decoration: BoxDecoration(
               gradient: isActive ? widget.palette.gradient : null,
               border: Border.all(
-                color: _focused
+                color: _isFocused
                     ? Colors.white
                     : widget.palette.primary.withValues(alpha: 0.45),
-                width: _focused ? 3.0 : 1.5,
+                width: _isFocused ? 3.0 : 1.5,
               ),
               borderRadius: BorderRadius.circular(10),
-              boxShadow: _focused
+              boxShadow: _isFocused
                   ? [
                       BoxShadow(
                         color: widget.palette.glow.withValues(alpha: 0.70),

@@ -33,6 +33,8 @@ const _csvFiles = [
   'egypt_prayer_times_2026.csv',
   'iraq_prayer_times_2026.csv',
   'jordan_prayer_times_2026.csv',
+  'malaysia_prayer_times_2026.csv',
+  'singapore_prayer_times_2026.csv',
   'lebanon_prayer_times_2026.csv',
   'morocco_prayer_times_2026.csv',
   'palestine_prayer_times_2026.csv',

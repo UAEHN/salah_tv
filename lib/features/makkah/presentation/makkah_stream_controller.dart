@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:video_player/video_player.dart';
+import '../../../core/app_config.dart';
 
 enum MakkahStreamState { idle, loading, playing, error }
 
 class MakkahStreamController {
-  static const kMakkahLiveUrl =
-      'https://live.kwikmotion.com/sharjahtvquranlive/shqurantv.smil/playlist.m3u8';
 
   /// Global flag — HeroCard listens to this to decide whether to strip its border.
   static final ValueNotifier<bool> isStreamPlaying = ValueNotifier(false);
@@ -32,7 +31,7 @@ class MakkahStreamController {
     state.value = MakkahStreamState.loading;
 
     try {
-      final url = kMakkahLiveUrl;
+      final url = AppConfig.makkahLiveStreamUrl;
       final vc = VideoPlayerController.networkUrl(
         Uri.parse(url),
         formatHint: VideoFormat.hls,

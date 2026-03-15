@@ -22,65 +22,114 @@ class AdhanOffsetsTable extends StatelessWidget {
     final palette = getThemePalette(settingsProv.settings.themeColorKey);
     final tc = ThemeColors.of(settingsProv.settings.isDarkMode);
     final offsets = settingsProv.settings.adhanOffsets;
-    return Wrap(
-      spacing: 20,
-      runSpacing: 16,
-      children: _prayers.map((p) {
-        final key = p.$1;
-        final name = p.$2;
-        final offset = offsets[key] ?? 0;
-        return Container(
-          width: 200,
-          padding: const EdgeInsets.all(16),
-          decoration: tc.glass(opacity: 0.06, borderRadius: 14),
-          child: Column(
+
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 560),
+      decoration: tc.glass(opacity: 0.06, borderRadius: 14),
+      clipBehavior: Clip.hardEdge,
+      child: Column(
+        children: _prayers.indexed.map((entry) {
+          final i = entry.$1;
+          final p = entry.$2;
+          final key = p.$1;
+          final name = p.$2;
+          final offset = offsets[key] ?? 0;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                name,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: tc.textPrimary,
+              if (i > 0)
+                Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: tc.textMuted.withValues(alpha: 0.12),
                 ),
+              _OffsetRow(
+                name: name,
+                offset: offset,
+                palette: palette,
+                tc: tc,
+                onDecrement: () =>
+                    settingsProv.updateAdhanOffset(key, offset - 1),
+                onIncrement: () =>
+                    settingsProv.updateAdhanOffset(key, offset + 1),
               ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TvSmallButton(
-                    icon: Icons.remove,
-                    palette: palette,
-                    onPressed: () => settingsProv.updateAdhanOffset(key, offset - 1),
-                  ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: 52,
-                    child: Text(
-                      offset >= 0 ? '+$offset' : '$offset',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: offset == 0 ? tc.textMuted : palette.primary,
-                        shadows: offset != 0
-                            ? [Shadow(color: palette.glow, blurRadius: 8)]
-                            : null,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  TvSmallButton(
-                    icon: Icons.add,
-                    palette: palette,
-                    onPressed: () => settingsProv.updateAdhanOffset(key, offset + 1),
-                  ),
-                ],
-              ),
-              Text('دقيقة', style: TextStyle(fontSize: 14, color: tc.textMuted)),
             ],
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class _OffsetRow extends StatelessWidget {
+  const _OffsetRow({
+    required this.name,
+    required this.offset,
+    required this.palette,
+    required this.tc,
+    required this.onDecrement,
+    required this.onIncrement,
+  });
+
+  final String name;
+  final int offset;
+  final AccentPalette palette;
+  final ThemeColors tc;
+  final VoidCallback onDecrement;
+  final VoidCallback onIncrement;
+
+  @override
+  Widget build(BuildContext context) {
+    final valueText = offset >= 0 ? '+$offset' : '$offset';
+    final isZero = offset == 0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Row(
+        children: [
+          TvSmallButton(
+            icon: Icons.remove,
+            palette: palette,
+            onPressed: onDecrement,
           ),
-        );
-      }).toList(),
+          const SizedBox(width: 10),
+          SizedBox(
+            width: 48,
+            child: Text(
+              valueText,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: isZero ? tc.textMuted : palette.primary,
+                shadows: isZero
+                    ? null
+                    : [Shadow(color: palette.glow, blurRadius: 8)],
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          TvSmallButton(
+            icon: Icons.add,
+            palette: palette,
+            onPressed: onIncrement,
+          ),
+          const SizedBox(width: 16),
+          Text(
+            'دقيقة',
+            style: TextStyle(fontSize: 12, color: tc.textMuted),
+          ),
+          const Spacer(),
+          Text(
+            name,
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+              color: tc.textPrimary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

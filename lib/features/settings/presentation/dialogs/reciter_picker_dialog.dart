@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
-import '../../../../models/quran_reciter.dart';
+import '../../../quran/domain/entities/quran_reciter.dart';
 import '../settings_provider.dart';
 
 class ReciterPickerDialog extends StatefulWidget {

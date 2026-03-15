@@ -23,7 +23,7 @@ class TvColorChip extends StatefulWidget {
 }
 
 class _TvColorChipState extends State<TvColorChip> {
-  bool _focused = false;
+  bool _isFocused = false;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class _TvColorChipState extends State<TvColorChip> {
       context.watch<SettingsProvider>().settings.isDarkMode,
     );
     return Focus(
-      onFocusChange: (f) => setState(() => _focused = f),
+      onFocusChange: (f) => setState(() => _isFocused = f),
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.select ||
@@ -44,7 +44,7 @@ class _TvColorChipState extends State<TvColorChip> {
       child: GestureDetector(
         onTap: widget.onPressed,
         child: AnimatedScale(
-          scale: _focused ? 1.15 : 1.0,
+          scale: _isFocused ? 1.15 : 1.0,
           duration: const Duration(milliseconds: 150),
           curve: Curves.easeOut,
           child: Column(
@@ -56,12 +56,12 @@ class _TvColorChipState extends State<TvColorChip> {
                 decoration: BoxDecoration(
                   gradient: widget.palette.gradient,
                   borderRadius: BorderRadius.circular(14),
-                  border: _focused
+                  border: _isFocused
                       ? Border.all(color: Colors.white, width: 4.5)
                       : widget.isSelected
                           ? Border.all(color: widget.palette.secondary, width: 2.5)
                           : Border.all(color: Colors.transparent, width: 2),
-                  boxShadow: _focused
+                  boxShadow: _isFocused
                       ? [
                           BoxShadow(
                             color: widget.palette.secondary.withValues(alpha: 0.95),
@@ -93,8 +93,8 @@ class _TvColorChipState extends State<TvColorChip> {
                 duration: const Duration(milliseconds: 150),
                 style: TextStyle(
                   fontSize: 15,
-                  color: (_focused || widget.isSelected) ? tc.textPrimary : tc.textMuted,
-                  fontWeight: (_focused || widget.isSelected)
+                  color: (_isFocused || widget.isSelected) ? tc.textPrimary : tc.textMuted,
+                  fontWeight: (_isFocused || widget.isSelected)
                       ? FontWeight.w700
                       : FontWeight.w400,
                 ),

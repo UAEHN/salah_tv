@@ -31,9 +31,9 @@ class SettingsNavCard extends StatefulWidget {
 }
 
 class _SettingsNavCardState extends State<SettingsNavCard> {
-  bool _focused = false;
+  bool _isFocused = false;
 
-  bool get _highlighted => _focused || widget.isSelected;
+  bool get _highlighted => _isFocused || widget.isSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class _SettingsNavCardState extends State<SettingsNavCard> {
       focusNode: widget.focusNode,
       autofocus: widget.autofocus,
       onFocusChange: (f) {
-        setState(() => _focused = f);
+        setState(() => _isFocused = f);
         if (f) widget.onFocused();
       },
       onKeyEvent: (_, event) {

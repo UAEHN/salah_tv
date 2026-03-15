@@ -1,6 +1,9 @@
-import '../../../models/app_settings.dart';
+import 'package:dartz/dartz.dart';
+import '../../../core/error/failures.dart';
+import '../../../core/usecases/success.dart';
+import 'entities/app_settings.dart';
 
 abstract class ISettingsRepository {
-  Future<AppSettings> load();
-  Future<void> save(AppSettings settings);
+  Future<Either<Failure, AppSettings>> load();
+  Future<Either<Failure, Success>> save(AppSettings settings);
 }

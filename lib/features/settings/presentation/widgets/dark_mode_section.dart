@@ -34,7 +34,7 @@ class DarkModeSection extends StatelessWidget {
         Switch(
           value: settings.isDarkMode,
           activeTrackColor: const Color(0xFF162035),
-          activeColor: const Color(0xFFB8C0D8),
+          activeThumbColor: const Color(0xFFB8C0D8),
           inactiveTrackColor: kTextMuted.withValues(alpha: 0.3),
           thumbColor: WidgetStateProperty.all(Colors.white),
           onChanged: (v) => settingsProv.updateDarkMode(v),

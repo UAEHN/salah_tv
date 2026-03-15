@@ -1,5 +1,31 @@
 package com.salah.salah_tv
 
+import android.app.UiModeManager
+import android.content.Context
+import android.content.res.Configuration
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
 
-class MainActivity : FlutterActivity()
+class MainActivity : FlutterActivity() {
+	override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+		super.configureFlutterEngine(flutterEngine)
+
+		MethodChannel(
+			flutterEngine.dartExecutor.binaryMessenger,
+			"salah_tv/platform",
+		).setMethodCallHandler { call, result ->
+			when (call.method) {
+				"isTV" -> result.success(isTvDevice())
+				else -> result.notImplemented()
+			}
+		}
+	}
+
+	private fun isTvDevice(): Boolean {
+		val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
+		val currentMode = resources.configuration.uiMode and Configuration.UI_MODE_TYPE_MASK
+		return currentMode == Configuration.UI_MODE_TYPE_TELEVISION ||
+			uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+	}
+}

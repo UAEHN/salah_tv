@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/city_translations.dart';
+import '../../../prayer/presentation/bloc/prayer_bloc.dart';
 import '../settings_provider.dart';
 import '../dialogs/city_picker_dialog.dart';
 import 'tv_button.dart';
@@ -71,9 +73,11 @@ class CitySection extends StatelessWidget {
     SettingsProvider settingsProv,
     AccentPalette palette,
   ) {
+    final availableCities =
+        context.select((PrayerBloc b) => b.state.availableCities);
     final filtered = citiesForCountry(
       settingsProv.settings.selectedCountry,
-      settingsProv.availableCities,
+      availableCities,
     );
     showDialog<void>(
       context: context,
