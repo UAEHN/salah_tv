@@ -24,10 +24,6 @@ class AppSettings {
   // Adhan sound selection ('default' or 'raad_al_kurdi')
   final String adhanSound;
 
-  // Makkah live stream
-  final bool isMakkahStreamEnabled;
-  final bool isMakkahStreamAudioEnabled; // false = muted (Quran continues)
-
   // Clock display style
   final bool isAnalogClock;
 
@@ -41,8 +37,6 @@ class AppSettings {
     this.selectedCity = 'Dubai',
     this.layoutStyle = 'modern',
     this.adhanSound = 'default',
-    this.isMakkahStreamEnabled = false,
-    this.isMakkahStreamAudioEnabled = false,
     this.isAnalogClock = false,
     this.iqamaDelays = const {
       'fajr': 20,
@@ -87,8 +81,6 @@ class AppSettings {
     String? selectedCity,
     String? layoutStyle,
     String? adhanSound,
-    bool? isMakkahStreamEnabled,
-    bool? isMakkahStreamAudioEnabled,
     bool? isAnalogClock,
   }) {
     return AppSettings(
@@ -109,10 +101,6 @@ class AppSettings {
       selectedCity: selectedCity ?? this.selectedCity,
       layoutStyle: layoutStyle ?? this.layoutStyle,
       adhanSound: adhanSound ?? this.adhanSound,
-      isMakkahStreamEnabled:
-          isMakkahStreamEnabled ?? this.isMakkahStreamEnabled,
-      isMakkahStreamAudioEnabled:
-          isMakkahStreamAudioEnabled ?? this.isMakkahStreamAudioEnabled,
       isAnalogClock: isAnalogClock ?? this.isAnalogClock,
     );
   }

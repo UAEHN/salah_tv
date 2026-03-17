@@ -21,8 +21,6 @@ extension AppSettingsMapper on AppSettings {
     'selectedCity': selectedCity,
     'layoutStyle': layoutStyle,
     'adhanSound': adhanSound,
-    'isMakkahStreamEnabled': isMakkahStreamEnabled,
-    'isMakkahStreamAudioEnabled': isMakkahStreamAudioEnabled,
     'isAnalogClock': isAnalogClock,
   };
 }
@@ -84,9 +82,6 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     adhanSound: const ['default', 'adhan2'].contains(map['adhanSound'])
         ? map['adhanSound'] as String
         : 'default',
-    isMakkahStreamEnabled: map['isMakkahStreamEnabled'] as bool? ?? false,
-    isMakkahStreamAudioEnabled:
-        map['isMakkahStreamAudioEnabled'] as bool? ?? false,
     isAnalogClock: map['isAnalogClock'] as bool? ?? false,
   );
 }

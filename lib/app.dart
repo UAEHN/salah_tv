@@ -5,6 +5,7 @@ import 'features/settings/presentation/settings_provider.dart';
 import 'features/prayer/presentation/screens/home_screen.dart';
 import 'features/settings/presentation/settings_screen.dart';
 import 'features/app_update/presentation/widgets/update_listener_widget.dart';
+import 'features/splash/presentation/splash_screen.dart';
 
 class SalahTvApp extends StatelessWidget {
   const SalahTvApp({super.key});
@@ -42,10 +43,11 @@ class SalahTvApp extends StatelessWidget {
         focusColor: palette.primary.withValues(alpha: 0.3),
       ),
       routes: {
+        '/splash': (_) => const SplashScreen(),
         '/': (_) => const UpdateListenerWidget(child: HomeScreen()),
         '/settings': (_) => const SettingsScreen(),
       },
-      initialRoute: '/',
+      initialRoute: '/splash',
     );
   }
 }

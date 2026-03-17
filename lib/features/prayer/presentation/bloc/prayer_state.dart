@@ -21,7 +21,6 @@ class PrayerState {
   final bool quranUserEnabled;
   final bool isCycleActive;
   final bool isPrePrayerAlert;
-  final bool isMakkahStreamAudioActive;
   final bool isMultiCity;
   final List<String> availableCities;
 
@@ -43,7 +42,6 @@ class PrayerState {
     required this.quranUserEnabled,
     required this.isCycleActive,
     required this.isPrePrayerAlert,
-    required this.isMakkahStreamAudioActive,
     required this.isMultiCity,
     required this.availableCities,
   });
@@ -66,7 +64,6 @@ class PrayerState {
     quranUserEnabled: e.quranUserEnabled,
     isCycleActive: e.isCycleActive,
     isPrePrayerAlert: e.isPrePrayerAlert,
-    isMakkahStreamAudioActive: e.isMakkahStreamAudioActive,
     isMultiCity: e.isMultiCity,
     availableCities: e.availableCities,
   );
@@ -89,7 +86,6 @@ class PrayerState {
     quranUserEnabled: false,
     isCycleActive: false,
     isPrePrayerAlert: false,
-    isMakkahStreamAudioActive: false,
     isMultiCity: false,
     availableCities: const [],
   );

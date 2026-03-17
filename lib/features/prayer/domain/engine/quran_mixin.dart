@@ -1,7 +1,6 @@
 import 'prayer_cycle_base.dart';
 
-/// Manages Quran background audio: user toggle, pause/resume around the adhan
-/// cycle, and Makkah stream audio coordination.
+/// Manages Quran background audio: user toggle, pause/resume around the adhan cycle.
 mixin QuranMixin on PrayerCycleBase {
   /// Toggle Quran streaming on/off.
   /// [serverUrl] is the CDN URL from mp3quran.net (e.g. 'https://server8.mp3quran.net/maher/')
@@ -33,32 +32,7 @@ mixin QuranMixin on PrayerCycleBase {
   void resumeQuranAfterAdhan() {
     if (s.isQuranPausedForAdhan) {
       s.isQuranPausedForAdhan = false;
-      // Don't resume Quran if Makkah stream audio is still active
-      if (s.isMakkahStreamAudioActive) return;
       audio.resumeOrRestartQuranPlayer(settings.quranReciterServerUrl);
     }
-  }
-
-  /// Called by the Makkah stream widget when stream audio starts/stops.
-  /// Mirrors the Quran pause/resume pattern used during the adhan cycle.
-  void setMakkahStreamAudioActive(bool value) {
-    if (s.isMakkahStreamAudioActive == value) return;
-    s.isMakkahStreamAudioActive = value;
-    if (value) {
-      // Stream audio turning on — pause Quran if it is currently playing
-      if (s.isQuranPlaying && !s.isQuranPausedForAdhan) {
-        audio.pauseQuranPlayer();
-      }
-    } else {
-      // Stream audio turning off — restart Quran from current surah.
-      // Always restart (not resume) because ExoPlayer may have caused the
-      // audioplayer to lose its paused state via Android audio focus changes.
-      if (s.isQuranPlaying && !s.isQuranPausedForAdhan) {
-        audio.restartQuranCurrentSurah(settings.quranReciterServerUrl);
-      }
-    }
-    // No notify() here — no widget watches isMakkahStreamAudioActive.
-    // Calling it caused a redundant notifyListeners() rebuild cascade that
-    // starved the 1-second tick timer on slow TV hardware.
   }
 }

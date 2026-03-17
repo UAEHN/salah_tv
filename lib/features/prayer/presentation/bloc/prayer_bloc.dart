@@ -25,12 +25,12 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     on<PrayerEngineRefreshed>(_onRefreshed);
     on<PrayerStarted>(_onStarted);
     on<PrayerResumed>(_onResumed);
+    on<PrayerPaused>(_onPaused);
     on<PrayerSettingsUpdated>(_onSettingsUpdated);
     on<PrayerAdhanStopped>(_onAdhanStopped);
     on<PrayerDuaStopped>(_onDuaStopped);
     on<PrayerIqamaStopped>(_onIqamaStopped);
     on<PrayerQuranToggled>(_onQuranToggled);
-    on<PrayerMakkahStreamAudioChanged>(_onMakkahAudio);
     on<PrayerReloaded>(_onReloaded);
     WidgetsBinding.instance.addObserver(this);
   }
@@ -44,6 +44,11 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
 
   void _onStarted(PrayerStarted _, Emitter<PrayerState> emit) {
     _engine.start();
+    emit(PrayerState.fromEngine(_engine));
+  }
+
+  void _onPaused(PrayerPaused _, Emitter<PrayerState> emit) {
+    _engine.onPaused();
     emit(PrayerState.fromEngine(_engine));
   }
 
@@ -94,14 +99,6 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     emit(PrayerState.fromEngine(_engine));
   }
 
-  void _onMakkahAudio(
-    PrayerMakkahStreamAudioChanged event,
-    Emitter<PrayerState> emit,
-  ) {
-    _engine.setMakkahStreamAudioActive(event.isActive);
-    emit(PrayerState.fromEngine(_engine));
-  }
-
   void _onReloaded(PrayerReloaded _, Emitter<PrayerState> emit) {
     _engine.reload();
     emit(PrayerState.fromEngine(_engine));
@@ -110,6 +107,10 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) add(const PrayerResumed());
+    if (state == AppLifecycleState.paused) add(const PrayerPaused());
+    // detached = activity destroyed (e.g. back-button exit on Android TV).
+    // Stop audio so the audioplayers service doesn't bleed into the next launch.
+    if (state == AppLifecycleState.detached) add(const PrayerPaused());
   }
 
   @override

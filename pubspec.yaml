@@ -38,8 +38,9 @@ dependencies:
   sqflite: ^2.4.2
   path: ^1.9.1
 
-  # Makkah live stream
-  video_player: ^2.9.3
+  # Lottie animations (splash screen)
+  lottie: ^3.3.1
+
   dio: ^5.9.2
   package_info_plus: ^9.0.0
   install_plugin_v2: ^1.0.0
@@ -78,6 +79,7 @@ flutter:
     - assets/audio/Maghrib.mp3
     - assets/audio/Isha.mp3
     - assets/prayer_times.db
+    - assets/animations/
   fonts:
     - family: Cairo
       fonts:

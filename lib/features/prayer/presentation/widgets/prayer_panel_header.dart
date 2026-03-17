@@ -24,25 +24,6 @@ class PrayerPanelHeader extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.mosque_rounded,
-                  color: Colors.white.withValues(alpha: 0.9),
-                  size: 26),
-              const SizedBox(width: 10),
-              Text(
-                'مواقيت الصلاة',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                  letterSpacing: 1,
-                ),
-              ),
-            ],
-          ),
           // City badge — shown only for multi-city CSV
           if (isMultiCity) ...[
             const SizedBox(height: 6),

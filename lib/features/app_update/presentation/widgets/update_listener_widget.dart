@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/update_bloc.dart';
@@ -5,10 +7,35 @@ import '../bloc/update_event.dart';
 import '../bloc/update_state.dart';
 import '../../domain/entities/app_version.dart';
 
-class UpdateListenerWidget extends StatelessWidget {
+class UpdateListenerWidget extends StatefulWidget {
   final Widget child;
 
   const UpdateListenerWidget({super.key, required this.child});
+
+  @override
+  State<UpdateListenerWidget> createState() => _UpdateListenerWidgetState();
+}
+
+class _UpdateListenerWidgetState extends State<UpdateListenerWidget> {
+  Timer? _checkTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Delay the update check so it never interrupts the splash screen or
+    // the initial home-screen render.
+    _checkTimer = Timer(const Duration(seconds: 5), () {
+      if (mounted) {
+        context.read<UpdateBloc>().add(CheckForUpdateEvent());
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _checkTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +45,7 @@ class UpdateListenerWidget extends StatelessWidget {
           _showUpdateDialog(context, state.appVersion);
         }
       },
-      child: child,
+      child: widget.child,
     );
   }
 

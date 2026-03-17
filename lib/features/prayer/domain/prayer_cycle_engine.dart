@@ -84,7 +84,6 @@ class PrayerCycleEngine extends PrayerCycleBase
 
   bool get isCycleActive => s.isCycleActive;
   bool get isPrePrayerAlert => s.isPrePrayerAlert;
-  bool get isMakkahStreamAudioActive => s.isMakkahStreamAudioActive;
   bool get isMultiCity => repo.isMultiCity;
   List<String> get availableCities => repo.availableCities;
 
@@ -103,6 +102,14 @@ class PrayerCycleEngine extends PrayerCycleBase
     notify();
   }
 
+  /// Called by PrayerBloc when the app is sent to the background.
+  /// Pauses Quran so it doesn't bleed into the next foreground session.
+  void onPaused() {
+    if (s.isQuranPlaying && !s.isQuranPausedForAdhan) {
+      audio.pauseQuranPlayer(); // sets _quranPausedAt timestamp for Issue 7
+    }
+  }
+
   /// Called by PrayerBloc when the app returns to foreground.
   void onResumed() {
     s.now = DateTime.now();
@@ -113,6 +120,9 @@ class PrayerCycleEngine extends PrayerCycleBase
       loadToday();
     }
     recoverIqamaState();
+    if (s.isQuranPlaying && !s.isQuranPausedForAdhan) {
+      audio.resumeOrRestartQuranPlayer(settings.quranReciterServerUrl);
+    }
     notify();
   }
 

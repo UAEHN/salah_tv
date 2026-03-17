@@ -11,7 +11,6 @@ import 'features/quran/domain/i_quran_api_repository.dart';
 import 'features/settings/domain/i_settings_repository.dart';
 import 'features/settings/presentation/settings_provider.dart';
 import 'features/app_update/presentation/bloc/update_bloc.dart';
-import 'features/app_update/presentation/bloc/update_event.dart';
 import 'injection.dart';
 
 void main() async {
@@ -35,7 +34,7 @@ void main() async {
           )..add(const PrayerStarted()),
         ),
         BlocProvider(
-          create: (_) => getIt<UpdateBloc>()..add(CheckForUpdateEvent()),
+          create: (_) => getIt<UpdateBloc>(),
         ),
       ],
       child: const _SettingsBridgeWrapper(),

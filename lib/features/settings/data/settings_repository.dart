@@ -32,8 +32,6 @@ class SettingsRepository implements ISettingsRepository {
           'selectedCity': prefs.getString('${_prefix}selected_city'),
           'layoutStyle': prefs.getString('${_prefix}layout_style'),
           'adhanSound': prefs.getString('${_prefix}adhan_sound'),
-          'isMakkahStreamEnabled': prefs.getBool('${_prefix}makkah_stream_enabled'),
-          'isMakkahStreamAudioEnabled': prefs.getBool('${_prefix}makkah_stream_audio'),
           'isAnalogClock': prefs.getBool('${_prefix}analog_clock'),
         }),
       );
@@ -68,14 +66,6 @@ class SettingsRepository implements ISettingsRepository {
       await prefs.setString('${_prefix}selected_city', s.selectedCity);
       await prefs.setString('${_prefix}layout_style', s.layoutStyle);
       await prefs.setString('${_prefix}adhan_sound', s.adhanSound);
-      await prefs.setBool(
-        '${_prefix}makkah_stream_enabled',
-        s.isMakkahStreamEnabled,
-      );
-      await prefs.setBool(
-        '${_prefix}makkah_stream_audio',
-        s.isMakkahStreamAudioEnabled,
-      );
       await prefs.setBool('${_prefix}analog_clock', s.isAnalogClock);
       return const Right(Success());
     } catch (e) {

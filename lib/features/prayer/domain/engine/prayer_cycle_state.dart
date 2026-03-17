@@ -48,9 +48,6 @@ class PrayerCycleState {
   final Set<String> preAlertBellPlayed = {};
   final Set<String> preAnnouncementPlayed = {};
 
-  // ── Makkah stream audio ──────────────────────────────────────────────────
-  bool isMakkahStreamAudioActive = false;
-
   // ── Derived state ────────────────────────────────────────────────────────
   bool get isCycleActive =>
       isAdhanPlaying || isDuaPlaying || isIqamaCountdown || isIqamaPlaying;

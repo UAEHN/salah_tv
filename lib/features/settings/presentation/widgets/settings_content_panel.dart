@@ -5,7 +5,6 @@ import 'city_section.dart';
 import 'country_section.dart';
 import 'dark_mode_section.dart';
 import 'iqama_table.dart';
-import 'makkah_stream_section.dart';
 import 'quran_section.dart';
 import 'section_title.dart';
 import 'simple_sections.dart';
@@ -27,11 +26,7 @@ class SettingsContentPanel extends StatelessWidget {
         const SizedBox(height: 16),
         const CitySection(),
       ]),
-      _slot([
-        const QuranSection(),
-        const SizedBox(height: 24),
-        const MakkahStreamSection(),
-      ]),
+      _slot([const QuranSection()]),
       _slot([const AdhanSection()]),
       _slot([const AdhanOffsetsTable()]),
       _slot([const IqamaTable()]),

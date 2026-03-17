@@ -8,6 +8,4 @@ abstract class AppConfig {
       'https://gist.githubusercontent.com/UAEHN/'
       '0f3dbd6d07c1217e97e414e777a28bd4/raw/app_version.json';
 
-  static const String makkahLiveStreamUrl =
-      'https://live.kwikmotion.com/sharjahtvquranlive/shqurantv.smil/playlist.m3u8';
 }

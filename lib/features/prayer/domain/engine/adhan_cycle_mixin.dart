@@ -35,9 +35,6 @@ mixin AdhanCycleMixin on PrayerCycleBase, IqamaMixin, QuranMixin {
     s.adhanTriggerTime = s.now; // anchor for iqama countdown calculation
     s.isIqamaCountdown = false;
 
-    // Immediately disable Makkah stream audio so it doesn't overlap adhan.
-    s.isMakkahStreamAudioActive = false;
-
     // Pause Quran for adhan/dua/iqama cycle
     pauseQuranForAdhan();
 

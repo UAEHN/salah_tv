@@ -123,20 +123,6 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── Makkah stream settings ───────────────────────────────────────────────
-
-  Future<void> updateMakkahStreamEnabled(bool value) async {
-    _settings = _settings.copyWith(isMakkahStreamEnabled: value);
-    await _save(_settings);
-    notifyListeners();
-  }
-
-  Future<void> updateMakkahStreamAudio(bool value) async {
-    _settings = _settings.copyWith(isMakkahStreamAudioEnabled: value);
-    await _save(_settings);
-    notifyListeners();
-  }
-
   Future<void> updateClockStyle({required bool isAnalog}) async {
     _settings = _settings.copyWith(isAnalogClock: isAnalog);
     await _save(_settings);

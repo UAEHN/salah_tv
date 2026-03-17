@@ -12,6 +12,10 @@ class PrayerResumed extends PrayerEvent {
   const PrayerResumed();
 }
 
+class PrayerPaused extends PrayerEvent {
+  const PrayerPaused();
+}
+
 class PrayerSettingsUpdated extends PrayerEvent {
   final AppSettings settings;
   const PrayerSettingsUpdated(this.settings);
@@ -32,11 +36,6 @@ class PrayerIqamaStopped extends PrayerEvent {
 class PrayerQuranToggled extends PrayerEvent {
   final String? serverUrl;
   const PrayerQuranToggled(this.serverUrl);
-}
-
-class PrayerMakkahStreamAudioChanged extends PrayerEvent {
-  final bool isActive;
-  const PrayerMakkahStreamAudioChanged(this.isActive);
 }
 
 class PrayerReloaded extends PrayerEvent {
