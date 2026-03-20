@@ -6,11 +6,13 @@ class AnalogClockPainter extends CustomPainter {
   final DateTime now;
   final AccentPalette palette;
   final ThemeColors tc;
+  final bool isDarkMode;
 
   const AnalogClockPainter({
     required this.now,
     required this.palette,
     required this.tc,
+    this.isDarkMode = false,
   });
 
   @override
@@ -18,19 +20,22 @@ class AnalogClockPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
+    final bgColor = isDarkMode ? Colors.white : tc.bgSurface.withValues(alpha: 0.88);
+    final ringColor = isDarkMode ? Colors.black : palette.primary.withValues(alpha: 0.75);
+    final handColor = isDarkMode ? Colors.black87 : tc.textPrimary;
+    final tickMain = isDarkMode ? Colors.black87 : tc.textPrimary.withValues(alpha: 0.88);
+    final tickMinor = isDarkMode ? Colors.black45 : tc.textSecondary.withValues(alpha: 0.50);
+    final centerDot = isDarkMode ? Colors.black : tc.textPrimary;
+
     // Background fill
-    canvas.drawCircle(
-      center,
-      radius,
-      Paint()..color = tc.bgSurface.withValues(alpha: 0.88),
-    );
+    canvas.drawCircle(center, radius, Paint()..color = bgColor);
 
     // Outer ring
     canvas.drawCircle(
       center,
       radius - radius * 0.02,
       Paint()
-        ..color = palette.primary.withValues(alpha: 0.75)
+        ..color = ringColor
         ..style = PaintingStyle.stroke
         ..strokeWidth = radius * 0.045,
     );
@@ -45,9 +50,7 @@ class AnalogClockPainter extends CustomPainter {
         Offset(center.dx + innerR * math.cos(angle), center.dy + innerR * math.sin(angle)),
         Offset(center.dx + outerR * math.cos(angle), center.dy + outerR * math.sin(angle)),
         Paint()
-          ..color = isMain
-              ? tc.textPrimary.withValues(alpha: 0.88)
-              : tc.textSecondary.withValues(alpha: 0.50)
+          ..color = isMain ? tickMain : tickMinor
           ..strokeWidth = isMain ? radius * 0.045 : radius * 0.025
           ..strokeCap = StrokeCap.round,
       );
@@ -60,7 +63,7 @@ class AnalogClockPainter extends CustomPainter {
       ((now.hour % 12) + now.minute / 60) * 30 * math.pi / 180 - math.pi / 2,
       radius * 0.50,
       radius * 0.068,
-      tc.textPrimary,
+      handColor,
     );
 
     // Minute hand
@@ -70,7 +73,7 @@ class AnalogClockPainter extends CustomPainter {
       (now.minute + now.second / 60) * 6 * math.pi / 180 - math.pi / 2,
       radius * 0.72,
       radius * 0.045,
-      tc.textPrimary,
+      handColor,
     );
 
     // Second hand (with tail)
@@ -86,7 +89,7 @@ class AnalogClockPainter extends CustomPainter {
 
     // Center cap
     canvas.drawCircle(center, radius * 0.075, Paint()..color = palette.primary);
-    canvas.drawCircle(center, radius * 0.035, Paint()..color = tc.textPrimary);
+    canvas.drawCircle(center, radius * 0.035, Paint()..color = centerDot);
   }
 
   void _drawHand(
@@ -110,5 +113,6 @@ class AnalogClockPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(AnalogClockPainter old) => old.now != now || old.tc != tc;
+  bool shouldRepaint(AnalogClockPainter old) =>
+      old.now != now || old.tc != tc || old.isDarkMode != isDarkMode;
 }

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html class="dark" dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#3e0500",
+              "primary": "#006a62",
+              "on-primary-fixed": "#00201d",
+              "secondary": "#9f402d",
+              "on-secondary-fixed-variant": "#802918",
+              "on-secondary": "#ffffff",
+              "on-error-container": "#93000a",
+              "inverse-surface": "#32302a",
+              "error": "#ba1a1a",
+              "tertiary-fixed": "#f3e2ac",
+              "on-tertiary-fixed-variant": "#51461e",
+              "tertiary-fixed-dim": "#d6c692",
+              "on-background": "#1d1c16",
+              "primary-fixed-dim": "#3adccc",
+              "surface-container": "#f2ede3",
+              "surface-bright": "#fef9ef",
+              "outline-variant": "#bacac6",
+              "surface-container-high": "#ede8de",
+              "on-surface": "#1d1c16",
+              "on-primary-fixed-variant": "#005049",
+              "error-container": "#ffdad6",
+              "surface-variant": "#e7e2d8",
+              "on-secondary-container": "#732010",
+              "on-tertiary-container": "#60542b",
+              "surface-dim": "#dedad0",
+              "surface-container-highest": "#e7e2d8",
+              "secondary-fixed-dim": "#ffb4a5",
+              "surface-container-lowest": "#ffffff",
+              "on-primary": "#ffffff",
+              "inverse-on-surface": "#f5f0e6",
+              "primary-fixed": "#61f9e9",
+              "tertiary-container": "#dac995",
+              "surface-container-low": "#f8f3e9",
+              "secondary-fixed": "#ffdad3",
+              "secondary-container": "#fd876f",
+              "on-surface-variant": "#3c4a47",
+              "inverse-primary": "#3adccc",
+              "surface": "#fef9ef",
+              "outline": "#6b7a77",
+              "surface-tint": "#006a62",
+              "on-error": "#ffffff",
+              "tertiary": "#6a5e33",
+              "on-tertiary-fixed": "#231b00",
+              "background": "#fef9ef",
+              "on-tertiary": "#ffffff",
+              "on-primary-container": "#006058",
+              "primary-container": "#40e0d0"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif", "IBM Plex Sans Arabic"],
+              "body": ["Plus Jakarta Sans", "IBM Plex Sans Arabic"],
+              "label": ["Plus Jakarta Sans", "IBM Plex Sans Arabic"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', 'IBM Plex Sans Arabic', sans-serif;
+        }
+        .neomorphic-card {
+            background: #1d1c16;
+            box-shadow: 10px 10px 20px #13120e, -10px -10px 20px #27261e;
+        }
+        .neomorphic-inset {
+            background: #1d1c16;
+            box-shadow: inset 6px 6px 12px #13120e, inset -6px -6px 12px #27261e;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-[#1d1c16] text-[#fef9ef] min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center px-6 h-16 bg-[#1d1c16]/80 backdrop-blur-md">
+<div class="flex items-center justify-between w-full">
+<button class="active:scale-95 duration-200 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-[#40e0d0]">arrow_forward</span>
+</button>
+<h1 class="font-headline text-2xl font-bold tracking-tight text-[#40e0d0]">الإعدادات</h1>
+<div class="w-6"></div> <!-- Spacer for symmetry -->
+</div>
+</header>
+<main class="pt-24 px-6 max-w-2xl mx-auto space-y-6">
+<!-- Section 1: Location -->
+<section class="space-y-4">
+<div class="flex items-center gap-3 px-2">
+<span class="material-symbols-outlined text-[#9f402d]">location_on</span>
+<h2 class="font-headline text-lg font-bold">الموقع</h2>
+</div>
+<button class="w-full neomorphic-card rounded-2xl p-5 flex items-center justify-between active:scale-[0.98] transition-all duration-200">
+<div class="text-right">
+<p class="font-bold text-[#40e0d0] text-lg mb-1">الدولة والمدينة</p>
+<p class="text-sm text-[#fef9ef]/60 font-medium">الرياض، المملكة العربية السعودية</p>
+</div>
+<span class="material-symbols-outlined text-[#fef9ef]/40">chevron_left</span>
+</button>
+</section>
+<!-- Section 2: Adhan Voice -->
+<section class="space-y-4">
+<div class="flex items-center gap-3 px-2">
+<span class="material-symbols-outlined text-[#9f402d]">volume_up</span>
+<h2 class="font-headline text-lg font-bold">صوت الأذان</h2>
+</div>
+<button class="w-full neomorphic-card rounded-2xl p-5 flex items-center justify-between active:scale-[0.98] transition-all duration-200">
+<div class="text-right">
+<p class="font-bold text-[#40e0d0] text-lg mb-1">صوت الأذان</p>
+<p class="text-sm text-[#fef9ef]/60 font-medium">الشيخ علي ملا</p>
+</div>
+<span class="material-symbols-outlined text-[#fef9ef]/40">chevron_left</span>
+</button>
+</section>
+<!-- Section 3: Prayer Adjustments -->
+<section class="space-y-4">
+<div class="flex items-center gap-3 px-2">
+<span class="material-symbols-outlined text-[#9f402d]">schedule</span>
+<h2 class="font-headline text-lg font-bold">مواقيت الصلاة</h2>
+</div>
+<button class="w-full neomorphic-card rounded-2xl p-5 flex items-center justify-between active:scale-[0.98] transition-all duration-200">
+<div class="text-right">
+<p class="font-bold text-[#40e0d0] text-lg mb-1">التعديل اليدوي للمواقيت</p>
+<p class="text-sm text-[#fef9ef]/60 font-medium">لا يوجد تعديل حالياً</p>
+</div>
+<span class="material-symbols-outlined text-[#fef9ef]/40">chevron_left</span>
+</button>
+</section>
+<!-- Section 4: Appearance -->
+<section class="space-y-4">
+<div class="flex items-center gap-3 px-2">
+<span class="material-symbols-outlined text-[#9f402d]">palette</span>
+<h2 class="font-headline text-lg font-bold">المظهر</h2>
+</div>
+<button class="w-full neomorphic-card rounded-2xl p-5 flex items-center justify-between active:scale-[0.98] transition-all duration-200">
+<div class="text-right">
+<p class="font-bold text-[#40e0d0] text-lg mb-1">تخصيص المظهر</p>
+<p class="text-sm text-[#fef9ef]/60 font-medium">الوضع الداكن</p>
+</div>
+<span class="material-symbols-outlined text-[#fef9ef]/40">chevron_left</span>
+</button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-[#1d1c16]/80 backdrop-blur-xl rounded-t-[2.5rem] shadow-2xl">
+<a class="flex flex-col items-center justify-center text-[#fef9ef]/60 px-5 py-2 hover:text-[#9f402d] transition-colors active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">schedule</span>
+<span class="font-label text-[10px] font-bold tracking-wider uppercase mt-1">PRAYER</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#fef9ef]/60 px-5 py-2 hover:text-[#9f402d] transition-colors active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-label text-[10px] font-bold tracking-wider uppercase mt-1">QIBLA</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#fef9ef]/60 px-5 py-2 hover:text-[#9f402d] transition-colors active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="font-label text-[10px] font-bold tracking-wider uppercase mt-1">DUA</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#006a62]/30 text-[#40e0d0] rounded-2xl px-5 py-2 active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label text-[10px] font-bold tracking-wider uppercase mt-1">SETTINGS</span>
+</a>
+</nav>
+</body></html>

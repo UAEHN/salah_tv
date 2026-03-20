@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'adhan_offsets_table.dart';
 import 'adhan_section.dart';
+import 'adhkar_section.dart';
 import 'city_section.dart';
 import 'country_section.dart';
 import 'dark_mode_section.dart';
@@ -55,6 +56,7 @@ class SettingsContentPanel extends StatelessWidget {
         const SizedBox(height: 12),
         const ClockStyleSection(),
       ]),
+      _slot([const AdhkarSection()]),
     ];
 
     return IndexedStack(

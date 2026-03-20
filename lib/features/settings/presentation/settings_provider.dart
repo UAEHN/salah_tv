@@ -128,4 +128,10 @@ class SettingsProvider extends ChangeNotifier {
     await _save(_settings);
     notifyListeners();
   }
+
+  Future<void> updateIsAdhkarEnabled(bool value) async {
+    _settings = _settings.copyWith(isAdhkarEnabled: value);
+    await _save(_settings);
+    notifyListeners();
+  }
 }

@@ -7,18 +7,19 @@ class MobileCountdownArcPainter extends CustomPainter {
   final double progress;
   final Color arcColor;
   final Color trackColor;
+  final double strokeWidth;
 
   const MobileCountdownArcPainter({
     required this.progress,
     required this.arcColor,
     required this.trackColor,
+    this.strokeWidth = 5.0,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = (size.shortestSide / 2) - 6;
-    const strokeWidth = 5.0;
     const startAngle = -math.pi / 2; // 12 o'clock
 
     // Track (background circle)

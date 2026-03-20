@@ -39,6 +39,7 @@ class AnalogClockWidget extends StatelessWidget {
           now: now,
           palette: palette,
           tc: tc,
+          isDarkMode: settings.isDarkMode,
         ),
       ),
     );

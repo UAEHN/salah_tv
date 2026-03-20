@@ -33,6 +33,7 @@ class SettingsRepository implements ISettingsRepository {
           'layoutStyle': prefs.getString('${_prefix}layout_style'),
           'adhanSound': prefs.getString('${_prefix}adhan_sound'),
           'isAnalogClock': prefs.getBool('${_prefix}analog_clock'),
+          'isAdhkarEnabled': prefs.getBool('${_prefix}adhkar_enabled'),
         }),
       );
     } catch (e) {
@@ -67,6 +68,7 @@ class SettingsRepository implements ISettingsRepository {
       await prefs.setString('${_prefix}layout_style', s.layoutStyle);
       await prefs.setString('${_prefix}adhan_sound', s.adhanSound);
       await prefs.setBool('${_prefix}analog_clock', s.isAnalogClock);
+      await prefs.setBool('${_prefix}adhkar_enabled', s.isAdhkarEnabled);
       return const Right(Success());
     } catch (e) {
       return Left(CacheFailure('Failed to save settings: $e'));

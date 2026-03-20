@@ -18,6 +18,7 @@ class UpdateListenerWidget extends StatefulWidget {
 
 class _UpdateListenerWidgetState extends State<UpdateListenerWidget> {
   Timer? _checkTimer;
+  static bool _isDialogShowing = false;
 
   @override
   void initState() {
@@ -25,7 +26,18 @@ class _UpdateListenerWidgetState extends State<UpdateListenerWidget> {
     // Delay the update check so it never interrupts the splash screen or
     // the initial home-screen render.
     _checkTimer = Timer(const Duration(seconds: 5), () {
-      if (mounted) {
+      if (!mounted) return;
+      // Skip if another widget instance already found an update or started a
+      // download. This prevents Flutter's auto-pushed '/' route (created before
+      // the splash screen) from firing a duplicate check after the splash
+      // navigates to '/', which would recreate UpdateListenerWidget and re-trigger
+      // the UpdateChecking → UpdateAvailable cycle — showing the dialog again
+      // after the user had already dismissed it.
+      final s = context.read<UpdateBloc>().state;
+      final alreadyActive = s is UpdateAvailable ||
+          s is UpdateDownloading ||
+          s is UpdateInstalling;
+      if (!alreadyActive) {
         context.read<UpdateBloc>().add(CheckForUpdateEvent());
       }
     });
@@ -40,8 +52,10 @@ class _UpdateListenerWidgetState extends State<UpdateListenerWidget> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<UpdateBloc, UpdateState>(
+      listenWhen: (prev, curr) =>
+          curr is UpdateAvailable && prev is UpdateChecking,
       listener: (context, state) {
-        if (state is UpdateAvailable) {
+        if (state is UpdateAvailable && !_isDialogShowing) {
           _showUpdateDialog(context, state.appVersion);
         }
       },
@@ -50,6 +64,7 @@ class _UpdateListenerWidgetState extends State<UpdateListenerWidget> {
   }
 
   void _showUpdateDialog(BuildContext context, AppVersion appVersion) {
+    _isDialogShowing = true;
     showDialog(
       context: context,
       barrierDismissible: !appVersion.isMandatory,
@@ -129,6 +144,10 @@ class _UpdateListenerWidgetState extends State<UpdateListenerWidget> {
           ],
         ),
       ),
-    );
+    ).whenComplete(() {
+      if (mounted) {
+        setState(() => _isDialogShowing = false);
+      }
+    });
   }
 }

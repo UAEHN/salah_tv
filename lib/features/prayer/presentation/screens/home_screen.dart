@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
+import '../../../../core/platform_config.dart';
 import '../bloc/prayer_bloc.dart';
 import '../bloc/prayer_event.dart';
 import '../../../settings/presentation/settings_provider.dart';
@@ -11,6 +12,7 @@ import '../widgets/home_main_view.dart';
 import '../../../audio/presentation/screens/adhan_screen.dart';
 import '../../../audio/presentation/screens/dua_screen.dart';
 import '../../../audio/presentation/screens/iqama_screen.dart';
+import 'mobile_home_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -39,6 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!kIsTV) return const MobileHomeScreen();
+
     final settings = context.watch<SettingsProvider>().settings;
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);

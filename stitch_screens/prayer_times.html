@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html class="dark" dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Al-Oasis - Prayer Times</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Arabic:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-fixed-dim": "#ffb4a5",
+              "on-primary-container": "#006058",
+              "outline": "#6b7a77",
+              "surface-container-low": "#f8f3e9",
+              "on-tertiary-container": "#60542b",
+              "surface-container-highest": "#e7e2d8",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "inverse-on-surface": "#f5f0e6",
+              "primary-fixed": "#61f9e9",
+              "tertiary": "#6a5e33",
+              "surface-bright": "#fef9ef",
+              "on-surface": "#1d1c16",
+              "tertiary-fixed-dim": "#d6c692",
+              "secondary-fixed": "#ffdad3",
+              "error": "#ba1a1a",
+              "tertiary-container": "#dac995",
+              "surface-container-high": "#ede8de",
+              "surface-container": "#f2ede3",
+              "on-tertiary-fixed-variant": "#51461e",
+              "primary-fixed-dim": "#3adccc",
+              "primary": "#006a62",
+              "on-tertiary-fixed": "#231b00",
+              "on-primary-fixed": "#00201d",
+              "on-secondary-container": "#732010",
+              "surface": "#fef9ef",
+              "on-secondary-fixed": "#3e0500",
+              "primary-container": "#40e0d0",
+              "outline-variant": "#bacac6",
+              "error-container": "#ffdad6",
+              "surface-variant": "#e7e2d8",
+              "tertiary-fixed": "#f3e2ac",
+              "on-primary": "#ffffff",
+              "surface-tint": "#006a62",
+              "inverse-surface": "#32302a",
+              "background": "#fef9ef",
+              "secondary-container": "#fd876f",
+              "on-error": "#ffffff",
+              "on-error-container": "#93000a",
+              "on-secondary": "#ffffff",
+              "on-background": "#1d1c16",
+              "surface-dim": "#dedad0",
+              "on-secondary-fixed-variant": "#802918",
+              "on-surface-variant": "#3c4a47",
+              "secondary": "#9f402d",
+              "on-primary-fixed-variant": "#005049",
+              "inverse-primary": "#3adccc"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif", "Noto Sans Arabic"],
+              "body": ["Plus Jakarta Sans", "Noto Sans Arabic"],
+              "label": ["Plus Jakarta Sans", "Noto Sans Arabic"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #1d1c16; /* Forcing deep charcoal as per requirement */
+            font-family: 'Plus Jakarta Sans', 'Noto Sans Arabic', sans-serif;
+        }
+        .neomorph-card {
+            background: #1d1c16;
+            box-shadow: 8px 8px 16px rgba(0,0,0,0.4), -8px -8px 16px rgba(255,255,255,0.02);
+        }
+        .neomorph-card-active {
+            background: linear-gradient(145deg, #006a62, #40e0d0);
+            box-shadow: inset 4px 4px 8px rgba(0,0,0,0.2), 8px 8px 16px rgba(0,0,0,0.3);
+        }
+        .radial-timer-bg {
+            background: radial-gradient(circle, rgba(0,106,98,0.1) 0%, rgba(29,28,22,1) 70%);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="text-on-background dark:bg-[#1d1c16] min-h-screen flex flex-col">
+<!-- Top Navigation Bar (Shared Component Strategy) -->
+<header class="flex justify-between items-center px-6 py-4 w-full bg-[#1d1c16] z-50">
+<button class="text-[#40e0d0] hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow px-6 pb-32 overflow-y-auto">
+<!-- Header Section: Location & Countdown -->
+<section class="mt-8 flex flex-col items-center text-center">
+<div class="flex items-center gap-2 mb-8 bg-[#2a2922] px-6 py-2 rounded-full shadow-inner">
+<span class="material-symbols-outlined text-[#40e0d0] text-sm" data-icon="location_on">location_on</span>
+<span class="text-white/80 font-body font-semibold text-sm tracking-wide">لندن، المملكة المتحدة</span>
+</div>
+<!-- Hero Countdown Timer -->
+<div class="relative w-64 h-64 flex items-center justify-center radial-timer-bg rounded-full border-[12px] border-[#006a62]/20 mb-4">
+<!-- SVG Circle Track -->
+<svg class="absolute inset-0 w-full h-full -rotate-90">
+<circle cx="50%" cy="50%" fill="transparent" r="46%" stroke="#40e0d0" stroke-dasharray="300" stroke-dashoffset="100" stroke-linecap="round" stroke-width="12"></circle>
+</svg>
+<div class="flex flex-col items-center z-10">
+<span class="text-[#40e0d0] font-headline text-6xl font-extrabold tracking-tighter mb-1">٠٢:٤٥</span>
+<span class="text-white/60 font-body text-xs font-bold uppercase tracking-[0.1rem]">باقي على صلاة العصر</span>
+</div>
+</div>
+<div class="mt-4 flex items-center justify-center gap-6">
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-[#2a2922] text-[#40e0d0] hover:bg-[#006a62]/20 transition-colors duration-200">
+<span class="material-symbols-outlined text-lg" data-icon="chevron_right">chevron_right</span>
+</button>
+<div class="flex flex-col items-center gap-1 group cursor-pointer">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-white/40 text-sm group-hover:text-[#40e0d0] transition-colors" data-icon="calendar_month">calendar_month</span>
+<p class="text-white/40 font-body text-[11px] uppercase tracking-widest group-hover:text-white/60 transition-colors">الخميس، ١٢ رمضان ١٤٤٥ هـ</p>
+</div>
+<div class="h-0.5 w-8 bg-[#40e0d0]/20 rounded-full"></div>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-[#2a2922] text-[#40e0d0] hover:bg-[#006a62]/20 transition-colors duration-200">
+<span class="material-symbols-outlined text-lg" data-icon="chevron_left">chevron_left</span>
+</button>
+</div>
+</section>
+<!-- Prayer Times Section -->
+<section class="mt-12 space-y-4">
+<!-- Fajr -->
+<div class="neomorph-card rounded-full p-4 flex items-center justify-between transition-all hover:scale-[1.02]">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-[#2a2922] flex items-center justify-center">
+<span class="material-symbols-outlined text-white/60" data-icon="dark_mode">dark_mode</span>
+</div>
+<div>
+<h3 class="text-white font-headline text-lg font-bold">الفجر</h3>
+</div>
+</div>
+<span class="text-white/80 font-headline text-2xl font-semibold">٠٤:١٢</span>
+</div>
+<!-- Dhuhr -->
+<div class="neomorph-card rounded-full p-4 flex items-center justify-between transition-all hover:scale-[1.02]">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-[#2a2922] flex items-center justify-center">
+<span class="material-symbols-outlined text-white/60" data-icon="light_mode">light_mode</span>
+</div>
+<div>
+<h3 class="text-white font-headline text-lg font-bold">الظهر</h3>
+</div>
+</div>
+<span class="text-white/80 font-headline text-2xl font-semibold">١٢:٠٥</span>
+</div>
+<!-- Asr (ACTIVE) -->
+<div class="neomorph-card-active rounded-full p-4 flex items-center justify-between transition-all scale-[1.05] shadow-xl">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="sunny" style="font-variation-settings: 'FILL' 1;">sunny</span>
+</div>
+<div>
+<h3 class="text-white font-headline text-lg font-bold">العصر</h3>
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+<p class="text-white/80 text-[10px] font-body font-bold">الصلاة القادمة</p>
+</div>
+</div>
+</div>
+<span class="text-white font-headline text-2xl font-extrabold">٠٣:٤٢</span>
+</div>
+<!-- Maghrib -->
+<div class="neomorph-card rounded-full p-4 flex items-center justify-between transition-all hover:scale-[1.02]">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-[#2a2922] flex items-center justify-center">
+<span class="material-symbols-outlined text-white/60" data-icon="wb_twilight">wb_twilight</span>
+</div>
+<div>
+<h3 class="text-white font-headline text-lg font-bold">المغرب</h3>
+</div>
+</div>
+<span class="text-white/80 font-headline text-2xl font-semibold">٠٦:١٨</span>
+</div>
+<!-- Isha -->
+<div class="neomorph-card rounded-full p-4 flex items-center justify-between transition-all hover:scale-[1.02]">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-[#2a2922] flex items-center justify-center">
+<span class="material-symbols-outlined text-white/60" data-icon="stars">stars</span>
+</div>
+<div>
+<h3 class="text-white font-headline text-lg font-bold">العشاء</h3>
+</div>
+</div>
+<span class="text-white/80 font-headline text-2xl font-semibold">٠٧:٤٥</span>
+</div>
+</section>
+<!-- Aesthetic Desert Detail -->
+</main>
+<!-- Bottom Navigation Bar (Shared Component Strategy) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-12 pb-8 pt-4 bg-[#1d1c16]/80 backdrop-blur-xl rounded-t-[3rem] shadow-[0_-8px_20px_rgba(0,0,0,0.1)]">
+<!-- Prayer (Active) -->
+<a class="flex flex-col items-center justify-center bg-gradient-to-br from-[#006a62] to-[#40e0d0] text-white rounded-full px-8 py-2 shadow-inner transition-all hover:scale-105 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="prayer_times" style="font-variation-settings: 'FILL' 1;">prayer_times</span>
+<span class="font-label text-[10px] font-bold uppercase tracking-[0.05rem] mt-0.5">الصلاة</span>
+</a>
+<!-- Qibla (Inactive) -->
+<a class="flex flex-col items-center justify-center text-[#9f402d] opacity-60 transition-all hover:scale-105 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="font-label text-[10px] font-bold uppercase tracking-[0.05rem] mt-0.5">القبلة</span>
+</a>
+</nav>
+</body></html>

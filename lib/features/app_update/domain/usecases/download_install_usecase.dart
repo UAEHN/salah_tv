@@ -11,6 +11,7 @@ class DownloadInstallUseCase {
   Future<Either<Failure, Success>> call({
     required String url,
     required Function(int, int) onProgress,
+    void Function()? onBeforeInstall,
   }) async {
     final downloadResult = await repository.downloadUpdate(
       url: url,
@@ -19,7 +20,10 @@ class DownloadInstallUseCase {
 
     return downloadResult.fold(
       (failure) => Left(failure),
-      (filePath) => repository.installUpdate(filePath),
+      (filePath) async {
+        onBeforeInstall?.call();
+        return repository.installUpdate(filePath);
+      },
     );
   }
 }

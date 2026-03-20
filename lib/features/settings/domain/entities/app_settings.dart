@@ -27,6 +27,9 @@ class AppSettings {
   // Clock display style
   final bool isAnalogClock;
 
+  // Adhkar display (أذكار الصباح والمساء)
+  final bool isAdhkarEnabled;
+
   const AppSettings({
     this.themeColorKey = 'green',
     this.use24HourFormat = false,
@@ -38,6 +41,7 @@ class AppSettings {
     this.layoutStyle = 'modern',
     this.adhanSound = 'default',
     this.isAnalogClock = false,
+    this.isAdhkarEnabled = true,
     this.iqamaDelays = const {
       'fajr': 20,
       'dhuhr': 10,
@@ -82,6 +86,7 @@ class AppSettings {
     String? layoutStyle,
     String? adhanSound,
     bool? isAnalogClock,
+    bool? isAdhkarEnabled,
   }) {
     return AppSettings(
       themeColorKey: themeColorKey ?? this.themeColorKey,
@@ -102,6 +107,7 @@ class AppSettings {
       layoutStyle: layoutStyle ?? this.layoutStyle,
       adhanSound: adhanSound ?? this.adhanSound,
       isAnalogClock: isAnalogClock ?? this.isAnalogClock,
+      isAdhkarEnabled: isAdhkarEnabled ?? this.isAdhkarEnabled,
     );
   }
 }

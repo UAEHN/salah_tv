@@ -22,6 +22,7 @@ extension AppSettingsMapper on AppSettings {
     'layoutStyle': layoutStyle,
     'adhanSound': adhanSound,
     'isAnalogClock': isAnalogClock,
+    'isAdhkarEnabled': isAdhkarEnabled,
   };
 }
 
@@ -83,5 +84,6 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
         ? map['adhanSound'] as String
         : 'default',
     isAnalogClock: map['isAnalogClock'] as bool? ?? false,
+    isAdhkarEnabled: map['isAdhkarEnabled'] as bool? ?? true,
   );
 }

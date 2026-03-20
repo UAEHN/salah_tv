@@ -23,6 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     (Icons.tune_rounded, ' تعديل  اوقات الأذان ', 'ضبط أوقات الأذان'),
     (Icons.timer_rounded, 'تعديل اوقات الاقامة', 'أوقات الإقامة بعد الأذان'),
     (Icons.palette_rounded, 'المظهر', 'الخط والألوان والتصميم'),
+    (Icons.auto_stories_rounded, 'الأذكار', 'أذكار الصباح والمساء'),
   ];
 
   late final List<FocusNode> _navFocusNodes =

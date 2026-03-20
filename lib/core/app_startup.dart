@@ -1,6 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import '../features/adhkar/data/adhkar_audio_service.dart';
+import '../features/adhkar/data/adhkar_json_repository.dart';
+import '../features/adhkar/domain/i_adhkar_audio_port.dart';
+import '../features/adhkar/domain/i_adhkar_state_repository.dart';
 import '../features/audio/data/audio_service.dart';
 import '../features/audio/domain/i_audio_repository.dart';
 import '../features/prayer/data/sqlite_prayer_repository.dart';
@@ -29,11 +33,16 @@ Future<AppSettings> initDependencies() async {
   // Keep screen on permanently — TV display app
   await WakelockPlus.enable();
 
-  await SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight],
-  );
-
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  if (platformConfig.isTV) {
+    await SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight],
+    );
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  } else {
+    await SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+    );
+  }
 
   // ── Register core services in get_it ──────────────────────────────────────
   final settingsRepo = SettingsRepository();
@@ -53,6 +62,12 @@ Future<AppSettings> initDependencies() async {
   final audioService = AudioService();
   getIt.registerSingleton<IAudioRepository>(audioService);
   getIt.registerSingleton<IPrayerAudioPort>(audioService);
+
+  final adhkarRepo = AdhkarJsonRepository();
+  await adhkarRepo.initialize();
+  getIt.registerSingleton<AdhkarJsonRepository>(adhkarRepo);
+  getIt.registerSingleton<IAdhkarStateRepository>(adhkarRepo);
+  getIt.registerSingleton<IAdhkarAudioPort>(AdhkarAudioService());
 
   getIt.registerLazySingleton<IQuranApiRepository>(
     () => QuranApiService(getIt<Dio>()),
