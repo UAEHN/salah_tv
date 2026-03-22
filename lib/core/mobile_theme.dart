@@ -1,76 +1,122 @@
 import 'package:flutter/material.dart';
 
-/// Design tokens — "Desert Oasis" dark theme (prayer_times.html).
-/// Used exclusively by the mobile UI. TV theme stays in app_colors.dart.
 class MobileColors {
   MobileColors._();
 
-  static const Color background = Color(0xFF1D1C16);      // deep charcoal
-  static const Color cardColor = Color(0xFF2A2922);       // elevated surface
-  static const Color primary = Color(0xFF006A62);         // oasis teal
-  static const Color primaryContainer = Color(0xFF40E0D0); // turquoise accent
-  static const Color secondary = Color(0xFF9F402D);       // terracotta
-  static const Color onSurface = Colors.white;
-  static const Color onSurfaceMuted = Color(0x99FFFFFF);  // white 60%
-  static const Color onSurfaceFaint = Color(0x66FFFFFF);  // white 40%
+  // ── Accent palette — Celestial Blue ──────────────────────────────────────
+  static const Color primary = Color(0xFF2563EB);          // blue-600
+  static const Color primaryContainer = Color(0xFF60A5FA); // blue-400
+  static const Color secondary = Color(0xFF7C3AED);        // violet-600
+  static const Color iqamaAccent = Color(0xFFFFB74D);      // amber — iqama countdown phase
+
+  static bool isDark(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark;
+  }
+
+  static Color background(BuildContext context) {
+    return isDark(context) ? const Color(0xFF080A12) : const Color(0xFFEEF3FF);
+  }
+
+  static Color cardColor(BuildContext context) {
+    return isDark(context) ? const Color(0xFF0D1220) : const Color(0xFFFFFFFF);
+  }
+
+  static Color onSurface(BuildContext context) {
+    return isDark(context) ? Colors.white : const Color(0xFF0F172A);
+  }
+
+  static Color onSurfaceMuted(BuildContext context) {
+    return isDark(context) ? const Color(0x99FFFFFF) : const Color(0xFF4B6080);
+  }
+
+  static Color onSurfaceFaint(BuildContext context) {
+    return isDark(context) ? const Color(0x55FFFFFF) : const Color(0xFFB8C8E0);
+  }
+
+  static Color border(BuildContext context) {
+    return isDark(context)
+        ? Colors.white.withValues(alpha: 0.07)
+        : const Color(0xFF0F172A).withValues(alpha: 0.08);
+  }
+
+  static Color shadowDark(BuildContext context) {
+    return isDark(context)
+        ? Colors.black.withValues(alpha: 0.35)
+        : const Color(0xFF0F172A).withValues(alpha: 0.08);
+  }
+
+  static List<Color> homeGradient(BuildContext context) {
+    return isDark(context)
+        ? const [
+            Color(0xFF0D1428),  // blue-navy at top
+            Color(0xFF080A12),  // base background
+            Color(0xFF080A12),
+            Color(0xFF06060F),  // near-black at bottom
+          ]
+        : const [
+            Color(0xFFE8F0FF),
+            Color(0xFFEEF3FF),
+            Color(0xFFEEF3FF),
+            Color(0xFFE4EDFF),
+          ];
+  }
+
+  static List<Color> qiblaGradient(BuildContext context) {
+    return isDark(context)
+        ? const [Color(0xFF0A0E1E), Color(0xFF080A12), Color(0xFF080A12)]
+        : const [Color(0xFFECF2FF), Color(0xFFEEF3FF), Color(0xFFE8F0FF)];
+  }
 }
 
 class MobileTextStyles {
   MobileTextStyles._();
 
-  static const TextStyle displayLg = TextStyle(
-    fontFamily: 'Beiruti',
+  static TextStyle displayLg(BuildContext context) => TextStyle(
+    fontFamily: 'Rubik',
     fontSize: 56,
     fontWeight: FontWeight.w800,
-    color: MobileColors.primaryContainer,
+    color: MobileColors.onSurface(context),
     height: 1.0,
     letterSpacing: -1,
   );
 
-  static const TextStyle headlineMd = TextStyle(
-    fontFamily: 'Beiruti',
+  static TextStyle headlineMd(BuildContext context) => TextStyle(
+    fontFamily: 'Rubik',
     fontSize: 18,
     fontWeight: FontWeight.w700,
-    color: MobileColors.onSurface,
+    color: MobileColors.onSurface(context),
   );
 
-  static const TextStyle titleMd = TextStyle(
-    fontFamily: 'Cairo',
+  static TextStyle titleMd(BuildContext context) => TextStyle(
+    fontFamily: 'Rubik',
     fontSize: 22,
-    fontWeight: FontWeight.w600,
-    color: MobileColors.onSurface,
-  );
-
-  static const TextStyle bodyMd = TextStyle(
-    fontFamily: 'Cairo',
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: MobileColors.onSurfaceMuted,
-  );
-
-  static const TextStyle labelSm = TextStyle(
-    fontFamily: 'Cairo',
-    fontSize: 10,
     fontWeight: FontWeight.w700,
-    color: MobileColors.onSurfaceMuted,
-    letterSpacing: 1.0,
+    color: MobileColors.onSurface(context),
+  );
+
+  static TextStyle bodyMd(BuildContext context) => TextStyle(
+    fontFamily: 'Rubik',
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: MobileColors.onSurfaceMuted(context),
+  );
+
+  static TextStyle labelSm(BuildContext context) => TextStyle(
+    fontFamily: 'Rubik',
+    fontSize: 12,
+    fontWeight: FontWeight.w700,
+    color: MobileColors.onSurfaceMuted(context),
   );
 }
 
-/// Neomorphic dark shadows — deep shadow below, faint highlight above.
 class MobileShadows {
   MobileShadows._();
 
-  static const List<BoxShadow> card = [
+  static List<BoxShadow> sleekCard(BuildContext context) => [
     BoxShadow(
-      color: Color(0x661D1C16),
-      offset: Offset(8, 8),
-      blurRadius: 16,
-    ),
-    BoxShadow(
-      color: Color(0x05FFFFFF),
-      offset: Offset(-8, -8),
-      blurRadius: 16,
+      color: MobileColors.shadowDark(context),
+      offset: const Offset(0, 8),
+      blurRadius: 20,
     ),
   ];
 }
@@ -78,27 +124,30 @@ class MobileShadows {
 class MobileDecorations {
   MobileDecorations._();
 
-  /// Pill-shaped inactive prayer card.
-  static BoxDecoration pillCard() => BoxDecoration(
-        color: MobileColors.background,
-        borderRadius: BorderRadius.circular(50),
-        boxShadow: MobileShadows.card,
-      );
+  static BoxDecoration pillCard(BuildContext context) => BoxDecoration(
+    color: MobileColors.cardColor(
+      context,
+    ).withValues(alpha: MobileColors.isDark(context) ? 0.55 : 0.9),
+    borderRadius: BorderRadius.circular(24),
+    border: Border.all(color: MobileColors.border(context), width: 1),
+    boxShadow: MobileShadows.sleekCard(context),
+  );
 
-  /// Gradient active prayer card.
-  static BoxDecoration activePillCard() => const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [MobileColors.primary, MobileColors.primaryContainer],
+  static BoxDecoration activePillCard(BuildContext context) => BoxDecoration(
+    gradient: const LinearGradient(
+      begin: Alignment.centerRight,
+      end: Alignment.centerLeft,
+      colors: [MobileColors.primary, MobileColors.primaryContainer],
+    ),
+    borderRadius: BorderRadius.circular(24),
+    boxShadow: [
+      BoxShadow(
+        color: MobileColors.primaryContainer.withValues(
+          alpha: MobileColors.isDark(context) ? 0.35 : 0.22,
         ),
-        borderRadius: BorderRadius.all(Radius.circular(50)),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x4D006A62),
-            offset: Offset(0, 8),
-            blurRadius: 20,
-          ),
-        ],
-      );
+        offset: const Offset(0, 8),
+        blurRadius: 24,
+      ),
+    ],
+  );
 }

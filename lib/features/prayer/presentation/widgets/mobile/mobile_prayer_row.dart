@@ -4,23 +4,23 @@ import '../../../../../core/mobile_theme.dart';
 import '../../../../../core/time_formatters.dart';
 
 const _prayerIcons = {
-  'fajr': Icons.dark_mode_outlined,
+  'fajr': Icons.nights_stay_outlined,
   'dhuhr': Icons.light_mode_outlined,
-  'asr': Icons.wb_sunny,
-  'maghrib': Icons.wb_twilight,
-  'isha': Icons.stars,
+  'asr': Icons.wb_sunny_outlined,
+  'maghrib': Icons.wb_twilight_rounded,
+  'isha': Icons.stars_outlined,
 };
 
 class MobilePrayerRow extends StatelessWidget {
   final PrayerEntry prayer;
   final bool isActive;
-  final bool use24Hour;
+  final bool is24HourFormat;
 
   const MobilePrayerRow({
     super.key,
     required this.prayer,
     required this.isActive,
-    required this.use24Hour,
+    required this.is24HourFormat,
   });
 
   @override
@@ -30,76 +30,119 @@ class MobilePrayerRow extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 400),
       decoration: isActive
-          ? MobileDecorations.activePillCard()
-          : MobileDecorations.pillCard(),
+          ? MobileDecorations.activePillCard(context)
+          : MobileDecorations.pillCard(context),
       alignment: Alignment.center,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-          // Icon circle
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isActive
-                  ? Colors.white.withValues(alpha: 0.2)
-                  : MobileColors.cardColor,
+            // Icon
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isActive
+                    ? Colors.white.withValues(alpha: 0.15)
+                    : MobileColors.shadowDark(context),
+              ),
+              child: Icon(
+                icon,
+                color: isActive
+                    ? Colors.white
+                    : MobileColors.onSurfaceMuted(context),
+                size: 20,
+              ),
             ),
-            child: Icon(
-              icon,
-              color: isActive ? Colors.white : MobileColors.onSurfaceMuted,
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: 16),
-          // Prayer name + active label
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  prayer.name,
-                  style: MobileTextStyles.headlineMd.copyWith(
-                    color: isActive ? Colors.white : MobileColors.onSurface,
+            const SizedBox(width: 16),
+
+            // Prayer name + active label
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize:
+                    MainAxisSize.min, // Fixes overflow by not taking max height
+                children: [
+                  Text(
+                    prayer.name,
+                    style: MobileTextStyles.titleMd(context).copyWith(
+                      color: isActive
+                          ? Colors.white
+                          : MobileColors.onSurface(context),
+                      height: 1.0,
+                    ),
                   ),
-                ),
-                if (isActive)
-                  Row(
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        margin: const EdgeInsets.only(left: 4),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
+                  if (isActive)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 4,
+                            height: 4,
+                            margin: const EdgeInsets.only(left: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 2),
+                          Text(
+                            'الصلاة القادمة',
+                            style: MobileTextStyles.labelSm(context).copyWith(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              fontSize: 10,
+                              height: 1.0,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'الصلاة القادمة',
-                        style: MobileTextStyles.labelSm.copyWith(
-                          color: Colors.white70,
-                        ),
+                    ),
+                ],
+              ),
+            ),
+
+            // Time
+            Builder(builder: (context) {
+              final timeColor = isActive
+                  ? Colors.white
+                  : MobileColors.onSurfaceMuted(context);
+              final period = formatPrayerPeriod(
+                prayer.time,
+                use24Hour: is24HourFormat,
+              );
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  if (period != null) ...[
+                    Text(
+                      period,
+                      style: MobileTextStyles.labelSm(context).copyWith(
+                        fontSize: 11,
+                        color: timeColor.withValues(alpha: 0.7),
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
+                    ),
+                    const SizedBox(width: 4),
+                  ],
+                  Text(
+                    formatPrayerTime(prayer.time, use24Hour: is24HourFormat),
+                    style: MobileTextStyles.titleMd(context).copyWith(
+                      fontSize: 22,
+                      color: timeColor,
+                      fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
                   ),
-              ],
-            ),
-          ),
-          // Time
-          Text(
-            formatPrayerTime(prayer.time, use24Hour: use24Hour),
-            style: MobileTextStyles.titleMd.copyWith(
-              fontSize: 20,
-              color: isActive ? Colors.white : MobileColors.onSurfaceMuted,
-              fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-              fontFeatures: const [FontFeature.tabularFigures()],
-            ),
-          ),
+                ],
+              );
+            }),
           ],
         ),
       ),

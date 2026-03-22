@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../core/app_colors.dart';
+import '../../../core/platform_config.dart';
 import 'settings_provider.dart';
 import 'widgets/settings_content_panel.dart';
 import 'widgets/settings_nav_panel.dart';
 import 'widgets/settings_screen_header.dart';
+import 'widgets/settings_key_handlers.dart';
+import 'screens/mobile_settings_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -39,42 +41,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _contentScopeNode.dispose();
     super.dispose();
   }
-  KeyEventResult _onNavKeyEvent(FocusNode _, KeyEvent event) {
-    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-      return KeyEventResult.ignored;
-    }
-    if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-      _contentScopeNode.requestFocus();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_contentScopeNode.hasPrimaryFocus) _contentScopeNode.nextFocus();
-      });
-      return KeyEventResult.handled;
-    }
-    return KeyEventResult.ignored;
-  }
-  KeyEventResult _onContentKeyEvent(FocusNode _, KeyEvent event) {
-    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-      return KeyEventResult.ignored;
-    }
-    final key = event.logicalKey;
-    if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.arrowDown) {
-      final dir = key == LogicalKeyboardKey.arrowDown
-          ? TraversalDirection.down
-          : TraversalDirection.up;
-      FocusManager.instance.primaryFocus?.focusInDirection(dir);
-      return KeyEventResult.handled;
-    }
-    if (key == LogicalKeyboardKey.arrowRight) {
-      final moved = FocusManager.instance.primaryFocus
-              ?.focusInDirection(TraversalDirection.right) ??
-          false;
-      if (!moved) _navFocusNodes[_selectedIndex].requestFocus();
-      return KeyEventResult.handled;
-    }
-    return KeyEventResult.ignored;
-  }
   @override
   Widget build(BuildContext context) {
+    if (!kIsTV) return const MobileSettingsScreen();
+
     final settings = context.watch<SettingsProvider>().settings;
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);
@@ -107,7 +77,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: Focus(
                           canRequestFocus: false,
                           skipTraversal: true,
-                          onKeyEvent: _onNavKeyEvent,
+                          onKeyEvent: (_, event) => handleSettingsNavKeyEvent(
+                            _contentScopeNode,
+                            event,
+                          ),
                           child: SettingsNavPanel(
                             categories: _categories,
                             selectedIndex: _selectedIndex,
@@ -127,7 +100,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: Focus(
                             canRequestFocus: false,
                             skipTraversal: true,
-                            onKeyEvent: _onContentKeyEvent,
+                            onKeyEvent: (_, event) => handleSettingsContentKeyEvent(
+                              _navFocusNodes,
+                              _selectedIndex,
+                              event,
+                            ),
                             child: FocusScope(
                               node: _contentScopeNode,
                               child: SettingsContentPanel(

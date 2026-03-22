@@ -1,0 +1,78 @@
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import '../../../../../core/mobile_theme.dart';
+
+class MobileQiblaTopBar extends StatelessWidget {
+  final String city;
+  final String country;
+
+  const MobileQiblaTopBar({
+    super.key,
+    required this.city,
+    required this.country,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Menu/Settings Button (Left)
+          Container(
+            decoration: BoxDecoration(
+              color: MobileColors.cardColor(context).withValues(alpha: 0.5),
+              shape: BoxShape.circle,
+              border: Border.all(color: MobileColors.border(context)),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.menu_rounded),
+              color: MobileColors.onSurface(context),
+              iconSize: 20,
+              onPressed: () => Navigator.pushNamed(context, '/settings'),
+            ),
+          ),
+
+          // Location Pill (Right)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: MobileColors.cardColor(context).withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: MobileColors.border(context)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '$city، $country',
+                      style: MobileTextStyles.labelSm(context).copyWith(
+                        color: MobileColors.onSurface(context),
+                        fontSize: 12,
+                      ),
+                      textDirection: TextDirection.rtl,
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(
+                      Icons.location_on,
+                      color: MobileColors.primaryContainer,
+                      size: 16,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

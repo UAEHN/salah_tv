@@ -41,6 +41,16 @@ dependencies:
   # Lottie animations (splash screen)
   lottie: ^3.3.1
 
+  # Compass (magnetometer + accelerometer)
+  sensors_plus: ^6.0.0
+  # GPS for Qibla bearing calculation
+  geolocator: ^13.0.0
+
+  # Scheduled local notifications for prayer times (mobile only)
+  flutter_local_notifications: ^18.0.0
+  # Required by flutter_local_notifications for exact-time scheduling
+  timezone: ^0.9.4
+
   dio: ^5.9.2
   package_info_plus: ^9.0.0
   install_plugin_v2: ^1.0.0
@@ -97,4 +107,11 @@ flutter:
       fonts:
         - asset: assets/fonts/Beiruti/Beiruti-Regular.ttf
         - asset: assets/fonts/Beiruti/Beiruti-Bold.ttf
+          weight: 700
+    - family: Rubik
+      fonts:
+        - asset: assets/fonts/Rubik/Rubik-Regular.ttf
+        - asset: assets/fonts/Rubik/Rubik-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Rubik/Rubik-Bold.ttf
           weight: 700

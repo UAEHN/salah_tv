@@ -6,6 +6,7 @@ import '../features/adhkar/data/adhkar_json_repository.dart';
 import '../features/adhkar/domain/i_adhkar_audio_port.dart';
 import '../features/adhkar/domain/i_adhkar_state_repository.dart';
 import '../features/audio/data/audio_service.dart';
+import '../features/audio/data/noop_prayer_audio_port.dart';
 import '../features/audio/domain/i_audio_repository.dart';
 import '../features/prayer/data/sqlite_prayer_repository.dart';
 import '../features/prayer/domain/i_prayer_audio_port.dart';
@@ -14,6 +15,10 @@ import '../features/quran/data/quran_api_service.dart';
 import '../features/quran/domain/i_quran_api_repository.dart';
 import '../features/settings/data/settings_repository.dart';
 import '../features/settings/domain/entities/app_settings.dart';
+import '../features/notifications/data/prayer_notification_service.dart';
+import '../features/prayer/domain/i_prayer_notification_port.dart';
+import '../features/qibla/data/qibla_repository.dart';
+import '../features/qibla/domain/i_qibla_repository.dart';
 import '../features/settings/domain/i_settings_repository.dart';
 import '../features/settings/domain/usecases/load_settings_usecase.dart';
 import '../injection.dart';
@@ -61,7 +66,10 @@ Future<AppSettings> initDependencies() async {
 
   final audioService = AudioService();
   getIt.registerSingleton<IAudioRepository>(audioService);
-  getIt.registerSingleton<IPrayerAudioPort>(audioService);
+  // Mobile: prayer-cycle audio (adhan/dua/iqama) is silent — notifications carry the sound.
+  getIt.registerSingleton<IPrayerAudioPort>(
+    platformConfig.isTV ? audioService : NoOpPrayerAudioPort(),
+  );
 
   final adhkarRepo = AdhkarJsonRepository();
   await adhkarRepo.initialize();
@@ -72,6 +80,16 @@ Future<AppSettings> initDependencies() async {
   getIt.registerLazySingleton<IQuranApiRepository>(
     () => QuranApiService(getIt<Dio>()),
   );
+
+  // Qibla: lazy — only instantiated when user opens the Qibla screen
+  getIt.registerLazySingleton<IQiblaRepository>(() => QiblaRepository());
+
+  // Prayer notifications: mobile only — TV app is always running in foreground
+  if (!platformConfig.isTV) {
+    final notifService = PrayerNotificationService();
+    await notifService.initialize();
+    getIt.registerSingleton<IPrayerNotificationPort>(notifService);
+  }
 
   return settings;
 }

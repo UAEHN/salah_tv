@@ -24,14 +24,15 @@ class UpdateBloc extends Bloc<UpdateEvent, UpdateState>
     on<CheckForUpdateEvent>(_onCheckForUpdate);
     on<StartDownloadEvent>(_onStartDownload);
     on<UpdateProgressEvent>(_onUpdateProgress);
+    on<RestoreAvailableEvent>(_onRestoreAvailable);
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState lifecycle) {
-    if (lifecycle == AppLifecycleState.resumed &&
-        state is UpdateInstalling &&
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed &&
+        this.state is UpdateInstalling &&
         _pendingRestore != null) {
-      emit(UpdateAvailable(_pendingRestore!));
+      add(RestoreAvailableEvent(_pendingRestore!));
       _pendingRestore = null;
     }
   }
@@ -100,5 +101,12 @@ class UpdateBloc extends Bloc<UpdateEvent, UpdateState>
     Emitter<UpdateState> emit,
   ) {
     emit(UpdateDownloading(event.receivedBytes / event.totalBytes));
+  }
+
+  void _onRestoreAvailable(
+    RestoreAvailableEvent event,
+    Emitter<UpdateState> emit,
+  ) {
+    emit(UpdateAvailable(event.appVersion));
   }
 }

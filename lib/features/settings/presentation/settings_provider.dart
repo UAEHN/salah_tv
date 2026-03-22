@@ -10,128 +10,118 @@ class SettingsProvider extends ChangeNotifier {
   final IQuranApiRepository _quranApiRepo;
   AppSettings _settings;
 
-  SettingsProvider(
-    ISettingsRepository repo,
-    this._quranApiRepo,
-    this._settings,
-  ) : _save = SaveSettingsUseCase(repo);
+  SettingsProvider(ISettingsRepository repo, this._quranApiRepo, this._settings)
+    : _save = SaveSettingsUseCase(repo);
 
   AppSettings get settings => _settings;
 
-  Future<void> updateTheme(String colorKey) async {
-    _settings = _settings.copyWith(themeColorKey: colorKey);
+  Future<void> _update(AppSettings s) async {
+    _settings = s;
     await _save(_settings);
     notifyListeners();
   }
 
-  Future<void> updatePlayAdhan(bool value) async {
-    _settings = _settings.copyWith(playAdhan: value);
-    await _save(_settings);
-    notifyListeners();
-  }
+  Future<void> updateTheme(String colorKey) =>
+      _update(_settings.copyWith(themeColorKey: colorKey));
 
-  Future<void> updateTimeFormat(bool use24h) async {
-    _settings = _settings.copyWith(use24HourFormat: use24h);
-    await _save(_settings);
-    notifyListeners();
-  }
+  Future<void> updatePlayAdhan(bool value) =>
+      _update(_settings.copyWith(playAdhan: value));
 
-  Future<void> updateIqamaDelay(String prayerKey, int minutes) async {
-    final newDelays = Map<String, int>.from(_settings.iqamaDelays);
-    newDelays[prayerKey] = minutes.clamp(0, 60);
-    _settings = _settings.copyWith(iqamaDelays: newDelays);
-    await _save(_settings);
-    notifyListeners();
-  }
+  Future<void> updateTimeFormat(bool use24h) =>
+      _update(_settings.copyWith(use24HourFormat: use24h));
 
-  Future<void> updateAdhanOffset(String prayerKey, int minutes) async {
-    final newOffsets = Map<String, int>.from(_settings.adhanOffsets);
-    newOffsets[prayerKey] = minutes.clamp(-30, 30);
-    _settings = _settings.copyWith(adhanOffsets: newOffsets);
-    await _save(_settings);
-    notifyListeners();
-  }
+  Future<void> updateDarkMode(bool value) =>
+      _update(_settings.copyWith(isDarkMode: value));
 
-  Future<void> updateHadithText(String text) async {
-    _settings = _settings.copyWith(hadithText: text);
-    await _save(_settings);
-    notifyListeners();
-  }
+  Future<void> updateFontFamily(String fontFamily) =>
+      _update(_settings.copyWith(fontFamily: fontFamily));
 
-  Future<void> updateHadithSource(String source) async {
-    _settings = _settings.copyWith(hadithSource: source);
-    await _save(_settings);
-    notifyListeners();
-  }
+  Future<void> updateHadithText(String text) =>
+      _update(_settings.copyWith(hadithText: text));
 
-  Future<void> updateDarkMode(bool value) async {
-    _settings = _settings.copyWith(isDarkMode: value);
-    await _save(_settings);
-    notifyListeners();
-  }
+  Future<void> updateHadithSource(String source) =>
+      _update(_settings.copyWith(hadithSource: source));
 
-  Future<void> updateFontFamily(String fontFamily) async {
-    _settings = _settings.copyWith(fontFamily: fontFamily);
-    await _save(_settings);
-    notifyListeners();
-  }
+  Future<void> updateLayoutStyle(String style) =>
+      _update(_settings.copyWith(layoutStyle: style));
 
-  // ── Quran settings ──────────────────────────────────────────────────────
+  Future<void> updateAdhanSound(String key) =>
+      _update(_settings.copyWith(adhanSound: key));
 
-  Future<void> updateIsQuranEnabled(bool value) async {
-    _settings = _settings.copyWith(isQuranEnabled: value);
-    await _save(_settings);
-    notifyListeners();
-  }
+  Future<void> updateClockStyle({required bool isAnalog}) =>
+      _update(_settings.copyWith(isAnalogClock: isAnalog));
 
-  Future<void> updateQuranReciter(String name, String serverUrl) async {
-    _settings = _settings.copyWith(
-      quranReciterName: name,
-      quranReciterServerUrl: serverUrl,
-    );
-    await _save(_settings);
-    notifyListeners();
-  }
+  Future<void> updateIsAdhkarEnabled(bool value) =>
+      _update(_settings.copyWith(isAdhkarEnabled: value));
 
-  Future<void> updateLayoutStyle(String style) async {
-    _settings = _settings.copyWith(layoutStyle: style);
-    await _save(_settings);
-    notifyListeners();
-  }
+  Future<void> updateSelectedCountry(String country) =>
+      _update(_settings.copyWith(selectedCountry: country));
 
-  Future<void> updateSelectedCountry(String country) async {
-    _settings = _settings.copyWith(selectedCountry: country);
-    await _save(_settings);
-    notifyListeners();
-  }
+  Future<void> updateSelectedCity(String city) =>
+      _update(_settings.copyWith(selectedCity: city));
 
-  Future<void> updateSelectedCity(String city) async {
-    _settings = _settings.copyWith(selectedCity: city);
-    await _save(_settings);
-    notifyListeners();
-  }
+  Future<void> updateLocation(String country, String city) =>
+      _update(_settings.copyWith(selectedCountry: country, selectedCity: city));
 
-  /// Returns reciters list, or empty list on failure.
+  // ── Quran ─────────────────────────────────────────────────────────────
+
+  Future<void> updateIsQuranEnabled(bool value) =>
+      _update(_settings.copyWith(isQuranEnabled: value));
+
+  Future<void> updateQuranReciter(String name, String serverUrl) =>
+      _update(_settings.copyWith(
+        quranReciterName: name, quranReciterServerUrl: serverUrl,
+      ));
+
   Future<List<QuranApiReciter>> fetchReciters() async {
     final result = await _quranApiRepo.fetchReciters();
     return result.fold((_) => [], (list) => list);
   }
 
-  Future<void> updateAdhanSound(String key) async {
-    _settings = _settings.copyWith(adhanSound: key);
-    await _save(_settings);
-    notifyListeners();
+  // ── Prayer time offsets ───────────────────────────────────────────────
+
+  Future<void> updateIqamaDelay(String prayerKey, int minutes) async {
+    final m = Map<String, int>.from(_settings.iqamaDelays);
+    m[prayerKey] = minutes.clamp(0, 60);
+    _update(_settings.copyWith(iqamaDelays: m));
   }
 
-  Future<void> updateClockStyle({required bool isAnalog}) async {
-    _settings = _settings.copyWith(isAnalogClock: isAnalog);
-    await _save(_settings);
-    notifyListeners();
+  Future<void> updateAdhanOffset(String prayerKey, int minutes) async {
+    final m = Map<String, int>.from(_settings.adhanOffsets);
+    m[prayerKey] = minutes.clamp(-30, 30);
+    _update(_settings.copyWith(adhanOffsets: m));
   }
 
-  Future<void> updateIsAdhkarEnabled(bool value) async {
-    _settings = _settings.copyWith(isAdhkarEnabled: value);
-    await _save(_settings);
-    notifyListeners();
+  // ── Notification settings (mobile) ────────────────────────────────────
+
+  Future<void> updatePreAdhanReminderMinutes(int min) =>
+      _update(_settings.copyWith(preAdhanReminderMinutes: min));
+
+  Future<void> updatePreIqamaReminderMinutes(int min) =>
+      _update(_settings.copyWith(preIqamaReminderMinutes: min));
+
+  Future<void> updatePrayerNotificationEnabled(String key, bool v) =>
+      _updateBoolMap(key, v, _settings.prayerNotificationEnabled,
+          (m) => _settings.copyWith(prayerNotificationEnabled: m));
+
+  Future<void> updatePreAdhanReminderEnabled(String key, bool v) =>
+      _updateBoolMap(key, v, _settings.preAdhanReminderEnabled,
+          (m) => _settings.copyWith(preAdhanReminderEnabled: m));
+
+  Future<void> updateIqamaNotificationEnabled(String key, bool v) =>
+      _updateBoolMap(key, v, _settings.iqamaNotificationEnabled,
+          (m) => _settings.copyWith(iqamaNotificationEnabled: m));
+
+  Future<void> updatePreIqamaReminderEnabled(String key, bool v) =>
+      _updateBoolMap(key, v, _settings.preIqamaReminderEnabled,
+          (m) => _settings.copyWith(preIqamaReminderEnabled: m));
+
+  Future<void> _updateBoolMap(
+    String key, bool value, Map<String, bool> current,
+    AppSettings Function(Map<String, bool>) applyCopy,
+  ) {
+    final m = Map<String, bool>.from(current);
+    m[key] = value;
+    return _update(applyCopy(m));
   }
 }

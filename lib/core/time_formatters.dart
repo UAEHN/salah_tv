@@ -1,9 +1,14 @@
 import 'package:intl/intl.dart';
 
 String formatPrayerTime(DateTime dt, {required bool use24Hour}) {
-  return use24Hour
-      ? DateFormat('HH:mm').format(dt)
-      : DateFormat('hh:mm a').format(dt);
+  if (use24Hour) return DateFormat('HH:mm').format(dt);
+  return DateFormat('hh:mm').format(dt);
+}
+
+/// Returns 'ص' or 'م' — null when use24Hour is true.
+String? formatPrayerPeriod(DateTime dt, {required bool use24Hour}) {
+  if (use24Hour) return null;
+  return dt.hour < 12 ? 'ص' : 'م';
 }
 
 String formatCountdown(Duration d) {

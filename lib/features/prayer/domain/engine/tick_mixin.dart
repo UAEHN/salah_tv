@@ -55,6 +55,9 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
     s.todayPrayers = repo.getToday();
     s.lastLoadedDay = s.now.day; // Issue 6: record the day we loaded for
     updateNextPrayer();
+    if (s.todayPrayers != null) {
+      unawaited(notifications?.scheduleForDay(s.todayPrayers!, settings));
+    }
   }
 
   void updateNextPrayer() {

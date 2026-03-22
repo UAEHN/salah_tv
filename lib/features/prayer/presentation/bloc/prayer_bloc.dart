@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../settings/domain/entities/app_settings.dart';
 import '../../domain/i_prayer_audio_port.dart';
+import '../../domain/i_prayer_notification_port.dart';
 import '../../domain/i_prayer_times_repository.dart';
 import '../../domain/prayer_cycle_engine.dart';
 import 'prayer_event.dart';
@@ -18,10 +19,17 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
   PrayerBloc(
     IPrayerTimesRepository repo,
     IPrayerAudioPort audio,
-    AppSettings initialSettings,
-  ) : _repo = repo,
+    AppSettings initialSettings, {
+    IPrayerNotificationPort? notifications,
+  }) : _repo = repo,
       super(PrayerState.initial()) {
-    _engine = PrayerCycleEngine(repo, audio, initialSettings, _onEngineChanged);
+    _engine = PrayerCycleEngine(
+      repo,
+      audio,
+      initialSettings,
+      _onEngineChanged,
+      notifications: notifications,
+    );
     on<PrayerEngineRefreshed>(_onRefreshed);
     on<PrayerStarted>(_onStarted);
     on<PrayerResumed>(_onResumed);

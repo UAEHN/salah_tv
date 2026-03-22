@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'entities/daily_prayer_times.dart';
 import 'i_prayer_audio_port.dart';
+import 'i_prayer_notification_port.dart';
 import 'i_prayer_times_repository.dart';
 import '../../settings/domain/entities/app_settings.dart';
 import 'engine/prayer_cycle_state.dart';
@@ -38,6 +39,9 @@ class PrayerCycleEngine extends PrayerCycleBase
   AppSettings settings;
 
   @override
+  final IPrayerNotificationPort? notifications;
+
+  @override
   final void Function() notify;
 
   StreamSubscription<void>? _completionSub;
@@ -46,8 +50,9 @@ class PrayerCycleEngine extends PrayerCycleBase
     this.repo,
     this.audio,
     AppSettings initialSettings,
-    this.notify,
-  ) : settings = initialSettings {
+    this.notify, {
+    this.notifications,
+  }) : settings = initialSettings {
     // Issue 2: stored subscription; Issue 4: entry guards in each stop method
     // prevent re-entrant / double-fire from onComplete
     _completionSub = audio.onComplete.listen((_) async {
@@ -118,6 +123,17 @@ class PrayerCycleEngine extends PrayerCycleBase
     if (s.now.day != s.lastLoadedDay) {
       s.adhansToday.clear();
       loadToday();
+    }
+    // If adhan or dua started while the app was in the background, the audio
+    // may have played partially or not at all (Android suspends the isolate).
+    // Clear these phases so recoverIqamaState() can recompute the correct
+    // state (iqama countdown or idle) based on actual elapsed time.
+    if (s.isAdhanPlaying || s.isDuaPlaying) {
+      s.adhanFallbackTimer?.cancel();
+      s.duaFallbackTimer?.cancel();
+      s.isAdhanPlaying = false;
+      s.isDuaPlaying = false;
+      unawaited(audio.stop());
     }
     recoverIqamaState();
     if (s.isQuranPlaying && !s.isQuranPausedForAdhan) {

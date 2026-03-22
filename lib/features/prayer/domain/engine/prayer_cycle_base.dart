@@ -1,4 +1,5 @@
 import '../i_prayer_audio_port.dart';
+import '../i_prayer_notification_port.dart';
 import '../i_prayer_times_repository.dart';
 import '../../../settings/domain/entities/app_settings.dart';
 import 'prayer_cycle_state.dart';
@@ -13,4 +14,7 @@ abstract class PrayerCycleBase {
   AppSettings get settings;
   set settings(AppSettings value);
   void Function() get notify;
+
+  /// Null on TV — notifications are mobile-only.
+  IPrayerNotificationPort? get notifications;
 }

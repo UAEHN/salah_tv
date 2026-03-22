@@ -41,9 +41,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!kIsTV) return const MobileHomeScreen();
-
     final settings = context.watch<SettingsProvider>().settings;
+    if (!kIsTV) {
+      return MobileHomeScreen(
+        city: settings.selectedCity,
+        country: settings.selectedCountry,
+        is24HourFormat: settings.use24HourFormat,
+      );
+    }
+
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);
     final screenW = MediaQuery.of(context).size.width;

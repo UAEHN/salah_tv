@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'app.dart';
 import 'core/app_startup.dart';
 import 'features/prayer/domain/i_prayer_audio_port.dart';
+import 'features/prayer/domain/i_prayer_notification_port.dart';
 import 'features/prayer/domain/i_prayer_times_repository.dart';
 import 'features/prayer/presentation/bloc/prayer_bloc.dart';
 import 'features/prayer/presentation/bloc/prayer_event.dart';
@@ -31,6 +32,9 @@ void main() async {
             getIt<IPrayerTimesRepository>(),
             getIt<IPrayerAudioPort>(),
             settings,
+            notifications: getIt.isRegistered<IPrayerNotificationPort>()
+                ? getIt<IPrayerNotificationPort>()
+                : null,
           )..add(const PrayerStarted()),
         ),
         BlocProvider(

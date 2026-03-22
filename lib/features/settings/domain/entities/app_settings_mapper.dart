@@ -23,47 +23,79 @@ extension AppSettingsMapper on AppSettings {
     'adhanSound': adhanSound,
     'isAnalogClock': isAnalogClock,
     'isAdhkarEnabled': isAdhkarEnabled,
+    'prayerNotificationEnabled': jsonEncode(prayerNotificationEnabled),
+    'preAdhanReminderEnabled': jsonEncode(preAdhanReminderEnabled),
+    'preAdhanReminderMinutes': preAdhanReminderMinutes,
+    'iqamaNotificationEnabled': jsonEncode(iqamaNotificationEnabled),
+    'preIqamaReminderEnabled': jsonEncode(preIqamaReminderEnabled),
+    'preIqamaReminderMinutes': preIqamaReminderMinutes,
   };
 }
 
-/// Reject URLs that are not HTTPS on the trusted mp3quran.net CDN.
 String _validatedQuranUrl(String url) {
   if (url.isEmpty) return '';
   final uri = Uri.tryParse(url);
-  if (uri == null || uri.scheme != 'https' || !uri.host.endsWith('mp3quran.net')) {
+  if (uri == null ||
+      uri.scheme != 'https' ||
+      !uri.host.endsWith('mp3quran.net')) {
     return '';
   }
   return url;
 }
 
+Map<String, bool> _decodeBoolMap(
+  dynamic raw, Map<String, bool> fallback,
+) {
+  if (raw == null) return fallback;
+  try {
+    final decoded = jsonDecode(raw as String) as Map;
+    return decoded.map((k, v) => MapEntry(k.toString(), v as bool));
+  } catch (_) {
+    return fallback;
+  }
+}
+
+Map<String, int> _decodeIntMap(dynamic raw, Map<String, int> fallback) {
+  if (raw == null) return fallback;
+  try {
+    final decoded = jsonDecode(raw as String) as Map;
+    return decoded.map((k, v) => MapEntry(k.toString(), v as int));
+  } catch (_) {
+    return fallback;
+  }
+}
+
+const _defaultBoolMapTrue = {
+  'fajr': true, 'dhuhr': true, 'asr': true, 'maghrib': true, 'isha': true,
+};
+const _defaultBoolMapFalse = {
+  'fajr': false, 'dhuhr': false, 'asr': false, 'maghrib': false, 'isha': false,
+};
+
 AppSettings appSettingsFromMap(Map<String, dynamic> map) {
-  Map<String, int> delays = const {
-    'fajr': 20, 'dhuhr': 10, 'asr': 10, 'maghrib': 5, 'isha': 15,
-  };
-  if (map['iqamaDelays'] != null) {
-    try {
-      final decoded = jsonDecode(map['iqamaDelays'] as String) as Map;
-      delays = decoded.map((k, v) => MapEntry(k.toString(), v as int));
-    } catch (_) {}
-  }
-
-  Map<String, int> offsets = const {
-    'fajr': 0, 'sunrise': 0, 'dhuhr': 0, 'asr': 0, 'maghrib': 0, 'isha': 0,
-  };
-  if (map['adhanOffsets'] != null) {
-    try {
-      final decoded = jsonDecode(map['adhanOffsets'] as String) as Map;
-      offsets = decoded.map((k, v) => MapEntry(k.toString(), v as int));
-    } catch (_) {}
-  }
-
   return AppSettings(
     themeColorKey: map['themeColorKey'] as String? ?? 'green',
     use24HourFormat: map['use24HourFormat'] as bool? ?? false,
     playAdhan: map['playAdhan'] as bool? ?? true,
     isDarkMode: map['isDarkMode'] as bool? ?? false,
-    iqamaDelays: delays,
-    adhanOffsets: offsets,
+    iqamaDelays: _decodeIntMap(map['iqamaDelays'], const {
+      'fajr': 20, 'dhuhr': 10, 'asr': 10, 'maghrib': 5, 'isha': 15,
+    }),
+    adhanOffsets: _decodeIntMap(map['adhanOffsets'], const {
+      'fajr': 0, 'sunrise': 0, 'dhuhr': 0, 'asr': 0, 'maghrib': 0, 'isha': 0,
+    }),
+    prayerNotificationEnabled: _decodeBoolMap(
+      map['prayerNotificationEnabled'], _defaultBoolMapTrue,
+    ),
+    preAdhanReminderEnabled: _decodeBoolMap(
+      map['preAdhanReminderEnabled'], _defaultBoolMapFalse,
+    ),
+    iqamaNotificationEnabled: _decodeBoolMap(
+      map['iqamaNotificationEnabled'], _defaultBoolMapFalse,
+    ),
+    preIqamaReminderEnabled: _decodeBoolMap(
+      map['preIqamaReminderEnabled'], _defaultBoolMapFalse,
+    ),
     hadithText: map['hadithText'] as String? ??
         '"مَن صامَ رمضانَ ثمَّ أتبعَهُ ستًّا من شوَّالٍ كانَ كصيامِ الدَّهرِ"',
     hadithSource: map['hadithSource'] as String? ?? 'رواه مسلم',
@@ -80,10 +112,13 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     layoutStyle: const ['classic', 'modern'].contains(map['layoutStyle'])
         ? map['layoutStyle'] as String
         : 'modern',
-    adhanSound: const ['default', 'adhan2'].contains(map['adhanSound'])
-        ? map['adhanSound'] as String
-        : 'default',
+    adhanSound:
+        const ['default', 'adhan2', 'adhan3'].contains(map['adhanSound'])
+            ? map['adhanSound'] as String
+            : 'default',
     isAnalogClock: map['isAnalogClock'] as bool? ?? false,
     isAdhkarEnabled: map['isAdhkarEnabled'] as bool? ?? true,
+    preAdhanReminderMinutes: map['preAdhanReminderMinutes'] as int? ?? 15,
+    preIqamaReminderMinutes: map['preIqamaReminderMinutes'] as int? ?? 5,
   );
 }

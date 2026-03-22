@@ -11,24 +11,25 @@ class AppSettings {
 
   // Quran background audio (streamed from mp3quran.net API)
   final bool isQuranEnabled;
-  final String quranReciterName; // Display name (Arabic)
-  final String quranReciterServerUrl; // CDN URL ending with '/'
+  final String quranReciterName;
+  final String quranReciterServerUrl;
 
   // Country & city selection (for multi-city CSV files)
   final String selectedCountry;
   final String selectedCity;
 
-  // Layout style ('classic' or 'modern')
   final String layoutStyle;
-
-  // Adhan sound selection ('default' or 'raad_al_kurdi')
   final String adhanSound;
-
-  // Clock display style
   final bool isAnalogClock;
-
-  // Adhkar display (أذكار الصباح والمساء)
   final bool isAdhkarEnabled;
+
+  // ── Notification settings (mobile only) ─────────────────────────────────
+  final Map<String, bool> prayerNotificationEnabled;
+  final Map<String, bool> preAdhanReminderEnabled;
+  final int preAdhanReminderMinutes;
+  final Map<String, bool> iqamaNotificationEnabled;
+  final Map<String, bool> preIqamaReminderEnabled;
+  final int preIqamaReminderMinutes;
 
   const AppSettings({
     this.themeColorKey = 'green',
@@ -42,21 +43,29 @@ class AppSettings {
     this.adhanSound = 'default',
     this.isAnalogClock = false,
     this.isAdhkarEnabled = true,
+    this.preAdhanReminderMinutes = 15,
     this.iqamaDelays = const {
-      'fajr': 20,
-      'dhuhr': 10,
-      'asr': 10,
-      'maghrib': 5,
-      'isha': 15,
+      'fajr': 20, 'dhuhr': 10, 'asr': 10, 'maghrib': 5, 'isha': 15,
     },
     this.adhanOffsets = const {
-      'fajr': 0,
-      'sunrise': 0,
-      'dhuhr': 0,
-      'asr': 0,
-      'maghrib': 0,
-      'isha': 0,
+      'fajr': 0, 'sunrise': 0, 'dhuhr': 0, 'asr': 0, 'maghrib': 0, 'isha': 0,
     },
+    this.prayerNotificationEnabled = const {
+      'fajr': true, 'dhuhr': true, 'asr': true, 'maghrib': true, 'isha': true,
+    },
+    this.preAdhanReminderEnabled = const {
+      'fajr': false, 'dhuhr': false, 'asr': false,
+      'maghrib': false, 'isha': false,
+    },
+    this.iqamaNotificationEnabled = const {
+      'fajr': false, 'dhuhr': false, 'asr': false,
+      'maghrib': false, 'isha': false,
+    },
+    this.preIqamaReminderEnabled = const {
+      'fajr': false, 'dhuhr': false, 'asr': false,
+      'maghrib': false, 'isha': false,
+    },
+    this.preIqamaReminderMinutes = 5,
     this.hadithText =
         '"مَن صامَ رمضانَ ثمَّ أتبعَهُ ستًّا من شوَّالٍ كانَ كصيامِ الدَّهرِ"',
     this.hadithSource = 'رواه مسلم',
@@ -87,6 +96,12 @@ class AppSettings {
     String? adhanSound,
     bool? isAnalogClock,
     bool? isAdhkarEnabled,
+    Map<String, bool>? prayerNotificationEnabled,
+    Map<String, bool>? preAdhanReminderEnabled,
+    int? preAdhanReminderMinutes,
+    Map<String, bool>? iqamaNotificationEnabled,
+    Map<String, bool>? preIqamaReminderEnabled,
+    int? preIqamaReminderMinutes,
   }) {
     return AppSettings(
       themeColorKey: themeColorKey ?? this.themeColorKey,
@@ -95,6 +110,18 @@ class AppSettings {
       isDarkMode: isDarkMode ?? this.isDarkMode,
       iqamaDelays: Map.unmodifiable(iqamaDelays ?? this.iqamaDelays),
       adhanOffsets: Map.unmodifiable(adhanOffsets ?? this.adhanOffsets),
+      prayerNotificationEnabled: Map.unmodifiable(
+        prayerNotificationEnabled ?? this.prayerNotificationEnabled,
+      ),
+      preAdhanReminderEnabled: Map.unmodifiable(
+        preAdhanReminderEnabled ?? this.preAdhanReminderEnabled,
+      ),
+      iqamaNotificationEnabled: Map.unmodifiable(
+        iqamaNotificationEnabled ?? this.iqamaNotificationEnabled,
+      ),
+      preIqamaReminderEnabled: Map.unmodifiable(
+        preIqamaReminderEnabled ?? this.preIqamaReminderEnabled,
+      ),
       hadithText: hadithText ?? this.hadithText,
       hadithSource: hadithSource ?? this.hadithSource,
       fontFamily: fontFamily ?? this.fontFamily,
@@ -108,6 +135,10 @@ class AppSettings {
       adhanSound: adhanSound ?? this.adhanSound,
       isAnalogClock: isAnalogClock ?? this.isAnalogClock,
       isAdhkarEnabled: isAdhkarEnabled ?? this.isAdhkarEnabled,
+      preAdhanReminderMinutes:
+          preAdhanReminderMinutes ?? this.preAdhanReminderMinutes,
+      preIqamaReminderMinutes:
+          preIqamaReminderMinutes ?? this.preIqamaReminderMinutes,
     );
   }
 }

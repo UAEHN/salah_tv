@@ -27,13 +27,26 @@ class SettingsRepository implements ISettingsRepository {
           'fontFamily': prefs.getString('${_prefix}font_family'),
           'isQuranEnabled': prefs.getBool('${_prefix}quran_enabled'),
           'quranReciterName': prefs.getString('${_prefix}quran_reciter_name'),
-          'quranReciterServerUrl': prefs.getString('${_prefix}quran_reciter_url'),
+          'quranReciterServerUrl':
+              prefs.getString('${_prefix}quran_reciter_url'),
           'selectedCountry': prefs.getString('${_prefix}selected_country'),
           'selectedCity': prefs.getString('${_prefix}selected_city'),
           'layoutStyle': prefs.getString('${_prefix}layout_style'),
           'adhanSound': prefs.getString('${_prefix}adhan_sound'),
           'isAnalogClock': prefs.getBool('${_prefix}analog_clock'),
           'isAdhkarEnabled': prefs.getBool('${_prefix}adhkar_enabled'),
+          'prayerNotificationEnabled':
+              prefs.getString('${_prefix}prayer_notif_enabled'),
+          'preAdhanReminderEnabled':
+              prefs.getString('${_prefix}pre_adhan_reminder_map'),
+          'preAdhanReminderMinutes':
+              prefs.getInt('${_prefix}pre_adhan_reminder_min'),
+          'iqamaNotificationEnabled':
+              prefs.getString('${_prefix}iqama_notif_map'),
+          'preIqamaReminderEnabled':
+              prefs.getString('${_prefix}pre_iqama_reminder_map'),
+          'preIqamaReminderMinutes':
+              prefs.getInt('${_prefix}pre_iqama_reminder_min'),
         }),
       );
     } catch (e) {
@@ -51,17 +64,17 @@ class SettingsRepository implements ISettingsRepository {
       await prefs.setBool('${_prefix}dark_mode', s.isDarkMode);
       await prefs.setString('${_prefix}iqama', jsonEncode(s.iqamaDelays));
       await prefs.setString(
-        '${_prefix}adhan_offsets',
-        jsonEncode(s.adhanOffsets),
+        '${_prefix}adhan_offsets', jsonEncode(s.adhanOffsets),
       );
       await prefs.setString('${_prefix}hadith_text', s.hadithText);
       await prefs.setString('${_prefix}hadith_source', s.hadithSource);
       await prefs.setString('${_prefix}font_family', s.fontFamily);
       await prefs.setBool('${_prefix}quran_enabled', s.isQuranEnabled);
-      await prefs.setString('${_prefix}quran_reciter_name', s.quranReciterName);
       await prefs.setString(
-        '${_prefix}quran_reciter_url',
-        s.quranReciterServerUrl,
+        '${_prefix}quran_reciter_name', s.quranReciterName,
+      );
+      await prefs.setString(
+        '${_prefix}quran_reciter_url', s.quranReciterServerUrl,
       );
       await prefs.setString('${_prefix}selected_country', s.selectedCountry);
       await prefs.setString('${_prefix}selected_city', s.selectedCity);
@@ -69,6 +82,28 @@ class SettingsRepository implements ISettingsRepository {
       await prefs.setString('${_prefix}adhan_sound', s.adhanSound);
       await prefs.setBool('${_prefix}analog_clock', s.isAnalogClock);
       await prefs.setBool('${_prefix}adhkar_enabled', s.isAdhkarEnabled);
+      await prefs.setString(
+        '${_prefix}prayer_notif_enabled',
+        jsonEncode(s.prayerNotificationEnabled),
+      );
+      await prefs.setString(
+        '${_prefix}pre_adhan_reminder_map',
+        jsonEncode(s.preAdhanReminderEnabled),
+      );
+      await prefs.setInt(
+        '${_prefix}pre_adhan_reminder_min', s.preAdhanReminderMinutes,
+      );
+      await prefs.setString(
+        '${_prefix}iqama_notif_map',
+        jsonEncode(s.iqamaNotificationEnabled),
+      );
+      await prefs.setString(
+        '${_prefix}pre_iqama_reminder_map',
+        jsonEncode(s.preIqamaReminderEnabled),
+      );
+      await prefs.setInt(
+        '${_prefix}pre_iqama_reminder_min', s.preIqamaReminderMinutes,
+      );
       return const Right(Success());
     } catch (e) {
       return Left(CacheFailure('Failed to save settings: $e'));
