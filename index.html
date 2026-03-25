@@ -2,41 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Privacy Policy - Mawaqit TV</title>
+  <title>Privacy Policy - Ghasaq (غسق)</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.7; }
-    h1 { color: #2c3e50; }
-    h2 { color: #34495e; margin-top: 30px; }
+    body { font-family: Arial, sans-serif; max-width: 820px; margin: 40px auto; padding: 0 24px; line-height: 1.8; color: #333; }
+    h1 { color: #1a2340; }
+    h2 { color: #2c3e50; margin-top: 32px; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 4px; }
+    code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+    .note { background: #f0f7ff; border-left: 4px solid #2980b9; padding: 10px 16px; border-radius: 4px; margin: 16px 0; }
   </style>
 </head>
 <body>
-  <h1>Privacy Policy for Mawaqit TV</h1>
-  <p><em>Last updated: March 19, 2026</em></p>
+  <h1>Privacy Policy for Ghasaq (غسق)</h1>
+  <p><em>Last updated: March 25, 2026</em></p>
 
   <h2>Introduction</h2>
-  <p>Mawaqit TV is an Islamic prayer times display application for Android TV devices. This privacy policy explains how the App handles information.</p>
+  <p>Ghasaq (غسق) is an Islamic prayer times app for Android TV and mobile devices. It displays prayer times, plays Adhan audio, streams Quran, and provides Adhkar and Qibla compass features. This policy explains how the app handles your data.</p>
+
+  <div class="note">All user data is stored <strong>locally on your device only</strong>. We do not operate any servers, and we do not collect, transmit, or store any personal data on our end.</div>
 
   <h2>Data We Do NOT Collect</h2>
-  <p>The App does not collect, store, transmit, or share any personal information. We do not collect names, email addresses, location data, device identifiers, or usage analytics.</p>
+  <p>The app does not collect, transmit, or share:</p>
+  <ul>
+    <li>Names, email addresses, or account information</li>
+    <li>Device identifiers or advertising IDs</li>
+    <li>Usage analytics or crash reports</li>
+    <li>Any data with third parties for marketing or profiling</li>
+  </ul>
+  <p>There is no Firebase, no analytics SDK, and no ad library in this app.</p>
 
-  <h2>Internet Usage</h2>
-  <p>The App requires internet access solely to stream Quran audio from mp3quran.net.</p>
+  <h2>Location Data</h2>
+  <p>The app requests location permission for two optional features:</p>
+  <ul>
+    <li><strong>Auto-detect city</strong> (mobile only): Uses GPS to find your nearest city and load the correct prayer times. The detected coordinates are saved locally on your device. This is optional — you can manually select your city instead.</li>
+    <li><strong>Qibla compass</strong> (mobile only): Uses your device location to calculate the direction of Mecca. Location is only accessed while the Qibla screen is open and is never stored.</li>
+  </ul>
+  <p>Location data is <strong>never sent to any server</strong>. It stays on your device.</p>
+
+  <h2>Sensors</h2>
+  <p>The Qibla compass uses the device magnetometer and accelerometer in real time to show compass direction. This sensor data is processed on-device only and is never logged or transmitted.</p>
 
   <h2>Local Storage</h2>
-  <p>The App stores your selected city and prayer settings locally on your device only. This data never leaves your device.</p>
+  <p>The app stores the following data locally on your device:</p>
+  <ul>
+    <li>Your selected city, country, and optionally GPS coordinates</li>
+    <li>Prayer time settings (offsets, Iqama delays, calculation method)</li>
+    <li>App appearance preferences (theme, font, layout)</li>
+    <li>Adhan sound selection and Quran reciter preference</li>
+    <li>Notification settings per prayer</li>
+    <li>A cached list of Quran reciters (refreshed every 24 hours)</li>
+  </ul>
+  <p>This data never leaves your device.</p>
+
+  <h2>Internet Usage</h2>
+  <p>The app requires internet access for the following purposes only:</p>
+  <ul>
+    <li><strong>Quran streaming:</strong> Audio is streamed on demand from <strong>mp3quran.net</strong> CDN servers. No personal data is sent.</li>
+    <li><strong>Quran reciter list:</strong> A list of available reciters is fetched from <code>https://mp3quran.net/api/v3/reciters</code> and cached locally for 24 hours.</li>
+    <li><strong>App update check:</strong> The app checks for a new version by fetching a small JSON file from GitHub. No personal data is sent.</li>
+  </ul>
 
   <h2>Prayer Times Data</h2>
-  <p>Prayer times are bundled within the App as a local database. No external prayer time API calls are made.</p>
+  <p>Prayer times for supported cities are bundled inside the app as a local database — no external prayer time API is used. For worldwide locations detected via GPS, times are calculated on-device using the <em>adhan</em> algorithm.</p>
+
+  <h2>Notifications</h2>
+  <p>On mobile devices, the app can send local notifications for prayer times, Adhan reminders, and Iqama times. These notifications are scheduled entirely on-device using Android's alarm system. No notification data passes through any external server.</p>
 
   <h2>Third-Party Services</h2>
-<p>The App streams Quran audio from <strong>mp3quran.net</strong>. 
-Please refer to their privacy policy for how they handle streaming requests.</p>
-
+  <p>The only external service the app communicates with for content is <strong>mp3quran.net</strong> (Quran audio streaming). Please refer to their privacy policy for how they handle streaming requests. The app update check uses a public GitHub endpoint with no personal data sent.</p>
 
   <h2>Children's Privacy</h2>
-  <p>The App does not collect any data from users of any age.</p>
+  <p>The app does not collect any data from users of any age.</p>
+
+  <h2>Changes to This Policy</h2>
+  <p>If we update this privacy policy, the revised version will be published at the same URL with an updated date.</p>
 
   <h2>Contact</h2>
-  <p>For questions: your@email.com</p>
+  <p>For questions or concerns: <a href="mailto:mawaqittvapp@gmail.com">mawaqittvapp@gmail.com</a></p>
 </body>
 </html>
