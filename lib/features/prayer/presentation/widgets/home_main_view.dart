@@ -35,7 +35,7 @@ class HomeMainView extends StatelessWidget {
         children: [
           Positioned.fill(
             child: CustomPaint(
-              painter: ArabescPainter(color: palette.primary, opacity: 0.05),
+              painter: ArabescPainter(color: palette.primary, opacity: 0.12),
             ),
           ),
           Positioned.fill(

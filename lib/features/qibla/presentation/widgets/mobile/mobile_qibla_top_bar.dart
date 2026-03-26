@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../../core/mobile_theme.dart';
+import '../../../../../core/widgets/mobile/mobile_shell.dart';
 
 class MobileQiblaTopBar extends StatelessWidget {
   final String city;
@@ -30,7 +31,7 @@ class MobileQiblaTopBar extends StatelessWidget {
               icon: const Icon(Icons.menu_rounded),
               color: MobileColors.onSurface(context),
               iconSize: 20,
-              onPressed: () => Navigator.pushNamed(context, '/settings'),
+              onPressed: () => MobileShell.switchTab(context, 0),
             ),
           ),
 

@@ -9,6 +9,19 @@ import '../domain/i_settings_repository.dart';
 
 class SettingsRepository implements ISettingsRepository {
   static const _prefix = 'salah_tv_';
+  static const _firstLaunchKey = '${_prefix}first_launch';
+
+  @override
+  Future<bool> isFirstLaunch() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_firstLaunchKey) ?? true;
+  }
+
+  @override
+  Future<void> markLaunched() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_firstLaunchKey, false);
+  }
 
   @override
   Future<Either<Failure, AppSettings>> load() async {
@@ -31,6 +44,12 @@ class SettingsRepository implements ISettingsRepository {
               prefs.getString('${_prefix}quran_reciter_url'),
           'selectedCountry': prefs.getString('${_prefix}selected_country'),
           'selectedCity': prefs.getString('${_prefix}selected_city'),
+          'selectedLatitude': prefs.getDouble('${_prefix}selected_lat'),
+          'selectedLongitude': prefs.getDouble('${_prefix}selected_lng'),
+          'calculationMethod': prefs.getString('${_prefix}calc_method'),
+          'isCalculatedLocation':
+              prefs.getBool('${_prefix}is_calculated_location'),
+          'utcOffsetHours': prefs.getDouble('${_prefix}utc_offset'),
           'layoutStyle': prefs.getString('${_prefix}layout_style'),
           'adhanSound': prefs.getString('${_prefix}adhan_sound'),
           'isAnalogClock': prefs.getBool('${_prefix}analog_clock'),
@@ -78,6 +97,21 @@ class SettingsRepository implements ISettingsRepository {
       );
       await prefs.setString('${_prefix}selected_country', s.selectedCountry);
       await prefs.setString('${_prefix}selected_city', s.selectedCity);
+      if (s.selectedLatitude != null) {
+        await prefs.setDouble('${_prefix}selected_lat', s.selectedLatitude!);
+      }
+      if (s.selectedLongitude != null) {
+        await prefs.setDouble('${_prefix}selected_lng', s.selectedLongitude!);
+      }
+      await prefs.setString('${_prefix}calc_method', s.calculationMethod);
+      await prefs.setBool(
+        '${_prefix}is_calculated_location', s.isCalculatedLocation,
+      );
+      if (s.utcOffsetHours != null) {
+        await prefs.setDouble('${_prefix}utc_offset', s.utcOffsetHours!);
+      } else {
+        await prefs.remove('${_prefix}utc_offset');
+      }
       await prefs.setString('${_prefix}layout_style', s.layoutStyle);
       await prefs.setString('${_prefix}adhan_sound', s.adhanSound);
       await prefs.setBool('${_prefix}analog_clock', s.isAnalogClock);

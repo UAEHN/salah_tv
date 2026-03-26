@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/city_translations.dart';
 import 'mobile_location_empty_state.dart';
 import 'mobile_location_option_tile.dart';
+import 'mobile_location_search_utils.dart';
 
 class MobileLocationCountriesList extends StatelessWidget {
-  final List<CountryInfo> countries;
+  final List<UnifiedCountry> countries;
   final String currentCountry;
   final ValueChanged<String> onSelect;
 
@@ -25,7 +25,7 @@ class MobileLocationCountriesList extends StatelessWidget {
       key: const ValueKey('countries'),
       padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
       physics: const BouncingScrollPhysics(),
-      itemExtent: 68, // ListTile(56) + margin-bottom(12) — skips per-item layout
+      itemExtent: 68,
       itemCount: countries.length,
       itemBuilder: (context, index) {
         final country = countries[index];

@@ -4,8 +4,13 @@ import '../../mobile_theme.dart';
 
 class MobileBottomNav extends StatelessWidget {
   final int currentIndex;
+  final ValueChanged<int>? onTabChanged;
 
-  const MobileBottomNav({super.key, this.currentIndex = 2});
+  const MobileBottomNav({
+    super.key,
+    this.currentIndex = 3,
+    this.onTabChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,33 +44,28 @@ class MobileBottomNav extends StatelessWidget {
                   icon: Icons.settings_rounded,
                   label: 'الإعدادات',
                   isActive: currentIndex == 0,
-                  onTap: () {
-                    if (currentIndex != 0) {
-                      _navigateTo(context, '/settings');
-                    }
-                  },
+                  onTap: () => _onItemTap(context, 0, '/settings'),
                 ),
                 _buildNavItem(
                   context: context,
                   icon: Icons.explore_outlined,
                   label: 'القبلة',
                   isActive: currentIndex == 1,
-                  onTap: () {
-                    if (currentIndex != 1) {
-                      _navigateTo(context, '/qibla');
-                    }
-                  },
+                  onTap: () => _onItemTap(context, 1, '/qibla'),
+                ),
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.auto_stories_rounded,
+                  label: 'الأذكار',
+                  isActive: currentIndex == 2,
+                  onTap: () => _onItemTap(context, 2, '/adhkar'),
                 ),
                 _buildNavItem(
                   context: context,
                   icon: Icons.mosque_rounded,
                   label: 'الصلاة',
-                  isActive: currentIndex == 2,
-                  onTap: () {
-                    if (currentIndex != 2) {
-                      _navigateTo(context, '/');
-                    }
-                  },
+                  isActive: currentIndex == 3,
+                  onTap: () => _onItemTap(context, 3, '/'),
                 ),
               ],
             ),
@@ -86,7 +86,7 @@ class MobileBottomNav extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: isActive
             ? BoxDecoration(
@@ -133,9 +133,14 @@ class MobileBottomNav extends StatelessWidget {
     );
   }
 
-  void _navigateTo(BuildContext context, String routeName) {
-    final currentRoute = ModalRoute.of(context)?.settings.name;
-    if (currentRoute == routeName) return;
-    Navigator.of(context).pushReplacementNamed(routeName);
+  void _onItemTap(BuildContext context, int index, String route) {
+    if (currentIndex == index) return;
+    if (onTabChanged != null) {
+      onTabChanged!(index);
+    } else {
+      final currentRoute = ModalRoute.of(context)?.settings.name;
+      if (currentRoute == route) return;
+      Navigator.of(context).pushReplacementNamed(route);
+    }
   }
 }

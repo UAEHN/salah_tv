@@ -18,6 +18,18 @@ class AppSettings {
   final String selectedCountry;
   final String selectedCity;
 
+  // Worldwide location (mobile only — when city is not in bundled DB)
+  final double? selectedLatitude;
+  final double? selectedLongitude;
+  final String calculationMethod;
+  final String madhab; // 'shafi' | 'hanafi'
+  final bool isCalculatedLocation;
+
+  /// UTC offset (hours) of the selected city. Used to display prayer times
+  /// in the city's local timezone instead of device timezone. Null means
+  /// use device local timezone (e.g. GPS-detected location where user is).
+  final double? utcOffsetHours;
+
   final String layoutStyle;
   final String adhanSound;
   final bool isAnalogClock;
@@ -39,6 +51,12 @@ class AppSettings {
     this.fontFamily = 'Kufi',
     this.selectedCountry = 'UAE',
     this.selectedCity = 'Dubai',
+    this.selectedLatitude,
+    this.selectedLongitude,
+    this.calculationMethod = 'muslim_world_league',
+    this.madhab = 'shafi',
+    this.isCalculatedLocation = false,
+    this.utcOffsetHours,
     this.layoutStyle = 'modern',
     this.adhanSound = 'default',
     this.isAnalogClock = false,
@@ -92,6 +110,13 @@ class AppSettings {
     String? quranReciterServerUrl,
     String? selectedCountry,
     String? selectedCity,
+    double? selectedLatitude,
+    double? selectedLongitude,
+    String? calculationMethod,
+    String? madhab,
+    bool? isCalculatedLocation,
+    double? utcOffsetHours,
+    bool clearUtcOffset = false,
     String? layoutStyle,
     String? adhanSound,
     bool? isAnalogClock,
@@ -131,6 +156,12 @@ class AppSettings {
           quranReciterServerUrl ?? this.quranReciterServerUrl,
       selectedCountry: selectedCountry ?? this.selectedCountry,
       selectedCity: selectedCity ?? this.selectedCity,
+      selectedLatitude: selectedLatitude ?? this.selectedLatitude,
+      selectedLongitude: selectedLongitude ?? this.selectedLongitude,
+      calculationMethod: calculationMethod ?? this.calculationMethod,
+      madhab: madhab ?? this.madhab,
+      isCalculatedLocation: isCalculatedLocation ?? this.isCalculatedLocation,
+      utcOffsetHours: clearUtcOffset ? null : (utcOffsetHours ?? this.utcOffsetHours),
       layoutStyle: layoutStyle ?? this.layoutStyle,
       adhanSound: adhanSound ?? this.adhanSound,
       isAnalogClock: isAnalogClock ?? this.isAnalogClock,

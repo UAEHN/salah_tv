@@ -3,15 +3,16 @@ import 'package:provider/provider.dart';
 import 'core/app_colors.dart';
 import 'core/mobile_theme.dart';
 import 'core/platform_config.dart';
+import 'core/widgets/mobile/mobile_shell.dart';
 import 'features/settings/presentation/settings_provider.dart';
 import 'features/prayer/presentation/screens/home_screen.dart';
 import 'features/settings/presentation/settings_screen.dart';
+import 'features/adhkar/presentation/screens/adhkar_screen.dart';
 import 'features/qibla/presentation/screens/qibla_screen.dart';
-import 'features/app_update/presentation/widgets/update_listener_widget.dart';
 import 'features/splash/presentation/splash_screen.dart';
 
-class SalahTvApp extends StatelessWidget {
-  const SalahTvApp({super.key});
+class GhasaqApp extends StatelessWidget {
+  const GhasaqApp({super.key});
 
   static PageRoute<void> _buildRoute({
     required RouteSettings settings,
@@ -61,7 +62,7 @@ class SalahTvApp extends StatelessWidget {
     final schemeOnPrimary = Colors.white;
 
     return MaterialApp(
-      title: 'مواقيت الصلاة',
+      title: 'غسق',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: isDark ? Brightness.dark : Brightness.light,
@@ -102,12 +103,19 @@ class SalahTvApp extends StatelessWidget {
           case '/':
             return _buildRoute(
               settings: routeSettings,
-              page: const UpdateListenerWidget(child: HomeScreen()),
+              page: kIsTV
+                  ? const HomeScreen()
+                  : const MobileShell(),
             );
           case '/settings':
             return _buildRoute(
               settings: routeSettings,
               page: const SettingsScreen(),
+            );
+          case '/adhkar':
+            return _buildRoute(
+              settings: routeSettings,
+              page: const AdhkarScreen(),
             );
           case '/qibla':
             return _buildRoute(
@@ -120,7 +128,9 @@ class SalahTvApp extends StatelessWidget {
           default:
             return _buildRoute(
               settings: routeSettings,
-              page: const UpdateListenerWidget(child: HomeScreen()),
+              page: kIsTV
+                  ? const HomeScreen()
+                  : const MobileShell(),
             );
         }
       },

@@ -37,16 +37,16 @@ class NextPrayerWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Label
+          // Label: الوقت المتبقي على أذان
           Text(
-            'الصلاة القادمة',
+            'الوقت المتبقي على أذان',
             style: TextStyle(
               fontSize: screenH * 0.040,
               fontWeight: FontWeight.w400,
               color: tc.textSecondary,
             ),
           ),
-          // اسم الصلاة — أبيض في الداكن، أسود في الفاتح
+          // اسم الصلاة
           Text(
             prayer.nextPrayerName,
             style: TextStyle(

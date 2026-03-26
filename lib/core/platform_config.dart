@@ -8,7 +8,7 @@ bool get kIsTV => GetIt.instance<PlatformConfig>().isTV;
 /// Registered as a singleton in [GetIt] by [initDependencies] before the
 /// widget tree is built.
 class PlatformConfig {
-  static const _channel = MethodChannel('salah_tv/platform');
+  static const _channel = MethodChannel('ghasaq/platform');
 
   bool _isTV = false;
 

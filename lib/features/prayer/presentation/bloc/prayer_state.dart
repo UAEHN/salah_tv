@@ -6,6 +6,8 @@ import '../../domain/prayer_cycle_engine.dart';
 class PrayerState {
   final DateTime now;
   final DailyPrayerTimes? todayPrayers;
+  final DateTime displayedDate;
+  final DailyPrayerTimes? displayedPrayers;
   final Duration countdown;
   final String nextPrayerName;
   final String nextPrayerKey;
@@ -21,12 +23,16 @@ class PrayerState {
   final bool quranUserEnabled;
   final bool isCycleActive;
   final bool isPrePrayerAlert;
+  final bool isViewingToday;
+  final bool isDateNavigationBusy;
   final bool isMultiCity;
   final List<String> availableCities;
 
   const PrayerState({
     required this.now,
     this.todayPrayers,
+    required this.displayedDate,
+    this.displayedPrayers,
     required this.countdown,
     required this.nextPrayerName,
     required this.nextPrayerKey,
@@ -42,13 +48,24 @@ class PrayerState {
     required this.quranUserEnabled,
     required this.isCycleActive,
     required this.isPrePrayerAlert,
+    required this.isViewingToday,
+    required this.isDateNavigationBusy,
     required this.isMultiCity,
     required this.availableCities,
   });
 
-  factory PrayerState.fromEngine(PrayerCycleEngine e) => PrayerState(
+  factory PrayerState.fromEngine(
+    PrayerCycleEngine e, {
+    DateTime? displayedDate,
+    DailyPrayerTimes? displayedPrayers,
+    bool isViewingToday = true,
+    bool isDateNavigationBusy = false,
+  }) => PrayerState(
     now: e.now,
     todayPrayers: e.todayPrayers,
+    displayedDate:
+        displayedDate ?? DateTime(e.now.year, e.now.month, e.now.day),
+    displayedPrayers: displayedPrayers ?? e.todayPrayers,
     countdown: e.countdown,
     nextPrayerName: e.nextPrayerName,
     nextPrayerKey: e.nextPrayerKey,
@@ -64,6 +81,8 @@ class PrayerState {
     quranUserEnabled: e.quranUserEnabled,
     isCycleActive: e.isCycleActive,
     isPrePrayerAlert: e.isPrePrayerAlert,
+    isViewingToday: isViewingToday,
+    isDateNavigationBusy: isDateNavigationBusy,
     isMultiCity: e.isMultiCity,
     availableCities: e.availableCities,
   );
@@ -71,6 +90,8 @@ class PrayerState {
   factory PrayerState.initial() => PrayerState(
     now: DateTime.now(),
     todayPrayers: null,
+    displayedDate: DateTime.now(),
+    displayedPrayers: null,
     countdown: Duration.zero,
     nextPrayerName: '',
     nextPrayerKey: '',
@@ -86,6 +107,8 @@ class PrayerState {
     quranUserEnabled: false,
     isCycleActive: false,
     isPrePrayerAlert: false,
+    isViewingToday: true,
+    isDateNavigationBusy: false,
     isMultiCity: false,
     availableCities: const [],
   );

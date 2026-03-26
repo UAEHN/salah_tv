@@ -34,7 +34,8 @@ class PrayerNotificationService implements IPrayerNotificationPort {
     DailyPrayerTimes prayers, AppSettings settings,
   ) async {
     await cancelAll();
-    if (!settings.playAdhan) return;
+    // playAdhan controls TV audio only — notifications are scheduled independently.
+    if (settings.prayerNotificationEnabled.values.every((v) => !v)) return;
     final now = DateTime.now();
     final sound = kAdhanSounds.firstWhere(
       (s) => s.key == settings.adhanSound, orElse: () => kAdhanSounds.first,

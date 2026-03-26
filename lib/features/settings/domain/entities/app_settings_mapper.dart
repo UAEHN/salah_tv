@@ -19,6 +19,12 @@ extension AppSettingsMapper on AppSettings {
     'quranReciterServerUrl': quranReciterServerUrl,
     'selectedCountry': selectedCountry,
     'selectedCity': selectedCity,
+    'selectedLatitude': selectedLatitude,
+    'selectedLongitude': selectedLongitude,
+    'calculationMethod': calculationMethod,
+    'madhab': madhab,
+    'isCalculatedLocation': isCalculatedLocation,
+    'utcOffsetHours': utcOffsetHours,
     'layoutStyle': layoutStyle,
     'adhanSound': adhanSound,
     'isAnalogClock': isAnalogClock,
@@ -99,7 +105,7 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     hadithText: map['hadithText'] as String? ??
         '"مَن صامَ رمضانَ ثمَّ أتبعَهُ ستًّا من شوَّالٍ كانَ كصيامِ الدَّهرِ"',
     hadithSource: map['hadithSource'] as String? ?? 'رواه مسلم',
-    fontFamily: const ['Cairo', 'Kufi', 'Beiruti'].contains(map['fontFamily'])
+    fontFamily: const ['Cairo', 'Kufi', 'Beiruti', 'Rubik'].contains(map['fontFamily'])
         ? map['fontFamily'] as String
         : 'Kufi',
     isQuranEnabled: map['isQuranEnabled'] as bool? ?? false,
@@ -109,11 +115,20 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     ),
     selectedCountry: map['selectedCountry'] as String? ?? 'UAE',
     selectedCity: map['selectedCity'] as String? ?? 'Dubai',
+    selectedLatitude: map['selectedLatitude'] as double?,
+    selectedLongitude: map['selectedLongitude'] as double?,
+    calculationMethod:
+        map['calculationMethod'] as String? ?? 'muslim_world_league',
+    madhab: const ['shafi', 'hanafi'].contains(map['madhab'])
+        ? map['madhab'] as String
+        : 'shafi',
+    isCalculatedLocation: map['isCalculatedLocation'] as bool? ?? false,
+    utcOffsetHours: (map['utcOffsetHours'] as num?)?.toDouble(),
     layoutStyle: const ['classic', 'modern'].contains(map['layoutStyle'])
         ? map['layoutStyle'] as String
         : 'modern',
     adhanSound:
-        const ['default', 'adhan2', 'adhan3'].contains(map['adhanSound'])
+        const ['default', 'adhan2'].contains(map['adhanSound'])
             ? map['adhanSound'] as String
             : 'default',
     isAnalogClock: map['isAnalogClock'] as bool? ?? false,

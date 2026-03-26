@@ -1,6 +1,6 @@
-name: salah_tv
-description: Islamic prayer times display for Android TV / TV Box
-version: 1.0.0+0
+name: ghasaq
+description: "غسق — مواقيت الصلاة لأجهزة Android TV"
+version: 1.0.1+2
 publish_to: none
 
 environment:
@@ -45,6 +45,7 @@ dependencies:
   sensors_plus: ^6.0.0
   # GPS for Qibla bearing calculation
   geolocator: ^13.0.0
+  geocoding: ^3.0.0
 
   # Scheduled local notifications for prayer times (mobile only)
   flutter_local_notifications: ^18.0.0
@@ -52,12 +53,12 @@ dependencies:
   timezone: ^0.9.4
 
   dio: ^5.9.2
-  package_info_plus: ^9.0.0
-  install_plugin_v2: ^1.0.0
   flutter_bloc: ^9.1.1
   dartz: ^0.10.1
   get_it: ^9.2.1
   injectable: ^2.7.1+4
+  adhan_dart: ^1.2.0
+
 
 dev_dependencies:
   flutter_test:
@@ -90,7 +91,9 @@ flutter:
     - assets/audio/Isha.mp3
     - assets/audio/adhkar.json
     - assets/audio/dua/
+    - assets/adhkar/adhkar_text.json
     - assets/prayer_times.db
+    - assets/world_cities.json
     - assets/animations/
   fonts:
     - family: Cairo

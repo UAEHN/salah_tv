@@ -4,8 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/platform_config.dart';
+import '../../../../injection.dart';
 import '../bloc/prayer_bloc.dart';
 import '../bloc/prayer_event.dart';
+import '../../../settings/domain/i_location_detector.dart';
+import '../../../settings/domain/i_settings_repository.dart';
+import '../../../settings/domain/usecases/detect_location_usecase.dart';
 import '../../../settings/presentation/settings_provider.dart';
 import '../../../settings/domain/entities/app_settings.dart';
 import '../widgets/home_main_view.dart';
@@ -30,6 +34,35 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _focusNode = FocusNode();
     _quranFocusNode = FocusNode();
+    if (!kIsTV) _tryAutoDetectLocation();
+  }
+
+  Future<void> _tryAutoDetectLocation() async {
+    final repo = getIt<ISettingsRepository>();
+    final isFirst = await repo.isFirstLaunch();
+    if (!isFirst) return;
+
+    await repo.markLaunched();
+    final useCase = DetectLocationUseCase(getIt<ILocationDetector>());
+    final result = await useCase();
+    if (!mounted) return;
+    result.fold(
+      (_) {},
+      (loc) {
+        final provider = context.read<SettingsProvider>();
+        if (loc.isInDb) {
+          provider.updateLocation(loc.dbCountryKey!, loc.dbCityKey!);
+        } else {
+          provider.updateWorldLocation(
+            loc.countryName,
+            loc.cityName,
+            loc.latitude,
+            loc.longitude,
+            'muslim_world_league',
+          );
+        }
+      },
+    );
   }
 
   @override

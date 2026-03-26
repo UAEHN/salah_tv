@@ -28,16 +28,17 @@ class NextPrayerContent extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Label
+        // Label: الوقت المتبقي على أذان
         Text(
-          'الصلاة القادمة',
+          'الوقت المتبقي على أذان',
           style: TextStyle(
             fontSize: screenH * 0.045,
             fontWeight: FontWeight.w400,
             color: tc.textSecondary,
           ),
         ),
-        SizedBox(height: screenH * 0.01),
+        SizedBox(height: screenH * 0.005),
+        // Prayer name
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 400),
           transitionBuilder: (child, animation) => FadeTransition(

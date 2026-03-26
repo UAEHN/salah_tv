@@ -11,7 +11,6 @@ import 'features/prayer/presentation/bloc/prayer_event.dart';
 import 'features/quran/domain/i_quran_api_repository.dart';
 import 'features/settings/domain/i_settings_repository.dart';
 import 'features/settings/presentation/settings_provider.dart';
-import 'features/app_update/presentation/bloc/update_bloc.dart';
 import 'injection.dart';
 
 void main() async {
@@ -36,9 +35,6 @@ void main() async {
                 ? getIt<IPrayerNotificationPort>()
                 : null,
           )..add(const PrayerStarted()),
-        ),
-        BlocProvider(
-          create: (_) => getIt<UpdateBloc>(),
         ),
       ],
       child: const _SettingsBridgeWrapper(),
@@ -77,5 +73,5 @@ class _SettingsBridgeWrapperState extends State<_SettingsBridgeWrapper> {
   }
 
   @override
-  Widget build(BuildContext context) => const SalahTvApp();
+  Widget build(BuildContext context) => const GhasaqApp();
 }

@@ -19,6 +19,9 @@ class QiblaRepository implements IQiblaRepository {
   AccelerometerEvent? _lastAcc;
   MagnetometerEvent? _lastMag;
   bool _isStarted = false;
+  double _smoothedHeading = 0;
+  bool _hasFirstReading = false;
+  DateTime _lastEmitTime = DateTime(0);
 
   @override
   Stream<Either<Failure, QiblaData>> watchQibla() {
@@ -70,13 +73,28 @@ class QiblaRepository implements IQiblaRepository {
     if (acc == null || mag == null || bearing == null || distance == null) {
       return;
     }
+
+    // Throttle: emit at most every 50ms (~20 Hz)
+    final now = DateTime.now();
+    if (now.difference(_lastEmitTime).inMilliseconds < 50) return;
+    _lastEmitTime = now;
+
     final raw = computeHeading(
       ax: acc.x, ay: acc.y, az: acc.z,
       mx: mag.x, my: mag.y, mz: mag.z,
     );
+
+    // Smooth raw sensor noise before emitting
+    if (!_hasFirstReading) {
+      _smoothedHeading = raw;
+      _hasFirstReading = true;
+    } else {
+      _smoothedHeading = angleLowPass(_smoothedHeading, raw, alpha: 0.2);
+    }
+
     _controller?.add(Right(QiblaData(
       qiblaBearing: bearing,
-      deviceHeading: raw,
+      deviceHeading: _smoothedHeading,
       distanceKm: distance,
     )));
   }
@@ -103,6 +121,9 @@ class QiblaRepository implements IQiblaRepository {
     _lastMag = null;
     _qiblaBearing = null;
     _distanceKm = null;
+    _smoothedHeading = 0;
+    _hasFirstReading = false;
+    _lastEmitTime = DateTime(0);
     await _accSub?.cancel();
     await _magSub?.cancel();
     await _controller?.close();

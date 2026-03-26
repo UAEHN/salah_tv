@@ -6,4 +6,6 @@ import 'entities/app_settings.dart';
 abstract class ISettingsRepository {
   Future<Either<Failure, AppSettings>> load();
   Future<Either<Failure, Success>> save(AppSettings settings);
+  Future<bool> isFirstLaunch();
+  Future<void> markLaunched();
 }

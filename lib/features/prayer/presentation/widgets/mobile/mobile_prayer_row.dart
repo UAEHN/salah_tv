@@ -15,12 +15,14 @@ class MobilePrayerRow extends StatelessWidget {
   final PrayerEntry prayer;
   final bool isActive;
   final bool is24HourFormat;
+  final int adhanOffset;
 
   const MobilePrayerRow({
     super.key,
     required this.prayer,
     required this.isActive,
     required this.is24HourFormat,
+    this.adhanOffset = 0,
   });
 
   @override
@@ -106,13 +108,16 @@ class MobilePrayerRow extends StatelessWidget {
               ),
             ),
 
-            // Time
+            // Time (adjusted by adhan offset)
             Builder(builder: (context) {
+              final adjustedTime = prayer.time.add(
+                Duration(minutes: adhanOffset),
+              );
               final timeColor = isActive
                   ? Colors.white
                   : MobileColors.onSurfaceMuted(context);
               final period = formatPrayerPeriod(
-                prayer.time,
+                adjustedTime,
                 use24Hour: is24HourFormat,
               );
               return Row(
@@ -132,7 +137,10 @@ class MobilePrayerRow extends StatelessWidget {
                     const SizedBox(width: 4),
                   ],
                   Text(
-                    formatPrayerTime(prayer.time, use24Hour: is24HourFormat),
+                    formatPrayerTime(
+                      adjustedTime,
+                      use24Hour: is24HourFormat,
+                    ),
                     style: MobileTextStyles.titleMd(context).copyWith(
                       fontSize: 22,
                       color: timeColor,

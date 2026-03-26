@@ -6,23 +6,23 @@ import '../../domain/i_prayer_audio_port.dart';
 import '../../domain/i_prayer_notification_port.dart';
 import '../../domain/i_prayer_times_repository.dart';
 import '../../domain/prayer_cycle_engine.dart';
+import 'prayer_displayed_date_controller.dart';
 import 'prayer_event.dart';
+import 'prayer_settings_sync.dart';
 import 'prayer_state.dart';
 
-/// BLoC that wraps [PrayerCycleEngine] and exposes its state as [PrayerState].
-/// Implements [WidgetsBindingObserver] to forward app-lifecycle events to the engine.
 class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     with WidgetsBindingObserver {
-  final IPrayerTimesRepository _repo;
   late final PrayerCycleEngine _engine;
+  late final PrayerDisplayedDateController _dateController;
 
   PrayerBloc(
     IPrayerTimesRepository repo,
     IPrayerAudioPort audio,
     AppSettings initialSettings, {
     IPrayerNotificationPort? notifications,
-  }) : _repo = repo,
-      super(PrayerState.initial()) {
+  }) : super(PrayerState.initial()) {
+    _dateController = PrayerDisplayedDateController.fromRepository(repo);
     _engine = PrayerCycleEngine(
       repo,
       audio,
@@ -40,6 +40,8 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     on<PrayerIqamaStopped>(_onIqamaStopped);
     on<PrayerQuranToggled>(_onQuranToggled);
     on<PrayerReloaded>(_onReloaded);
+    on<PrayerDateChanged>(_onDateChanged);
+    on<PrayerDateReset>(_onDateReset);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -47,22 +49,26 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     if (!isClosed) add(const PrayerEngineRefreshed());
   }
 
+  void _emitCurrent(Emitter<PrayerState> emit) {
+    _dateController.resetIfViewingToday(_engine.now);
+    emit(_dateController.buildState(_engine));
+  }
+
   void _onRefreshed(PrayerEngineRefreshed _, Emitter<PrayerState> emit) =>
-      emit(PrayerState.fromEngine(_engine));
+      _emitCurrent(emit);
 
-  void _onStarted(PrayerStarted _, Emitter<PrayerState> emit) {
-    _engine.start();
-    emit(PrayerState.fromEngine(_engine));
-  }
+  void _onStarted(PrayerStarted _, Emitter<PrayerState> emit) =>
+      _runSync(_engine.start, emit);
 
-  void _onPaused(PrayerPaused _, Emitter<PrayerState> emit) {
-    _engine.onPaused();
-    emit(PrayerState.fromEngine(_engine));
-  }
+  void _onPaused(PrayerPaused _, Emitter<PrayerState> emit) =>
+      _runSync(_engine.onPaused, emit);
 
-  void _onResumed(PrayerResumed _, Emitter<PrayerState> emit) {
-    _engine.onResumed();
-    emit(PrayerState.fromEngine(_engine));
+  void _onResumed(PrayerResumed _, Emitter<PrayerState> emit) =>
+      _runSync(_engine.onResumed, emit);
+
+  void _runSync(void Function() action, Emitter<PrayerState> emit) {
+    action();
+    _emitCurrent(emit);
   }
 
   Future<void> _onSettingsUpdated(
@@ -71,53 +77,65 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
   ) async {
     final prev = _engine.settings;
     final next = event.settings;
-    if (next.selectedCountry != prev.selectedCountry) {
-      await _repo.loadCountry(next.selectedCountry);
-    }
+    await syncPrayerRepositoryMode(_engine.repo, prev, next);
     await _engine.updateSettings(next);
-    emit(PrayerState.fromEngine(_engine));
+    if (_dateController.shouldRefreshSelectedDate(prev, next)) {
+      await _dateController.refreshSelectedDate();
+    }
+    _emitCurrent(emit);
   }
 
   Future<void> _onAdhanStopped(
     PrayerAdhanStopped _,
     Emitter<PrayerState> emit,
-  ) async {
-    await _engine.stopAdhan();
-    emit(PrayerState.fromEngine(_engine));
-  }
+  ) => _runAsync(_engine.stopAdhan, emit);
 
-  Future<void> _onDuaStopped(
-    PrayerDuaStopped _,
-    Emitter<PrayerState> emit,
-  ) async {
-    await _engine.stopDua();
-    emit(PrayerState.fromEngine(_engine));
-  }
+  Future<void> _onDuaStopped(PrayerDuaStopped _, Emitter<PrayerState> emit) =>
+      _runAsync(_engine.stopDua, emit);
 
   Future<void> _onIqamaStopped(
     PrayerIqamaStopped _,
     Emitter<PrayerState> emit,
+  ) => _runAsync(_engine.stopIqama, emit);
+
+  Future<void> _runAsync(
+    Future<void> Function() action,
+    Emitter<PrayerState> emit,
   ) async {
-    await _engine.stopIqama();
-    emit(PrayerState.fromEngine(_engine));
+    await action();
+    _emitCurrent(emit);
   }
 
-  void _onQuranToggled(PrayerQuranToggled event, Emitter<PrayerState> emit) {
-    _engine.toggleQuran(event.serverUrl);
-    emit(PrayerState.fromEngine(_engine));
-  }
+  void _onQuranToggled(PrayerQuranToggled event, Emitter<PrayerState> emit) =>
+      _runSync(() => _engine.toggleQuran(event.serverUrl), emit);
 
-  void _onReloaded(PrayerReloaded _, Emitter<PrayerState> emit) {
+  Future<void> _onReloaded(PrayerReloaded _, Emitter<PrayerState> emit) async {
     _engine.reload();
-    emit(PrayerState.fromEngine(_engine));
+    await _dateController.refreshSelectedDate();
+    _emitCurrent(emit);
   }
+
+  Future<void> _onDateChanged(
+    PrayerDateChanged event,
+    Emitter<PrayerState> emit,
+  ) async {
+    if (_dateController.isBusy) return;
+    final changeFuture = _dateController.changeDate(
+      _engine.now,
+      event.dayOffset,
+    );
+    _emitCurrent(emit);
+    await changeFuture;
+    _emitCurrent(emit);
+  }
+
+  void _onDateReset(PrayerDateReset _, Emitter<PrayerState> emit) =>
+      _runSync(_dateController.clear, emit);
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) add(const PrayerResumed());
     if (state == AppLifecycleState.paused) add(const PrayerPaused());
-    // detached = activity destroyed (e.g. back-button exit on Android TV).
-    // Stop audio so the audioplayers service doesn't bleed into the next launch.
     if (state == AppLifecycleState.detached) add(const PrayerPaused());
   }
 

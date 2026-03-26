@@ -13,6 +13,7 @@ class FontSection extends StatelessWidget {
     ('Cairo', 'كايرو'),
     ('Beiruti', 'بيروتي'),
     ('Kufi', 'كوفي'),
+    ('Rubik', 'روبيك'),
   ];
 
   @override

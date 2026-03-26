@@ -42,6 +42,15 @@ class PrayerReloaded extends PrayerEvent {
   const PrayerReloaded();
 }
 
+class PrayerDateChanged extends PrayerEvent {
+  final int dayOffset;
+  const PrayerDateChanged(this.dayOffset);
+}
+
+class PrayerDateReset extends PrayerEvent {
+  const PrayerDateReset();
+}
+
 /// Internal: dispatched by the engine's notify callback on every tick.
 /// Do not dispatch externally.
 class PrayerEngineRefreshed extends PrayerEvent {

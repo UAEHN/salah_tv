@@ -16,11 +16,19 @@ mixin SettingsMixin
     final oldUrl = settings.quranReciterServerUrl;
     final oldCity = settings.selectedCity;
     final oldCountry = settings.selectedCountry;
+    final oldMethod = settings.calculationMethod;
+    final oldMadhab = settings.madhab;
     settings = newSettings;
 
-    // If city or country changed, reset adhan state and reload prayer times
+    // Reload prayer times when location or calculation parameters change.
+    // calculationMethod / madhab: syncPrayerRepositoryMode already re-inits
+    // the calcRepo cache before this runs, so loadToday picks up new values.
+    final isCalcChange = newSettings.calculationMethod != oldMethod ||
+        newSettings.madhab != oldMadhab;
+
     if (newSettings.selectedCity != oldCity ||
-        newSettings.selectedCountry != oldCountry) {
+        newSettings.selectedCountry != oldCountry ||
+        isCalcChange) {
       await resetAdhanCycleForCityChange();
       repo.setActiveCity(newSettings.selectedCity);
       loadToday();

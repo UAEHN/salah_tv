@@ -52,7 +52,7 @@ class _QiblaCompassState extends State<QiblaCompass>
     double diff = _targetHeading - _smoothHeading;
     if (diff > 180) diff -= 360;
     if (diff < -180) diff += 360;
-    final next = _smoothHeading + 0.15 * diff;
+    final next = _smoothHeading + 0.08 * diff;
     if ((next - _smoothHeading).abs() > 0.01) {
       setState(() => _smoothHeading = next);
     }

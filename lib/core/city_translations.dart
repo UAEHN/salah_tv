@@ -12,6 +12,13 @@ class CountryInfo {
   });
 }
 
+/// Set of country keys that have pre-computed prayer times in the bundled DB.
+final Set<String> kDbCountryKeys =
+    kCountries.map((c) => c.key).toSet();
+
+/// Returns true if [countryKey] has data in the bundled SQLite DB.
+bool isDbCountry(String countryKey) => kDbCountryKeys.contains(countryKey);
+
 const List<CountryInfo> kCountries = [
   CountryInfo(
     key: 'UAE',

@@ -29,10 +29,13 @@ class HeroCard extends StatelessWidget {
     final canShowAdhkar = session == AdhkarSession.morning
         ? (!adhkarRepo.hasMorningAdhkarShownToday() || adhkarRepo.isMorningSessionActive)
         : (!adhkarRepo.hasEveningAdhkarShownToday() || adhkarRepo.isEveningSessionActive);
-    // Morning: hide from 10:00 AM onward. Evening: hide 15 min before prayer.
+    // Morning: hide from 10:00 AM onward.
+    // Evening: only valid while waiting for Maghrib (not after it passes).
+    //          Hide 5 min before Maghrib to free the screen for the adhan cycle.
     final isTimeValid = session == AdhkarSession.morning
         ? DateTime.now().hour < 10
-        : prayerState.countdown.inSeconds > 15 * 60;
+        : prayerState.nextPrayerKey == 'maghrib' &&
+          prayerState.countdown.inSeconds > 5 * 60;
     final isAdhkarActive =
         settings.isAdhkarEnabled &&
         !prayerState.isCycleActive &&

@@ -8,6 +8,7 @@ import '../../../core/error/failures.dart';
 import '../../../core/usecases/success.dart';
 import '../domain/i_prayer_times_repository.dart';
 import '../domain/entities/daily_prayer_times.dart';
+import '../domain/prayer_time_calculator.dart' as calc;
 import 'sqlite_db_initializer.dart';
 import 'sqlite_prayer_queries.dart';
 import 'sqlite_prayer_cache.dart';
@@ -16,8 +17,8 @@ class SqlitePrayerRepository implements IPrayerTimesRepository {
   SqlitePrayerRepository({
     SqliteDbInitializer? initializer,
     SqlitePrayerQueries? queries,
-  })  : _initializer = initializer ?? SqliteDbInitializer(),
-        _queries = queries ?? SqlitePrayerQueries();
+  }) : _initializer = initializer ?? SqliteDbInitializer(),
+       _queries = queries ?? SqlitePrayerQueries();
 
   final SqliteDbInitializer _initializer;
   final SqlitePrayerQueries _queries;
@@ -37,8 +38,7 @@ class SqlitePrayerRepository implements IPrayerTimesRepository {
   bool get isMultiCity => _cityIds.length > 1;
 
   @override
-  List<String> get availableCities =>
-      List.unmodifiable(_cityIds.keys.toList());
+  List<String> get availableCities => List.unmodifiable(_cityIds.keys.toList());
 
   @override
   String get activeCity => _activeCity;
@@ -94,6 +94,22 @@ class SqlitePrayerRepository implements IPrayerTimesRepository {
     _cache.invalidate();
     _updateTotalDays();
     _refreshCache();
+  }
+
+  @override
+  Future<Either<Failure, DailyPrayerTimes?>> getByDate(DateTime date) async {
+    try {
+      if (_db == null || _activeCity.isEmpty) return const Right(null);
+      final cityId = _cityIds[_activeCity];
+      if (cityId == null) return const Right(null);
+      final key = calc.dateKey(date);
+      final cached = _cache.getByKey(key);
+      if (cached != null) return Right(cached);
+      final entry = await _queries.fetchByKey(_db!, cityId, key);
+      return Right(entry);
+    } catch (e) {
+      return Left(CacheFailure('Failed to fetch prayer times for date: $e'));
+    }
   }
 
   /// Returns today's times from the rolling cache.

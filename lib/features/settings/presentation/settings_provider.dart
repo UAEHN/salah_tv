@@ -17,8 +17,8 @@ class SettingsProvider extends ChangeNotifier {
 
   Future<void> _update(AppSettings s) async {
     _settings = s;
-    await _save(_settings);
-    notifyListeners();
+    notifyListeners(); // update UI immediately
+    await _save(_settings); // persist in background
   }
 
   Future<void> updateTheme(String colorKey) =>
@@ -61,7 +61,32 @@ class SettingsProvider extends ChangeNotifier {
       _update(_settings.copyWith(selectedCity: city));
 
   Future<void> updateLocation(String country, String city) =>
-      _update(_settings.copyWith(selectedCountry: country, selectedCity: city));
+      _update(_settings.copyWith(
+        selectedCountry: country,
+        selectedCity: city,
+        isCalculatedLocation: false,
+        clearUtcOffset: true,
+      ));
+
+  /// Sets a worldwide location that uses adhan_dart for calculation.
+  Future<void> updateWorldLocation(
+    String country,
+    String city,
+    double lat,
+    double lng,
+    String method, {
+    double? utcOffsetHours,
+  }) =>
+      _update(_settings.copyWith(
+        selectedCountry: country,
+        selectedCity: city,
+        selectedLatitude: lat,
+        selectedLongitude: lng,
+        calculationMethod: method,
+        isCalculatedLocation: true,
+        utcOffsetHours: utcOffsetHours,
+        clearUtcOffset: utcOffsetHours == null,
+      ));
 
   // ── Quran ─────────────────────────────────────────────────────────────
 
@@ -77,6 +102,14 @@ class SettingsProvider extends ChangeNotifier {
     final result = await _quranApiRepo.fetchReciters();
     return result.fold((_) => [], (list) => list);
   }
+
+  // ── Calculation method & madhab ───────────────────────────────────────
+
+  Future<void> updateCalculationMethod(String methodKey) =>
+      _update(_settings.copyWith(calculationMethod: methodKey));
+
+  Future<void> updateMadhab(String madhabKey) =>
+      _update(_settings.copyWith(madhab: madhabKey));
 
   // ── Prayer time offsets ───────────────────────────────────────────────
 

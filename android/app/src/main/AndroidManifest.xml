@@ -4,10 +4,10 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false"/>
-    <!-- TV only: leanback required restricts to Android TV devices on Play Store -->
+    <!-- leanback required=false: app appears in both phone and TV Play Store sections -->
     <uses-feature
         android:name="android.software.leanback"
-        android:required="true"/>
+        android:required="false"/>
     <!-- Internet for Quran streaming -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Qibla: GPS for bearing calculation -->
@@ -16,17 +16,13 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <!-- Keep screen on during Adhan -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <!-- Auto-start on boot -->
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <!-- Required for Android 11+ (API 30+) to prompt for app installations -->
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!-- Prayer time notifications (mobile) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
-        android:label="مواقيت الصلاة"
+        android:label="غسق"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -77,17 +73,6 @@
             </intent-filter>
         </receiver>
 
-        <!-- Auto-start on boot -->
-        <receiver
-            android:name=".BootReceiver"
-            android:exported="true"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </receiver>
     </application>
     <queries>
         <intent>

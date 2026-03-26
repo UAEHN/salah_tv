@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../../core/city_translations.dart';
+import '../../../../../features/prayer/data/calculation_method_map.dart';
 import '../../screens/mobile_notification_settings_screen.dart';
+import '../../screens/mobile_prayer_offsets_screen.dart';
 import '../../settings_provider.dart';
+import 'mobile_calculation_method_dialog.dart';
+import 'mobile_madhab_dialog.dart';
 import 'mobile_settings_tile.dart';
 import 'mobile_theme_dialog.dart';
 import 'mobile_time_format_dialog.dart';
@@ -45,6 +49,13 @@ class MobileSettingsList extends StatelessWidget {
                       onSave: (country, city) async {
                         await settingsProvider.updateLocation(country, city);
                       },
+                      onSaveWorld: (country, city, lat, lng, method,
+                          {double? utcOffsetHours}) async {
+                        await settingsProvider.updateWorldLocation(
+                          country, city, lat, lng, method,
+                          utcOffsetHours: utcOffsetHours,
+                        );
+                      },
                     ),
                   );
                 },
@@ -65,6 +76,49 @@ class MobileSettingsList extends StatelessWidget {
                     ),
                   );
                 },
+              ),
+              const SizedBox(height: 24),
+
+              const MobileSettingsSectionTitle(
+                title: 'الحساب',
+                icon: Icons.calculate_rounded,
+              ),
+              MobileSettingsTile(
+                title: 'طريقة الحساب',
+                subtitle: kCalculationMethodLabels[settings.calculationMethod],
+                onTap: () => showModalBottomSheet(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  isScrollControlled: true,
+                  builder: (_) => MobileCalculationMethodDialog(
+                    currentMethod: settings.calculationMethod,
+                    onSave: settingsProvider.updateCalculationMethod,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              MobileSettingsTile(
+                title: 'المذهب الفقهي',
+                subtitle: settings.madhab == 'hanafi' ? 'الحنفي' : 'الشافعي / المالكي / الحنبلي',
+                onTap: () => showModalBottomSheet(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  isScrollControlled: true,
+                  builder: (_) => MobileMadhabDialog(
+                    currentMadhab: settings.madhab,
+                    onSave: settingsProvider.updateMadhab,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              MobileSettingsTile(
+                title: 'تعديل أوقات الأذان والإقامة',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const MobilePrayerOffsetsScreen(),
+                  ),
+                ),
               ),
               const SizedBox(height: 24),
 
