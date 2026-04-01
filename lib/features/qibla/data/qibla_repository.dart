@@ -1,6 +1,7 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
@@ -25,11 +26,10 @@ class QiblaRepository implements IQiblaRepository {
 
   @override
   Stream<Either<Failure, QiblaData>> watchQibla() {
-    _controller ??=
-        StreamController<Either<Failure, QiblaData>>.broadcast();
+    _controller ??= StreamController<Either<Failure, QiblaData>>.broadcast();
     if (!_isStarted) {
       _isStarted = true;
-      _start(); // intentionally unawaited — emits errors on stream
+      _start(); // intentionally unawaited, emits errors on stream
     }
     return _controller!.stream;
   }
@@ -50,8 +50,9 @@ class QiblaRepository implements IQiblaRepository {
       );
       _qiblaBearing = calculateQiblaBearing(pos.latitude, pos.longitude);
       _distanceKm = calculateDistanceKm(pos.latitude, pos.longitude);
-    } catch (_) {
-      _controller?.add(const Left(LocationFailure('تعذّر تحديد الموقع')));
+    } catch (e) {
+      debugPrint('[Qibla] position failed: $e');
+      _controller?.add(const Left(LocationFailure('Unable to determine location')));
       return;
     }
 
@@ -80,11 +81,14 @@ class QiblaRepository implements IQiblaRepository {
     _lastEmitTime = now;
 
     final raw = computeHeading(
-      ax: acc.x, ay: acc.y, az: acc.z,
-      mx: mag.x, my: mag.y, mz: mag.z,
+      ax: acc.x,
+      ay: acc.y,
+      az: acc.z,
+      mx: mag.x,
+      my: mag.y,
+      mz: mag.z,
     );
 
-    // Smooth raw sensor noise before emitting
     if (!_hasFirstReading) {
       _smoothedHeading = raw;
       _hasFirstReading = true;
@@ -92,11 +96,15 @@ class QiblaRepository implements IQiblaRepository {
       _smoothedHeading = angleLowPass(_smoothedHeading, raw, alpha: 0.2);
     }
 
-    _controller?.add(Right(QiblaData(
-      qiblaBearing: bearing,
-      deviceHeading: _smoothedHeading,
-      distanceKm: distance,
-    )));
+    _controller?.add(
+      Right(
+        QiblaData(
+          qiblaBearing: bearing,
+          deviceHeading: _smoothedHeading,
+          distanceKm: distance,
+        ),
+      ),
+    );
   }
 
   Future<Failure?> _ensureLocation() async {
@@ -107,8 +115,7 @@ class QiblaRepository implements IQiblaRepository {
     if (perm == LocationPermission.denied) {
       perm = await Geolocator.requestPermission();
     }
-    if (perm == LocationPermission.denied ||
-        perm == LocationPermission.deniedForever) {
+    if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) {
       return const LocationPermissionFailure();
     }
     return null;

@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
 import '../settings_provider.dart';
 import 'tv_switch_row.dart';
@@ -9,10 +11,12 @@ class DarkModeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final settingsProv = context.watch<SettingsProvider>();
     final settings = settingsProv.settings;
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);
+
     return TvSwitchRow(
       value: settings.isDarkMode,
       accent: palette.primary,
@@ -27,7 +31,7 @@ class DarkModeSection extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Text(
-          'الوضع الليلي:',
+          '${l.settingsDarkModeLabel}:',
           style: TextStyle(fontSize: 20, color: tc.textPrimary),
         ),
         const SizedBox(width: 16),
@@ -41,7 +45,7 @@ class DarkModeSection extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Text(
-          settings.isDarkMode ? 'مفعّل' : 'معطّل',
+          settings.isDarkMode ? l.commonEnabled : l.commonDisabled,
           style: TextStyle(
             fontSize: 20,
             color: settings.isDarkMode ? kDarkTextSecondary : kTextMuted,

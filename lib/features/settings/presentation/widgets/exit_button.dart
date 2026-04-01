@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 
 /// Full-width exit/close-app button shown at the bottom of the settings nav panel.
 class SettingsExitButton extends StatefulWidget {
@@ -15,6 +16,7 @@ class _SettingsExitButtonState extends State<SettingsExitButton> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Focus(
       onFocusChange: (f) => setState(() => _isFocused = f),
       onKeyEvent: (_, event) {
@@ -61,7 +63,7 @@ class _SettingsExitButtonState extends State<SettingsExitButton> {
               ),
               const SizedBox(width: 10),
               Text(
-                'اغلاق التطبيق',
+                l.settingsCloseApp,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,

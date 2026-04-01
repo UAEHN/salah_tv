@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
+import '../../../../core/localization/prayer_name_localizer.dart';
 import '../../../../core/platform_config.dart';
-import '../../../../injection.dart';
 import '../bloc/prayer_bloc.dart';
-import '../bloc/prayer_event.dart';
 import '../../../settings/domain/i_location_detector.dart';
 import '../../../settings/domain/i_settings_repository.dart';
-import '../../../settings/domain/usecases/detect_location_usecase.dart';
+import '../../../settings/domain/usecases/first_launch_location_usecase.dart';
 import '../../../settings/presentation/settings_provider.dart';
-import '../../../settings/domain/entities/app_settings.dart';
+import '../../../../core/calculation_method_info.dart';
 import '../widgets/home_main_view.dart';
 import '../../../audio/presentation/screens/adhan_screen.dart';
 import '../../../audio/presentation/screens/dua_screen.dart';
 import '../../../audio/presentation/screens/iqama_screen.dart';
+import 'home_key_handler.dart';
 import 'mobile_home_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -38,31 +37,24 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _tryAutoDetectLocation() async {
-    final repo = getIt<ISettingsRepository>();
-    final isFirst = await repo.isFirstLaunch();
-    if (!isFirst) return;
-
-    await repo.markLaunched();
-    final useCase = DetectLocationUseCase(getIt<ILocationDetector>());
-    final result = await useCase();
-    if (!mounted) return;
-    result.fold(
-      (_) {},
-      (loc) {
-        final provider = context.read<SettingsProvider>();
-        if (loc.isInDb) {
-          provider.updateLocation(loc.dbCountryKey!, loc.dbCityKey!);
-        } else {
-          provider.updateWorldLocation(
-            loc.countryName,
-            loc.cityName,
-            loc.latitude,
-            loc.longitude,
-            'muslim_world_league',
-          );
-        }
-      },
+    final useCase = FirstLaunchLocationUseCase(
+      context.read<ISettingsRepository>(),
+      context.read<ILocationDetector>(),
     );
+    final loc = await useCase();
+    if (!mounted || loc == null) return;
+    final provider = context.read<SettingsProvider>();
+    if (loc.isInDb) {
+      provider.updateLocation(loc.dbCountryKey!, loc.dbCityKey!);
+    } else {
+      provider.updateWorldLocation(
+        loc.countryName,
+        loc.cityName,
+        loc.latitude,
+        loc.longitude,
+        defaultMethodForCountryIso(loc.isoCountryCode),
+      );
+    }
   }
 
   @override
@@ -88,18 +80,22 @@ class _HomeScreenState extends State<HomeScreen> {
     final screenW = MediaQuery.of(context).size.width;
     final screenH = MediaQuery.of(context).size.height;
 
-    final isAdhanPlaying =
-        context.select((PrayerBloc b) => b.state.isAdhanPlaying);
-    final isDuaPlaying =
-        context.select((PrayerBloc b) => b.state.isDuaPlaying);
-    final isIqamaPlaying =
-        context.select((PrayerBloc b) => b.state.isIqamaPlaying);
-    final isIqamaCountdown =
-        context.select((PrayerBloc b) => b.state.isIqamaCountdown);
-    final currentAdhanPrayerName =
-        context.select((PrayerBloc b) => b.state.currentAdhanPrayerName);
-    final iqamaPrayerName =
-        context.select((PrayerBloc b) => b.state.iqamaPrayerName);
+    final isAdhanPlaying = context.select(
+      (PrayerBloc b) => b.state.isAdhanPlaying,
+    );
+    final isDuaPlaying = context.select((PrayerBloc b) => b.state.isDuaPlaying);
+    final isIqamaPlaying = context.select(
+      (PrayerBloc b) => b.state.isIqamaPlaying,
+    );
+    final isIqamaCountdown = context.select(
+      (PrayerBloc b) => b.state.isIqamaCountdown,
+    );
+    final currentAdhanPrayerKey = context.select(
+      (PrayerBloc b) => b.state.currentAdhanPrayerKey,
+    );
+    final iqamaPrayerKey = context.select(
+      (PrayerBloc b) => b.state.iqamaPrayerKey,
+    );
 
     return PopScope(
       canPop: false,
@@ -107,16 +103,31 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Focus(
           focusNode: _focusNode,
           autofocus: true,
-          onKeyEvent: (_, event) => _handleKey(
-            event, context, settings, isAdhanPlaying, isDuaPlaying,
-            isIqamaPlaying, isIqamaCountdown,
+          onKeyEvent: (_, event) => handleHomeKey(
+            event,
+            context,
+            settings,
+            isAdhanPlaying: isAdhanPlaying,
+            isDuaPlaying: isDuaPlaying,
+            isIqamaPlaying: isIqamaPlaying,
+            isIqamaCountdown: isIqamaCountdown,
+            quranFocusNode: _quranFocusNode,
           ),
           child: isAdhanPlaying
-              ? AdhanScreen(prayerName: currentAdhanPrayerName, palette: palette)
+              ? AdhanScreen(
+                  prayerName: localizedPrayerName(
+                    context,
+                    currentAdhanPrayerKey,
+                  ),
+                  palette: palette,
+                )
               : isDuaPlaying
               ? DuaScreen(palette: palette)
               : isIqamaPlaying
-              ? IqamaScreen(prayerName: iqamaPrayerName, palette: palette)
+              ? IqamaScreen(
+                  prayerName: localizedPrayerName(context, iqamaPrayerKey),
+                  palette: palette,
+                )
               : HomeMainView(
                   palette: palette,
                   tc: tc,
@@ -130,51 +141,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-
-  KeyEventResult _handleKey(
-    KeyEvent event,
-    BuildContext context,
-    AppSettings settings,
-    bool isAdhanPlaying,
-    bool isDuaPlaying,
-    bool isIqamaPlaying,
-    bool isIqamaCountdown,
-  ) {
-    if (event is! KeyDownEvent) return KeyEventResult.ignored;
-    final key = event.logicalKey;
-    if (key == LogicalKeyboardKey.mediaPlayPause ||
-        key == LogicalKeyboardKey.mediaPlay ||
-        key == LogicalKeyboardKey.mediaPause) {
-      if (!isAdhanPlaying && !isDuaPlaying && !isIqamaPlaying) {
-        context.read<PrayerBloc>().add(PrayerQuranToggled(settings.quranReciterServerUrl));
-      }
-      return KeyEventResult.handled;
-    }
-    if (key == LogicalKeyboardKey.arrowDown &&
-        settings.isQuranEnabled &&
-        settings.hasQuranReciter &&
-        !isIqamaCountdown &&
-        !isAdhanPlaying &&
-        !isDuaPlaying &&
-        !isIqamaPlaying) {
-      _quranFocusNode.requestFocus();
-      return KeyEventResult.handled;
-    }
-    if (key == LogicalKeyboardKey.select ||
-        key == LogicalKeyboardKey.enter ||
-        key == LogicalKeyboardKey.contextMenu) {
-      if (isAdhanPlaying) {
-        context.read<PrayerBloc>().add(const PrayerAdhanStopped());
-      } else if (isDuaPlaying) {
-        context.read<PrayerBloc>().add(const PrayerDuaStopped());
-      } else if (isIqamaPlaying) {
-        context.read<PrayerBloc>().add(const PrayerIqamaStopped());
-      } else {
-        Navigator.pushNamed(context, '/settings');
-      }
-      return KeyEventResult.handled;
-    }
-    return KeyEventResult.ignored;
   }
 }

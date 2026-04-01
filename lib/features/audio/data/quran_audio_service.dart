@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 
 /// Manages background Quran streaming from the mp3quran.net CDN.
 /// Streams surah-by-surah (1→2→…→114→1) and handles pause/resume/restart.
@@ -34,7 +35,9 @@ class QuranAudioService {
       final url = '$_quranServerUrl$surahNum.mp3';
       await _quranPlayer.setReleaseMode(ReleaseMode.release);
       await _quranPlayer.play(UrlSource(url));
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[QuranAudio] _playCurrentSurah failed: $e');
+    }
   }
 
   /// Start streaming from the given CDN server URL, beginning at surah 1.
@@ -51,7 +54,9 @@ class QuranAudioService {
     _quranPausedAt = DateTime.now(); // record pause time for Issue 7 check
     try {
       await _quranPlayer.pause();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[QuranAudio] pauseQuranPlayer failed: $e');
+    }
   }
 
   /// Resume or restart Quran after iqama ends (Issue 7).
@@ -69,7 +74,9 @@ class QuranAudioService {
     } else {
       try {
         await _quranPlayer.resume();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[QuranAudio] resume after pause failed: $e');
+      }
     }
   }
 
@@ -87,7 +94,9 @@ class QuranAudioService {
   Future<void> resumeQuranPlayer() async {
     try {
       await _quranPlayer.resume();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[QuranAudio] resumeQuranPlayer failed: $e');
+    }
   }
 
   /// Fully stop Quran (user pressed the stop button).
@@ -96,7 +105,9 @@ class QuranAudioService {
       _quranServerUrl = '';
       _quranSurahIndex = 0;
       await _quranPlayer.stop();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[QuranAudio] stopQuranPlayer failed: $e');
+    }
   }
 
   void dispose() => _quranPlayer.dispose();

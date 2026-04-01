@@ -1,5 +1,8 @@
-import 'dart:math' as math;
+﻿import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../core/app_colors.dart';
 
 class QuranButtonFace extends StatelessWidget {
@@ -24,6 +27,7 @@ class QuranButtonFace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final pulse = (math.sin(angle * 2) + 1) / 2;
     final t = fadeT;
     final a0 = 0.45 + (0.65 - 0.45) * t;
@@ -110,7 +114,7 @@ class QuranButtonFace extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              'القرآن الكريم',
+              l.settingsCategoryQuran,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight:

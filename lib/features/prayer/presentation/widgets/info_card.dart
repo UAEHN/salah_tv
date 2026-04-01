@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/city_translations.dart';
@@ -17,6 +18,7 @@ class InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>().settings;
+    final locale = AppLocalizations.of(context).localeName;
     final tc = ThemeColors.of(settings.isDarkMode);
     final screenH = MediaQuery.of(context).size.height;
 
@@ -70,7 +72,7 @@ class InfoCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    cityLabel(settings.selectedCity),
+                    cityLabel(settings.selectedCity, locale: locale),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,

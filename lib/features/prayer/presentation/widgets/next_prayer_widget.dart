@@ -1,11 +1,14 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
+import '../../../../core/localization/prayer_name_localizer.dart';
 import '../../../../core/time_formatters.dart';
 import '../../../../core/widgets/flip_clock.dart';
-import '../bloc/prayer_bloc.dart';
 import '../../../settings/presentation/settings_provider.dart';
+import '../bloc/prayer_bloc.dart';
 
 class NextPrayerWidget extends StatelessWidget {
   final AccentPalette palette;
@@ -14,6 +17,7 @@ class NextPrayerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final prayer = context.watch<PrayerBloc>().state;
     final isDark = context.watch<SettingsProvider>().settings.isDarkMode;
     final tc = ThemeColors.of(isDark);
@@ -37,18 +41,16 @@ class NextPrayerWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Label: الوقت المتبقي على أذان
           Text(
-            'الوقت المتبقي على أذان',
+            l.nextPrayerLabel,
             style: TextStyle(
               fontSize: screenH * 0.040,
               fontWeight: FontWeight.w400,
               color: tc.textSecondary,
             ),
           ),
-          // اسم الصلاة
           Text(
-            prayer.nextPrayerName,
+            localizedPrayerName(context, prayer.nextPrayerKey),
             style: TextStyle(
               fontSize: screenH * 0.09,
               fontWeight: FontWeight.w600,
@@ -63,7 +65,6 @@ class NextPrayerWidget extends StatelessWidget {
             ),
           ),
           SizedBox(height: screenH * 0.01),
-          // Countdown
           Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,

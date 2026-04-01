@@ -1,9 +1,12 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/app_colors.dart';
+
 import '../../../../core/adhan_sounds.dart';
-import '../settings_provider.dart';
+import '../../../../core/app_colors.dart';
+import '../../../../core/localization/adhan_sound_localizer.dart';
 import '../dialogs/adhan_sound_picker_dialog.dart';
+import '../settings_provider.dart';
 import 'section_title.dart';
 import 'tv_button.dart';
 import 'tv_switch_row.dart';
@@ -13,10 +16,12 @@ class AdhanSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final settingsProv = context.watch<SettingsProvider>();
     final settings = settingsProv.settings;
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -26,7 +31,7 @@ class AdhanSection extends StatelessWidget {
           onChanged: (v) => settingsProv.updatePlayAdhan(v),
           children: [
             Text(
-              'تشغيل الأذان تلقائياً:',
+              l.settingsAutoPlayAdhan,
               style: TextStyle(fontSize: 20, color: tc.textPrimary),
             ),
             const SizedBox(width: 16),
@@ -39,7 +44,7 @@ class AdhanSection extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Text(
-              settings.playAdhan ? 'مفعّل' : 'معطّل',
+              settings.playAdhan ? l.commonEnabled : l.commonDisabled,
               style: TextStyle(
                 fontSize: 20,
                 color: settings.playAdhan ? palette.primary : tc.textMuted,
@@ -50,7 +55,7 @@ class AdhanSection extends StatelessWidget {
         ),
         if (settings.playAdhan) ...[
           const SizedBox(height: 16),
-          SettingsSectionTitle(title: 'صوت الأذان'),
+          SettingsSectionTitle(title: l.settingsAdhanSoundLabel),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -64,12 +69,15 @@ class AdhanSection extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          kAdhanSounds
-                              .firstWhere(
-                                (s) => s.key == settings.adhanSound,
-                                orElse: () => kAdhanSounds.first,
-                              )
-                              .label,
+                          localizedAdhanSoundLabel(
+                            context,
+                            kAdhanSounds
+                                .firstWhere(
+                                  (s) => s.key == settings.adhanSound,
+                                  orElse: () => kAdhanSounds.first,
+                                )
+                                .key,
+                          ),
                           style: TextStyle(
                             fontSize: 18,
                             color: tc.textPrimary,
@@ -99,7 +107,10 @@ class AdhanSection extends StatelessWidget {
                   children: [
                     const Icon(Icons.music_note_rounded, color: Colors.white, size: 20),
                     const SizedBox(width: 8),
-                    Text('تغيير الأذان', style: TextStyle(fontSize: 18, color: Colors.white)),
+                    Text(
+                      l.settingsChangeAdhan,
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                    ),
                   ],
                 ),
               ),

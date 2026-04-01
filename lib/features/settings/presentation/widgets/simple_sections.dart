@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
 import '../settings_provider.dart';
 import 'tv_color_chip.dart';
@@ -9,31 +11,47 @@ import 'tv_format_button.dart';
 class FontSection extends StatelessWidget {
   const FontSection({super.key});
 
-  static const _fonts = [
-    ('Cairo', 'كايرو'),
-    ('Beiruti', 'بيروتي'),
-    ('Kufi', 'كوفي'),
-    ('Rubik', 'روبيك'),
-  ];
+  static const _fontsArabic = ['Cairo', 'Beiruti', 'Kufi', 'Rubik'];
+  static const _fontsEnglish = ['Cairo', 'Beiruti', 'Inter'];
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final settingsProv = context.watch<SettingsProvider>();
     final settings = settingsProv.settings;
     final palette = getThemePalette(settings.themeColorKey);
+    final fonts = l.localeName == 'en' ? _fontsEnglish : _fontsArabic;
+
     return Wrap(
       spacing: 16,
       runSpacing: 12,
-      children: _fonts.map((f) {
+      children: fonts.map((fontKey) {
         return TvFontChip(
-          fontKey: f.$1,
-          label: f.$2,
-          isSelected: settings.fontFamily == f.$1,
+          fontKey: fontKey,
+          label: _localizedFontLabel(l, fontKey),
+          isSelected: settings.fontFamily == fontKey,
           palette: palette,
-          onPressed: () => settingsProv.updateFontFamily(f.$1),
+          onPressed: () => settingsProv.updateFontFamily(fontKey),
         );
       }).toList(),
     );
+  }
+
+  String _localizedFontLabel(AppLocalizations l, String fontKey) {
+    switch (fontKey) {
+      case 'Cairo':
+        return l.fontCairo;
+      case 'Beiruti':
+        return l.fontBeiruti;
+      case 'Kufi':
+        return l.fontKufi;
+      case 'Rubik':
+        return l.fontRubik;
+      case 'Inter':
+        return l.fontInter;
+      default:
+        return fontKey;
+    }
   }
 }
 
@@ -42,20 +60,39 @@ class ThemeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final settingsProv = context.watch<SettingsProvider>();
     final settings = settingsProv.settings;
+
     return Wrap(
       spacing: 16,
       runSpacing: 12,
-      children: kThemePalettes.entries.map((e) {
+      children: kThemePalettes.entries.map((entry) {
         return TvColorChip(
-          palette: e.value,
-          label: kThemeLabels[e.key] ?? e.key,
-          isSelected: settings.themeColorKey == e.key,
-          onPressed: () => settingsProv.updateTheme(e.key),
+          palette: entry.value,
+          label: _localizedThemeLabel(l, entry.key),
+          isSelected: settings.themeColorKey == entry.key,
+          onPressed: () => settingsProv.updateTheme(entry.key),
         );
       }).toList(),
     );
+  }
+
+  String _localizedThemeLabel(AppLocalizations l, String themeKey) {
+    switch (themeKey) {
+      case 'green':
+        return l.themeGreen;
+      case 'teal':
+        return l.themeTeal;
+      case 'gold':
+        return l.themeGold;
+      case 'blue':
+        return l.themeBlue;
+      case 'purple':
+        return l.themePurple;
+      default:
+        return themeKey;
+    }
   }
 }
 
@@ -64,20 +101,22 @@ class TimeFormatSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final settingsProv = context.watch<SettingsProvider>();
     final settings = settingsProv.settings;
     final palette = getThemePalette(settings.themeColorKey);
+
     return Row(
       children: [
         TvFormatButton(
-          label: '24 ساعة',
+          label: l.settings24HourLabel,
           isSelected: settings.use24HourFormat,
           palette: palette,
           onPressed: () => settingsProv.updateTimeFormat(true),
         ),
         const SizedBox(width: 16),
         TvFormatButton(
-          label: '12 ساعة',
+          label: l.settings12HourLabel,
           isSelected: !settings.use24HourFormat,
           palette: palette,
           onPressed: () => settingsProv.updateTimeFormat(false),
@@ -92,20 +131,22 @@ class LayoutStyleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final settingsProv = context.watch<SettingsProvider>();
     final settings = settingsProv.settings;
     final palette = getThemePalette(settings.themeColorKey);
+
     return Row(
       children: [
         TvFormatButton(
-          label: 'حديث',
+          label: l.layoutModern,
           isSelected: settings.layoutStyle == 'modern',
           palette: palette,
           onPressed: () => settingsProv.updateLayoutStyle('modern'),
         ),
         const SizedBox(width: 16),
         TvFormatButton(
-          label: 'كلاسيكي',
+          label: l.layoutClassic,
           isSelected: settings.layoutStyle == 'classic',
           palette: palette,
           onPressed: () => settingsProv.updateLayoutStyle('classic'),
@@ -120,20 +161,22 @@ class ClockStyleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final settingsProv = context.watch<SettingsProvider>();
     final settings = settingsProv.settings;
     final palette = getThemePalette(settings.themeColorKey);
+
     return Row(
       children: [
         TvFormatButton(
-          label: 'رقمي',
+          label: l.clockDigital,
           isSelected: !settings.isAnalogClock,
           palette: palette,
           onPressed: () => settingsProv.updateClockStyle(isAnalog: false),
         ),
         const SizedBox(width: 16),
         TvFormatButton(
-          label: 'تناظري',
+          label: l.clockAnalog,
           isSelected: settings.isAnalogClock,
           palette: palette,
           onPressed: () => settingsProv.updateClockStyle(isAnalog: true),

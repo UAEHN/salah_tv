@@ -1,69 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'core/app_colors.dart';
 import 'core/mobile_theme.dart';
+import 'core/navigation/app_route_builder.dart';
 import 'core/platform_config.dart';
 import 'core/widgets/mobile/mobile_shell.dart';
-import 'features/settings/presentation/settings_provider.dart';
-import 'features/prayer/presentation/screens/home_screen.dart';
-import 'features/settings/presentation/settings_screen.dart';
 import 'features/adhkar/presentation/screens/adhkar_screen.dart';
+import 'features/prayer/presentation/screens/home_screen.dart';
 import 'features/qibla/presentation/screens/qibla_screen.dart';
+import 'features/settings/presentation/screens/mobile_settings_screen.dart';
+import 'features/settings/presentation/settings_provider.dart';
+import 'features/settings/presentation/settings_screen.dart';
 import 'features/splash/presentation/splash_screen.dart';
+import 'features/tasbih/domain/i_tasbih_repository.dart';
+import 'features/tasbih/presentation/bloc/tasbih_bloc.dart';
+import 'features/tasbih/presentation/bloc/tasbih_event.dart';
+import 'features/tasbih/presentation/screens/mobile_tasbih_screen.dart';
+import 'injection.dart';
 
 class GhasaqApp extends StatelessWidget {
   const GhasaqApp({super.key});
-
-  static PageRoute<void> _buildRoute({
-    required RouteSettings settings,
-    required Widget page,
-    bool isInstant = false,
-  }) {
-    return PageRouteBuilder<void>(
-      settings: settings,
-      transitionDuration: isInstant
-          ? Duration.zero
-          : const Duration(milliseconds: 220),
-      reverseTransitionDuration: isInstant
-          ? Duration.zero
-          : const Duration(milliseconds: 180),
-      pageBuilder: (_, _, _) => page,
-      transitionsBuilder: (_, animation, _, child) {
-        if (isInstant) return child;
-        final curved = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutCubic,
-          reverseCurve: Curves.easeInCubic,
-        );
-        return FadeTransition(
-          opacity: curved,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0.02, 0),
-              end: Offset.zero,
-            ).animate(curved),
-            child: child,
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     final appSettings = context.watch<SettingsProvider>().settings;
     final palette = getThemePalette(appSettings.themeColorKey);
-
     final isDark = appSettings.isDarkMode;
     final tc = ThemeColors.of(isDark);
     final isTV = kIsTV;
+    final effectiveFontFamily = appSettings.fontFamily;
+
     final schemePrimary = isTV ? palette.primary : MobileColors.primary;
     final schemeSecondary = isTV ? palette.secondary : MobileColors.secondary;
-    final schemeOnPrimary = Colors.white;
 
     return MaterialApp(
-      title: 'غسق',
+      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
+      locale: Locale(appSettings.locale),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: ThemeData(
         brightness: isDark ? Brightness.dark : Brightness.light,
         scaffoldBackgroundColor: tc.bgMain,
@@ -71,14 +47,15 @@ class GhasaqApp extends StatelessWidget {
         colorScheme: (isDark ? ColorScheme.dark() : ColorScheme.light())
             .copyWith(
               primary: schemePrimary,
-              onPrimary: schemeOnPrimary,
+              onPrimary: Colors.white,
               secondary: schemeSecondary,
               surface: tc.bgSurface,
             ),
-        fontFamily: appSettings.fontFamily,
+        fontFamily: effectiveFontFamily,
         textTheme: (isDark ? ThemeData.dark() : ThemeData.light()).textTheme
             .apply(
-              fontFamily: appSettings.fontFamily,
+              fontFamily: effectiveFontFamily,
+              fontFamilyFallback: const ['Inter'],
               bodyColor: tc.textPrimary,
               displayColor: tc.textPrimary,
             ),
@@ -87,50 +64,66 @@ class GhasaqApp extends StatelessWidget {
         focusColor: palette.primary.withValues(alpha: 0.3),
       ),
       builder: (_, child) {
+        // TV layout is fixed LTR regardless of locale — only text direction
+        // within individual widgets changes. Mobile follows the locale naturally.
+        final content = child ?? const SizedBox.shrink();
         return ColoredBox(
           color: tc.bgMain,
-          child: child ?? const SizedBox.shrink(),
+          child: isTV
+              ? Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: content,
+                )
+              : content,
         );
       },
       onGenerateRoute: (routeSettings) {
         switch (routeSettings.name) {
           case '/splash':
-            return _buildRoute(
+            return buildAppRoute(
               settings: routeSettings,
               page: const SplashScreen(),
               isInstant: true,
             );
           case '/':
-            return _buildRoute(
+            return buildAppRoute(
               settings: routeSettings,
-              page: kIsTV
-                  ? const HomeScreen()
-                  : const MobileShell(),
+              page: isTV ? const HomeScreen() : const MobileShell(),
             );
           case '/settings':
-            return _buildRoute(
+            return buildAppRoute(
               settings: routeSettings,
-              page: const SettingsScreen(),
+              page: isTV
+                  ? const SettingsScreen()
+                  : const MobileSettingsScreen(),
             );
           case '/adhkar':
-            return _buildRoute(
+            return buildAppRoute(
               settings: routeSettings,
               page: const AdhkarScreen(),
             );
           case '/qibla':
-            return _buildRoute(
+            return buildAppRoute(
               settings: routeSettings,
               page: QiblaScreen(
                 city: appSettings.selectedCity,
                 country: appSettings.selectedCountry,
               ),
             );
-          default:
-            return _buildRoute(
+          case '/tasbih':
+            return buildAppRoute(
               settings: routeSettings,
-              page: kIsTV
-                  ? const HomeScreen()
-                  : const MobileShell(),
+              page: BlocProvider(
+                create: (_) =>
+                    TasbihBloc(getIt<ITasbihRepository>())
+                      ..add(const TasbihStarted()),
+                child: const MobileTasbihScreen(),
+              ),
+            );
+          default:
+            return buildAppRoute(
+              settings: routeSettings,
+              page: isTV ? const HomeScreen() : const MobileShell(),
             );
         }
       },

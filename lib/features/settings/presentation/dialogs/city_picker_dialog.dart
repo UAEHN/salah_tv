@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../core/app_colors.dart';
 import '../../../../core/city_translations.dart';
 
@@ -18,6 +20,7 @@ class CityPickerDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Dialog(
@@ -35,8 +38,12 @@ class CityPickerDialog extends StatelessWidget {
                   Icon(Icons.location_on_rounded, color: palette.primary, size: 26),
                   const SizedBox(width: 12),
                   Text(
-                    'اختر المدينة',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
+                    l.settingsSelectCity,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
                   ),
                 ],
               ),
@@ -46,18 +53,22 @@ class CityPickerDialog extends StatelessWidget {
               Expanded(
                 child: ListView.separated(
                   itemCount: cities.length,
-                  separatorBuilder: (_, _) => const Divider(color: Colors.white10, height: 1),
+                  separatorBuilder: (_, _) =>
+                      const Divider(color: Colors.white10, height: 1),
                   itemBuilder: (context, i) {
                     final city = cities[i];
                     final isSelected = city == selectedCity;
                     return ListTile(
-                      leading: Icon(Icons.location_city_rounded,
-                          color: isSelected ? palette.primary : Colors.white38),
+                      leading: Icon(
+                        Icons.location_city_rounded,
+                        color: isSelected ? palette.primary : Colors.white38,
+                      ),
                       title: Text(
-                        cityLabel(city),
+                        cityLabel(city, locale: l.localeName),
                         style: TextStyle(
                           color: isSelected ? palette.primary : Colors.white,
-                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
+                          fontWeight:
+                              isSelected ? FontWeight.w700 : FontWeight.normal,
                           fontSize: 18,
                         ),
                       ),

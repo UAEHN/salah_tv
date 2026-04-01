@@ -69,12 +69,10 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
     );
 
     if (next != null) {
-      s.nextPrayerName = next.name;
       s.nextPrayerKey = next.key;
       s.countdown = countdown;
     } else {
       // All prayers done today — countdown to tomorrow's Fajr
-      s.nextPrayerName = 'الفجر';
       s.nextPrayerKey = 'fajr';
       final tomorrow = DateTime(s.now.year, s.now.month, s.now.day + 1);
       final tomorrowKey = calc.dateKey(tomorrow);

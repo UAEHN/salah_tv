@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart' hide TextDirection;
 import '../../domain/entities/daily_prayer_times.dart';
+import '../../../../core/localization/prayer_name_localizer.dart';
 import '../../../settings/domain/entities/app_settings.dart';
 import '../../../../core/app_colors.dart';
 import 'prayer_time_column.dart';
@@ -38,7 +38,7 @@ class PrayerRow extends StatelessWidget {
     final iqamaTime = adjustedTime.add(Duration(minutes: iqamaDelay));
     final screenH = MediaQuery.of(context).size.height;
 
-    // الألوان تعتمد على الوضع فقط — بغض النظر عن لون الثيم
+    // Colors depend on the active mode only, regardless of theme color.
     final nameColor = isNext ? tc.textPrimary : tc.textSecondary;
     final iconColor = isNext ? tc.textPrimary : tc.textMuted;
 
@@ -86,7 +86,7 @@ class PrayerRow extends StatelessWidget {
           // Prayer name
           Expanded(
             child: Text(
-              prayer.name,
+              localizedPrayerName(context, prayer.key),
               textAlign: TextAlign.right,
               style: TextStyle(
                 fontSize: screenH * 0.056,
@@ -96,11 +96,7 @@ class PrayerRow extends StatelessWidget {
             ),
           ),
           SizedBox(width: screenH * 0.022),
-          Icon(
-            prayerIcon(prayer.key),
-            size: screenH * 0.042,
-            color: iconColor,
-          ),
+          Icon(prayerIcon(prayer.key), size: screenH * 0.042, color: iconColor),
         ],
       ),
     );

@@ -1,4 +1,4 @@
-import 'entities/daily_prayer_times.dart';
+import '../../prayer/domain/entities/daily_prayer_times.dart';
 import '../../settings/domain/entities/app_settings.dart';
 
 /// Domain port: schedules local notifications for prayer times.

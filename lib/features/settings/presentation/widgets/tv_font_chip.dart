@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
 import '../settings_provider.dart';
 
@@ -32,6 +33,7 @@ class _TvFontChipState extends State<TvFontChip> {
     final isDark = context.watch<SettingsProvider>().settings.isDarkMode;
     final tc = ThemeColors.of(isDark);
     final isActive = _isFocused || widget.isSelected;
+
     return Focus(
       onFocusChange: (f) => setState(() => _isFocused = f),
       onKeyEvent: (_, event) {
@@ -81,22 +83,12 @@ class _TvFontChipState extends State<TvFontChip> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'أبجد هوز',
-                  style: TextStyle(
-                    fontFamily: widget.fontKey,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: isActive ? Colors.white : tc.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
                   widget.label,
                   style: TextStyle(
-                    fontSize: 14,
-                    color: isActive
-                        ? Colors.white.withValues(alpha: 0.85)
-                        : tc.textMuted,
+                    fontFamily: widget.fontKey,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: isActive ? Colors.white : tc.textPrimary,
                   ),
                 ),
                 if (widget.isSelected) ...[

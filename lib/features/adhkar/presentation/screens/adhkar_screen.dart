@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../core/platform_config.dart';
 import '../../domain/i_adhkar_text_repository.dart';
 import '../bloc/adhkar_reader_cubit.dart';
@@ -15,17 +17,18 @@ class AdhkarScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!kIsTV) {
       return BlocProvider(
-        create: (_) => AdhkarReaderCubit(
-          GetIt.I<IAdhkarTextRepository>(),
-        )..loadCategories(),
+        create: (_) =>
+            AdhkarReaderCubit(GetIt.I<IAdhkarTextRepository>())..loadCategories(),
         child: const MobileAdhkarScreen(),
       );
     }
-    return const Scaffold(
+
+    final l = AppLocalizations.of(context);
+    return Scaffold(
       body: Center(
         child: Text(
-          'الأذكار غير متوفرة على أجهزة التلفاز',
-          style: TextStyle(color: Colors.white, fontSize: 24),
+          l.adhkarNotAvailableOnTv,
+          style: const TextStyle(color: Colors.white, fontSize: 24),
         ),
       ),
     );

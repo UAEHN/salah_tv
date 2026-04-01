@@ -1,6 +1,6 @@
 name: ghasaq
 description: "غسق — مواقيت الصلاة لأجهزة Android TV"
-version: 1.0.1+2
+version: 1.0.3+4
 publish_to: none
 
 environment:
@@ -8,6 +8,8 @@ environment:
 
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
 
   # State management
@@ -78,6 +80,7 @@ flutter_launcher_icons:
     image_path: assets/images/Icon.png
 
 flutter:
+  generate: true
   uses-material-design: true
   assets:
     - assets/audio/adhan.mp3
@@ -94,6 +97,7 @@ flutter:
     - assets/adhkar/adhkar_text.json
     - assets/prayer_times.db
     - assets/world_cities.json
+    - assets/db_countries.json
     - assets/animations/
   fonts:
     - family: Cairo
@@ -117,4 +121,11 @@ flutter:
         - asset: assets/fonts/Rubik/Rubik-SemiBold.ttf
           weight: 600
         - asset: assets/fonts/Rubik/Rubik-Bold.ttf
+          weight: 700
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter/Inter-Regular.ttf
+        - asset: assets/fonts/Inter/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter/Inter-Bold.ttf
           weight: 700

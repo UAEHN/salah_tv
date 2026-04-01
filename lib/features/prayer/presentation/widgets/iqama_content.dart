@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
+import '../../../../core/localization/prayer_name_localizer.dart';
 import '../../../../core/time_formatters.dart';
 import '../../../../core/widgets/flip_clock.dart';
 import '../bloc/prayer_bloc.dart';
@@ -12,6 +14,7 @@ class IqamaContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final prayerState = context.watch<PrayerBloc>().state;
     final settings = context.watch<SettingsProvider>().settings;
     final palette = getThemePalette(settings.themeColorKey);
@@ -24,10 +27,7 @@ class IqamaContent extends StatelessWidget {
       color: tc.textPrimary,
       letterSpacing: 2,
       shadows: [
-        Shadow(
-          color: palette.glow.withValues(alpha: 0.35),
-          blurRadius: 12,
-        ),
+        Shadow(color: palette.glow.withValues(alpha: 0.35), blurRadius: 12),
       ],
     );
 
@@ -35,7 +35,9 @@ class IqamaContent extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'إقامة صلاة ${prayerState.iqamaPrayerName} بعد',
+          l.iqamaAfterPrayer(
+            localizedPrayerName(context, prayerState.iqamaPrayerKey),
+          ),
           style: TextStyle(
             fontSize: screenH * 0.048,
             fontWeight: FontWeight.w500,

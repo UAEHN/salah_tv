@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/app_colors.dart';
-import '../../../../injection.dart';
 import '../bloc/prayer_bloc.dart';
 import '../bloc/prayer_state.dart';
 import '../../../settings/presentation/settings_provider.dart';
+import '../../../adhkar/domain/adhkar_eligibility.dart';
 import '../../../adhkar/domain/entities/adhkar_session.dart';
 import '../../../adhkar/domain/i_adhkar_state_repository.dart';
 import 'adhkar_hero_content.dart';
@@ -24,29 +24,18 @@ class HeroCard extends StatelessWidget {
 
     final isIqama = prayerState.isIqamaCountdown;
     final session = sessionFromNextPrayer(prayerState.nextPrayerKey);
-    final adhkarRepo = getIt<IAdhkarStateRepository>();
-    // Show if: not shown today OR session is currently active (don't interrupt).
-    final canShowAdhkar = session == AdhkarSession.morning
-        ? (!adhkarRepo.hasMorningAdhkarShownToday() || adhkarRepo.isMorningSessionActive)
-        : (!adhkarRepo.hasEveningAdhkarShownToday() || adhkarRepo.isEveningSessionActive);
-    // Morning: hide from 10:00 AM onward.
-    // Evening: only valid while waiting for Maghrib (not after it passes).
-    //          Hide 5 min before Maghrib to free the screen for the adhan cycle.
-    final isTimeValid = session == AdhkarSession.morning
-        ? DateTime.now().hour < 10
-        : prayerState.nextPrayerKey == 'maghrib' &&
-          prayerState.countdown.inSeconds > 5 * 60;
-    final isAdhkarActive =
-        settings.isAdhkarEnabled &&
-        !prayerState.isCycleActive &&
-        session != AdhkarSession.none &&
-        canShowAdhkar &&
-        isTimeValid;
+    final adhkarRepo = context.read<IAdhkarStateRepository>();
+    final isAdhkarActive = isAdhkarEligible(
+      session: session,
+      repo: adhkarRepo,
+      isAdhkarEnabled: settings.isAdhkarEnabled,
+      isCycleActive: prayerState.isCycleActive,
+      nextPrayerKey: prayerState.nextPrayerKey,
+      countdownSeconds: prayerState.countdown.inSeconds,
+    );
 
     return BlocListener<PrayerBloc, PrayerState>(
       listenWhen: (prev, curr) {
-        // Fires once when morning window closes while app is running.
-        // Marks today as done so adhkar never re-appear outside the window.
         final prevOpen =
             sessionFromNextPrayer(prev.nextPrayerKey) == AdhkarSession.morning &&
             prev.countdown.inSeconds > 15 * 60;
@@ -56,7 +45,7 @@ class HeroCard extends StatelessWidget {
         return prevOpen && currClosed;
       },
       listener: (context, state) {
-        final repo = getIt<IAdhkarStateRepository>();
+        final repo = context.read<IAdhkarStateRepository>();
         if (!repo.hasMorningAdhkarShownToday()) repo.startMorningSession();
       },
       child: AnimatedContainer(

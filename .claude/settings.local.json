@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(flutter pub:*)"
+      "Bash(flutter pub:*)",
+      "Bash(find /c/Users/boode/Desktop/salah/salah_tv/assets -name adhkar* -type f)",
+      "Bash(find /c/Users/boode/Desktop/salah/salah_tv/lib/features -name *localizer* -o -name *localize*)"
     ]
   }
 }

@@ -1,10 +1,11 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 
 const _kGold = Color(0xFFD4A843);
 const _kGoldLight = Color(0xFFF5D78E);
 
-/// Centre content: pulsing ✦ ornament, "غسق" with golden shimmer + glow,
+/// Center content: pulsing ornament, localized app title with shimmer + glow,
 /// animated separator, and the Quranic verse sliding up.
 class SplashBrandContent extends StatelessWidget {
   final AnimationController brandAnimation;
@@ -18,7 +19,10 @@ class SplashBrandContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final h = MediaQuery.of(context).size.height;
+    final l = AppLocalizations.of(context);
+    final size = MediaQuery.of(context).size;
+    final h = size.height;
+    final w = size.width;
 
     final starFade = CurvedAnimation(
       parent: brandAnimation,
@@ -87,12 +91,18 @@ class SplashBrandContent extends StatelessWidget {
               ),
             ),
             SizedBox(height: h * 0.015),
-            // غسق — shimmer + glow
+            // App title with shimmer + glow
             FadeTransition(
               opacity: titleFade,
               child: ScaleTransition(
                 scale: titleScale,
-                child: _shimmerTitle(h),
+                child: SizedBox(
+                  width: w * 0.85,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: _shimmerTitle(h, l.appTitle),
+                  ),
+                ),
               ),
             ),
             SizedBox(height: h * 0.02),
@@ -122,10 +132,10 @@ class SplashBrandContent extends StatelessWidget {
                       color: Colors.white70,
                       height: 1.6,
                     ),
-                    children: const [
-                      TextSpan(text: 'أَقِمِ ٱلصَّلَوٰةَ لِدُلُوكِ ٱلشَّمْسِ إِلَىٰ '),
+                    children: [
+                      TextSpan(text: l.splashVerseStart),
                       TextSpan(
-                        text: 'غَسَقِ',
+                        text: l.splashVerseHighlight,
                         style: TextStyle(
                           color: _kGold,
                           fontWeight: FontWeight.w700,
@@ -134,7 +144,7 @@ class SplashBrandContent extends StatelessWidget {
                           ],
                         ),
                       ),
-                      TextSpan(text: ' ٱلَّيْلِ'),
+                      TextSpan(text: l.splashVerseEnd),
                     ],
                   ),
                   textAlign: TextAlign.center,
@@ -148,7 +158,7 @@ class SplashBrandContent extends StatelessWidget {
               child: FadeTransition(
                 opacity: refFade,
                 child: Text(
-                  'الإسراء: ٧٨',
+                  l.splashVerseReference,
                   style: TextStyle(
                     fontSize: h * 0.020,
                     color: Colors.white38,
@@ -162,7 +172,7 @@ class SplashBrandContent extends StatelessWidget {
     );
   }
 
-  Widget _shimmerTitle(double h) {
+  Widget _shimmerTitle(double h, String title) {
     final center = shimmerAnimation.value * 1.6 - 0.3;
     final style = TextStyle(
       fontSize: h * 0.13,
@@ -174,7 +184,7 @@ class SplashBrandContent extends StatelessWidget {
       children: [
         // Glow layer behind
         Text(
-          'غسق',
+          title,
           style: style.copyWith(
             color: _kGold.withValues(alpha: 0.25),
             shadows: [Shadow(color: _kGold.withValues(alpha: 0.4), blurRadius: 40)],
@@ -191,7 +201,7 @@ class SplashBrandContent extends StatelessWidget {
               (center + 0.15).clamp(0.0, 1.0),
             ],
           ).createShader(bounds),
-          child: Text('غسق', style: style.copyWith(color: Colors.white)),
+          child: Text(title, style: style.copyWith(color: Colors.white)),
         ),
       ],
     );

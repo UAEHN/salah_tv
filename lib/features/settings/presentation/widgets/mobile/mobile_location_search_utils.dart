@@ -1,3 +1,6 @@
+﻿import 'package:flutter/widgets.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/city_translations.dart';
 import '../../../domain/entities/world_city.dart';
 import '../../../domain/i_world_city_repository.dart';
@@ -7,25 +10,29 @@ import '../../../domain/i_world_city_repository.dart';
 class UnifiedCountry {
   final String key;
   final String arabicName;
+  final String englishName;
   final bool isInDb;
 
   const UnifiedCountry({
     required this.key,
     required this.arabicName,
+    required this.englishName,
     required this.isInDb,
   });
 }
 
-// O(1) country lookup — built once at library-load time
 final _kCountryIndex = Map<String, CountryInfo>.fromEntries(
   kCountries.map((c) => MapEntry(c.key, c)),
 );
 
-/// Builds a merged list of DB + world countries (DB countries first).
-/// World countries that already exist in the DB are excluded.
 List<UnifiedCountry> buildUnifiedCountries(IWorldCityRepository? worldRepo) {
   final dbEntries = kCountries.map(
-    (c) => UnifiedCountry(key: c.key, arabicName: c.arabicName, isInDb: true),
+    (c) => UnifiedCountry(
+      key: c.key,
+      arabicName: c.arabicName,
+      englishName: c.englishName,
+      isInDb: true,
+    ),
   );
   if (worldRepo == null) return dbEntries.toList();
 
@@ -35,6 +42,7 @@ List<UnifiedCountry> buildUnifiedCountries(IWorldCityRepository? worldRepo) {
       .map((w) => UnifiedCountry(
             key: w.key,
             arabicName: w.arabicName,
+            englishName: w.key,
             isInDb: false,
           ));
   return [...dbEntries, ...worldEntries];
@@ -45,11 +53,11 @@ List<UnifiedCountry> filterUnifiedCountries(
   List<UnifiedCountry> allCountries,
 ) {
   return allCountries.where((country) {
-    return _matchesQuery(query, [country.key, country.arabicName]);
+    return _matchesQuery(
+        query, [country.key, country.arabicName, country.englishName]);
   }).toList();
 }
 
-/// DB city keys for a DB country.
 List<String> filterDbCities(String countryKey, String query) {
   final country = _kCountryIndex[countryKey];
   if (country == null) return [];
@@ -58,7 +66,6 @@ List<String> filterDbCities(String countryKey, String query) {
   }).toList();
 }
 
-/// World cities for a non-DB country.
 List<WorldCity> filterWorldCities(
   String countryKey,
   String query,
@@ -71,8 +78,9 @@ List<WorldCity> filterWorldCities(
   }).toList();
 }
 
-String locationSearchHint(bool showCities) {
-  return showCities ? 'ابحث عن مدينة' : 'ابحث عن دولة';
+String locationSearchHint(BuildContext context, bool showCities) {
+  final l = AppLocalizations.of(context);
+  return showCities ? l.settingsSearchCity : l.settingsSearchCountry;
 }
 
 bool _matchesQuery(String query, List<String> values) {
@@ -83,13 +91,12 @@ bool _matchesQuery(String query, List<String> values) {
   );
 }
 
-/// Strips Arabic diacritics (tashkeel) and normalizes alef variants
-/// for loose matching. Range u064B-u065F covers only harakat, not letters.
+/// Strips Arabic diacritics and normalizes common Arabic variants.
 String _normalizeQuery(String value) {
   return value
       .trim()
       .toLowerCase()
-      .replaceAll(RegExp('[\u064B-\u065F]'), '') // tashkeel only
-      .replaceAll(RegExp('[إأآ]'), 'ا') // normalize alef variants
-      .replaceAll('ة', 'ه'); // normalize teh marbuta
+      .replaceAll(RegExp('[\u064B-\u065F]'), '')
+      .replaceAll(RegExp('[\u0625\u0623\u0622]'), '\u0627')
+      .replaceAll('\u0629', '\u0647');
 }

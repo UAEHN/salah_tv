@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 
 class MobileNotificationSettingsHeader extends StatelessWidget {
@@ -6,6 +8,7 @@ class MobileNotificationSettingsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
@@ -13,7 +16,7 @@ class MobileNotificationSettingsHeader extends StatelessWidget {
         children: [
           const SizedBox(width: 48),
           Text(
-            'إعدادات التنبيهات',
+            l.settingsNotificationSettings,
             style: MobileTextStyles.titleMd(context).copyWith(
               color: MobileColors.onSurface(context),
               fontSize: 24,

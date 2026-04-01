@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../core/app_colors.dart';
 import '../../../../core/city_translations.dart';
 
@@ -18,8 +20,10 @@ class CountryPickerDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final isEn = l.localeName == 'en';
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: isEn ? TextDirection.ltr : TextDirection.rtl,
       child: Dialog(
         backgroundColor: const Color(0xFF0A1628),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -35,8 +39,12 @@ class CountryPickerDialog extends StatelessWidget {
                   Icon(Icons.public_rounded, color: palette.primary, size: 26),
                   const SizedBox(width: 12),
                   Text(
-                    'اختر الدولة',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
+                    l.settingsSelectCountry,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
                   ),
                 ],
               ),
@@ -47,18 +55,22 @@ class CountryPickerDialog extends StatelessWidget {
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: countries.length,
-                  separatorBuilder: (_, _) => const Divider(color: Colors.white10, height: 1),
+                  separatorBuilder: (_, _) =>
+                      const Divider(color: Colors.white10, height: 1),
                   itemBuilder: (context, i) {
                     final c = countries[i];
                     final isSelected = c.key == selectedCountry;
                     return ListTile(
-                      leading: Icon(Icons.flag_rounded,
-                          color: isSelected ? palette.primary : Colors.white38),
+                      leading: Icon(
+                        Icons.flag_rounded,
+                        color: isSelected ? palette.primary : Colors.white38,
+                      ),
                       title: Text(
-                        c.arabicName,
+                        isEn ? c.englishName : c.arabicName,
                         style: TextStyle(
                           color: isSelected ? palette.primary : Colors.white,
-                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
+                          fontWeight:
+                              isSelected ? FontWeight.w700 : FontWeight.normal,
                           fontSize: 18,
                         ),
                       ),

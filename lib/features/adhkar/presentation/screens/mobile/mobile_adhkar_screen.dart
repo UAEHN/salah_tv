@@ -1,10 +1,14 @@
-import 'dart:ui';
+﻿import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 import '../../bloc/adhkar_reader_cubit.dart';
 import '../../bloc/adhkar_reader_state.dart';
 import '../../widgets/mobile/mobile_adhkar_category_grid.dart';
+import '../../widgets/mobile/mobile_tasbih_entry_card.dart';
 import 'mobile_adhkar_reader_screen.dart';
 
 class MobileAdhkarScreen extends StatelessWidget {
@@ -12,20 +16,20 @@ class MobileAdhkarScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Stack(
       children: [
-        _Background(),
+        const _Background(),
         SafeArea(
           bottom: false,
           child: BlocBuilder<AdhkarReaderCubit, AdhkarReaderState>(
             builder: (context, state) => switch (state) {
               AdhkarReaderCategories(:final categories) => Column(
                   children: [
-                    _TopBar(title: 'الأذكار'),
+                    _TopBar(title: l.navAdhkar),
+                    const MobileTasbihEntryCard(),
                     Expanded(
-                      child: MobileAdhkarCategoryGrid(
-                        categories: categories,
-                      ),
+                      child: MobileAdhkarCategoryGrid(categories: categories),
                     ),
                   ],
                 ),
@@ -41,6 +45,8 @@ class MobileAdhkarScreen extends StatelessWidget {
 }
 
 class _Background extends StatelessWidget {
+  const _Background();
+
   @override
   Widget build(BuildContext context) {
     return Stack(

@@ -1,5 +1,8 @@
-import 'dart:ui';
+﻿import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 import '../../../../../core/widgets/mobile/mobile_shell.dart';
 
@@ -15,12 +18,12 @@ class MobileQiblaTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Menu/Settings Button (Left)
           Container(
             decoration: BoxDecoration(
               color: MobileColors.cardColor(context).withValues(alpha: 0.5),
@@ -34,8 +37,6 @@ class MobileQiblaTopBar extends StatelessWidget {
               onPressed: () => MobileShell.switchTab(context, 0),
             ),
           ),
-
-          // Location Pill (Right)
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: BackdropFilter(
@@ -54,7 +55,7 @@ class MobileQiblaTopBar extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '$city، $country',
+                      '$city${l.localeComma} $country',
                       style: MobileTextStyles.labelSm(context).copyWith(
                         color: MobileColors.onSurface(context),
                         fontSize: 12,

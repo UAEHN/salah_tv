@@ -29,8 +29,8 @@ mixin RecoveryMixin on PrayerCycleBase {
       // Still inside the iqama countdown window — show it
       s.isIqamaCountdown = true;
       s.iqamaCountdown = remaining;
-      s.iqamaPrayerName = missed.name;
-      s.currentAdhanPrayerName = missed.name;
+      s.iqamaPrayerKey = missed.key;
+      s.currentAdhanPrayerKey = missed.key;
       s.activeCyclePrayerKey = missed.key; // lock card highlight on recovery
     }
     // If remaining <= 0 the iqama window has already closed — nothing to show

@@ -1,9 +1,12 @@
-import 'dart:ui';
+﻿import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 import '../../../../../core/widgets/mobile/mobile_shell.dart';
 
-/// Minimal header — Location pill in the center, menu icon on the right.
+/// Minimal header: location pill in the center, menu icon on the right.
 class MobileTopBar extends StatelessWidget {
   final String city;
   final String country;
@@ -18,12 +21,12 @@ class MobileTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Location Pill (Center) with Glassmorphism
           GestureDetector(
             onTap: onLocationTap,
             child: ClipRRect(
@@ -50,7 +53,7 @@ class MobileTopBar extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        '$city، $country',
+                        '$city${l.localeComma} $country',
                         style: MobileTextStyles.labelSm(
                           context,
                         ).copyWith(color: MobileColors.onSurfaceMuted(context)),
@@ -70,8 +73,6 @@ class MobileTopBar extends StatelessWidget {
               ),
             ),
           ),
-
-          // Menu/Settings Button (Right)
           Align(
             alignment: Alignment.centerRight,
             child: IconButton(

@@ -12,7 +12,6 @@ class PrayerCycleState {
   DateTime now = DateTime.now();
   DailyPrayerTimes? todayPrayers;
   Duration countdown = Duration.zero;
-  String nextPrayerName = '';
   String nextPrayerKey = '';
   final Set<String> adhansToday = {};
   int lastLoadedDay = -1; // Issue 6: date-change detection
@@ -20,10 +19,12 @@ class PrayerCycleState {
 
   // ── Adhan state ──────────────────────────────────────────────────────────
   bool isAdhanPlaying = false;
-  String currentAdhanPrayerName = '';
-  String activeCyclePrayerKey = ''; // set when adhan fires, cleared after iqama ends
+  String currentAdhanPrayerKey = '';
+  String activeCyclePrayerKey =
+      ''; // set when adhan fires, cleared after iqama ends
   int currentIqamaDelayMin = 0; // Issue 9: snapshot at adhan fire time
-  DateTime? adhanTriggerTime; // exact moment adhan fired — anchors iqama countdown
+  DateTime?
+  adhanTriggerTime; // exact moment adhan fired — anchors iqama countdown
   Timer? adhanFallbackTimer;
 
   // ── Dua state ────────────────────────────────────────────────────────────
@@ -33,7 +34,7 @@ class PrayerCycleState {
   // ── Iqama countdown & playback ───────────────────────────────────────────
   bool isIqamaCountdown = false;
   Duration iqamaCountdown = Duration.zero;
-  String iqamaPrayerName = '';
+  String iqamaPrayerKey = '';
   bool isIqamaPlaying = false;
   Timer? iqamaFallbackTimer;
 

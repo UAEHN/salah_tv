@@ -9,14 +9,13 @@ class PrayerState {
   final DateTime displayedDate;
   final DailyPrayerTimes? displayedPrayers;
   final Duration countdown;
-  final String nextPrayerName;
   final String nextPrayerKey;
   final bool isAdhanPlaying;
-  final String currentAdhanPrayerName;
+  final String currentAdhanPrayerKey;
   final String activeCyclePrayerKey;
   final bool isIqamaCountdown;
   final Duration iqamaCountdown;
-  final String iqamaPrayerName;
+  final String iqamaPrayerKey;
   final bool isIqamaPlaying;
   final bool isDuaPlaying;
   final bool isQuranPlaying;
@@ -34,14 +33,13 @@ class PrayerState {
     required this.displayedDate,
     this.displayedPrayers,
     required this.countdown,
-    required this.nextPrayerName,
     required this.nextPrayerKey,
     required this.isAdhanPlaying,
-    required this.currentAdhanPrayerName,
+    required this.currentAdhanPrayerKey,
     required this.activeCyclePrayerKey,
     required this.isIqamaCountdown,
     required this.iqamaCountdown,
-    required this.iqamaPrayerName,
+    required this.iqamaPrayerKey,
     required this.isIqamaPlaying,
     required this.isDuaPlaying,
     required this.isQuranPlaying,
@@ -67,14 +65,13 @@ class PrayerState {
         displayedDate ?? DateTime(e.now.year, e.now.month, e.now.day),
     displayedPrayers: displayedPrayers ?? e.todayPrayers,
     countdown: e.countdown,
-    nextPrayerName: e.nextPrayerName,
     nextPrayerKey: e.nextPrayerKey,
     isAdhanPlaying: e.isAdhanPlaying,
-    currentAdhanPrayerName: e.currentAdhanPrayerName,
+    currentAdhanPrayerKey: e.currentAdhanPrayerKey,
     activeCyclePrayerKey: e.activeCyclePrayerKey,
     isIqamaCountdown: e.isIqamaCountdown,
     iqamaCountdown: e.iqamaCountdown,
-    iqamaPrayerName: e.iqamaPrayerName,
+    iqamaPrayerKey: e.iqamaPrayerKey,
     isIqamaPlaying: e.isIqamaPlaying,
     isDuaPlaying: e.isDuaPlaying,
     isQuranPlaying: e.isQuranPlaying,
@@ -93,14 +90,13 @@ class PrayerState {
     displayedDate: DateTime.now(),
     displayedPrayers: null,
     countdown: Duration.zero,
-    nextPrayerName: '',
     nextPrayerKey: '',
     isAdhanPlaying: false,
-    currentAdhanPrayerName: '',
+    currentAdhanPrayerKey: '',
     activeCyclePrayerKey: '',
     isIqamaCountdown: false,
     iqamaCountdown: Duration.zero,
-    iqamaPrayerName: '',
+    iqamaPrayerKey: '',
     isIqamaPlaying: false,
     isDuaPlaying: false,
     isQuranPlaying: false,

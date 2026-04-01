@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 import 'mobile_select_option_tile.dart';
 
@@ -14,6 +16,7 @@ class MobileThemeDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final cardColor = MobileColors.cardColor(context);
 
     return Container(
@@ -39,14 +42,14 @@ class MobileThemeDialog extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'تخصيص المظهر',
+              l.settingsCustomizeAppearance,
               style: MobileTextStyles.titleMd(
                 context,
               ).copyWith(color: MobileColors.onSurface(context), fontSize: 18),
             ),
             const SizedBox(height: 24),
             MobileSelectOptionTile(
-              title: 'الوضع الداكن',
+              title: l.settingsDarkMode,
               icon: Icons.dark_mode_rounded,
               isSelected: isDarkMode,
               onTap: () {
@@ -55,7 +58,7 @@ class MobileThemeDialog extends StatelessWidget {
               },
             ),
             MobileSelectOptionTile(
-              title: 'الوضع الفاتح',
+              title: l.settingsLightMode,
               icon: Icons.light_mode_rounded,
               isSelected: !isDarkMode,
               onTap: () {

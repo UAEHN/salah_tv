@@ -1,4 +1,5 @@
-import 'package:dartz/dartz.dart';
+﻿import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -49,12 +50,12 @@ class GpsLocationDetector implements ILocationDetector {
 
     final position = await _resolvePosition();
     if (position == null) {
-      return const Left(LocationFailure('تعذّر تحديد الموقع'));
+      return const Left(LocationFailure('Unable to determine location'));
     }
 
     final placemarks = await _reverseGeocode(position);
     if (placemarks.isEmpty) {
-      return const Left(LocationFailure('تعذّر قراءة بيانات الموقع'));
+      return const Left(LocationFailure('Unable to read location details'));
     }
 
     final countryResult = _countryMatcher.match(
@@ -68,27 +69,26 @@ class GpsLocationDetector implements ILocationDetector {
       dbCityKey = _cityMatcher.match(dbCountryKey, placemarks);
     }
 
-    final countryDisplay = countryResult?.displayName ??
-        placemarks.first.country ??
-        'غير معروف';
-    final cityDisplay = _bestCityName(placemarks) ?? 'غير معروف';
+    final countryDisplay =
+        countryResult?.displayName ?? placemarks.first.country ?? 'Unknown';
+    final cityDisplay = _bestCityName(placemarks) ?? 'Unknown';
 
-    return Right(DetectedLocation(
-      countryName: countryDisplay,
-      cityName: dbCityKey ?? cityDisplay,
-      latitude: position.latitude,
-      longitude: position.longitude,
-      isoCountryCode: placemarks.first.isoCountryCode,
-      dbCountryKey: dbCityKey != null ? dbCountryKey : null,
-      dbCityKey: dbCityKey,
-    ));
+    return Right(
+      DetectedLocation(
+        countryName: countryDisplay,
+        cityName: dbCityKey ?? cityDisplay,
+        latitude: position.latitude,
+        longitude: position.longitude,
+        isoCountryCode: placemarks.first.isoCountryCode,
+        dbCountryKey: dbCityKey != null ? dbCountryKey : null,
+        dbCityKey: dbCityKey,
+      ),
+    );
   }
 
   String? _bestCityName(List<Placemark> placemarks) {
     for (final p in placemarks.take(3)) {
-      final candidate = p.locality ??
-          p.subAdministrativeArea ??
-          p.administrativeArea;
+      final candidate = p.locality ?? p.subAdministrativeArea ?? p.administrativeArea;
       if (candidate != null && candidate.trim().isNotEmpty) return candidate;
     }
     return null;
@@ -96,11 +96,9 @@ class GpsLocationDetector implements ILocationDetector {
 
   Future<List<Placemark>> _reverseGeocode(Position position) async {
     try {
-      return placemarkFromCoordinates(
-        position.latitude,
-        position.longitude,
-      );
-    } catch (_) {
+      return placemarkFromCoordinates(position.latitude, position.longitude);
+    } catch (e) {
+      debugPrint('[Location] reverse geocode failed: $e');
       return const [];
     }
   }
@@ -115,8 +113,7 @@ class GpsLocationDetector implements ILocationDetector {
   bool _isUsableCachedPosition(Position? position) {
     if (position == null) return false;
     if (position.accuracy > _cachedPositionMaxAccuracyMeters) return false;
-    return DateTime.now().difference(position.timestamp) <=
-        _cachedPositionMaxAge;
+    return DateTime.now().difference(position.timestamp) <= _cachedPositionMaxAge;
   }
 
   Future<Position?> _getFreshPosition() async {
@@ -127,7 +124,8 @@ class GpsLocationDetector implements ILocationDetector {
           timeLimit: Duration(seconds: 8),
         ),
       );
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Location] fresh position failed: $e');
       return null;
     }
   }
@@ -140,8 +138,7 @@ class GpsLocationDetector implements ILocationDetector {
     if (perm == LocationPermission.denied) {
       perm = await Geolocator.requestPermission();
     }
-    if (perm == LocationPermission.denied ||
-        perm == LocationPermission.deniedForever) {
+    if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) {
       return const LocationPermissionFailure();
     }
     return null;

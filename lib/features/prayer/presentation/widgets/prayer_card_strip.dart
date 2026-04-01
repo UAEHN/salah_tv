@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
-import '../bloc/prayer_bloc.dart';
 import '../../../settings/presentation/settings_provider.dart';
+import '../bloc/prayer_bloc.dart';
 import 'prayer_card.dart';
 
 class PrayerCardStrip extends StatelessWidget {
@@ -11,18 +13,17 @@ class PrayerCardStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final today = context.select(
-      (PrayerBloc b) => b.state.todayPrayers,
-    );
-    // During adhan → dua → iqama countdown → iqama, keep the active prayer
+    final l = AppLocalizations.of(context);
+    final today = context.select((PrayerBloc b) => b.state.todayPrayers);
+
+    // During adhan -> dua -> iqama countdown -> iqama, keep the active prayer
     // highlighted instead of jumping to the next one.
     final nextKey = context.select((PrayerBloc b) {
       final cycle = b.state.activeCyclePrayerKey;
       return cycle.isNotEmpty ? cycle : b.state.nextPrayerKey;
     });
-    final isPreAlert = context.select(
-      (PrayerBloc b) => b.state.isPrePrayerAlert,
-    );
+
+    final isPreAlert = context.select((PrayerBloc b) => b.state.isPrePrayerAlert);
     final settings = context.watch<SettingsProvider>().settings;
     final tc = ThemeColors.of(settings.isDarkMode);
     final screenW = MediaQuery.of(context).size.width;
@@ -30,14 +31,13 @@ class PrayerCardStrip extends StatelessWidget {
     if (today == null) {
       return Center(
         child: Text(
-          'لا توجد بيانات لهذا اليوم',
+          l.noPrayerDataToday,
           style: TextStyle(fontSize: 18, color: tc.textSecondary),
         ),
       );
     }
 
     final prayers = today.prayers.reversed.toList();
-    // Determine prayer order for "passed" logic
     const prayerOrder = [
       'fajr',
       'sunrise',
@@ -55,8 +55,6 @@ class PrayerCardStrip extends StatelessWidget {
           final p = prayers[i];
           final isNext = p.key == nextKey;
           final pIndex = prayerOrder.indexOf(p.key);
-          // A prayer is "passed" if its index is before the next prayer
-          // Special case: if nextKey is fajr (all passed = next day)
           final isPassed = nextIndex >= 0 && pIndex < nextIndex;
           final delay = settings.iqamaDelays[p.key] ?? 10;
           final offset = settings.adhanOffsets[p.key] ?? 0;

@@ -1,16 +1,19 @@
-import 'dart:convert';
+﻿import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../domain/entities/adhkar_session.dart';
 import '../domain/entities/dhikr.dart';
 import '../domain/i_adhkar_state_repository.dart';
 
 const _kMorningShownKey = 'adhkar_morning_shown_date';
 const _kEveningShownKey = 'adhkar_evening_shown_date';
+const _kMorningCategory = '\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0635\u0628\u0627\u062d';
+const _kEveningCategory = '\u0623\u0630\u0643\u0627\u0631 \u0627\u0644\u0645\u0633\u0627\u0621';
 
-/// Loads adhkar content from [assets/audio/adhkar.json] once at startup.
-/// Also implements [IAdhkarStateRepository] for once-per-day session tracking.
+/// Loads adhkar content from assets and tracks once-per-day session state.
 class AdhkarJsonRepository implements IAdhkarStateRepository {
   List<Dhikr> _morning = const [];
   List<Dhikr> _evening = const [];
@@ -24,12 +27,12 @@ class AdhkarJsonRepository implements IAdhkarStateRepository {
       final raw = await rootBundle.loadString('assets/audio/adhkar.json');
       final list = (jsonDecode(raw) as List).cast<Map<String, dynamic>>();
       _morning = list
-          .where((e) => e['category'] == 'أذكار الصباح')
-          .map((e) => Dhikr.fromJson(e))
+          .where((e) => e['category'] == _kMorningCategory)
+          .map(Dhikr.fromJson)
           .toList();
       _evening = list
-          .where((e) => e['category'] == 'أذكار المساء')
-          .map((e) => Dhikr.fromJson(e))
+          .where((e) => e['category'] == _kEveningCategory)
+          .map(Dhikr.fromJson)
           .toList();
       debugPrint('[AdhkarRepo] morning=${_morning.length} evening=${_evening.length}');
     } catch (e) {
@@ -43,14 +46,11 @@ class AdhkarJsonRepository implements IAdhkarStateRepository {
       case AdhkarSession.morning:
         return _morning;
       case AdhkarSession.evening:
-        // TODO: replace with real evening data when available
         return _evening.isNotEmpty ? _evening : _morning;
       case AdhkarSession.none:
         return const [];
     }
   }
-
-  // ── IAdhkarStateRepository ────────────────────────────────────────────────
 
   @override
   bool get isMorningSessionActive => _isMorningSessionActive;
@@ -71,8 +71,6 @@ class AdhkarJsonRepository implements IAdhkarStateRepository {
 
   @override
   void endMorningSession() => _isMorningSessionActive = false;
-
-  // ── Evening session ───────────────────────────────────────────────────────
 
   @override
   bool get isEveningSessionActive => _isEveningSessionActive;

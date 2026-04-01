@@ -1,13 +1,15 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../core/app_colors.dart';
 import '../../../core/platform_config.dart';
+import 'screens/mobile_settings_screen.dart';
 import 'settings_provider.dart';
 import 'widgets/settings_content_panel.dart';
+import 'widgets/settings_key_handlers.dart';
 import 'widgets/settings_nav_panel.dart';
 import 'widgets/settings_screen_header.dart';
-import 'widgets/settings_key_handlers.dart';
-import 'screens/mobile_settings_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -18,18 +20,9 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   int _selectedIndex = 0;
-  static const _categories = [
-    (Icons.location_on_rounded, 'الموقع', 'الدولة والمدينة'),
-    (Icons.menu_book_rounded, 'القرآن الكريم', 'بث القرآن في الخلفية'),
-    (Icons.volume_up_rounded, 'الأذان', 'صوت الأذان والتشغيل التلقائي'),
-    (Icons.tune_rounded, ' تعديل  اوقات الأذان ', 'ضبط أوقات الأذان'),
-    (Icons.timer_rounded, 'تعديل اوقات الاقامة', 'أوقات الإقامة بعد الأذان'),
-    (Icons.palette_rounded, 'المظهر', 'الخط والألوان والتصميم'),
-    (Icons.auto_stories_rounded, 'الأذكار', 'أذكار الصباح والمساء'),
-  ];
 
   late final List<FocusNode> _navFocusNodes =
-      List.generate(_categories.length, (_) => FocusNode());
+      List.generate(7, (_) => FocusNode());
 
   final _contentScopeNode = FocusScopeNode(debugLabel: 'settings_content');
 
@@ -41,13 +34,54 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _contentScopeNode.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     if (!kIsTV) return const MobileSettingsScreen();
 
+    final l = AppLocalizations.of(context);
+    final categories = [
+      (
+        Icons.location_on_rounded,
+        l.settingsCategoryLocation,
+        l.settingsCategoryLocationSubtitle,
+      ),
+      (
+        Icons.menu_book_rounded,
+        l.settingsCategoryQuran,
+        l.settingsCategoryQuranSubtitle,
+      ),
+      (
+        Icons.volume_up_rounded,
+        l.settingsCategoryAdhan,
+        l.settingsCategoryAdhanSubtitle,
+      ),
+      (
+        Icons.tune_rounded,
+        l.settingsCategoryAdhanOffsets,
+        l.settingsCategoryAdhanOffsetsSubtitle,
+      ),
+      (
+        Icons.timer_rounded,
+        l.settingsCategoryIqama,
+        l.settingsCategoryIqamaSubtitle,
+      ),
+      (
+        Icons.palette_rounded,
+        l.settingsCategoryAppearance,
+        l.settingsCategoryAppearanceSubtitle,
+      ),
+      (
+        Icons.auto_stories_rounded,
+        l.settingsCategoryAdhkar,
+        l.settingsCategoryAdhkarSubtitle,
+      ),
+    ];
+
     final settings = context.watch<SettingsProvider>().settings;
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);
+
     return PopScope(
       canPop: true,
       child: Scaffold(
@@ -82,7 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             event,
                           ),
                           child: SettingsNavPanel(
-                            categories: _categories,
+                            categories: categories,
                             selectedIndex: _selectedIndex,
                             navFocusNodes: _navFocusNodes,
                             palette: palette,
@@ -100,7 +134,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: Focus(
                             canRequestFocus: false,
                             skipTraversal: true,
-                            onKeyEvent: (_, event) => handleSettingsContentKeyEvent(
+                            onKeyEvent: (_, event) =>
+                                handleSettingsContentKeyEvent(
                               _navFocusNodes,
                               _selectedIndex,
                               event,

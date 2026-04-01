@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 import 'mobile_select_option_tile.dart';
 
@@ -14,6 +16,7 @@ class MobileMadhabDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final cardColor = MobileColors.cardColor(context);
 
     return Container(
@@ -29,12 +32,12 @@ class MobileMadhabDialog extends StatelessWidget {
           children: [
             _buildHandle(context),
             const SizedBox(height: 20),
-            _buildHeader(context),
+            _buildHeader(context, l),
             const SizedBox(height: 8),
-            _buildNote(context),
+            _buildNote(context, l),
             const SizedBox(height: 20),
             MobileSelectOptionTile(
-              title: 'الشافعي / المالكي / الحنبلي',
+              title: l.madhabShafiFamily,
               icon: Icons.mosque_rounded,
               isSelected: currentMadhab == 'shafi',
               onTap: () {
@@ -43,7 +46,7 @@ class MobileMadhabDialog extends StatelessWidget {
               },
             ),
             MobileSelectOptionTile(
-              title: 'الحنفي',
+              title: l.madhabHanafi,
               icon: Icons.mosque_rounded,
               isSelected: currentMadhab == 'hanafi',
               onTap: () {
@@ -51,7 +54,7 @@ class MobileMadhabDialog extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
-            _buildAsrNote(context),
+            _buildAsrNote(context, l),
             const SizedBox(height: 16),
           ],
         ),
@@ -68,16 +71,16 @@ class MobileMadhabDialog extends StatelessWidget {
         ),
       );
 
-  Widget _buildHeader(BuildContext context) => Text(
-        'المذهب الفقهي',
+  Widget _buildHeader(BuildContext context, AppLocalizations l) => Text(
+        l.settingsMadhabLabel,
         style: MobileTextStyles.titleMd(context).copyWith(
           color: MobileColors.onSurface(context),
           fontSize: 18,
         ),
       );
 
-  Widget _buildNote(BuildContext context) => Text(
-        'يؤثر على وقت العصر في الأوقات المحسوبة (GPS) فقط',
+  Widget _buildNote(BuildContext context, AppLocalizations l) => Text(
+        l.settingsMadhabAffectsAsrNote,
         style: MobileTextStyles.bodyMd(context).copyWith(
           color: MobileColors.onSurfaceMuted(context),
           fontSize: 12,
@@ -86,7 +89,7 @@ class MobileMadhabDialog extends StatelessWidget {
         textAlign: TextAlign.center,
       );
 
-  Widget _buildAsrNote(BuildContext context) => Padding(
+  Widget _buildAsrNote(BuildContext context, AppLocalizations l) => Padding(
         padding: const EdgeInsets.only(top: 12),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -98,7 +101,7 @@ class MobileMadhabDialog extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Text(
-              'المذهب الحنفي يُؤخّر وقت العصر قليلاً',
+              l.settingsHanafiAsrLaterNote,
               style: MobileTextStyles.bodyMd(context).copyWith(
                 color: MobileColors.onSurfaceMuted(context),
                 fontSize: 11,

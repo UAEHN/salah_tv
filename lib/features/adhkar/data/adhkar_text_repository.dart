@@ -50,6 +50,7 @@ class AdhkarTextRepository implements IAdhkarTextRepository {
           return AdhkarCategory(
             id: id,
             nameAr: c['nameAr'] as String,
+            nameEn: c['nameEn'] as String? ?? '',
             icon: _kIconMap[c['icon'] as String] ?? 'auto_stories',
             totalCount: _adhkarByCategory![id]?.length ?? 0,
           );

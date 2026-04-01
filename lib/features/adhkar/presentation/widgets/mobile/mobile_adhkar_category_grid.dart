@@ -20,7 +20,7 @@ class MobileAdhkarCategoryGrid extends StatelessWidget {
           crossAxisCount: 2,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
-          childAspectRatio: 1.0,
+          mainAxisExtent: 170,
         ),
         itemCount: categories.length,
         itemBuilder: (context, index) {

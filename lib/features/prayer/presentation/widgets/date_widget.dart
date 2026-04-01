@@ -1,45 +1,19 @@
-import 'dart:async';
+﻿import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:hijri/hijri_calendar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
-import '../bloc/prayer_bloc.dart';
+import '../../../../core/localization/date_localizer.dart';
 import '../../../settings/presentation/settings_provider.dart';
-
-const List<String> _hijriMonthsAr = [
-  'مُحَرَّم',
-  'صَفَر',
-  'رَبِيع الأَوَّل',
-  'رَبِيع الثَّانِي',
-  'جُمَادَى الأُولَى',
-  'جُمَادَى الآخِرَة',
-  'رَجَب',
-  'شَعْبَان',
-  'رَمَضَان',
-  'شَوَّال',
-  'ذُو القَعْدَة',
-  'ذُو الحِجَّة',
-];
-
-const List<String> _gregorianMonthsAr = [
-  'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-  'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
-];
-
-const List<String> _dayNamesAr = [
-  'الاثنين',
-  'الثلاثاء',
-  'الأربعاء',
-  'الخميس',
-  'الجمعة',
-  'السبت',
-  'الأحد',
-];
+import '../bloc/prayer_bloc.dart';
 
 class DateWidget extends StatefulWidget {
   final AccentPalette palette;
   final bool compact;
+
   const DateWidget({super.key, required this.palette, this.compact = false});
 
   @override
@@ -64,21 +38,6 @@ class _DateWidgetState extends State<DateWidget> {
     super.dispose();
   }
 
-  String _hijriDate(DateTime d) {
-    final h = HijriCalendar.fromDate(d);
-    final day = _dayNamesAr[d.weekday - 1];
-    final month = (h.hMonth >= 1 && h.hMonth <= 12)
-        ? _hijriMonthsAr[h.hMonth - 1]
-        : h.longMonthName;
-    return "$day  ${h.hDay} $month ${h.hYear} هـ";
-  }
-
-  String _gregorianDate(DateTime d) {
-    final day = _dayNamesAr[d.weekday - 1];
-    final month = _gregorianMonthsAr[d.month - 1];
-    return "$day  ${d.day} $month ${d.year} م";
-  }
-
   @override
   Widget build(BuildContext context) {
     final now = context.select(
@@ -88,8 +47,11 @@ class _DateWidgetState extends State<DateWidget> {
     final isDark = context.watch<SettingsProvider>().settings.isDarkMode;
     final tc = ThemeColors.of(isDark);
     final screenH = MediaQuery.of(context).size.height;
+    final l = AppLocalizations.of(context);
 
-    final text = _isShowingHijri ? _hijriDate(now) : _gregorianDate(now);
+    final text = _isShowingHijri
+        ? formatHijriDateLocalized(l, now)
+        : formatGregorianDateLocalized(l, now);
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 600),

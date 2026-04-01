@@ -1,4 +1,4 @@
-abstract class Failure {
+﻿abstract class Failure {
   final String message;
   const Failure(this.message);
 }
@@ -12,11 +12,11 @@ class CacheFailure extends Failure {
 }
 
 class LocationPermissionFailure extends Failure {
-  const LocationPermissionFailure() : super('صلاحية الموقع مرفوضة');
+  const LocationPermissionFailure() : super('Location permission denied');
 }
 
 class LocationServiceDisabledFailure extends Failure {
-  const LocationServiceDisabledFailure() : super('خدمة الموقع معطّلة');
+  const LocationServiceDisabledFailure() : super('Location service is disabled');
 }
 
 class LocationFailure extends Failure {

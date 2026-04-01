@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
 import '../settings_provider.dart';
 import 'tv_switch_row.dart';
@@ -9,10 +11,12 @@ class AdhkarSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final settingsProv = context.watch<SettingsProvider>();
     final settings = settingsProv.settings;
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -28,7 +32,7 @@ class AdhkarSection extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Text(
-              'أذكار الصباح والمساء:',
+              l.settingsMorningEveningAdhkar,
               style: TextStyle(fontSize: 20, color: tc.textPrimary),
             ),
             const SizedBox(width: 16),
@@ -41,7 +45,7 @@ class AdhkarSection extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Text(
-              settings.isAdhkarEnabled ? 'مفعّل' : 'معطّل',
+              settings.isAdhkarEnabled ? l.commonEnabled : l.commonDisabled,
               style: TextStyle(
                 fontSize: 20,
                 color: settings.isAdhkarEnabled ? palette.primary : tc.textMuted,
@@ -63,7 +67,7 @@ class AdhkarSection extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'أذكار الصباح: تظهر بعد الفجر حتى الساعة 10:00 صباحاً. أذكار المساء: تظهر بعد العصر وتنتهي قبل أذان المغرب بـ 5 دقائق. تظهر مرة واحدة في اليوم، وتُوقف مؤقتاً أثناء الأذان والإقامة.',
+                  l.settingsAdhkarScheduleNote,
                   style: TextStyle(fontSize: 14, color: tc.textMuted),
                 ),
               ),

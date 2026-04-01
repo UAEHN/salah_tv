@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
 import '../../../settings/presentation/settings_provider.dart';
 
@@ -8,6 +10,7 @@ class CountdownWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final settings = context.watch<SettingsProvider>().settings;
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);
@@ -38,7 +41,6 @@ class CountdownWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Settings Hint
           Container(
             padding: EdgeInsets.symmetric(
               horizontal: screenH * 0.015,
@@ -59,7 +61,7 @@ class CountdownWidget extends StatelessWidget {
                 ),
                 SizedBox(width: screenW * 0.005),
                 Text(
-                  'اضغط OK للإعدادات',
+                  l.pressOkForSettings,
                   style: TextStyle(
                     fontSize: screenH * 0.022,
                     color: tc.textMuted,

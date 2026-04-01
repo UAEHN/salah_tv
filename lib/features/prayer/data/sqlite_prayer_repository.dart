@@ -84,6 +84,21 @@ class SqlitePrayerRepository implements IPrayerTimesRepository {
   }
 
   /// Updates the active city and refreshes the cache for the new selection.
+  /// No-op: SQLite repo does not support calculated mode.
+  @override
+  void configureCalculatedMode(
+    double lat,
+    double lng,
+    String methodKey, {
+    String madhabKey = 'shafi',
+    String cityLabel = '',
+    double? utcOffsetHours,
+  }) {}
+
+  /// No-op: SQLite repo is always in database mode.
+  @override
+  void configureDatabaseMode() {}
+
   @override
   void setActiveCity(String city) {
     if (!_cityIds.containsKey(city)) return;

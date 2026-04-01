@@ -1,0 +1,326 @@
+﻿{
+    "@@locale":  "en",
+    "appTitle":  "Ghasaq",
+    "languageArabic":  "Arabic",
+    "languageEnglish":  "English",
+    "localeComma":  ",",
+    "commonEnabled":  "Enabled",
+    "commonDisabled":  "Disabled",
+    "commonRetry":  "Retry",
+    "commonError":  "Error",
+    "commonSave":  "Save",
+    "commonSaveChanges":  "Save changes",
+    "navSettings":  "Settings",
+    "navQibla":  "Qibla",
+    "navAdhkar":  "Adhkar",
+    "navPrayer":  "Prayer",
+    "navTasbih":  "Tasbih",
+    "adhkarNotAvailableOnTv":  "Adhkar is not available on TV devices",
+    "adhkarCompletedCategory":  "You have completed {categoryName}",
+    "@adhkarCompletedCategory":  {
+                                     "placeholders":  {
+                                                          "categoryName":  {
+
+                                                                           }
+                                                      }
+                                 },
+    "adhkarMayAllahAccept":  "May Allah accept from you",
+    "adhkarBackToCategories":  "Back to categories",
+    "adhkarCountLabel":  "{count} adhkar",
+    "@adhkarCountLabel":  {
+                              "placeholders":  {
+                                                   "count":  {
+                                                                 "type":  "int"
+                                                             }
+                                               }
+                          },
+    "adhkarMorningSession":  "Morning adhkar",
+    "adhkarEveningSession":  "Evening adhkar",
+    "tasbihEntrySummary":  "Tap to start your daily tasbih",
+    "tasbihPhraseSubhanAllah":  "Subhan Allah",
+    "tasbihPhraseAlhamdulillah":  "Alhamdulillah",
+    "tasbihPhraseAllahuAkbar":  "Allahu Akbar",
+    "tasbihPhraseLaIlahaIllallah":  "La ilaha illa Allah",
+    "tasbihCompletedMessage":  "Completed",
+    "tasbihSwipeHint":  "Swipe to switch phrase",
+    "tasbihResetTooltip":  "Reset counter",
+    "duaAfterAdhanTitle":  "Supplication after Adhan",
+    "duaAfterAdhanText":  "O Allah, Lord of this perfect call and established prayer, grant Muhammad Al-Wasilah and virtue, and raise him to the praised station You have promised him.",
+    "prayerFajr":  "Fajr",
+    "prayerSunrise":  "Sunrise",
+    "prayerDhuhr":  "Dhuhr",
+    "prayerAsr":  "Asr",
+    "prayerMaghrib":  "Maghrib",
+    "prayerIsha":  "Isha",
+    "nextPrayerLabel":  "Time remaining for Adhan",
+    "nextPrayerActiveLabel":  "Next prayer",
+    "countdownNextPrayer":  "Next prayer in {prayerName}",
+    "@countdownNextPrayer":  {
+                                 "placeholders":  {
+                                                      "prayerName":  {
+
+                                                                     }
+                                                  }
+                             },
+    "countdownToIqama":  "Iqama for {prayerName} in",
+    "@countdownToIqama":  {
+                              "placeholders":  {
+                                                   "prayerName":  {
+
+                                                                  }
+                                               }
+                          },
+    "iqamaAfterPrayer":  "Iqama for {prayerName} in",
+    "@iqamaAfterPrayer":  {
+                              "placeholders":  {
+                                                   "prayerName":  {
+
+                                                                  }
+                                               }
+                          },
+    "ongoingNow":  "In progress",
+    "adhanNowTitle":  "It is now time for",
+    "adhanPrayerTitle":  "Adhan for {prayerName}",
+    "@adhanPrayerTitle":  {
+                              "placeholders":  {
+                                                   "prayerName":  {
+
+                                                                  }
+                                               }
+                          },
+    "skipAdhanHint":  "Press OK to skip Adhan",
+    "iqamaNowTitle":  "Prayer time",
+    "iqamaLabel":  "Iqama",
+    "noPrayerDataToday":  "No prayer data for today",
+    "noPrayerDataForDate":  "No prayer data for this date",
+    "checkCsvInSettings":  "Check CSV data in settings",
+    "pressOkForSettings":  "Press OK for settings",
+    "backToToday":  "Back to today",
+    "notificationReminderTitle":  "Reminder",
+    "notificationIqamaTitle":  "Iqama",
+    "notificationAdhanBody":  "It is time for {prayerName}",
+    "@notificationAdhanBody":  {
+                                   "placeholders":  {
+                                                        "prayerName":  {
+
+                                                                       }
+                                                    }
+                               },
+    "notificationPreAdhanBody":  "{prayerName} in {minutes} minutes",
+    "@notificationPreAdhanBody":  {
+                                      "placeholders":  {
+                                                           "prayerName":  {
+
+                                                                          },
+                                                           "minutes":  {
+
+                                                                       }
+                                                       }
+                                  },
+    "notificationPreIqamaBody":  "Iqama for {prayerName} in {minutes} minutes",
+    "@notificationPreIqamaBody":  {
+                                      "placeholders":  {
+                                                           "prayerName":  {
+
+                                                                          },
+                                                           "minutes":  {
+
+                                                                       }
+                                                       }
+                                  },
+    "notificationIqamaBody":  "It is time for Iqama of {prayerName}",
+    "@notificationIqamaBody":  {
+                                   "placeholders":  {
+                                                        "prayerName":  {
+
+                                                                       }
+                                                    }
+                               },
+    "settingsLanguage":  "Language",
+    "settingsTimeFormat":  "Time Format",
+    "settingsAppearance":  "Appearance",
+    "settingsOther":  "Other",
+    "settings24HourFormat":  "24-Hour Format",
+    "settings24HourEnabled":  "24-hour system",
+    "settings12HourEnabled":  "12-hour system",
+    "settings24HourLabel":  "24 hours",
+    "settings12HourLabel":  "12 hours",
+    "settingsCustomizeAppearance":  "Customize Appearance",
+    "settingsDarkMode":  "Dark Mode",
+    "settingsLightMode":  "Light Mode",
+    "settingsDarkModeLabel":  "Night mode",
+    "settingsPrivacyPolicy":  "Privacy Policy",
+    "settingsLocationSection":  "Location",
+    "settingsCountryAndCity":  "Country and city",
+    "settingsNotificationsSection":  "Notifications",
+    "settingsNotificationSettings":  "Notification settings",
+    "settingsCalculationSection":  "Calculation",
+    "settingsCalculationMethodLabel":  "Calculation method",
+    "settingsMadhabLabel":  "Madhab",
+    "settingsAdjustPrayerTimes":  "Adjust adhan and iqama times",
+    "settingsGeneralSettings":  "General settings",
+    "settingsPrayerAlerts":  "Prayer alerts",
+    "settingsAdhanSoundLabel":  "Adhan sound",
+    "settingsPreAdhanReminder":  "Reminder before adhan",
+    "settingsAdhanAlert":  "Adhan alert",
+    "settingsPreIqamaReminder":  "Reminder before iqama",
+    "settingsIqamaAlert":  "Iqama alert",
+    "settingsPreAdhanDuration":  "Reminder duration before adhan",
+    "settingsPreIqamaDuration":  "Reminder duration before iqama",
+    "settingsBeforeMinutes":  "{minutes} minutes before",
+    "@settingsBeforeMinutes":  {
+                                   "placeholders":  {
+                                                        "minutes":  {
+
+                                                                    }
+                                                    }
+                               },
+    "settingsDurationMinutes":  "{minutes} minutes",
+    "@settingsDurationMinutes":  {
+                                     "placeholders":  {
+                                                          "minutes":  {
+
+                                                                      }
+                                                      }
+                                 },
+    "settingsAdjustTimes":  "Adjust times",
+    "settingsAdjustAdhanTimeTitle":  "Adjust adhan time",
+    "settingsAdjustAdhanTimeSubtitle":  "Advance or delay adhan (-30 to +30 min)",
+    "settingsIqamaDelayTitle":  "Iqama delay",
+    "settingsIqamaDelaySubtitle":  "Minutes after adhan (0 to 60 min)",
+    "settingsMinuteShort":  "m",
+    "settingsMinuteUnit":  "minute",
+    "settingsMadhabAffectsAsrNote":  "Affects Asr time for calculated (GPS) times only",
+    "settingsHanafiAsrLaterNote":  "Hanafi madhab shifts Asr slightly later",
+    "madhabShafi":  "Shafi",
+    "madhabHanafi":  "Hanafi",
+    "madhabShafiFamily":  "Shafi / Maliki / Hanbali",
+    "settingsChooseAdhanSound":  "Choose adhan sound",
+    "settingsDetectingLocation":  "Detecting location...",
+    "settingsDetectMyLocation":  "Detect my location automatically",
+    "settingsNoMatchingCountries":  "No matching countries",
+    "settingsNoMatchingCities":  "No matching cities",
+    "settingsSelectCountry":  "Select country",
+    "settingsSelectCity":  "Select city",
+    "settingsSearchCountry":  "Search for a country",
+    "settingsSearchCity":  "Search for a city",
+    "settingsMethodAffectsGpsOnly":  "Affects calculated (GPS) times only",
+    "settingsNotificationsEnabled":  "Notifications enabled",
+    "settingsNotificationsDisabled":  "Notifications disabled",
+    "settingsCategoryLocation":  "Location",
+    "settingsCategoryLocationSubtitle":  "Country and city",
+    "settingsCategoryQuran":  "Quran",
+    "settingsCategoryQuranSubtitle":  "Background Quran streaming",
+    "settingsCategoryAdhan":  "Adhan",
+    "settingsCategoryAdhanSubtitle":  "Adhan sound and auto playback",
+    "settingsCategoryAdhanOffsets":  "Adhan offsets",
+    "settingsCategoryAdhanOffsetsSubtitle":  "Adjust adhan times",
+    "settingsCategoryIqama":  "Iqama offsets",
+    "settingsCategoryIqamaSubtitle":  "Iqama delay after adhan",
+    "settingsCategoryAppearance":  "Appearance",
+    "settingsCategoryAppearanceSubtitle":  "Font, colors, and layout",
+    "settingsCategoryAdhkar":  "Adhkar",
+    "settingsCategoryAdhkarSubtitle":  "Morning and evening adhkar",
+    "settingsFont":  "Font",
+    "settingsThemeColor":  "Theme color",
+    "settingsLayoutDesign":  "Layout design",
+    "settingsClockType":  "Clock type",
+    "layoutModern":  "Modern",
+    "layoutClassic":  "Classic",
+    "clockDigital":  "Digital",
+    "clockAnalog":  "Analog",
+    "fontCairo":  "Cairo",
+    "fontBeiruti":  "Beiruti",
+    "fontKufi":  "Kufi",
+    "fontRubik":  "Rubik",
+    "fontInter":  "Inter",
+    "themeGreen":  "Emerald",
+    "themeTeal":  "Turquoise",
+    "themeGold":  "Gold",
+    "themeBlue":  "Blue",
+    "themePurple":  "Purple",
+    "settingsAutoPlayAdhan":  "Play adhan automatically:",
+    "settingsChangeAdhan":  "Change adhan",
+    "settingsQuranInBackground":  "Play Quran in background:",
+    "settingsNoReciterSelected":  "No reciter selected",
+    "settingsChangeReciter":  "Change reciter",
+    "settingsInternetRequiredForQuran":  "Internet is required to load reciters and play Quran.",
+    "settingsMorningEveningAdhkar":  "Morning and evening adhkar:",
+    "settingsAdhkarScheduleNote":  "Morning adhkar appears after Fajr until 10:00 AM. Evening adhkar appears after Asr and ends 5 minutes before Maghrib adhan. It appears once daily and pauses during adhan and iqama.",
+    "settingsNoCitySelected":  "No city selected",
+    "settingsChangeCity":  "Change city",
+    "settingsChangeCountry":  "Change country",
+    "settingsCloseApp":  "Close app",
+    "settingsSelectReciter":  "Choose reciter",
+    "settingsFailedToLoadReciters":  "Failed to load reciters.\nCheck your internet connection.",
+    "settingsLoadingReciters":  "Loading reciters...",
+    "adhanSound1":  "Adhan 1",
+    "adhanSound2":  "Adhan 2",
+    "adhanSoundAliMulla":  "Shaykh Ali Mulla",
+    "adhanSoundAbdulbasit":  "Shaykh Abdulbasit Abdulsamad",
+    "adhanSoundAqsa":  "Al-Aqsa Mosque Adhan",
+    "qiblaPermissionDeniedTitle":  "Location denied",
+    "qiblaPermissionDeniedSubtitle":  "Please allow location access from settings",
+    "qiblaGpsDisabledTitle":  "GPS is disabled",
+    "qiblaGpsDisabledSubtitle":  "Please enable location service",
+    "qiblaNotAvailableOnTv":  "Qibla is not available on TV devices",
+    "qiblaAlignedStatus":  "You are facing the Qibla",
+    "qiblaFindStatus":  "Turn toward the Qibla",
+    "qiblaAlignedSub":  "ALIGNED WITH KAABA",
+    "qiblaFindSub":  "FIND THE KAABA",
+    "qiblaDistanceToKaaba":  "Distance to Kaaba",
+    "qiblaDeviation":  "Deviation",
+    "unitKm":  "km",
+    "unitDegree":  "degree",
+    "weekdayMonday":  "Monday",
+    "weekdayTuesday":  "Tuesday",
+    "weekdayWednesday":  "Wednesday",
+    "weekdayThursday":  "Thursday",
+    "weekdayFriday":  "Friday",
+    "weekdaySaturday":  "Saturday",
+    "weekdaySunday":  "Sunday",
+    "gregorianMonthJanuary":  "January",
+    "gregorianMonthFebruary":  "February",
+    "gregorianMonthMarch":  "March",
+    "gregorianMonthApril":  "April",
+    "gregorianMonthMay":  "May",
+    "gregorianMonthJune":  "June",
+    "gregorianMonthJuly":  "July",
+    "gregorianMonthAugust":  "August",
+    "gregorianMonthSeptember":  "September",
+    "gregorianMonthOctober":  "October",
+    "gregorianMonthNovember":  "November",
+    "gregorianMonthDecember":  "December",
+    "hijriMonthMuharram":  "Muharram",
+    "hijriMonthSafar":  "Safar",
+    "hijriMonthRabiAlAwwal":  "Rabi Al-Awwal",
+    "hijriMonthRabiAlThani":  "Rabi Al-Thani",
+    "hijriMonthJumadaAlAwwal":  "Jumada Al-Awwal",
+    "hijriMonthJumadaAlAkhirah":  "Jumada Al-Akhirah",
+    "hijriMonthRajab":  "Rajab",
+    "hijriMonthShaban":  "Sha\u0027ban",
+    "hijriMonthRamadan":  "Ramadan",
+    "hijriMonthShawwal":  "Shawwal",
+    "hijriMonthDhuAlQadah":  "Dhu Al-Qadah",
+    "hijriMonthDhuAlHijjah":  "Dhu Al-Hijjah",
+    "hijriYearSuffix":  "AH",
+    "gregorianYearSuffix":  "AD",
+    "calcMethodMuslimWorldLeague":  "Muslim World League",
+    "calcMethodEgyptian":  "Egyptian General Authority of Survey",
+    "calcMethodKarachi":  "University of Islamic Sciences, Karachi",
+    "calcMethodUmmAlQura":  "Umm Al-Qura",
+    "calcMethodDubai":  "Dubai",
+    "calcMethodQatar":  "Qatar",
+    "calcMethodKuwait":  "Kuwait",
+    "calcMethodMorocco":  "Morocco",
+    "calcMethodSingapore":  "Singapore",
+    "calcMethodTehran":  "Tehran",
+    "calcMethodTurkiye":  "Turkiye (Diyanet)",
+    "calcMethodNorthAmerica":  "North America (ISNA)",
+    "calcMethodMoonsightingCommittee":  "Moonsighting Committee",
+    "splashVerseStart":  "أَقِمِ ٱلصَّلَوٰةَ لِدُلُوكِ ٱلشَّمْسِ إِلَىٰ ",
+    "splashVerseHighlight":  "غَسَقِ",
+    "splashVerseEnd":  " ٱلَّيْلِ",
+    "splashVerseReference":  "الإسراء: ٧٨",
+    "fontPreviewSample":  "Abcd Abcd"
+}

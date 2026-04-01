@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../settings/domain/entities/app_settings.dart';
 import '../../domain/i_prayer_audio_port.dart';
-import '../../domain/i_prayer_notification_port.dart';
+import '../../../notifications/domain/i_prayer_notification_port.dart';
 import '../../domain/i_prayer_times_repository.dart';
 import '../../domain/prayer_cycle_engine.dart';
 import 'prayer_displayed_date_controller.dart';

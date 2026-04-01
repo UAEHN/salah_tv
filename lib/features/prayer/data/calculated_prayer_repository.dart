@@ -48,8 +48,8 @@ class CalculatedPrayerRepository implements IPrayerTimesRepository {
     return const Right(Success());
   }
 
-  /// Configures the repository with coordinates and calculation method.
-  void initializeWithCoordinates(
+  @override
+  void configureCalculatedMode(
     double lat,
     double lng,
     String methodKey, {
@@ -70,8 +70,12 @@ class CalculatedPrayerRepository implements IPrayerTimesRepository {
     );
   }
 
+  /// No-op: calculated repo is always in calculated mode.
+  @override
+  void configureDatabaseMode() {}
+
   /// Not meaningful for calculated mode — coordinates are set via
-  /// [initializeWithCoordinates]. Always returns success.
+  /// [configureCalculatedMode]. Always returns success.
   @override
   Future<Either<Failure, Success>> loadCountry(String countryKey) async {
     return const Right(Success());

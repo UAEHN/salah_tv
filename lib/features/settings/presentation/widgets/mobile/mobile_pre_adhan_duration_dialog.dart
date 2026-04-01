@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 import 'mobile_select_option_tile.dart';
 
@@ -11,7 +13,7 @@ class MobilePreAdhanDurationDialog extends StatefulWidget {
     super.key,
     required this.currentMinutes,
     required this.onSave,
-    this.title = 'مدة التذكير قبل الأذان',
+    required this.title,
   });
 
   @override
@@ -33,6 +35,7 @@ class _MobilePreAdhanDurationDialogState
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final cardColor = MobileColors.cardColor(context);
 
     return Container(
@@ -67,7 +70,7 @@ class _MobilePreAdhanDurationDialogState
             const SizedBox(height: 24),
             ..._options.map(
               (min) => MobileSelectOptionTile(
-                title: '$min دقيقة',
+                title: l.settingsDurationMinutes(min),
                 icon: Icons.timer_outlined,
                 isSelected: _selected == min,
                 onTap: () => setState(() => _selected = min),
@@ -105,7 +108,7 @@ class _MobilePreAdhanDurationDialogState
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     child: Text(
-                      'حفظ',
+                      l.commonSave,
                       style: MobileTextStyles.titleMd(context).copyWith(
                         color: Colors.white,
                         fontSize: 16,

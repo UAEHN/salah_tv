@@ -1,6 +1,9 @@
-import 'dart:ui';
+﻿import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 import '../../bloc/qibla_cubit.dart';
 import '../../bloc/qibla_state.dart';
@@ -55,7 +58,7 @@ class MobileQiblaScreen extends StatelessWidget {
           child: Column(
             children: [
               MobileQiblaTopBar(city: city, country: country),
-              Expanded(child: _QiblaBody()),
+              const Expanded(child: _QiblaBody()),
             ],
           ),
         ),
@@ -65,32 +68,36 @@ class MobileQiblaScreen extends StatelessWidget {
 }
 
 class _QiblaBody extends StatelessWidget {
+  const _QiblaBody();
+
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+
     return BlocBuilder<QiblaCubit, QiblaState>(
       builder: (context, state) => switch (state) {
         QiblaActive() => MobileQiblaActiveView(data: state.data),
         QiblaLoading() => const Center(child: CircularProgressIndicator()),
         QiblaPermissionDenied() => MobileQiblaStatusView(
             icon: Icons.location_off_rounded,
-            title: 'الموقع مرفوض',
-            subtitle: 'يرجى السماح بالوصول إلى الموقع من الإعدادات',
+            title: l.qiblaPermissionDeniedTitle,
+            subtitle: l.qiblaPermissionDeniedSubtitle,
             onAction: () => context.read<QiblaCubit>().start(),
-            actionLabel: 'إعادة المحاولة',
+            actionLabel: l.commonRetry,
           ),
         QiblaLocationDisabled() => MobileQiblaStatusView(
             icon: Icons.gps_off_rounded,
-            title: 'الـ GPS معطّل',
-            subtitle: 'يرجى تفعيل خدمة الموقع',
+            title: l.qiblaGpsDisabledTitle,
+            subtitle: l.qiblaGpsDisabledSubtitle,
             onAction: () => context.read<QiblaCubit>().start(),
-            actionLabel: 'إعادة المحاولة',
+            actionLabel: l.commonRetry,
           ),
         QiblaError() => MobileQiblaStatusView(
             icon: Icons.error_outline_rounded,
-            title: 'خطأ',
+            title: l.commonError,
             subtitle: state.message,
             onAction: () => context.read<QiblaCubit>().start(),
-            actionLabel: 'إعادة المحاولة',
+            actionLabel: l.commonRetry,
           ),
         QiblaInitial() => const SizedBox.shrink(),
       },

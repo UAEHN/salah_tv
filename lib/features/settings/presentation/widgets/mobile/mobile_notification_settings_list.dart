@@ -1,5 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
+import '../../../../../core/localization/prayer_name_localizer.dart';
 import '../../settings_provider.dart';
 import 'mobile_adhan_sound_dialog.dart';
 import 'mobile_notification_master_toggle.dart';
@@ -9,19 +12,14 @@ import 'mobile_pre_adhan_duration_dialog.dart';
 import 'mobile_settings_section_title.dart';
 import 'mobile_settings_tile.dart';
 
-const _prayers = [
-  ('fajr', 'الفجر'),
-  ('dhuhr', 'الظهر'),
-  ('asr', 'العصر'),
-  ('maghrib', 'المغرب'),
-  ('isha', 'العشاء'),
-];
+const _prayerKeys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
 class MobileNotificationSettingsList extends StatelessWidget {
   const MobileNotificationSettingsList({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final sp = context.watch<SettingsProvider>();
     final s = sp.settings;
     final isMasterOn = s.playAdhan;
@@ -39,45 +37,47 @@ class MobileNotificationSettingsList extends StatelessWidget {
                 onChanged: (v) => sp.updatePlayAdhan(v),
               ),
               const SizedBox(height: 16),
-              const MobileSettingsSectionTitle(
-                title: 'إعدادات عامة',
+              MobileSettingsSectionTitle(
+                title: l.settingsGeneralSettings,
                 icon: Icons.settings_outlined,
               ),
               MobileSettingsTile(
-                title: 'صوت الأذان',
+                title: l.settingsAdhanSoundLabel,
                 onTap: () => _showAdhanSoundPicker(context, sp, s.adhanSound),
               ),
               const SizedBox(height: 24),
-              const MobileSettingsSectionTitle(
-                title: 'تنبيهات الصلوات',
+              MobileSettingsSectionTitle(
+                title: l.settingsPrayerAlerts,
                 icon: Icons.mosque_rounded,
               ),
-              ..._prayers.map((p) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: MobilePrayerNotificationCard(
-                  prayerKey: p.$1,
-                  prayerName: p.$2,
-                  isAdhanOn: s.prayerNotificationEnabled[p.$1] ?? true,
-                  isPreAdhanOn: s.preAdhanReminderEnabled[p.$1] ?? false,
-                  isIqamaOn: s.iqamaNotificationEnabled[p.$1] ?? false,
-                  isPreIqamaOn: s.preIqamaReminderEnabled[p.$1] ?? false,
-                  isEnabled: isMasterOn,
-                  preAdhanMinutes: s.preAdhanReminderMinutes,
-                  preIqamaMinutes: s.preIqamaReminderMinutes,
-                  onAdhanChanged: (v) =>
-                      sp.updatePrayerNotificationEnabled(p.$1, v),
-                  onPreAdhanChanged: (v) =>
-                      sp.updatePreAdhanReminderEnabled(p.$1, v),
-                  onIqamaChanged: (v) =>
-                      sp.updateIqamaNotificationEnabled(p.$1, v),
-                  onPreIqamaChanged: (v) =>
-                      sp.updatePreIqamaReminderEnabled(p.$1, v),
-                  onPreAdhanDurationTap: () =>
-                      _showDurationPicker(context, sp, 'adhan'),
-                  onPreIqamaDurationTap: () =>
-                      _showDurationPicker(context, sp, 'iqama'),
-                ),
-              )),
+              ..._prayerKeys.map((prayerKey) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: MobilePrayerNotificationCard(
+                      prayerKey: prayerKey,
+                      prayerName: localizedPrayerName(context, prayerKey),
+                      isAdhanOn: s.prayerNotificationEnabled[prayerKey] ?? true,
+                      isPreAdhanOn:
+                          s.preAdhanReminderEnabled[prayerKey] ?? false,
+                      isIqamaOn: s.iqamaNotificationEnabled[prayerKey] ?? false,
+                      isPreIqamaOn:
+                          s.preIqamaReminderEnabled[prayerKey] ?? false,
+                      isEnabled: isMasterOn,
+                      preAdhanMinutes: s.preAdhanReminderMinutes,
+                      preIqamaMinutes: s.preIqamaReminderMinutes,
+                      onAdhanChanged: (v) =>
+                          sp.updatePrayerNotificationEnabled(prayerKey, v),
+                      onPreAdhanChanged: (v) =>
+                          sp.updatePreAdhanReminderEnabled(prayerKey, v),
+                      onIqamaChanged: (v) =>
+                          sp.updateIqamaNotificationEnabled(prayerKey, v),
+                      onPreIqamaChanged: (v) =>
+                          sp.updatePreIqamaReminderEnabled(prayerKey, v),
+                      onPreAdhanDurationTap: () =>
+                          _showDurationPicker(context, sp, 'adhan'),
+                      onPreIqamaDurationTap: () =>
+                          _showDurationPicker(context, sp, 'iqama'),
+                    ),
+                  )),
             ],
           ),
         ),
@@ -86,7 +86,9 @@ class MobileNotificationSettingsList extends StatelessWidget {
   }
 
   void _showAdhanSoundPicker(
-    BuildContext context, SettingsProvider sp, String current,
+    BuildContext context,
+    SettingsProvider sp,
+    String current,
   ) {
     showModalBottomSheet(
       context: context,
@@ -100,16 +102,22 @@ class MobileNotificationSettingsList extends StatelessWidget {
   }
 
   void _showDurationPicker(
-    BuildContext context, SettingsProvider sp, String type,
+    BuildContext context,
+    SettingsProvider sp,
+    String type,
   ) {
+    final l = AppLocalizations.of(context);
     final s = context.read<SettingsProvider>().settings;
     final isAdhan = type == 'adhan';
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (_) => MobilePreAdhanDurationDialog(
-        title: isAdhan ? 'مدة التذكير قبل الأذان' : 'مدة التذكير قبل الإقامة',
+        title: isAdhan
+            ? l.settingsPreAdhanDuration
+            : l.settingsPreIqamaDuration,
         currentMinutes: isAdhan
             ? s.preAdhanReminderMinutes
             : s.preIqamaReminderMinutes,

@@ -101,7 +101,9 @@ class MobileHomeScreen extends StatelessWidget {
               Expanded(
                 child: MobilePrayerList(is24HourFormat: is24HourFormat),
               ),
-              const SizedBox(height: 100),
+              SizedBox(
+                height: MediaQuery.of(context).padding.bottom + 80,
+              ),
             ],
           ),
         ),

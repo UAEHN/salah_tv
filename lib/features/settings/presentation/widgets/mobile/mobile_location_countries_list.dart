@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import 'mobile_location_empty_state.dart';
 import 'mobile_location_option_tile.dart';
 import 'mobile_location_search_utils.dart';
@@ -17,8 +19,9 @@ class MobileLocationCountriesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     if (countries.isEmpty) {
-      return const MobileLocationEmptyState(message: 'لا توجد دول مطابقة');
+      return MobileLocationEmptyState(message: l.settingsNoMatchingCountries);
     }
 
     return ListView.builder(
@@ -30,7 +33,7 @@ class MobileLocationCountriesList extends StatelessWidget {
       itemBuilder: (context, index) {
         final country = countries[index];
         return MobileLocationOptionTile(
-          title: country.arabicName,
+          title: l.localeName == 'en' ? country.englishName : country.arabicName,
           isSelected: country.key == currentCountry,
           onTap: () => onSelect(country.key),
         );

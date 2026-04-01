@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 
 /// Master on/off toggle card for all notifications.
@@ -14,6 +16,7 @@ class MobileNotificationMasterToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final cardColor = MobileColors.cardColor(context);
 
     return Container(
@@ -41,7 +44,7 @@ class MobileNotificationMasterToggle extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              isOn ? 'الإشعارات مفعّلة' : 'الإشعارات معطّلة',
+              isOn ? l.settingsNotificationsEnabled : l.settingsNotificationsDisabled,
               style: MobileTextStyles.titleMd(context).copyWith(
                 color: MobileColors.onSurface(context),
                 fontSize: 16,

@@ -1,5 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/adhan_sounds.dart';
+import '../../../../../core/localization/adhan_sound_localizer.dart';
 import '../../../../../core/mobile_theme.dart';
 import 'mobile_select_option_tile.dart';
 
@@ -28,6 +31,7 @@ class _MobileAdhanSoundDialogState extends State<MobileAdhanSoundDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final cardColor = MobileColors.cardColor(context);
 
     return Container(
@@ -41,7 +45,6 @@ class _MobileAdhanSoundDialogState extends State<MobileAdhanSoundDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle bar
             Container(
               width: 40,
               height: 4,
@@ -53,26 +56,22 @@ class _MobileAdhanSoundDialogState extends State<MobileAdhanSoundDialog> {
               ),
             ),
             const SizedBox(height: 24),
-
             Text(
-              'اختر صوت الأذان',
+              l.settingsChooseAdhanSound,
               style: MobileTextStyles.titleMd(
                 context,
               ).copyWith(color: MobileColors.onSurface(context), fontSize: 18),
             ),
             const SizedBox(height: 24),
-
             ...kAdhanSounds.map(
               (sound) => MobileSelectOptionTile(
-                title: sound.label,
+                title: localizedAdhanSoundLabel(context, sound.key),
                 icon: Icons.graphic_eq_rounded,
                 isSelected: _selectedSound == sound.key,
                 onTap: () => setState(() => _selectedSound = sound.key),
               ),
             ),
-
             const SizedBox(height: 32),
-
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -104,7 +103,7 @@ class _MobileAdhanSoundDialogState extends State<MobileAdhanSoundDialog> {
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     child: Text(
-                      'حفظ التغييرات',
+                      l.commonSaveChanges,
                       style: MobileTextStyles.titleMd(
                         context,
                       ).copyWith(color: Colors.white, fontSize: 16),

@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/mobile_theme.dart';
 import '../../../../../injection.dart';
@@ -44,6 +45,7 @@ class _MobileDetectLocationButtonState
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
       child: SizedBox(
@@ -59,7 +61,9 @@ class _MobileDetectLocationButtonState
                 )
               : const Icon(Icons.my_location_rounded, size: 20),
           label: Text(
-            _isLoading ? 'جارِ تحديد الموقع...' : 'تحديد موقعي تلقائياً',
+            _isLoading
+                ? l.settingsDetectingLocation
+                : l.settingsDetectMyLocation,
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,

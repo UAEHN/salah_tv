@@ -1,5 +1,5 @@
 import '../i_prayer_audio_port.dart';
-import '../i_prayer_notification_port.dart';
+import '../../../notifications/domain/i_prayer_notification_port.dart';
 import '../i_prayer_times_repository.dart';
 import '../../../settings/domain/entities/app_settings.dart';
 import 'prayer_cycle_state.dart';

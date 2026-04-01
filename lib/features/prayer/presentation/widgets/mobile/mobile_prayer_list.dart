@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
+import '../../../../../core/mobile_theme.dart';
 import '../../../../settings/presentation/settings_provider.dart';
 import '../../bloc/prayer_bloc.dart';
-import '../../../../../core/mobile_theme.dart';
 import 'mobile_prayer_row.dart';
 
 class MobilePrayerList extends StatelessWidget {
@@ -13,6 +15,7 @@ class MobilePrayerList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final prayers = context.select(
       (PrayerBloc b) => b.state.displayedPrayers?.prayersOnly ?? const [],
     );
@@ -31,13 +34,15 @@ class MobilePrayerList extends StatelessWidget {
     final adhanOffsets = context.select(
       (SettingsProvider p) => p.settings.adhanOffsets,
     );
+
     // During iqama countdown/cycle, keep highlight on the active prayer,
     // not the next upcoming one.
     final activeKey = !isViewingToday
         ? ''
         : activeCyclePrayerKey.isNotEmpty
-        ? activeCyclePrayerKey
-        : nextPrayerKey;
+            ? activeCyclePrayerKey
+            : nextPrayerKey;
+
     if (prayers.isEmpty) {
       return Center(
         child: isBusy
@@ -46,7 +51,7 @@ class MobilePrayerList extends StatelessWidget {
                 strokeWidth: 2,
               )
             : Text(
-                'لا توجد بيانات لهذا التاريخ',
+                l.noPrayerDataForDate,
                 style: MobileTextStyles.bodyMd(
                   context,
                 ).copyWith(color: MobileColors.onSurfaceMuted(context)),
@@ -60,16 +65,12 @@ class MobilePrayerList extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Calculate the maximum allowed height per item based on available screen space
-        // We subtract the total spacing from the max height and divide by number of prayers.
-        // We do NOT clamp with a hardcoded bottom value (like 60.0) because on small screens
-        // that will force the items to overflow the constrained height.
+        // We do not clamp with a hardcoded lower bound to avoid overflow on
+        // small screens.
         final calculatedHeight =
             (constraints.maxHeight - spacing * (prayers.length - 1)) /
             prayers.length;
 
-        // Max height is capped at 90 so it doesn't look stretched on very tall screens,
-        // but it is allowed to shrink as needed to prevent overflow.
         final itemHeight = calculatedHeight.clamp(0.0, 90.0);
 
         return Padding(

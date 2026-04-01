@@ -13,10 +13,10 @@ import '../../../features/qibla/presentation/bloc/qibla_state.dart';
 import '../../../features/qibla/presentation/screens/mobile/mobile_qibla_screen.dart';
 import '../../../features/settings/domain/i_location_detector.dart';
 import '../../../features/settings/domain/i_settings_repository.dart';
-import '../../../features/settings/domain/usecases/detect_location_usecase.dart';
+import '../../../features/settings/domain/usecases/first_launch_location_usecase.dart';
+import '../../calculation_method_info.dart';
 import '../../../features/settings/presentation/screens/mobile_settings_screen.dart';
 import '../../../features/settings/presentation/settings_provider.dart';
-import '../../../injection.dart';
 import 'mobile_bottom_nav.dart';
 
 /// Single-Scaffold shell for mobile: keeps all tabs alive via [IndexedStack].
@@ -48,31 +48,21 @@ class _MobileShellState extends State<MobileShell> {
   }
 
   Future<void> _tryAutoDetectLocation() async {
-    final repo = getIt<ISettingsRepository>();
-    final isFirst = await repo.isFirstLaunch();
-    if (!isFirst) return;
-
-    await repo.markLaunched();
-    final useCase = DetectLocationUseCase(getIt<ILocationDetector>());
-    final result = await useCase();
-    if (!mounted) return;
-    result.fold(
-      (_) {},
-      (loc) {
-        final provider = context.read<SettingsProvider>();
-        if (loc.isInDb) {
-          provider.updateLocation(loc.dbCountryKey!, loc.dbCityKey!);
-        } else {
-          provider.updateWorldLocation(
-            loc.countryName,
-            loc.cityName,
-            loc.latitude,
-            loc.longitude,
-            'muslim_world_league',
-          );
-        }
-      },
+    final useCase = FirstLaunchLocationUseCase(
+      context.read<ISettingsRepository>(), context.read<ILocationDetector>(),
     );
+    final loc = await useCase();
+    if (!mounted || loc == null) return;
+    final provider = context.read<SettingsProvider>();
+    if (loc.isInDb) {
+      provider.updateLocation(loc.dbCountryKey!, loc.dbCityKey!);
+    } else {
+      provider.updateWorldLocation(
+        loc.countryName, loc.cityName,
+        loc.latitude, loc.longitude,
+        defaultMethodForCountryIso(loc.isoCountryCode),
+      );
+    }
   }
 
   void _onTabChanged(int index) {
@@ -142,9 +132,18 @@ class _MobileShellState extends State<MobileShell> {
               left: 0,
               right: 0,
               bottom: 0,
-              child: MobileBottomNav(
-                currentIndex: _currentIndex,
-                onTabChanged: _onTabChanged,
+              child: BlocBuilder<AdhkarReaderCubit, AdhkarReaderState>(
+                bloc: _adhkarCubit,
+                builder: (context, adhkarState) {
+                  final isReading = _currentIndex == 2 &&
+                      (adhkarState is AdhkarReaderReading ||
+                          adhkarState is AdhkarReaderCompleted);
+                  if (isReading) return const SizedBox.shrink();
+                  return MobileBottomNav(
+                    currentIndex: _currentIndex,
+                    onTabChanged: _onTabChanged,
+                  );
+                },
               ),
             ),
           ],

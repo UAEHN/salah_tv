@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../core/app_colors.dart';
 
 IconData prayerIcon(String key) {
@@ -42,6 +44,7 @@ class PrayerTimeColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -67,7 +70,7 @@ class PrayerTimeColumn extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'إقامة ',
+                '${l.iqamaLabel} ',
                 style: TextStyle(
                   fontSize: screenH * 0.022,
                   color: tc.textMuted,

@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 
 class MobileHeroHijriRow extends StatelessWidget {
@@ -23,6 +25,7 @@ class MobileHeroHijriRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -76,7 +79,7 @@ class MobileHeroHijriRow extends StatelessWidget {
                           Text(
                             isViewingToday
                                 ? gregorianDate
-                                : '$gregorianDate - العودة إلى اليوم',
+                                : '$gregorianDate - ${l.backToToday}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,

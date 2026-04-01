@@ -1,19 +1,22 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
+import '../../../../core/localization/prayer_name_localizer.dart';
 import '../settings_provider.dart';
 import 'tv_small_button.dart';
 
 class AdhanOffsetsTable extends StatelessWidget {
   const AdhanOffsetsTable({super.key});
 
-  static const _prayers = [
-    ('fajr', 'الفجر'),
-    ('sunrise', 'الشروق'),
-    ('dhuhr', 'الظهر'),
-    ('asr', 'العصر'),
-    ('maghrib', 'المغرب'),
-    ('isha', 'العشاء'),
+  static const _prayerKeys = [
+    'fajr',
+    'sunrise',
+    'dhuhr',
+    'asr',
+    'maghrib',
+    'isha',
   ];
 
   @override
@@ -28,11 +31,10 @@ class AdhanOffsetsTable extends StatelessWidget {
       decoration: tc.glass(opacity: 0.06, borderRadius: 14),
       clipBehavior: Clip.hardEdge,
       child: Column(
-        children: _prayers.indexed.map((entry) {
+        children: _prayerKeys.indexed.map((entry) {
           final i = entry.$1;
-          final p = entry.$2;
-          final key = p.$1;
-          final name = p.$2;
+          final key = entry.$2;
+          final name = localizedPrayerName(context, key);
           final offset = offsets[key] ?? 0;
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -48,10 +50,8 @@ class AdhanOffsetsTable extends StatelessWidget {
                 offset: offset,
                 palette: palette,
                 tc: tc,
-                onDecrement: () =>
-                    settingsProv.updateAdhanOffset(key, offset - 1),
-                onIncrement: () =>
-                    settingsProv.updateAdhanOffset(key, offset + 1),
+                onDecrement: () => settingsProv.updateAdhanOffset(key, offset - 1),
+                onIncrement: () => settingsProv.updateAdhanOffset(key, offset + 1),
               ),
             ],
           );
@@ -80,6 +80,7 @@ class _OffsetRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final valueText = offset >= 0 ? '+$offset' : '$offset';
     final isZero = offset == 0;
 
@@ -116,7 +117,7 @@ class _OffsetRow extends StatelessWidget {
           ),
           const SizedBox(width: 16),
           Text(
-            'دقيقة',
+            l.settingsMinuteUnit,
             style: TextStyle(fontSize: 12, color: tc.textMuted),
           ),
           const Spacer(),

@@ -1,6 +1,9 @@
-import 'package:flutter/material.dart';
-import '../../../../core/app_colors.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../core/adhan_sounds.dart';
+import '../../../../core/app_colors.dart';
+import '../../../../core/localization/adhan_sound_localizer.dart';
 
 class AdhanSoundPickerDialog extends StatelessWidget {
   final AccentPalette palette;
@@ -16,6 +19,7 @@ class AdhanSoundPickerDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Dialog(
@@ -33,8 +37,12 @@ class AdhanSoundPickerDialog extends StatelessWidget {
                   Icon(Icons.volume_up_rounded, color: palette.primary, size: 26),
                   const SizedBox(width: 12),
                   Text(
-                    'اختر صوت الأذان',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
+                    l.settingsChooseAdhanSound,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
                   ),
                 ],
               ),
@@ -44,19 +52,23 @@ class AdhanSoundPickerDialog extends StatelessWidget {
               ListView.separated(
                 shrinkWrap: true,
                 itemCount: kAdhanSounds.length,
-                separatorBuilder: (_, _) => const Divider(color: Colors.white10, height: 1),
+                separatorBuilder: (_, _) =>
+                    const Divider(color: Colors.white10, height: 1),
                 itemBuilder: (context, i) {
                   final key = kAdhanSounds[i].key;
-                  final label = kAdhanSounds[i].label;
+                  final label = localizedAdhanSoundLabel(context, key);
                   final isSelected = key == selectedKey;
                   return ListTile(
-                    leading: Icon(Icons.music_note_rounded,
-                        color: isSelected ? palette.primary : Colors.white38),
+                    leading: Icon(
+                      Icons.music_note_rounded,
+                      color: isSelected ? palette.primary : Colors.white38,
+                    ),
                     title: Text(
                       label,
                       style: TextStyle(
                         color: isSelected ? palette.primary : Colors.white,
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
+                        fontWeight:
+                            isSelected ? FontWeight.w700 : FontWeight.normal,
                         fontSize: 18,
                       ),
                     ),

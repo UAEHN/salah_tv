@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
+import '../../../../core/localization/prayer_name_localizer.dart';
 import '../../../../core/time_formatters.dart';
 import '../bloc/prayer_bloc.dart';
 import '../../../settings/presentation/settings_provider.dart';
@@ -13,6 +15,7 @@ class IqamaCountdownWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final prayer = context.watch<PrayerBloc>().state;
     final isDark = context.watch<SettingsProvider>().settings.isDarkMode;
     final tc = ThemeColors.of(isDark);
@@ -41,7 +44,9 @@ class IqamaCountdownWidget extends StatelessWidget {
         children: [
           // Label
           Text(
-            'إقامة صلاة ${prayer.iqamaPrayerName}  بعد ',
+            l.iqamaAfterPrayer(
+              localizedPrayerName(context, prayer.iqamaPrayerKey),
+            ),
             style: TextStyle(
               fontSize: screenH * 0.040,
               fontWeight: FontWeight.w500,

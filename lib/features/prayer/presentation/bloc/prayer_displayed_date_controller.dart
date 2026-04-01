@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../../../settings/domain/entities/app_settings.dart';
 import '../../domain/entities/daily_prayer_times.dart';
 import '../../domain/i_prayer_times_repository.dart';
@@ -56,7 +57,10 @@ class PrayerDisplayedDateController {
     final date = _selectedDate;
     if (date == null) return;
     final result = await _getPrayerTimesByDate(date);
-    result.fold((_) {}, (prayers) => _selectedDatePrayers = prayers);
+    result.fold(
+      (f) => debugPrint('[DateNav] refresh failed: $f'),
+      (prayers) => _selectedDatePrayers = prayers,
+    );
   }
 
   Future<void> changeDate(DateTime now, int dayOffset) async {
@@ -70,7 +74,7 @@ class PrayerDisplayedDateController {
     }
     _isBusy = true;
     final result = await _getPrayerTimesByDate(targetDate);
-    result.fold((_) {}, (prayers) {
+    result.fold((f) => debugPrint('[DateNav] load $targetDate failed: $f'), (prayers) {
       if (prayers != null) {
         _selectedDate = targetDate;
         _selectedDatePrayers = prayers;

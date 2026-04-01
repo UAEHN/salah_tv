@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
+import '../../../../../core/calculation_method_info.dart';
 import '../../../../../core/mobile_theme.dart';
-import '../../../../../features/prayer/data/calculation_method_map.dart';
 import 'mobile_select_option_tile.dart';
 
 class MobileCalculationMethodDialog extends StatelessWidget {
@@ -13,8 +15,25 @@ class MobileCalculationMethodDialog extends StatelessWidget {
     required this.onSave,
   });
 
+  static const _methods = [
+    'muslim_world_league',
+    'egyptian',
+    'karachi',
+    'umm_al_qura',
+    'dubai',
+    'qatar',
+    'kuwait',
+    'morocco',
+    'singapore',
+    'tehran',
+    'turkiye',
+    'north_america',
+    'moonsighting_committee',
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final cardColor = MobileColors.cardColor(context);
 
     return Container(
@@ -30,9 +49,9 @@ class MobileCalculationMethodDialog extends StatelessWidget {
           children: [
             _buildHandle(context),
             const SizedBox(height: 20),
-            _buildHeader(context),
+            _buildHeader(context, l),
             const SizedBox(height: 8),
-            _buildNote(context),
+            _buildNote(context, l),
             const SizedBox(height: 16),
             _buildList(context),
             const SizedBox(height: 16),
@@ -51,16 +70,16 @@ class MobileCalculationMethodDialog extends StatelessWidget {
         ),
       );
 
-  Widget _buildHeader(BuildContext context) => Text(
-        'طريقة الحساب',
+  Widget _buildHeader(BuildContext context, AppLocalizations l) => Text(
+        l.settingsCalculationMethodLabel,
         style: MobileTextStyles.titleMd(context).copyWith(
           color: MobileColors.onSurface(context),
           fontSize: 18,
         ),
       );
 
-  Widget _buildNote(BuildContext context) => Text(
-        'تؤثر على الأوقات المحسوبة (GPS) فقط',
+  Widget _buildNote(BuildContext context, AppLocalizations l) => Text(
+        l.settingsMethodAffectsGpsOnly,
         style: MobileTextStyles.bodyMd(context).copyWith(
           color: MobileColors.onSurfaceMuted(context),
           fontSize: 12,
@@ -74,13 +93,13 @@ class MobileCalculationMethodDialog extends StatelessWidget {
         ),
         child: ListView(
           shrinkWrap: true,
-          children: kCalculationMethodLabels.entries.map((e) {
+          children: _methods.map((key) {
             return MobileSelectOptionTile(
-              title: e.value,
+              title: localizedCalculationMethod(context, key),
               icon: Icons.calculate_rounded,
-              isSelected: currentMethod == e.key,
+              isSelected: currentMethod == key,
               onTap: () {
-                onSave(e.key);
+                onSave(key);
                 Navigator.pop(context);
               },
             );

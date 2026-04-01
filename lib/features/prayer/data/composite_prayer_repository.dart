@@ -32,6 +32,29 @@ class CompositePrayerRepository implements IPrayerTimesRepository {
   }
 
   @override
+  void configureCalculatedMode(
+    double lat,
+    double lng,
+    String methodKey, {
+    String madhabKey = 'shafi',
+    String cityLabel = '',
+    double? utcOffsetHours,
+  }) {
+    _calcRepo.configureCalculatedMode(
+      lat, lng, methodKey,
+      madhabKey: madhabKey,
+      cityLabel: cityLabel,
+      utcOffsetHours: utcOffsetHours,
+    );
+    _isCalculatedMode = true;
+  }
+
+  @override
+  void configureDatabaseMode() {
+    _isCalculatedMode = false;
+  }
+
+  @override
   bool get hasData => _active.hasData;
 
   @override

@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import 'tv_button.dart';
 
 class CloseAppSection extends StatelessWidget {
@@ -7,6 +9,7 @@ class CloseAppSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return TvButton(
       onPressed: () => SystemNavigator.pop(),
       accent: const Color(0xFFEF4444),
@@ -16,7 +19,10 @@ class CloseAppSection extends StatelessWidget {
         children: [
           const Icon(Icons.power_settings_new_rounded, color: Colors.white, size: 20),
           const SizedBox(width: 8),
-          Text('إغلاق التطبيق', style: TextStyle(fontSize: 18, color: Colors.white)),
+          Text(
+            l.settingsCloseApp,
+            style: const TextStyle(fontSize: 18, color: Colors.white),
+          ),
         ],
       ),
     );

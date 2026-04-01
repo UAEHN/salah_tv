@@ -1,56 +1,13 @@
-import 'package:hijri/hijri_calendar.dart';
+﻿import 'package:ghasaq/l10n/app_localizations.dart';
 
-const _hijriMonths = [
-  'مُحَرَّم',
-  'صَفَر',
-  'رَبِيع الأَوَّل',
-  'رَبِيع الثَّانِي',
-  'جُمَادَى الأُولَى',
-  'جُمَادَى الآخِرَة',
-  'رَجَب',
-  'شَعْبَان',
-  'رَمَضَان',
-  'شَوَّال',
-  'ذُو القَعْدَة',
-  'ذُو الحِجَّة',
-];
+import '../../../../../core/localization/date_localizer.dart';
 
-const _dayNames = [
-  'الاثنين',
-  'الثلاثاء',
-  'الأربعاء',
-  'الخميس',
-  'الجمعة',
-  'السبت',
-  'الأحد',
-];
-
-const _gregorianMonths = [
-  'يناير',
-  'فبراير',
-  'مارس',
-  'أبريل',
-  'مايو',
-  'يونيو',
-  'يوليو',
-  'أغسطس',
-  'سبتمبر',
-  'أكتوبر',
-  'نوفمبر',
-  'ديسمبر',
-];
-
-String formatHijriDate(DateTime date) {
-  final hijri = HijriCalendar.fromDate(date);
-  final month = (hijri.hMonth >= 1 && hijri.hMonth <= 12)
-      ? _hijriMonths[hijri.hMonth - 1]
-      : hijri.longMonthName;
-  return '${_dayNames[date.weekday - 1]}، ${hijri.hDay} $month ${hijri.hYear} هـ';
+String formatHijriDate(AppLocalizations l, DateTime date) {
+  return formatHijriDateLocalized(l, date);
 }
 
-String formatGregorianDate(DateTime date) {
-  final month = _gregorianMonths[date.month - 1];
-  return '${date.day} $month ${date.year} م';
+String formatGregorianDate(AppLocalizations l, DateTime date) {
+  return formatGregorianDateLocalized(l, date);
 }
 
 /// Progress for the prayer countdown arc.

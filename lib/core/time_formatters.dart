@@ -1,14 +1,23 @@
-import 'package:intl/intl.dart';
+﻿import 'package:intl/intl.dart';
 
-String formatPrayerTime(DateTime dt, {required bool use24Hour}) {
-  if (use24Hour) return DateFormat('HH:mm').format(dt);
-  return DateFormat('hh:mm').format(dt);
+String formatPrayerTime(
+  DateTime dt, {
+  required bool use24Hour,
+  String? localeCode,
+}) {
+  // Always use 'en' for digits so Arabic locale doesn't produce ٣:٠٠ etc.
+  if (use24Hour) return DateFormat('HH:mm', 'en').format(dt);
+  return DateFormat('hh:mm', 'en').format(dt);
 }
 
-/// Returns 'ص' or 'م' — null when use24Hour is true.
-String? formatPrayerPeriod(DateTime dt, {required bool use24Hour}) {
+/// Returns the localized day period (AM/PM) for 12-hour format.
+String? formatPrayerPeriod(
+  DateTime dt, {
+  required bool use24Hour,
+  String? localeCode,
+}) {
   if (use24Hour) return null;
-  return dt.hour < 12 ? 'ص' : 'م';
+  return DateFormat('a', localeCode).format(dt);
 }
 
 String formatCountdown(Duration d) {

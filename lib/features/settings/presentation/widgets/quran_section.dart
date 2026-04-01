@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
-import '../settings_provider.dart';
 import '../dialogs/reciter_picker_dialog.dart';
+import '../settings_provider.dart';
 import 'tv_button.dart';
 import 'tv_switch_row.dart';
 
@@ -11,10 +13,12 @@ class QuranSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final settingsProv = context.watch<SettingsProvider>();
     final settings = settingsProv.settings;
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -30,7 +34,7 @@ class QuranSection extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Text(
-              'تشغيل القرآن في الخلفية:',
+              l.settingsQuranInBackground,
               style: TextStyle(fontSize: 20, color: tc.textPrimary),
             ),
             const SizedBox(width: 16),
@@ -43,7 +47,7 @@ class QuranSection extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Text(
-              settings.isQuranEnabled ? 'مفعّل' : 'معطّل',
+              settings.isQuranEnabled ? l.commonEnabled : l.commonDisabled,
               style: TextStyle(
                 fontSize: 20,
                 color: settings.isQuranEnabled ? palette.primary : tc.textMuted,
@@ -72,7 +76,7 @@ class QuranSection extends StatelessWidget {
                         child: Text(
                           settings.hasQuranReciter
                               ? settings.quranReciterName
-                              : 'لم يتم اختيار قاريء',
+                              : l.settingsNoReciterSelected,
                           style: TextStyle(
                             fontSize: 18,
                             color: settings.hasQuranReciter ? tc.textPrimary : tc.textMuted,
@@ -94,6 +98,7 @@ class QuranSection extends StatelessWidget {
                   builder: (_) => ReciterPickerDialog(
                     palette: palette,
                     currentServerUrl: settings.quranReciterServerUrl,
+                    language: l.localeName,
                     onSelected: (name, serverUrl) =>
                         settingsProv.updateQuranReciter(name, serverUrl),
                   ),
@@ -106,8 +111,8 @@ class QuranSection extends StatelessWidget {
                     const Icon(Icons.person_search_rounded, color: Colors.white, size: 20),
                     const SizedBox(width: 8),
                     Text(
-                      'تغيير القاريء',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                      l.settingsChangeReciter,
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
                     ),
                   ],
                 ),
@@ -124,7 +129,7 @@ class QuranSection extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'يتطلب اتصالاً بالإنترنت لتحميل قائمة القراء وتشغيل القرآن.',
+                    l.settingsInternetRequiredForQuran,
                     style: TextStyle(fontSize: 14, color: tc.textMuted),
                   ),
                 ),

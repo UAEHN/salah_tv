@@ -1,19 +1,16 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
+import '../../../../core/localization/prayer_name_localizer.dart';
 import '../settings_provider.dart';
 import 'tv_small_button.dart';
 
 class IqamaTable extends StatelessWidget {
   const IqamaTable({super.key});
 
-  static const _prayers = [
-    ('fajr', 'الفجر'),
-    ('dhuhr', 'الظهر'),
-    ('asr', 'العصر'),
-    ('maghrib', 'المغرب'),
-    ('isha', 'العشاء'),
-  ];
+  static const _prayerKeys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +24,10 @@ class IqamaTable extends StatelessWidget {
       decoration: tc.glass(opacity: 0.06, borderRadius: 14),
       clipBehavior: Clip.hardEdge,
       child: Column(
-        children: _prayers.indexed.map((entry) {
+        children: _prayerKeys.indexed.map((entry) {
           final i = entry.$1;
-          final p = entry.$2;
-          final key = p.$1;
-          final name = p.$2;
+          final key = entry.$2;
+          final name = localizedPrayerName(context, key);
           final delay = delays[key] ?? 10;
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -47,10 +43,8 @@ class IqamaTable extends StatelessWidget {
                 delay: delay,
                 palette: palette,
                 tc: tc,
-                onDecrement: () =>
-                    settingsProv.updateIqamaDelay(key, delay - 1),
-                onIncrement: () =>
-                    settingsProv.updateIqamaDelay(key, delay + 1),
+                onDecrement: () => settingsProv.updateIqamaDelay(key, delay - 1),
+                onIncrement: () => settingsProv.updateIqamaDelay(key, delay + 1),
               ),
             ],
           );
@@ -79,6 +73,7 @@ class _DelayRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Row(
@@ -110,7 +105,7 @@ class _DelayRow extends StatelessWidget {
           ),
           const SizedBox(width: 16),
           Text(
-            'دقيقة',
+            l.settingsMinuteUnit,
             style: TextStyle(fontSize: 12, color: tc.textMuted),
           ),
           const Spacer(),

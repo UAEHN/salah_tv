@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../domain/entities/world_city.dart';
 import 'mobile_location_empty_state.dart';
 import 'mobile_location_option_tile.dart';
@@ -25,8 +27,9 @@ class MobileLocationWorldCitiesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     if (cities.isEmpty) {
-      return const MobileLocationEmptyState(message: 'لا توجد مدن مطابقة');
+      return MobileLocationEmptyState(message: l.settingsNoMatchingCities);
     }
 
     return ListView.builder(
@@ -37,8 +40,8 @@ class MobileLocationWorldCitiesList extends StatelessWidget {
       itemCount: cities.length,
       itemBuilder: (context, index) {
         final city = cities[index];
-        final isSelected = city.arabicName == currentCity &&
-            selectedCountryKey == currentCountry;
+        final isSelected =
+            city.arabicName == currentCity && selectedCountryKey == currentCountry;
         return MobileLocationOptionTile(
           title: city.arabicName,
           isSelected: isSelected,

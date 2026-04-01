@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/daily_prayer_times.dart';
+import '../../../../../core/localization/prayer_name_localizer.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import '../../../../../core/mobile_theme.dart';
 import '../../../../../core/time_formatters.dart';
 
@@ -27,6 +29,8 @@ class MobilePrayerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final localeCode = Localizations.localeOf(context).languageCode;
     final icon = _prayerIcons[prayer.key] ?? Icons.access_time_outlined;
 
     return AnimatedContainer(
@@ -70,7 +74,7 @@ class MobilePrayerRow extends StatelessWidget {
                     MainAxisSize.min, // Fixes overflow by not taking max height
                 children: [
                   Text(
-                    prayer.name,
+                    localizedPrayerName(context, prayer.key),
                     style: MobileTextStyles.titleMd(context).copyWith(
                       color: isActive
                           ? Colors.white
@@ -94,7 +98,7 @@ class MobilePrayerRow extends StatelessWidget {
                           ),
                           const SizedBox(width: 2),
                           Text(
-                            'الصلاة القادمة',
+                            l.nextPrayerActiveLabel,
                             style: MobileTextStyles.labelSm(context).copyWith(
                               color: Colors.white.withValues(alpha: 0.8),
                               fontSize: 10,
@@ -109,48 +113,54 @@ class MobilePrayerRow extends StatelessWidget {
             ),
 
             // Time (adjusted by adhan offset)
-            Builder(builder: (context) {
-              final adjustedTime = prayer.time.add(
-                Duration(minutes: adhanOffset),
-              );
-              final timeColor = isActive
-                  ? Colors.white
-                  : MobileColors.onSurfaceMuted(context);
-              final period = formatPrayerPeriod(
-                adjustedTime,
-                use24Hour: is24HourFormat,
-              );
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  if (period != null) ...[
+            Builder(
+              builder: (context) {
+                final adjustedTime = prayer.time.add(
+                  Duration(minutes: adhanOffset),
+                );
+                final timeColor = isActive
+                    ? Colors.white
+                    : MobileColors.onSurfaceMuted(context);
+                final period = formatPrayerPeriod(
+                  adjustedTime,
+                  use24Hour: is24HourFormat,
+                  localeCode: localeCode,
+                );
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    if (period != null) ...[
+                      Text(
+                        period,
+                        style: MobileTextStyles.labelSm(context).copyWith(
+                          fontSize: 11,
+                          color: timeColor.withValues(alpha: 0.7),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                    ],
                     Text(
-                      period,
-                      style: MobileTextStyles.labelSm(context).copyWith(
-                        fontSize: 11,
-                        color: timeColor.withValues(alpha: 0.7),
-                        fontWeight: FontWeight.w600,
+                      formatPrayerTime(
+                        adjustedTime,
+                        use24Hour: is24HourFormat,
+                        localeCode: localeCode,
+                      ),
+                      style: MobileTextStyles.titleMd(context).copyWith(
+                        fontSize: 22,
+                        color: timeColor,
+                        fontWeight: isActive
+                            ? FontWeight.w700
+                            : FontWeight.w600,
+                        fontFeatures: const [FontFeature.tabularFigures()],
                       ),
                     ),
-                    const SizedBox(width: 4),
                   ],
-                  Text(
-                    formatPrayerTime(
-                      adjustedTime,
-                      use24Hour: is24HourFormat,
-                    ),
-                    style: MobileTextStyles.titleMd(context).copyWith(
-                      fontSize: 22,
-                      color: timeColor,
-                      fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
-                  ),
-                ],
-              );
-            }),
+                );
+              },
+            ),
           ],
         ),
       ),

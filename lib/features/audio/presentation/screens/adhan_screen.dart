@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import '../../../../core/app_colors.dart';
 import '../../../prayer/presentation/painters/arabesque_painter.dart';
 
@@ -14,6 +15,7 @@ class AdhanScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       color: Colors.white,
       child: Stack(
@@ -24,7 +26,7 @@ class AdhanScreen extends StatelessWidget {
               painter: ArabescPainter(color: palette.primary, opacity: 0.1),
             ),
           ),
-          
+
           // Gradient Overlay
           Positioned.fill(
             child: DecoratedBox(
@@ -46,14 +48,10 @@ class AdhanScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.mosque_rounded,
-                  size: 100,
-                  color: palette.primary,
-                ),
+                Icon(Icons.mosque_rounded, size: 100, color: palette.primary),
                 const SizedBox(height: 30),
                 Text(
-                  'حان الآن موعد',
+                  l.adhanNowTitle,
                   style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.w500,
@@ -62,35 +60,34 @@ class AdhanScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'أذان $prayerName',
+                  l.adhanPrayerTitle(prayerName),
                   style: TextStyle(
                     fontSize: 80,
                     fontWeight: FontWeight.w800,
                     color: palette.primary,
-                    shadows: [
-                      Shadow(
-                        color: palette.glow,
-                        blurRadius: 20,
-                      ),
-                    ],
+                    shadows: [Shadow(color: palette.glow, blurRadius: 20)],
                   ),
                 ),
                 const SizedBox(height: 60),
                 // Skip hint
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                   decoration: glassDecoration(opacity: 0.05, borderRadius: 30),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.stop_circle_outlined, color: kTextMuted, size: 24),
+                      Icon(
+                        Icons.stop_circle_outlined,
+                        color: kTextMuted,
+                        size: 24,
+                      ),
                       const SizedBox(width: 8),
                       Text(
-                        'اضغط OK لتخطي الأذان',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: kTextMuted,
-                        ),
+                        l.skipAdhanHint,
+                        style: TextStyle(fontSize: 20, color: kTextMuted),
                       ),
                     ],
                   ),

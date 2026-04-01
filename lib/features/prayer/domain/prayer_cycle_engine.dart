@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'entities/daily_prayer_times.dart';
 import 'i_prayer_audio_port.dart';
-import 'i_prayer_notification_port.dart';
+import '../../notifications/domain/i_prayer_notification_port.dart';
 import 'i_prayer_times_repository.dart';
 import '../../settings/domain/entities/app_settings.dart';
 import 'engine/prayer_cycle_state.dart';
@@ -70,14 +70,13 @@ class PrayerCycleEngine extends PrayerCycleBase
   DateTime get now => s.now;
   DailyPrayerTimes? get todayPrayers => s.todayPrayers;
   Duration get countdown => s.countdown;
-  String get nextPrayerName => s.nextPrayerName;
   String get nextPrayerKey => s.nextPrayerKey;
   bool get isAdhanPlaying => s.isAdhanPlaying;
-  String get currentAdhanPrayerName => s.currentAdhanPrayerName;
+  String get currentAdhanPrayerKey => s.currentAdhanPrayerKey;
   String get activeCyclePrayerKey => s.activeCyclePrayerKey;
   bool get isIqamaCountdown => s.isIqamaCountdown;
   Duration get iqamaCountdown => s.iqamaCountdown;
-  String get iqamaPrayerName => s.iqamaPrayerName;
+  String get iqamaPrayerKey => s.iqamaPrayerKey;
   bool get isIqamaPlaying => s.isIqamaPlaying;
   bool get isDuaPlaying => s.isDuaPlaying;
 

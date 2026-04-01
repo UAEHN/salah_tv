@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
 import '../../../../core/city_translations.dart';
 import '../../../prayer/presentation/bloc/prayer_bloc.dart';
-import '../settings_provider.dart';
 import '../dialogs/country_picker_dialog.dart';
+import '../settings_provider.dart';
 import 'tv_button.dart';
 
 class CountrySection extends StatelessWidget {
@@ -13,10 +15,12 @@ class CountrySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final settingsProv = context.watch<SettingsProvider>();
     final palette = getThemePalette(settingsProv.settings.themeColorKey);
     final tc = ThemeColors.of(settingsProv.settings.isDarkMode);
     final country = settingsProv.settings.selectedCountry;
+
     return Row(
       children: [
         Expanded(
@@ -29,7 +33,7 @@ class CountrySection extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    countryLabel(country),
+                    countryLabel(country, locale: l.localeName),
                     style: TextStyle(
                       fontSize: 18,
                       color: tc.textPrimary,
@@ -53,8 +57,8 @@ class CountrySection extends StatelessWidget {
               const Icon(Icons.public_rounded, color: Colors.white, size: 20),
               const SizedBox(width: 8),
               Text(
-                'تغيير الدولة',
-                style: TextStyle(fontSize: 18, color: Colors.white),
+                l.settingsChangeCountry,
+                style: const TextStyle(fontSize: 18, color: Colors.white),
               ),
             ],
           ),
@@ -68,6 +72,7 @@ class CountrySection extends StatelessWidget {
     SettingsProvider settingsProv,
     AccentPalette palette,
   ) {
+    final bloc = context.read<PrayerBloc>();
     showDialog<void>(
       context: context,
       builder: (_) => CountryPickerDialog(
@@ -75,10 +80,8 @@ class CountrySection extends StatelessWidget {
         selectedCountry: settingsProv.settings.selectedCountry,
         countries: kCountries,
         onSelected: (countryKey) async {
-          final bloc = context.read<PrayerBloc>();
           await settingsProv.updateSelectedCountry(countryKey);
-          final current = bloc.state;
-          var filtered = citiesForCountry(countryKey, current.availableCities);
+          var filtered = citiesForCountry(countryKey, bloc.state.availableCities);
           if (filtered.isEmpty) {
             final state = await bloc.stream
                 .firstWhere((s) => s.availableCities.isNotEmpty)

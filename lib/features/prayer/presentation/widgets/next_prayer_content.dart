@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
+import '../../../../core/localization/prayer_name_localizer.dart';
 import '../../../../core/time_formatters.dart';
 import '../../../../core/widgets/flip_clock.dart';
 import '../bloc/prayer_bloc.dart';
@@ -12,6 +14,7 @@ class NextPrayerContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final prayerState = context.watch<PrayerBloc>().state;
     final settings = context.watch<SettingsProvider>().settings;
     final palette = getThemePalette(settings.themeColorKey);
@@ -28,9 +31,9 @@ class NextPrayerContent extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Label: الوقت المتبقي على أذان
+        // Label for remaining time until adhan
         Text(
-          'الوقت المتبقي على أذان',
+          l.nextPrayerLabel,
           style: TextStyle(
             fontSize: screenH * 0.045,
             fontWeight: FontWeight.w400,
@@ -52,8 +55,8 @@ class NextPrayerContent extends StatelessWidget {
             ),
           ),
           child: Text(
-            prayerState.nextPrayerName,
-            key: ValueKey(prayerState.nextPrayerName),
+            localizedPrayerName(context, prayerState.nextPrayerKey),
+            key: ValueKey(prayerState.nextPrayerKey),
             style: TextStyle(
               fontSize: screenH * 0.12,
               fontWeight: FontWeight.w700,

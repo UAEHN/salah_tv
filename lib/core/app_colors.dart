@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
-// ─── Light theme base colors ────────────────────────────────────────────────
+// â”€â”€â”€ Light theme base colors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const Color kBgDeep      = Color(0xFFF0F4F8);
 const Color kBgDark      = Color(0xFFFFFFFF);
 const Color kBgSurface   = Color(0xFFF5F7FA);
@@ -10,7 +10,7 @@ const Color kTextPrimary   = Color(0xFF1A1A2E);
 const Color kTextSecondary = Color(0xFF4A4A6A);
 const Color kTextMuted     = Color(0xFF8A8AA0);
 
-// ─── Dark theme base colors ──────────────────────────────────────────────────
+// â”€â”€â”€ Dark theme base colors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const Color kDarkBgDeep      = Color(0xFF07101E);
 const Color kDarkBgMain      = Color(0xFF0C1528);
 const Color kDarkBgSurface   = Color(0xFF162035);
@@ -20,7 +20,7 @@ const Color kDarkTextPrimary   = Color(0xFFF0F4FF);
 const Color kDarkTextSecondary = Color(0xFFB8C0D8);
 const Color kDarkTextMuted     = Color(0xFF6A7494);
 
-// ─── ThemeColors – single source of truth for light/dark ────────────────────
+// â”€â”€â”€ ThemeColors â€“ single source of truth for light/dark â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class ThemeColors {
   final Color bgDeep;
   final Color bgMain;
@@ -85,7 +85,7 @@ class ThemeColors {
   }
 }
 
-// ─── Theme accent palettes ───────────────────────────────────────────────────
+// â”€â”€â”€ Theme accent palettes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class AccentPalette {
   final Color primary;
   final Color secondary;
@@ -139,11 +139,11 @@ const Map<String, AccentPalette> kThemePalettes = {
 };
 
 const Map<String, String> kThemeLabels = {
-  'green': 'زمردي',
-  'teal':  'فيروزي',
-  'gold':  'ذهبي',
-  'blue':  'ياقوتي',
-  'purple': 'بنفسجي',
+  'green': 'Emerald',
+  'teal': 'Turquoise',
+  'gold': 'Gold',
+  'blue': 'Blue',
+  'purple': 'Purple',
 };
 
 Color getThemeColor(String key) =>
@@ -152,7 +152,7 @@ Color getThemeColor(String key) =>
 AccentPalette getThemePalette(String key) =>
     kThemePalettes[key] ?? kThemePalettes['green']!;
 
-// ─── Legacy helpers (backward compatibility) ─────────────────────────────────
+// â”€â”€â”€ Legacy helpers (backward compatibility) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 BoxDecoration glassDecoration({
   double opacity = 0.08,
   double borderRadius = 16,
@@ -175,3 +175,4 @@ LinearGradient bgGradient() => const LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
     );
+

@@ -19,16 +19,16 @@ mixin AdhanCycleMixin on PrayerCycleBase, IqamaMixin, QuranMixin {
       );
       if (diff.inSeconds >= 0 && diff.inSeconds <= 2) {
         s.adhansToday.add(key);
-        unawaited(triggerAdhan(p.name, p.key));
+        unawaited(triggerAdhan(p.key));
       }
     }
   }
 
   // Issue 3: async so we can detect playAdhan() failure and clean up
   // state immediately rather than waiting 4 minutes for the fallback timer.
-  Future<void> triggerAdhan(String prayerName, String prayerKey) async {
+  Future<void> triggerAdhan(String prayerKey) async {
     s.isAdhanPlaying = true;
-    s.currentAdhanPrayerName = prayerName;
+    s.currentAdhanPrayerKey = prayerKey;
     s.activeCyclePrayerKey = prayerKey; // lock card highlight for this prayer
     s.currentIqamaDelayMin =
         settings.iqamaDelays[prayerKey] ?? 0; // Issue 9: snapshot
@@ -98,7 +98,7 @@ mixin AdhanCycleMixin on PrayerCycleBase, IqamaMixin, QuranMixin {
     // so adhan + dua duration is deducted automatically.
     final delay = s.currentIqamaDelayMin; // Issue 9: snapshotted at adhan fire
     if (delay > 0) {
-      s.iqamaPrayerName = s.currentAdhanPrayerName;
+      s.iqamaPrayerKey = s.currentAdhanPrayerKey;
       // Calculate how much of the iqama delay has already elapsed
       // since the adhan started (adhan duration + dua duration).
       Duration remaining = Duration(minutes: delay);
@@ -125,13 +125,13 @@ mixin AdhanCycleMixin on PrayerCycleBase, IqamaMixin, QuranMixin {
     s.iqamaFallbackTimer?.cancel();
     if (s.isCycleActive) await audio.stop();
     s.isAdhanPlaying = false;
-    s.currentAdhanPrayerName = '';
+    s.currentAdhanPrayerKey = '';
     s.activeCyclePrayerKey = '';
     s.currentIqamaDelayMin = 0;
     s.adhanTriggerTime = null;
     s.isIqamaCountdown = false;
     s.iqamaCountdown = Duration.zero;
-    s.iqamaPrayerName = '';
+    s.iqamaPrayerKey = '';
     s.isIqamaPlaying = false;
     s.isDuaPlaying = false;
     resumeQuranAfterAdhan();

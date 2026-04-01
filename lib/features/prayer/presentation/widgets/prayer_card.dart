@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart' hide TextDirection;
-import '../../domain/entities/daily_prayer_times.dart';
-import '../../../settings/domain/entities/app_settings.dart';
+﻿import 'package:flutter/material.dart';
+
 import '../../../../core/app_colors.dart';
+import '../../../../core/time_formatters.dart';
+import '../../../settings/domain/entities/app_settings.dart';
+import '../../domain/entities/daily_prayer_times.dart';
 import 'prayer_card_content.dart';
 
 class PrayerCard extends StatefulWidget {
@@ -63,21 +64,22 @@ class _PrayerCardState extends State<PrayerCard>
   }
 
   String _formatTime(DateTime dt) {
-    if (widget.settings.use24HourFormat) return DateFormat('HH:mm').format(dt);
-    final h = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
-    final m = dt.minute.toString().padLeft(2, '0');
-    return '$h:$m ${dt.hour < 12 ? 'ص' : 'م'}';
+    return formatPrayerTime(
+      dt,
+      use24Hour: widget.settings.use24HourFormat,
+      localeCode: widget.settings.locale,
+    );
   }
 
   IconData _icon(String key) => switch (key) {
-    'fajr' => Icons.wb_twilight_rounded,
-    'sunrise' => Icons.brightness_high_rounded,
-    'dhuhr' => Icons.wb_sunny_rounded,
-    'asr' => Icons.wb_sunny_outlined,
-    'maghrib' => Icons.brightness_4_rounded,
-    'isha' => Icons.nights_stay_rounded,
-    _ => Icons.star_rounded,
-  };
+        'fajr' => Icons.wb_twilight_rounded,
+        'sunrise' => Icons.brightness_high_rounded,
+        'dhuhr' => Icons.wb_sunny_rounded,
+        'asr' => Icons.wb_sunny_outlined,
+        'maghrib' => Icons.brightness_4_rounded,
+        'isha' => Icons.nights_stay_rounded,
+        _ => Icons.star_rounded,
+      };
 
   @override
   Widget build(BuildContext context) {

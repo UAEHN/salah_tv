@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'city_translations.dart';
 import '../features/adhkar/data/adhkar_audio_service.dart';
 import '../features/adhkar/data/adhkar_json_repository.dart';
 import '../features/adhkar/data/adhkar_text_repository.dart';
@@ -23,12 +24,14 @@ import '../features/quran/domain/i_quran_api_repository.dart';
 import '../features/settings/data/settings_repository.dart';
 import '../features/settings/domain/entities/app_settings.dart';
 import '../features/notifications/data/prayer_notification_service.dart';
-import '../features/prayer/domain/i_prayer_notification_port.dart';
+import '../features/notifications/domain/i_prayer_notification_port.dart';
 import '../features/qibla/data/qibla_repository.dart';
 import '../features/qibla/domain/i_qibla_repository.dart';
 import '../features/settings/data/gps_location_detector.dart';
 import '../features/settings/domain/i_location_detector.dart';
 import '../features/settings/domain/i_settings_repository.dart';
+import '../features/tasbih/data/tasbih_repository.dart';
+import '../features/tasbih/domain/i_tasbih_repository.dart';
 import '../features/settings/domain/usecases/load_settings_usecase.dart';
 import '../injection.dart';
 import 'platform_config.dart';
@@ -38,6 +41,9 @@ import 'platform_config.dart';
 Future<AppSettings> initDependencies() async {
   // Register app_update services (Dio, UpdateBloc, etc.) via injectable
   configureDependencies();
+
+  // ── Load bundled data assets ──────────────────────────────────────────────
+  await loadCityTranslations();
 
   // ── Detect platform first — kIsTV getter depends on this ──────────────────
   final platformConfig = PlatformConfig();
@@ -79,7 +85,7 @@ Future<AppSettings> initDependencies() async {
       settings.selectedLongitude != null) {
     // Worldwide location — init SQLite anyway for possible mode switch.
     await sqliteRepo.initialize('uae');
-    calcRepo.initializeWithCoordinates(
+    calcRepo.configureCalculatedMode(
       settings.selectedLatitude!,
       settings.selectedLongitude!,
       settings.calculationMethod,
@@ -136,6 +142,9 @@ Future<AppSettings> initDependencies() async {
     getIt.registerLazySingleton<IWorldCityRepository>(
       () => WorldCityJsonRepository(),
     );
+
+    // Tasbih counter — mobile only, no async init needed
+    getIt.registerLazySingleton<ITasbihRepository>(() => TasbihRepository());
   }
 
   return settings;

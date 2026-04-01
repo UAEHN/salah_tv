@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 import 'mobile_notification_toggle_row.dart';
 
@@ -49,6 +51,7 @@ class MobilePrayerNotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final cardColor = MobileColors.cardColor(context);
 
     return Opacity(
@@ -68,35 +71,35 @@ class MobilePrayerNotificationCard extends StatelessWidget {
             _PrayerHeader(prayerKey: prayerKey, prayerName: prayerName),
             const SizedBox(height: 12),
             MobileNotificationToggleRow(
-              label: 'تذكير قبل الأذان',
+              label: l.settingsPreAdhanReminder,
               value: isPreAdhanOn,
               isEnabled: isEnabled,
               onChanged: onPreAdhanChanged,
             ),
             if (isPreAdhanOn && isEnabled)
               MobileReminderDurationChip(
-                label: 'قبل $preAdhanMinutes دقيقة',
+                label: l.settingsBeforeMinutes(preAdhanMinutes),
                 onTap: onPreAdhanDurationTap,
               ),
             MobileNotificationToggleRow(
-              label: 'تنبيه الأذان',
+              label: l.settingsAdhanAlert,
               value: isAdhanOn,
               isEnabled: isEnabled,
               onChanged: onAdhanChanged,
             ),
             MobileNotificationToggleRow(
-              label: 'تذكير قبل الإقامة',
+              label: l.settingsPreIqamaReminder,
               value: isPreIqamaOn,
               isEnabled: isEnabled,
               onChanged: onPreIqamaChanged,
             ),
             if (isPreIqamaOn && isEnabled)
               MobileReminderDurationChip(
-                label: 'قبل $preIqamaMinutes دقيقة',
+                label: l.settingsBeforeMinutes(preIqamaMinutes),
                 onTap: onPreIqamaDurationTap,
               ),
             MobileNotificationToggleRow(
-              label: 'تنبيه الإقامة',
+              label: l.settingsIqamaAlert,
               value: isIqamaOn,
               isEnabled: isEnabled,
               onChanged: onIqamaChanged,

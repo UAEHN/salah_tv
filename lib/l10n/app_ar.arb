@@ -1,0 +1,326 @@
+﻿{
+    "@@locale":  "ar",
+    "appTitle":  "غسق",
+    "languageArabic":  "العربية",
+    "languageEnglish":  "English",
+    "localeComma":  "،",
+    "commonEnabled":  "مفعّل",
+    "commonDisabled":  "معطّل",
+    "commonRetry":  "إعادة المحاولة",
+    "commonError":  "خطأ",
+    "commonSave":  "حفظ",
+    "commonSaveChanges":  "حفظ التغييرات",
+    "navSettings":  "الإعدادات",
+    "navQibla":  "القبلة",
+    "navAdhkar":  "الأذكار",
+    "navPrayer":  "الصلاة",
+    "navTasbih":  "التسبيح",
+    "adhkarNotAvailableOnTv":  "الأذكار غير متوفرة على أجهزة التلفاز",
+    "adhkarCompletedCategory":  "أنهيت {categoryName}",
+    "@adhkarCompletedCategory":  {
+                                     "placeholders":  {
+                                                          "categoryName":  {
+
+                                                                           }
+                                                      }
+                                 },
+    "adhkarMayAllahAccept":  "تقبل الله منك",
+    "adhkarBackToCategories":  "العودة إلى التصنيفات",
+    "adhkarCountLabel":  "{count} ذكر",
+    "@adhkarCountLabel":  {
+                              "placeholders":  {
+                                                   "count":  {
+                                                                 "type":  "int"
+                                                             }
+                                               }
+                          },
+    "adhkarMorningSession":  "أذكار الصباح",
+    "adhkarEveningSession":  "أذكار المساء",
+    "tasbihEntrySummary":  "ابدأ التسبيح اليومي",
+    "tasbihPhraseSubhanAllah":  "سبحان الله",
+    "tasbihPhraseAlhamdulillah":  "الحمد لله",
+    "tasbihPhraseAllahuAkbar":  "الله أكبر",
+    "tasbihPhraseLaIlahaIllallah":  "لا إله إلا الله",
+    "tasbihCompletedMessage":  "تم الإنجاز",
+    "tasbihSwipeHint":  "اسحب للتبديل بين الأذكار",
+    "tasbihResetTooltip":  "إعادة العداد",
+    "duaAfterAdhanTitle":  "دعاء بعد الأذان",
+    "duaAfterAdhanText":  "اللَّهُمَّ رَبَّ هَذِهِ الدَّعْوَةِ التَّامَّةِ وَالصَّلَاةِ الْقَائِمَةِ، آتِ مُحَمَّدًا الْوَسِيلَةَ وَالْفَضِيلَةَ، وَابْعَثْهُ مَقَامًا مَحْمُودًا الَّذِي وَعَدْتَهُ.",
+    "prayerFajr":  "الفجر",
+    "prayerSunrise":  "الشروق",
+    "prayerDhuhr":  "الظهر",
+    "prayerAsr":  "العصر",
+    "prayerMaghrib":  "المغرب",
+    "prayerIsha":  "العشاء",
+    "nextPrayerLabel":  "الوقت المتبقي على أذان",
+    "nextPrayerActiveLabel":  "الصلاة القادمة",
+    "countdownNextPrayer":  "باقي على صلاة {prayerName}",
+    "@countdownNextPrayer":  {
+                                 "placeholders":  {
+                                                      "prayerName":  {
+
+                                                                     }
+                                                  }
+                             },
+    "countdownToIqama":  "باقي على إقامة {prayerName}",
+    "@countdownToIqama":  {
+                              "placeholders":  {
+                                                   "prayerName":  {
+
+                                                                  }
+                                               }
+                          },
+    "iqamaAfterPrayer":  "إقامة صلاة {prayerName} بعد",
+    "@iqamaAfterPrayer":  {
+                              "placeholders":  {
+                                                   "prayerName":  {
+
+                                                                  }
+                                               }
+                          },
+    "ongoingNow":  "جارٍ الآن",
+    "adhanNowTitle":  "حان الآن موعد",
+    "adhanPrayerTitle":  "أذان {prayerName}",
+    "@adhanPrayerTitle":  {
+                              "placeholders":  {
+                                                   "prayerName":  {
+
+                                                                  }
+                                               }
+                          },
+    "skipAdhanHint":  "اضغط OK لتخطي الأذان",
+    "iqamaNowTitle":  "حان موعد صلاة",
+    "iqamaLabel":  "الإقامة",
+    "noPrayerDataToday":  "لا توجد بيانات لهذا اليوم",
+    "noPrayerDataForDate":  "لا توجد بيانات لهذا التاريخ",
+    "checkCsvInSettings":  "تحقق من ملف CSV في الإعدادات",
+    "pressOkForSettings":  "اضغط OK للإعدادات",
+    "backToToday":  "العودة إلى اليوم",
+    "notificationReminderTitle":  "تذكير",
+    "notificationIqamaTitle":  "الإقامة",
+    "notificationAdhanBody":  "حان وقت {prayerName}",
+    "@notificationAdhanBody":  {
+                                   "placeholders":  {
+                                                        "prayerName":  {
+
+                                                                       }
+                                                    }
+                               },
+    "notificationPreAdhanBody":  "{prayerName} بعد {minutes} دقيقة",
+    "@notificationPreAdhanBody":  {
+                                      "placeholders":  {
+                                                           "prayerName":  {
+
+                                                                          },
+                                                           "minutes":  {
+
+                                                                       }
+                                                       }
+                                  },
+    "notificationPreIqamaBody":  "إقامة {prayerName} بعد {minutes} دقيقة",
+    "@notificationPreIqamaBody":  {
+                                      "placeholders":  {
+                                                           "prayerName":  {
+
+                                                                          },
+                                                           "minutes":  {
+
+                                                                       }
+                                                       }
+                                  },
+    "notificationIqamaBody":  "حان وقت إقامة {prayerName}",
+    "@notificationIqamaBody":  {
+                                   "placeholders":  {
+                                                        "prayerName":  {
+
+                                                                       }
+                                                    }
+                               },
+    "settingsLanguage":  "اللغة",
+    "settingsTimeFormat":  "صيغة الوقت",
+    "settingsAppearance":  "المظهر",
+    "settingsOther":  "أخرى",
+    "settings24HourFormat":  "صيغة 24 ساعة",
+    "settings24HourEnabled":  "نظام 24 ساعة",
+    "settings12HourEnabled":  "نظام 12 ساعة",
+    "settings24HourLabel":  "24 ساعة",
+    "settings12HourLabel":  "12 ساعة",
+    "settingsCustomizeAppearance":  "تخصيص المظهر",
+    "settingsDarkMode":  "الوضع الداكن",
+    "settingsLightMode":  "الوضع الفاتح",
+    "settingsDarkModeLabel":  "الوضع الليلي",
+    "settingsPrivacyPolicy":  "سياسة الخصوصية",
+    "settingsLocationSection":  "الموقع",
+    "settingsCountryAndCity":  "الدولة والمدينة",
+    "settingsNotificationsSection":  "التنبيهات",
+    "settingsNotificationSettings":  "إعدادات التنبيهات",
+    "settingsCalculationSection":  "الحساب",
+    "settingsCalculationMethodLabel":  "طريقة الحساب",
+    "settingsMadhabLabel":  "المذهب الفقهي",
+    "settingsAdjustPrayerTimes":  "تعديل أوقات الأذان والإقامة",
+    "settingsGeneralSettings":  "إعدادات عامة",
+    "settingsPrayerAlerts":  "تنبيهات الصلوات",
+    "settingsAdhanSoundLabel":  "صوت الأذان",
+    "settingsPreAdhanReminder":  "تذكير قبل الأذان",
+    "settingsAdhanAlert":  "تنبيه الأذان",
+    "settingsPreIqamaReminder":  "تذكير قبل الإقامة",
+    "settingsIqamaAlert":  "تنبيه الإقامة",
+    "settingsPreAdhanDuration":  "مدة التذكير قبل الأذان",
+    "settingsPreIqamaDuration":  "مدة التذكير قبل الإقامة",
+    "settingsBeforeMinutes":  "قبل {minutes} دقيقة",
+    "@settingsBeforeMinutes":  {
+                                   "placeholders":  {
+                                                        "minutes":  {
+
+                                                                    }
+                                                    }
+                               },
+    "settingsDurationMinutes":  "{minutes} دقيقة",
+    "@settingsDurationMinutes":  {
+                                     "placeholders":  {
+                                                          "minutes":  {
+
+                                                                      }
+                                                      }
+                                 },
+    "settingsAdjustTimes":  "تعديل الأوقات",
+    "settingsAdjustAdhanTimeTitle":  "ضبط وقت الأذان",
+    "settingsAdjustAdhanTimeSubtitle":  "تقديم أو تأخير الأذان (−30 إلى +30 دقيقة)",
+    "settingsIqamaDelayTitle":  "تأخير الإقامة",
+    "settingsIqamaDelaySubtitle":  "عدد الدقائق بعد الأذان (0 إلى 60 دقيقة)",
+    "settingsMinuteShort":  "د",
+    "settingsMinuteUnit":  "دقيقة",
+    "settingsMadhabAffectsAsrNote":  "يؤثر على وقت العصر في الأوقات المحسوبة (GPS) فقط",
+    "settingsHanafiAsrLaterNote":  "المذهب الحنفي يُؤخّر وقت العصر قليلاً",
+    "madhabShafi":  "الشافعي",
+    "madhabHanafi":  "الحنفي",
+    "madhabShafiFamily":  "الشافعي / المالكي / الحنبلي",
+    "settingsChooseAdhanSound":  "اختر صوت الأذان",
+    "settingsDetectingLocation":  "جارِ تحديد الموقع...",
+    "settingsDetectMyLocation":  "تحديد موقعي تلقائياً",
+    "settingsNoMatchingCountries":  "لا توجد دول مطابقة",
+    "settingsNoMatchingCities":  "لا توجد مدن مطابقة",
+    "settingsSelectCountry":  "اختر الدولة",
+    "settingsSelectCity":  "اختر المدينة",
+    "settingsSearchCountry":  "ابحث عن دولة",
+    "settingsSearchCity":  "ابحث عن مدينة",
+    "settingsMethodAffectsGpsOnly":  "تؤثر على الأوقات المحسوبة (GPS) فقط",
+    "settingsNotificationsEnabled":  "الإشعارات مفعّلة",
+    "settingsNotificationsDisabled":  "الإشعارات معطّلة",
+    "settingsCategoryLocation":  "الموقع",
+    "settingsCategoryLocationSubtitle":  "الدولة والمدينة",
+    "settingsCategoryQuran":  "القرآن الكريم",
+    "settingsCategoryQuranSubtitle":  "بث القرآن في الخلفية",
+    "settingsCategoryAdhan":  "الأذان",
+    "settingsCategoryAdhanSubtitle":  "صوت الأذان والتشغيل التلقائي",
+    "settingsCategoryAdhanOffsets":  "تعديل أوقات الأذان",
+    "settingsCategoryAdhanOffsetsSubtitle":  "ضبط أوقات الأذان",
+    "settingsCategoryIqama":  "تعديل أوقات الإقامة",
+    "settingsCategoryIqamaSubtitle":  "أوقات الإقامة بعد الأذان",
+    "settingsCategoryAppearance":  "المظهر",
+    "settingsCategoryAppearanceSubtitle":  "الخط والألوان والتصميم",
+    "settingsCategoryAdhkar":  "الأذكار",
+    "settingsCategoryAdhkarSubtitle":  "أذكار الصباح والمساء",
+    "settingsFont":  "الخط",
+    "settingsThemeColor":  "لون القالب",
+    "settingsLayoutDesign":  "تصميم الواجهة",
+    "settingsClockType":  "نوع الساعة",
+    "layoutModern":  "حديث",
+    "layoutClassic":  "كلاسيكي",
+    "clockDigital":  "رقمي",
+    "clockAnalog":  "تناظري",
+    "fontCairo":  "كايرو",
+    "fontBeiruti":  "بيروتي",
+    "fontKufi":  "كوفي",
+    "fontRubik":  "روبيك",
+    "fontInter":  "Inter",
+    "themeGreen":  "زمردي",
+    "themeTeal":  "فيروزي",
+    "themeGold":  "ذهبي",
+    "themeBlue":  "ياقوتي",
+    "themePurple":  "بنفسجي",
+    "settingsAutoPlayAdhan":  "تشغيل الأذان تلقائياً:",
+    "settingsChangeAdhan":  "تغيير الأذان",
+    "settingsQuranInBackground":  "تشغيل القرآن في الخلفية:",
+    "settingsNoReciterSelected":  "لم يتم اختيار قارئ",
+    "settingsChangeReciter":  "تغيير القارئ",
+    "settingsInternetRequiredForQuran":  "يتطلب اتصالاً بالإنترنت لتحميل قائمة القراء وتشغيل القرآن.",
+    "settingsMorningEveningAdhkar":  "أذكار الصباح والمساء:",
+    "settingsAdhkarScheduleNote":  "أذكار الصباح: تظهر بعد الفجر حتى الساعة 10:00 صباحاً. أذكار المساء: تظهر بعد العصر وتنتهي قبل أذان المغرب بـ 5 دقائق. تظهر مرة واحدة في اليوم، وتُوقف مؤقتاً أثناء الأذان والإقامة.",
+    "settingsNoCitySelected":  "لم يتم اختيار مدينة",
+    "settingsChangeCity":  "تغيير المدينة",
+    "settingsChangeCountry":  "تغيير الدولة",
+    "settingsCloseApp":  "إغلاق التطبيق",
+    "settingsSelectReciter":  "اختر القارئ",
+    "settingsFailedToLoadReciters":  "تعذّر تحميل القائمة.\nتحقق من الاتصال بالإنترنت.",
+    "settingsLoadingReciters":  "جاري تحميل القراء...",
+    "adhanSound1":  "أذان 1",
+    "adhanSound2":  "أذان 2",
+    "adhanSoundAliMulla":  "الشيخ علي ملا",
+    "adhanSoundAbdulbasit":  "الشيخ عبدالباسط عبدالصمد",
+    "adhanSoundAqsa":  "أذان المسجد الأقصى",
+    "qiblaPermissionDeniedTitle":  "الموقع مرفوض",
+    "qiblaPermissionDeniedSubtitle":  "يرجى السماح بالوصول إلى الموقع من الإعدادات",
+    "qiblaGpsDisabledTitle":  "الـ GPS معطّل",
+    "qiblaGpsDisabledSubtitle":  "يرجى تفعيل خدمة الموقع",
+    "qiblaNotAvailableOnTv":  "القبلة غير متوفرة على أجهزة التلفاز",
+    "qiblaAlignedStatus":  "أنت تشير باتجاه القبلة",
+    "qiblaFindStatus":  "اتجه نحو القبلة",
+    "qiblaAlignedSub":  "ALIGNED WITH KAABA",
+    "qiblaFindSub":  "FIND THE KAABA",
+    "qiblaDistanceToKaaba":  "المسافة للكعبة",
+    "qiblaDeviation":  "الانحراف",
+    "unitKm":  "كم",
+    "unitDegree":  "درجة",
+    "weekdayMonday":  "الاثنين",
+    "weekdayTuesday":  "الثلاثاء",
+    "weekdayWednesday":  "الأربعاء",
+    "weekdayThursday":  "الخميس",
+    "weekdayFriday":  "الجمعة",
+    "weekdaySaturday":  "السبت",
+    "weekdaySunday":  "الأحد",
+    "gregorianMonthJanuary":  "يناير",
+    "gregorianMonthFebruary":  "فبراير",
+    "gregorianMonthMarch":  "مارس",
+    "gregorianMonthApril":  "أبريل",
+    "gregorianMonthMay":  "مايو",
+    "gregorianMonthJune":  "يونيو",
+    "gregorianMonthJuly":  "يوليو",
+    "gregorianMonthAugust":  "أغسطس",
+    "gregorianMonthSeptember":  "سبتمبر",
+    "gregorianMonthOctober":  "أكتوبر",
+    "gregorianMonthNovember":  "نوفمبر",
+    "gregorianMonthDecember":  "ديسمبر",
+    "hijriMonthMuharram":  "مُحَرَّم",
+    "hijriMonthSafar":  "صَفَر",
+    "hijriMonthRabiAlAwwal":  "رَبِيع الأَوَّل",
+    "hijriMonthRabiAlThani":  "رَبِيع الثَّانِي",
+    "hijriMonthJumadaAlAwwal":  "جُمَادَى الأُولَى",
+    "hijriMonthJumadaAlAkhirah":  "جُمَادَى الآخِرَة",
+    "hijriMonthRajab":  "رَجَب",
+    "hijriMonthShaban":  "شَعْبَان",
+    "hijriMonthRamadan":  "رَمَضَان",
+    "hijriMonthShawwal":  "شَوَّال",
+    "hijriMonthDhuAlQadah":  "ذُو القَعْدَة",
+    "hijriMonthDhuAlHijjah":  "ذُو الحِجَّة",
+    "hijriYearSuffix":  "هـ",
+    "gregorianYearSuffix":  "م",
+    "calcMethodMuslimWorldLeague":  "رابطة العالم الإسلامي",
+    "calcMethodEgyptian":  "الهيئة المصرية العامة للمساحة",
+    "calcMethodKarachi":  "جامعة العلوم الإسلامية، كراتشي",
+    "calcMethodUmmAlQura":  "أم القرى",
+    "calcMethodDubai":  "دبي",
+    "calcMethodQatar":  "قطر",
+    "calcMethodKuwait":  "الكويت",
+    "calcMethodMorocco":  "المغرب",
+    "calcMethodSingapore":  "سنغافورة",
+    "calcMethodTehran":  "طهران",
+    "calcMethodTurkiye":  "تركيا (ديانت)",
+    "calcMethodNorthAmerica":  "أمريكا الشمالية (ISNA)",
+    "calcMethodMoonsightingCommittee":  "لجنة رؤية الهلال",
+    "splashVerseStart":  "أَقِمِ ٱلصَّلَوٰةَ لِدُلُوكِ ٱلشَّمْسِ إِلَىٰ ",
+    "splashVerseHighlight":  "غَسَقِ",
+    "splashVerseEnd":  " ٱلَّيْلِ",
+    "splashVerseReference":  "الإسراء: ٧٨",
+    "fontPreviewSample":  "أبجد هوز"
+}

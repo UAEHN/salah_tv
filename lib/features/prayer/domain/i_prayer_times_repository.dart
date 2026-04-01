@@ -14,6 +14,21 @@ abstract class IPrayerTimesRepository {
   Future<Either<Failure, Success>> loadCountry(String countryKey);
   Future<Either<Failure, DailyPrayerTimes?>> getByDate(DateTime date);
   void setActiveCity(String city);
+
+  /// Switch to calculated mode with the given coordinates and method.
+  /// No-op on repos that don't support dual mode.
+  void configureCalculatedMode(
+    double lat,
+    double lng,
+    String methodKey, {
+    String madhabKey = 'shafi',
+    String cityLabel = '',
+    double? utcOffsetHours,
+  });
+
+  /// Switch to DB-backed mode. No-op on repos that don't support dual mode.
+  void configureDatabaseMode();
+
   // Sync O(1) cache lookups — no Either needed
   DailyPrayerTimes? getToday();
   DailyPrayerTimes? getTomorrowByKey(String key);

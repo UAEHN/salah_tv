@@ -49,7 +49,8 @@ class AdhkarAudioService implements IAdhkarAudioPort {
       _appInitiatedStop = true;
       await _player.stop();
       _appInitiatedStop = false;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[AdhkarAudio] stop failed: $e');
       _appInitiatedStop = false;
     }
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import '../../../../core/app_colors.dart';
 import '../../../prayer/presentation/painters/arabesque_painter.dart';
 
@@ -14,6 +15,7 @@ class IqamaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       color: Colors.white,
       child: Stack(
@@ -46,14 +48,10 @@ class IqamaScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.mosque_rounded,
-                  size: 100,
-                  color: palette.primary,
-                ),
+                Icon(Icons.mosque_rounded, size: 100, color: palette.primary),
                 const SizedBox(height: 30),
                 Text(
-                  'حان موعد صلاة',
+                  l.iqamaNowTitle,
                   style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.w500,
@@ -67,19 +65,16 @@ class IqamaScreen extends StatelessWidget {
                     fontSize: 80,
                     fontWeight: FontWeight.w800,
                     color: palette.primary,
-                    shadows: [
-                      Shadow(
-                        color: palette.glow,
-                        blurRadius: 20,
-                      ),
-                    ],
+                    shadows: [Shadow(color: palette.glow, blurRadius: 20)],
                   ),
                 ),
                 const SizedBox(height: 16),
                 // Iqama label
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 28, vertical: 10),
+                    horizontal: 28,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: palette.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(30),
@@ -89,7 +84,7 @@ class IqamaScreen extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'الإقامة',
+                    l.iqamaLabel,
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w700,

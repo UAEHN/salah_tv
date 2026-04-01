@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import '../../domain/entities/daily_prayer_times.dart';
+import '../../../../core/localization/prayer_name_localizer.dart';
 import '../../../../core/app_colors.dart';
 
 class PrayerCardContent extends StatelessWidget {
@@ -32,17 +34,18 @@ class PrayerCardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final borderColor = isPreAlert
         ? palette.primary.withValues(alpha: 0.30 + pulse * 0.20)
         : isNext
-            ? palette.primary.withValues(alpha: 0.5)
-            : tc.borderGlass;
+        ? palette.primary.withValues(alpha: 0.5)
+        : tc.borderGlass;
 
     final glowColor = isPreAlert
         ? palette.primary.withValues(alpha: 0.08 + pulse * 0.12)
         : isNext
-            ? palette.glow.withValues(alpha: 0.2)
-            : Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.04);
+        ? palette.glow.withValues(alpha: 0.2)
+        : Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.04);
 
     return Container(
       decoration: BoxDecoration(
@@ -91,7 +94,7 @@ class PrayerCardContent extends StatelessWidget {
           ),
           SizedBox(height: screenH * 0.008),
           Text(
-            prayer.name,
+            localizedPrayerName(context, prayer.key),
             style: TextStyle(
               fontSize: screenH * 0.040,
               fontWeight: isNext ? FontWeight.w700 : FontWeight.w500,
@@ -100,7 +103,10 @@ class PrayerCardContent extends StatelessWidget {
           ),
           Container(
             height: 1,
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: screenH * 0.006),
+            margin: EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: screenH * 0.006,
+            ),
             color: isNext
                 ? palette.primary.withValues(alpha: 0.25)
                 : tc.borderGlass,
@@ -117,7 +123,7 @@ class PrayerCardContent extends StatelessWidget {
           if (prayer.isCountable) ...[
             SizedBox(height: screenH * 0.002),
             Text(
-              'إقامة $formattedIqama',
+              '${l.iqamaLabel} $formattedIqama',
               textDirection: TextDirection.rtl,
               style: TextStyle(fontSize: screenH * 0.026, color: tc.textMuted),
             ),

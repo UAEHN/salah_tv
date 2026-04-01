@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
 import '../../../../core/city_translations.dart';
 import '../../../prayer/presentation/bloc/prayer_bloc.dart';
-import '../settings_provider.dart';
 import '../dialogs/city_picker_dialog.dart';
+import '../settings_provider.dart';
 import 'tv_button.dart';
 
 class CitySection extends StatelessWidget {
@@ -13,11 +15,13 @@ class CitySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final settingsProv = context.watch<SettingsProvider>();
     final settings = settingsProv.settings;
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);
     final hasCity = settings.selectedCity.isNotEmpty;
+
     return Row(
       children: [
         Expanded(
@@ -34,7 +38,9 @@ class CitySection extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    hasCity ? cityLabel(settings.selectedCity) : 'لم يتم اختيار مدينة',
+                    hasCity
+                        ? cityLabel(settings.selectedCity, locale: l.localeName)
+                        : l.settingsNoCitySelected,
                     style: TextStyle(
                       fontSize: 18,
                       color: hasCity ? tc.textPrimary : tc.textMuted,
@@ -58,8 +64,8 @@ class CitySection extends StatelessWidget {
               const Icon(Icons.location_city_rounded, color: Colors.white, size: 20),
               const SizedBox(width: 8),
               Text(
-                'تغيير المدينة',
-                style: TextStyle(fontSize: 18, color: Colors.white),
+                l.settingsChangeCity,
+                style: const TextStyle(fontSize: 18, color: Colors.white),
               ),
             ],
           ),
@@ -73,12 +79,12 @@ class CitySection extends StatelessWidget {
     SettingsProvider settingsProv,
     AccentPalette palette,
   ) {
-    final availableCities =
-        context.select((PrayerBloc b) => b.state.availableCities);
+    final availableCities = context.select((PrayerBloc b) => b.state.availableCities);
     final filtered = citiesForCountry(
       settingsProv.settings.selectedCountry,
       availableCities,
     );
+
     showDialog<void>(
       context: context,
       builder: (_) => CityPickerDialog(

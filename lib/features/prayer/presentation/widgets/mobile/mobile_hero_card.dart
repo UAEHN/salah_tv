@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../../../settings/presentation/settings_provider.dart';
 import '../../bloc/prayer_bloc.dart';
@@ -13,9 +14,10 @@ class MobileHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final state = context.watch<PrayerBloc>().state;
-    final nextPrayerName = context.select(
-      (PrayerBloc b) => b.state.nextPrayerName,
+    final nextPrayerKey = context.select(
+      (PrayerBloc b) => b.state.nextPrayerKey,
     );
     final countdown = context.select((PrayerBloc b) => b.state.countdown);
     final isCycleActive = context.select(
@@ -27,8 +29,8 @@ class MobileHeroCard extends StatelessWidget {
     final iqamaCountdown = context.select(
       (PrayerBloc b) => b.state.iqamaCountdown,
     );
-    final iqamaPrayerName = context.select(
-      (PrayerBloc b) => b.state.iqamaPrayerName,
+    final iqamaPrayerKey = context.select(
+      (PrayerBloc b) => b.state.iqamaPrayerKey,
     );
     final activeCyclePrayerKey = context.select(
       (PrayerBloc b) => b.state.activeCyclePrayerKey,
@@ -54,19 +56,19 @@ class MobileHeroCard extends StatelessWidget {
     return Column(
       children: [
         MobileHeroCountdown(
-          nextPrayerName: nextPrayerName,
+          nextPrayerKey: nextPrayerKey,
           countdown: countdown,
           isCycleActive: isCycleActive,
           isIqamaCountdown: isIqamaCountdown,
           iqamaCountdown: iqamaCountdown,
-          iqamaPrayerName: iqamaPrayerName,
+          iqamaPrayerKey: iqamaPrayerKey,
           progress: progress,
           iqamaProgress: iqamaProgress,
         ),
         const SizedBox(height: 24),
         MobileHeroHijriRow(
-          hijriDate: formatHijriDate(displayedDate),
-          gregorianDate: formatGregorianDate(displayedDate),
+          hijriDate: formatHijriDate(l, displayedDate),
+          gregorianDate: formatGregorianDate(l, displayedDate),
           isViewingToday: isViewingToday,
           isBusy: isDateNavigationBusy,
           onPrevious: () =>

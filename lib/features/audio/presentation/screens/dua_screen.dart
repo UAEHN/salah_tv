@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+
 import '../../../../core/app_colors.dart';
 import '../../../prayer/presentation/painters/arabesque_painter.dart';
 
@@ -7,36 +8,35 @@ class DuaScreen extends StatelessWidget {
 
   const DuaScreen({super.key, required this.palette});
 
+  static const _title = 'دعاء بعد الأذان';
+  static const _text =
+      'اللَّهُمَّ رَبَّ هَذِهِ الدَّعْوَةِ التَّامَّةِ وَالصَّلَاةِ الْقَائِمَةِ،'
+      ' آتِ مُحَمَّدًا الْوَسِيلَةَ وَالْفَضِيلَةَ،'
+      ' وَابْعَثْهُ مَقَامًا مَحْمُودًا الَّذِي وَعَدْتَهُ.';
+
   @override
   Widget build(BuildContext context) {
+
     return Container(
       color: Colors.white,
       child: Stack(
         children: [
-          // Background arabesque pattern
           Positioned.fill(
             child: CustomPaint(
               painter: ArabescPainter(color: palette.primary, opacity: 0.08),
             ),
           ),
-
-          // Radial gradient overlay
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   center: Alignment.center,
                   radius: 1.3,
-                  colors: [
-                    palette.primary.withValues(alpha: 0.07),
-                    Colors.white,
-                  ],
+                  colors: [palette.primary.withValues(alpha: 0.07), Colors.white],
                 ),
               ),
             ),
           ),
-
-          // Top decorative bar
           Positioned(
             top: 0,
             left: 0,
@@ -46,8 +46,6 @@ class DuaScreen extends StatelessWidget {
               decoration: BoxDecoration(gradient: palette.gradient),
             ),
           ),
-
-          // Bottom decorative bar
           Positioned(
             bottom: 0,
             left: 0,
@@ -57,15 +55,12 @@ class DuaScreen extends StatelessWidget {
               decoration: BoxDecoration(gradient: palette.gradient),
             ),
           ),
-
-          // Content
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 80),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Icon
                   Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
@@ -82,22 +77,16 @@ class DuaScreen extends StatelessWidget {
                       color: palette.primary,
                     ),
                   ),
-
                   const SizedBox(height: 20),
-
-                  // Label
                   Text(
-                    'دعاء بعد الأذان',
-                    style: TextStyle(
+                    _title,
+                    style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w500,
                       color: kTextSecondary,
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
-                  // Divider
                   Container(
                     width: 60,
                     height: 3,
@@ -106,13 +95,9 @@ class DuaScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-
                   const SizedBox(height: 28),
-
-                  // Dua text
                   Text(
-                    'اللهم ربَّ هذه الدعوةِ التامة، والصلاةِ القائمة،\n'
-                    'آتِ محمدًا الوسيلةَ والفضيلة، وابعَثْه مقامًا محمودًا الذي وعَدْتَه',
+                    _text,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 36,

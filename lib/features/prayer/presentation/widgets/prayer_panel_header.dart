@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/city_translations.dart';
 
@@ -16,6 +17,7 @@ class PrayerPanelHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context).localeName;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
@@ -44,7 +46,7 @@ class PrayerPanelHeader extends StatelessWidget {
                       size: 13),
                   const SizedBox(width: 4),
                   Text(
-                    cityLabel(selectedCity),
+                    cityLabel(selectedCity, locale: locale),
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,

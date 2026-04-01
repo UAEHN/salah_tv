@@ -18,25 +18,24 @@ class DailyPrayerTimes {
   });
 
   List<PrayerEntry> get prayers => [
-        PrayerEntry(name: 'الفجر', key: 'fajr', time: fajr),
-        PrayerEntry(name: 'الشروق', key: 'sunrise', time: sunrise, isCountable: false),
-        PrayerEntry(name: 'الظهر', key: 'dhuhr', time: dhuhr),
-        PrayerEntry(name: 'العصر', key: 'asr', time: asr),
-        PrayerEntry(name: 'المغرب', key: 'maghrib', time: maghrib),
-        PrayerEntry(name: 'العشاء', key: 'isha', time: isha),
-      ];
+    PrayerEntry(key: 'fajr', time: fajr),
+    PrayerEntry(key: 'sunrise', time: sunrise, isCountable: false),
+    PrayerEntry(key: 'dhuhr', time: dhuhr),
+    PrayerEntry(key: 'asr', time: asr),
+    PrayerEntry(key: 'maghrib', time: maghrib),
+    PrayerEntry(key: 'isha', time: isha),
+  ];
 
-  List<PrayerEntry> get prayersOnly => prayers.where((p) => p.isCountable).toList();
+  List<PrayerEntry> get prayersOnly =>
+      prayers.where((p) => p.isCountable).toList();
 }
 
 class PrayerEntry {
-  final String name;
   final String key;
   final DateTime time;
   final bool isCountable;
 
   const PrayerEntry({
-    required this.name,
     required this.key,
     required this.time,
     this.isCountable = true,

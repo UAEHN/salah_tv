@@ -1,10 +1,12 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 import '../../../domain/entities/qibla_data.dart';
 import 'qibla_compass.dart';
 import 'qibla_stats_row.dart';
 
-/// Active Qibla view — shown when GPS + sensors are working.
+/// Active Qibla view shown when GPS + sensors are working.
 class MobileQiblaActiveView extends StatelessWidget {
   final QiblaData data;
 
@@ -12,9 +14,10 @@ class MobileQiblaActiveView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final isAligned = data.isAligned;
-    final statusText = isAligned ? 'أنت تشير باتجاه القبلة' : 'اتجه نحو القبلة';
-    final statusSub = isAligned ? 'ALIGNED WITH KAABA' : 'FIND THE KAABA';
+    final statusText = isAligned ? l.qiblaAlignedStatus : l.qiblaFindStatus;
+    final statusSub = isAligned ? l.qiblaAlignedSub : l.qiblaFindSub;
 
     return Column(
       children: [

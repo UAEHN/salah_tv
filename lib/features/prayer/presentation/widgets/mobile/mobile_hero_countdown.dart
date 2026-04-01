@@ -1,35 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+import '../../../../../core/localization/prayer_name_localizer.dart';
 import '../../../../../core/mobile_theme.dart';
 import '../../../../../core/time_formatters.dart';
 import '../mobile_countdown_arc_painter.dart';
 
 class MobileHeroCountdown extends StatelessWidget {
-  final String nextPrayerName;
+  final String nextPrayerKey;
   final Duration countdown;
   final bool isCycleActive;
   final bool isIqamaCountdown;
   final Duration iqamaCountdown;
-  final String iqamaPrayerName;
+  final String iqamaPrayerKey;
   final double progress;
   final double iqamaProgress;
 
   const MobileHeroCountdown({
     super.key,
-    required this.nextPrayerName,
+    required this.nextPrayerKey,
     required this.countdown,
     required this.isCycleActive,
     required this.isIqamaCountdown,
     required this.iqamaCountdown,
-    required this.iqamaPrayerName,
+    required this.iqamaPrayerKey,
     required this.progress,
     required this.iqamaProgress,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final nextPrayerName = localizedPrayerName(context, nextPrayerKey);
+    final iqamaPrayerName = localizedPrayerName(context, iqamaPrayerKey);
+
+    final size =
+        (MediaQuery.of(context).size.height * 0.33).clamp(160.0, 256.0);
+    final innerSize = size - 20;
+
     return SizedBox(
-      width: 256,
-      height: 256,
+      width: size,
+      height: size,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -50,8 +60,8 @@ class MobileHeroCountdown extends StatelessWidget {
             ),
           ),
           Container(
-            width: 236,
-            height: 236,
+            width: innerSize,
+            height: innerSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               boxShadow: [
@@ -66,7 +76,7 @@ class MobileHeroCountdown extends StatelessWidget {
             ),
           ),
           CustomPaint(
-            size: const Size(256, 256),
+            size: Size(size, size),
             painter: MobileCountdownArcPainter(
               progress: isIqamaCountdown ? iqamaProgress : progress,
               arcColor: isIqamaCountdown
@@ -89,8 +99,8 @@ class MobileHeroCountdown extends StatelessWidget {
                     isIqamaCountdown
                         ? formatCountdown(iqamaCountdown)
                         : isCycleActive
-                            ? iqamaPrayerName
-                            : formatCountdown(countdown),
+                        ? iqamaPrayerName
+                        : formatCountdown(countdown),
                     maxLines: 1,
                     style: MobileTextStyles.displayLg(context).copyWith(
                       fontSize: isCycleActive && !isIqamaCountdown ? 36 : 64,
@@ -101,7 +111,9 @@ class MobileHeroCountdown extends StatelessWidget {
                         BoxShadow(
                           color: isIqamaCountdown
                               ? MobileColors.iqamaAccent.withValues(alpha: 0.5)
-                              : MobileColors.primaryContainer.withValues(alpha: 0.5),
+                              : MobileColors.primaryContainer.withValues(
+                                  alpha: 0.5,
+                                ),
                           blurRadius: 10,
                         ),
                       ],
@@ -112,10 +124,10 @@ class MobileHeroCountdown extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 isIqamaCountdown
-                    ? 'باقي على إقامة $iqamaPrayerName'
+                    ? l.countdownToIqama(iqamaPrayerName)
                     : isCycleActive
-                        ? 'جارٍ الآن'
-                        : 'باقي على صلاة $nextPrayerName',
+                    ? l.ongoingNow
+                    : l.countdownNextPrayer(nextPrayerName),
                 style: MobileTextStyles.bodyMd(context).copyWith(
                   color: MobileColors.onSurfaceMuted(context),
                   fontSize: 12,

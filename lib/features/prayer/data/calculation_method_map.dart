@@ -22,38 +22,3 @@ CalculationParameters calculationParametersFor(String methodKey) {
     _ => CalculationMethodParameters.muslimWorldLeague(),
   };
 }
-
-/// Default calculation method for a given ISO 3166-1 alpha-2 country code.
-String defaultMethodForCountryIso(String? isoCode) {
-  return switch (isoCode?.toUpperCase()) {
-    'AE' => 'dubai',
-    'SA' => 'umm_al_qura',
-    'KW' => 'kuwait',
-    'QA' => 'qatar',
-    'EG' || 'LY' || 'SD' => 'egyptian',
-    'MA' => 'morocco',
-    'TR' => 'turkiye',
-    'IR' => 'tehran',
-    'PK' || 'BD' || 'IN' || 'AF' => 'karachi',
-    'SG' || 'MY' || 'ID' || 'BN' => 'singapore',
-    'US' || 'CA' || 'MX' => 'north_america',
-    _ => 'muslim_world_league',
-  };
-}
-
-/// Human-readable Arabic labels for calculation methods.
-const kCalculationMethodLabels = <String, String>{
-  'muslim_world_league': 'رابطة العالم الإسلامي',
-  'egyptian': 'الهيئة المصرية العامة للمساحة',
-  'karachi': 'جامعة العلوم الإسلامية، كراتشي',
-  'umm_al_qura': 'أم القرى',
-  'dubai': 'دبي',
-  'qatar': 'قطر',
-  'kuwait': 'الكويت',
-  'morocco': 'المغرب',
-  'singapore': 'سنغافورة',
-  'tehran': 'طهران',
-  'turkiye': 'تركيا (ديانت)',
-  'north_america': 'أمريكا الشمالية (ISNA)',
-  'moonsighting_committee': 'لجنة رؤية الهلال',
-};

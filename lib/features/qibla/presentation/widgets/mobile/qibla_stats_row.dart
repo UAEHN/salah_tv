@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 
 class QiblaStatsRow extends StatelessWidget {
@@ -13,29 +15,27 @@ class QiblaStatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Row(
       textDirection: TextDirection.rtl,
       children: [
-        // Distance Card (Right side when RTL)
         Expanded(
           child: _buildStatCard(
             context: context,
-            title: 'المسافة للكعبة',
+            title: l.qiblaDistanceToKaaba,
             value: distance,
-            unit: 'كم',
+            unit: l.unitKm,
             unitColor: MobileColors.primaryContainer,
           ),
         ),
         const SizedBox(width: 16),
-        // Deviation Card (Left side when RTL)
         Expanded(
           child: _buildStatCard(
             context: context,
-            title: 'الانحراف',
+            title: l.qiblaDeviation,
             value: deviation,
-            unit: 'درجة',
-            unitColor: MobileColors
-                .secondary, // Or use a distinct orange/red like the design
+            unit: l.unitDegree,
+            unitColor: MobileColors.secondary,
           ),
         ),
       ],
@@ -52,9 +52,7 @@ class QiblaStatsRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: MobileDecorations.pillCard(context).copyWith(
-        borderRadius: BorderRadius.circular(
-          32,
-        ), // More rounded than prayer cards
+        borderRadius: BorderRadius.circular(32),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -14,6 +14,7 @@ extension AppSettingsMapper on AppSettings {
     'hadithText': hadithText,
     'hadithSource': hadithSource,
     'fontFamily': fontFamily,
+    'locale': locale,
     'isQuranEnabled': isQuranEnabled,
     'quranReciterName': quranReciterName,
     'quranReciterServerUrl': quranReciterServerUrl,
@@ -49,14 +50,13 @@ String _validatedQuranUrl(String url) {
   return url;
 }
 
-Map<String, bool> _decodeBoolMap(
-  dynamic raw, Map<String, bool> fallback,
-) {
+Map<String, bool> _decodeBoolMap(dynamic raw, Map<String, bool> fallback) {
   if (raw == null) return fallback;
   try {
     final decoded = jsonDecode(raw as String) as Map;
     return decoded.map((k, v) => MapEntry(k.toString(), v as bool));
-  } catch (_) {
+  } on Object {
+    // Malformed stored JSON — return safe default.
     return fallback;
   }
 }
@@ -66,16 +66,25 @@ Map<String, int> _decodeIntMap(dynamic raw, Map<String, int> fallback) {
   try {
     final decoded = jsonDecode(raw as String) as Map;
     return decoded.map((k, v) => MapEntry(k.toString(), v as int));
-  } catch (_) {
+  } on Object {
+    // Malformed stored JSON — return safe default.
     return fallback;
   }
 }
 
 const _defaultBoolMapTrue = {
-  'fajr': true, 'dhuhr': true, 'asr': true, 'maghrib': true, 'isha': true,
+  'fajr': true,
+  'dhuhr': true,
+  'asr': true,
+  'maghrib': true,
+  'isha': true,
 };
 const _defaultBoolMapFalse = {
-  'fajr': false, 'dhuhr': false, 'asr': false, 'maghrib': false, 'isha': false,
+  'fajr': false,
+  'dhuhr': false,
+  'asr': false,
+  'maghrib': false,
+  'isha': false,
 };
 
 AppSettings appSettingsFromMap(Map<String, dynamic> map) {
@@ -85,29 +94,47 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     playAdhan: map['playAdhan'] as bool? ?? true,
     isDarkMode: map['isDarkMode'] as bool? ?? false,
     iqamaDelays: _decodeIntMap(map['iqamaDelays'], const {
-      'fajr': 20, 'dhuhr': 10, 'asr': 10, 'maghrib': 5, 'isha': 15,
+      'fajr': 20,
+      'dhuhr': 10,
+      'asr': 10,
+      'maghrib': 5,
+      'isha': 15,
     }),
     adhanOffsets: _decodeIntMap(map['adhanOffsets'], const {
-      'fajr': 0, 'sunrise': 0, 'dhuhr': 0, 'asr': 0, 'maghrib': 0, 'isha': 0,
+      'fajr': 0,
+      'sunrise': 0,
+      'dhuhr': 0,
+      'asr': 0,
+      'maghrib': 0,
+      'isha': 0,
     }),
     prayerNotificationEnabled: _decodeBoolMap(
-      map['prayerNotificationEnabled'], _defaultBoolMapTrue,
+      map['prayerNotificationEnabled'],
+      _defaultBoolMapTrue,
     ),
     preAdhanReminderEnabled: _decodeBoolMap(
-      map['preAdhanReminderEnabled'], _defaultBoolMapFalse,
+      map['preAdhanReminderEnabled'],
+      _defaultBoolMapFalse,
     ),
     iqamaNotificationEnabled: _decodeBoolMap(
-      map['iqamaNotificationEnabled'], _defaultBoolMapFalse,
+      map['iqamaNotificationEnabled'],
+      _defaultBoolMapFalse,
     ),
     preIqamaReminderEnabled: _decodeBoolMap(
-      map['preIqamaReminderEnabled'], _defaultBoolMapFalse,
+      map['preIqamaReminderEnabled'],
+      _defaultBoolMapFalse,
     ),
-    hadithText: map['hadithText'] as String? ??
-        '"مَن صامَ رمضانَ ثمَّ أتبعَهُ ستًّا من شوَّالٍ كانَ كصيامِ الدَّهرِ"',
-    hadithSource: map['hadithSource'] as String? ?? 'رواه مسلم',
-    fontFamily: const ['Cairo', 'Kufi', 'Beiruti', 'Rubik'].contains(map['fontFamily'])
+    hadithText:
+        map['hadithText'] as String? ??
+        '"Whoever fasts Ramadan then follows it with six days of Shawwal, it is as if he fasted the whole year."',
+    hadithSource: map['hadithSource'] as String? ?? 'Sahih Muslim',
+    fontFamily:
+        const ['Cairo', 'Kufi', 'Beiruti', 'Rubik'].contains(map['fontFamily'])
         ? map['fontFamily'] as String
         : 'Kufi',
+    locale: const ['ar', 'en'].contains(map['locale'])
+        ? map['locale'] as String
+        : 'ar',
     isQuranEnabled: map['isQuranEnabled'] as bool? ?? false,
     quranReciterName: map['quranReciterName'] as String? ?? '',
     quranReciterServerUrl: _validatedQuranUrl(
@@ -127,10 +154,9 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     layoutStyle: const ['classic', 'modern'].contains(map['layoutStyle'])
         ? map['layoutStyle'] as String
         : 'modern',
-    adhanSound:
-        const ['default', 'adhan2'].contains(map['adhanSound'])
-            ? map['adhanSound'] as String
-            : 'default',
+    adhanSound: const ['default', 'adhan2'].contains(map['adhanSound'])
+        ? map['adhanSound'] as String
+        : 'default',
     isAnalogClock: map['isAnalogClock'] as bool? ?? false,
     isAdhkarEnabled: map['isAdhkarEnabled'] as bool? ?? true,
     preAdhanReminderMinutes: map['preAdhanReminderMinutes'] as int? ?? 15,

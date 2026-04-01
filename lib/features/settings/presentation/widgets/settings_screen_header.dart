@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../core/app_colors.dart';
 
 /// Top gradient header bar for the settings screen.
@@ -9,6 +11,7 @@ class SettingsScreenHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
@@ -33,9 +36,9 @@ class SettingsScreenHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          const Text(
-            'الإعدادات',
-            style: TextStyle(
+          Text(
+            l.navSettings,
+            style: const TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.w700,
               color: Colors.white,

@@ -1,8 +1,8 @@
 /// Central configuration constants.
 /// All hardcoded URLs and keys live here — never inline in data sources.
 abstract class AppConfig {
-  static const String quranReciterApiUrl =
-      'https://mp3quran.net/api/v3/reciters?language=ar';
+  static String quranReciterApiUrl({String language = 'ar'}) =>
+      'https://mp3quran.net/api/v3/reciters?language=$language';
 
   static const String appVersionCheckUrl =
       'https://gist.githubusercontent.com/UAEHN/'

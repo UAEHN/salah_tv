@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 import '../../../../../core/mobile_theme.dart';
 import 'mobile_select_option_tile.dart';
 
@@ -14,6 +15,7 @@ class MobileTimeFormatDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final cardColor = MobileColors.cardColor(context);
 
     return Container(
@@ -39,14 +41,14 @@ class MobileTimeFormatDialog extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'صيغة الوقت',
+              l.settingsTimeFormat,
               style: MobileTextStyles.titleMd(
                 context,
               ).copyWith(color: MobileColors.onSurface(context), fontSize: 18),
             ),
             const SizedBox(height: 24),
             MobileSelectOptionTile(
-              title: 'نظام 24 ساعة',
+              title: l.settings24HourEnabled,
               icon: Icons.schedule_rounded,
               isSelected: is24Hour,
               onTap: () {
@@ -55,7 +57,7 @@ class MobileTimeFormatDialog extends StatelessWidget {
               },
             ),
             MobileSelectOptionTile(
-              title: 'نظام 12 ساعة',
+              title: l.settings12HourEnabled,
               icon: Icons.schedule_rounded,
               isSelected: !is24Hour,
               onTap: () {

@@ -15,6 +15,9 @@ class WorldCityJsonRepository implements IWorldCityRepository {
     if (_cities != null) return;
     final raw = await rootBundle.loadString('assets/world_cities.json');
     final list = (jsonDecode(raw) as List).cast<Map<String, dynamic>>();
+    // JSON keys are abbreviated to reduce asset size (~50 KB savings):
+    //   n=name, a=arabicName, c=countryKey, ca=countryArabic,
+    //   lat=latitude, lng=longitude, m=calculationMethod, tz=utcOffset
     _cities = list
         .map((e) => WorldCity(
               name: e['n'] as String,

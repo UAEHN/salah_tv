@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import '../../../core/adhan_sounds.dart';
 import '../domain/i_audio_repository.dart';
 import '../../prayer/domain/i_prayer_audio_port.dart';
@@ -66,7 +67,8 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
               .asset;
       await _player.play(AssetSource(asset));
       return true;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Audio] playAdhan failed: $e');
       _isPlaying = false;
       _isAppInitiatedStop = false;
       return false;
@@ -82,7 +84,8 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
       _isPlaying = true;
       await _player.play(AssetSource('audio/dua.mp3'));
       return true;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Audio] playDua failed: $e');
       _isPlaying = false;
       _isAppInitiatedStop = false;
       return false;
@@ -98,7 +101,8 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
       _isPlaying = true;
       await _player.play(AssetSource('audio/iqama.mp3'));
       return true;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Audio] playIqama failed: $e');
       _isPlaying = false;
       _isAppInitiatedStop = false;
       return false;
@@ -111,7 +115,9 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
     try {
       await _player.stop();
       _isPlaying = false;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[Audio] stop failed: $e');
+    }
     _isAppInitiatedStop = false;
   }
 
@@ -130,7 +136,9 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
     try {
       await _bellPlayer.setVolume(0.15);
       await _bellPlayer.play(AssetSource('audio/bell.wav'));
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[Audio] playPreAlertBell failed: $e');
+    }
   }
 
   // ── Quran background player (delegated to QuranAudioService) ─────────────

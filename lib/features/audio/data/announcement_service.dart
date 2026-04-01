@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 
 /// Plays a short prayer-name announcement on an isolated [AudioPlayer].
 /// Completely separate from [AudioService._player] so the state-machine
@@ -31,7 +32,9 @@ class AnnouncementService {
         onTimeout: () {},
       );
       sub.cancel();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[Audio] announcement play failed: $e');
+    }
   }
 
   void dispose() => _player.dispose();

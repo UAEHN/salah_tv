@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/adhkar_category.dart';
 import '../../domain/i_adhkar_text_repository.dart';
@@ -6,6 +7,7 @@ import 'adhkar_reader_state.dart';
 /// Manages navigation and counting for the mobile adhkar reader.
 class AdhkarReaderCubit extends Cubit<AdhkarReaderState> {
   final IAdhkarTextRepository _repository;
+  Timer? _autoAdvanceTimer;
 
   AdhkarReaderCubit(this._repository)
       : super(const AdhkarReaderInitial());
@@ -42,8 +44,9 @@ class AdhkarReaderCubit extends Cubit<AdhkarReaderState> {
 
     // Auto-advance when all repetitions done
     if (updated[s.currentIndex]! <= 0) {
-      Future.delayed(const Duration(milliseconds: 400), () {
-        if (state is AdhkarReaderReading) next();
+      _autoAdvanceTimer?.cancel();
+      _autoAdvanceTimer = Timer(const Duration(milliseconds: 400), () {
+        if (!isClosed && state is AdhkarReaderReading) next();
       });
     }
   }
@@ -65,4 +68,10 @@ class AdhkarReaderCubit extends Cubit<AdhkarReaderState> {
   }
 
   void backToCategories() => loadCategories();
+
+  @override
+  Future<void> close() {
+    _autoAdvanceTimer?.cancel();
+    return super.close();
+  }
 }
