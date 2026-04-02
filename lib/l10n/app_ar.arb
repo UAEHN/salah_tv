@@ -322,5 +322,47 @@
     "splashVerseHighlight":  "غَسَقِ",
     "splashVerseEnd":  " ٱلَّيْلِ",
     "splashVerseReference":  "الإسراء: ٧٨",
-    "fontPreviewSample":  "أبجد هوز"
+    "fontPreviewSample":  "أبجد هوز",
+    "onboardingWelcome":  "مرحباً بك في غسق",
+    "onboardingChooseLanguage":  "اختر لغتك المفضلة",
+    "onboardingSelectCountry":  "اختر بلدك",
+    "onboardingSelectCity":  "اختر مدينتك",
+    "onboardingStepLanguage":  "اللغة",
+    "onboardingStepLocation":  "البلد",
+    "onboardingStepCity":  "المدينة",
+    "onboardingNext":  "التالي",
+    "onboardingFinish":  "ابدأ",
+    "todayPrayerTimes":  "أوقات الصلاة اليوم",
+    "remainingHours":  "بعد {hours} س",
+    "@remainingHours":  {
+                            "placeholders":  {
+                                                 "hours":  { "type":  "int" }
+                                             }
+                        },
+    "remainingMinutes":  "بعد {minutes} د",
+    "@remainingMinutes":  {
+                              "placeholders":  {
+                                                   "minutes":  { "type":  "int" }
+                                               }
+                          },
+    "remainingHoursMinutes":  "بعد {hours} س {minutes} د",
+    "@remainingHoursMinutes":  {
+                                   "placeholders":  {
+                                                        "hours":  { "type":  "int" },
+                                                        "minutes":  { "type":  "int" }
+                                                    }
+                               },
+    "prayerPassed":  "أُديت",
+    "feedbackSection":  "اقتراحات وشكاوي",
+    "feedbackSettingsTile":  "أرسل ملاحظة",
+    "feedbackTitle":  "أرسل ملاحظة",
+    "feedbackSubtitle":  "شاركنا آراءك واقتراحاتك",
+    "feedbackTypeBug":  "مشكلة",
+    "feedbackTypeSuggestion":  "اقتراح",
+    "feedbackTypeOther":  "شكوى",
+    "feedbackMessageHint":  "صف ملاحظتك...",
+    "feedbackSend":  "إرسال الملاحظة",
+    "feedbackSuccess":  "شكراً! تم إرسال ملاحظتك بنجاح.",
+    "feedbackError":  "حدث خطأ. حاول مرة أخرى.",
+    "feedbackEmptyError":  "يرجى كتابة ملاحظتك أولاً"
 }

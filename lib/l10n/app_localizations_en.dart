@@ -740,4 +740,88 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fontPreviewSample => 'Abcd Abcd';
+
+  @override
+  String get onboardingWelcome => 'Welcome to Ghasaq';
+
+  @override
+  String get onboardingChooseLanguage => 'Choose your preferred language';
+
+  @override
+  String get onboardingSelectCountry => 'Select your country';
+
+  @override
+  String get onboardingSelectCity => 'Select your city';
+
+  @override
+  String get onboardingStepLanguage => 'Language';
+
+  @override
+  String get onboardingStepLocation => 'Country';
+
+  @override
+  String get onboardingStepCity => 'City';
+
+  @override
+  String get onboardingNext => 'Next';
+
+  @override
+  String get onboardingFinish => 'Get started';
+
+  @override
+  String get todayPrayerTimes => 'Today\'s prayer times';
+
+  @override
+  String remainingHours(int hours) {
+    return 'in ${hours}h';
+  }
+
+  @override
+  String remainingMinutes(int minutes) {
+    return 'in ${minutes}m';
+  }
+
+  @override
+  String remainingHoursMinutes(int hours, int minutes) {
+    return 'in ${hours}h ${minutes}m';
+  }
+
+  @override
+  String get prayerPassed => 'Prayed';
+
+  @override
+  String get feedbackSection => 'Feedback & Complaints';
+
+  @override
+  String get feedbackSettingsTile => 'Send Feedback';
+
+  @override
+  String get feedbackTitle => 'Send Feedback';
+
+  @override
+  String get feedbackSubtitle => 'Share your thoughts and suggestions';
+
+  @override
+  String get feedbackTypeBug => 'Bug Report';
+
+  @override
+  String get feedbackTypeSuggestion => 'Suggestion';
+
+  @override
+  String get feedbackTypeOther => 'Complaint';
+
+  @override
+  String get feedbackMessageHint => 'Describe your feedback...';
+
+  @override
+  String get feedbackSend => 'Send Feedback';
+
+  @override
+  String get feedbackSuccess => 'Thanks! Your feedback was sent successfully.';
+
+  @override
+  String get feedbackError => 'An error occurred. Please try again.';
+
+  @override
+  String get feedbackEmptyError => 'Please enter your feedback first';
 }

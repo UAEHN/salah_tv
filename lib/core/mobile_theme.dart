@@ -3,68 +3,70 @@ import 'package:flutter/material.dart';
 class MobileColors {
   MobileColors._();
 
-  // ── Accent palette — Celestial Blue ──────────────────────────────────────
-  static const Color primary = Color(0xFF2563EB);          // blue-600
-  static const Color primaryContainer = Color(0xFF60A5FA); // blue-400
-  static const Color secondary = Color(0xFF7C3AED);        // violet-600
-  static const Color iqamaAccent = Color(0xFFFFB74D);      // amber — iqama countdown phase
+  // ✨ Accent palette - Ghasaq Night & Gold ✨
+  static const Color primary = Color(0xFFD4A843); // Ghasaq Gold
+  static const Color primaryContainer = Color(0xFFE8C77A); // Soft Gold
+  static const Color secondary = Color(0xFFE67E22); // Warm Sunset Orange
+  static const Color iqamaAccent = Color(
+    0xFFE74C3C,
+  ); // Amber/Red — iqama countdown phase
 
   static bool isDark(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark;
   }
 
   static Color background(BuildContext context) {
-    return isDark(context) ? const Color(0xFF080A12) : const Color(0xFFEEF3FF);
+    return isDark(context) ? const Color(0xFF050A18) : const Color(0xFFF9F6F0);
   }
 
   static Color cardColor(BuildContext context) {
-    return isDark(context) ? const Color(0xFF0D1220) : const Color(0xFFFFFFFF);
+    return isDark(context) ? const Color(0xFF0F1B33) : const Color(0xFFFFFFFF);
   }
 
   static Color onSurface(BuildContext context) {
-    return isDark(context) ? Colors.white : const Color(0xFF0F172A);
+    return isDark(context) ? Colors.white : const Color(0xFF1A1A24);
   }
 
   static Color onSurfaceMuted(BuildContext context) {
-    return isDark(context) ? const Color(0x99FFFFFF) : const Color(0xFF4B6080);
+    return isDark(context) ? const Color(0x99FFFFFF) : const Color(0xFF5C6370);
   }
 
   static Color onSurfaceFaint(BuildContext context) {
-    return isDark(context) ? const Color(0x55FFFFFF) : const Color(0xFFB8C8E0);
+    return isDark(context) ? const Color(0x55FFFFFF) : const Color(0xFFB0B5C0);
   }
 
   static Color border(BuildContext context) {
     return isDark(context)
-        ? Colors.white.withValues(alpha: 0.07)
-        : const Color(0xFF0F172A).withValues(alpha: 0.08);
+        ? Colors.white.withValues(alpha: 0.08)
+        : const Color(0xFF1A1A24).withValues(alpha: 0.08);
   }
 
   static Color shadowDark(BuildContext context) {
     return isDark(context)
-        ? Colors.black.withValues(alpha: 0.35)
-        : const Color(0xFF0F172A).withValues(alpha: 0.08);
+        ? Colors.black.withValues(alpha: 0.40)
+        : const Color(0xFF1A1A24).withValues(alpha: 0.06);
   }
 
   static List<Color> homeGradient(BuildContext context) {
     return isDark(context)
         ? const [
-            Color(0xFF0D1428),  // blue-navy at top
-            Color(0xFF080A12),  // base background
-            Color(0xFF080A12),
-            Color(0xFF06060F),  // near-black at bottom
+            Color(0xFF0B142B), // Dark navy top
+            Color(0xFF050A18), // Base night
+            Color(0xFF050A18),
+            Color(0xFF03050C), // Near black bottom
           ]
         : const [
-            Color(0xFFE8F0FF),
-            Color(0xFFEEF3FF),
-            Color(0xFFEEF3FF),
-            Color(0xFFE4EDFF),
+            Color(0xFFFFFDF8),
+            Color(0xFFF9F6F0),
+            Color(0xFFF9F6F0),
+            Color(0xFFF2ECE1),
           ];
   }
 
   static List<Color> qiblaGradient(BuildContext context) {
     return isDark(context)
-        ? const [Color(0xFF0A0E1E), Color(0xFF080A12), Color(0xFF080A12)]
-        : const [Color(0xFFECF2FF), Color(0xFFEEF3FF), Color(0xFFE8F0FF)];
+        ? const [Color(0xFF0A0F1E), Color(0xFF050A18), Color(0xFF050A18)]
+        : const [Color(0xFFFFFDF8), Color(0xFFF9F6F0), Color(0xFFF2ECE1)];
   }
 }
 
@@ -72,7 +74,7 @@ class MobileTextStyles {
   MobileTextStyles._();
 
   static TextStyle displayLg(BuildContext context) => TextStyle(
-    fontFamily: 'Rubik',
+    fontFamily: 'Cairo',
     fontSize: 56,
     fontWeight: FontWeight.w800,
     color: MobileColors.onSurface(context),
@@ -81,28 +83,28 @@ class MobileTextStyles {
   );
 
   static TextStyle headlineMd(BuildContext context) => TextStyle(
-    fontFamily: 'Rubik',
+    fontFamily: 'Cairo',
     fontSize: 18,
     fontWeight: FontWeight.w700,
     color: MobileColors.onSurface(context),
   );
 
   static TextStyle titleMd(BuildContext context) => TextStyle(
-    fontFamily: 'Rubik',
+    fontFamily: 'Cairo',
     fontSize: 22,
     fontWeight: FontWeight.w700,
     color: MobileColors.onSurface(context),
   );
 
   static TextStyle bodyMd(BuildContext context) => TextStyle(
-    fontFamily: 'Rubik',
+    fontFamily: 'Cairo',
     fontSize: 14,
     fontWeight: FontWeight.w600,
     color: MobileColors.onSurfaceMuted(context),
   );
 
   static TextStyle labelSm(BuildContext context) => TextStyle(
-    fontFamily: 'Rubik',
+    fontFamily: 'Cairo',
     fontSize: 12,
     fontWeight: FontWeight.w700,
     color: MobileColors.onSurfaceMuted(context),

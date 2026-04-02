@@ -322,5 +322,47 @@
     "splashVerseHighlight":  "غَسَقِ",
     "splashVerseEnd":  " ٱلَّيْلِ",
     "splashVerseReference":  "الإسراء: ٧٨",
-    "fontPreviewSample":  "Abcd Abcd"
+    "fontPreviewSample":  "Abcd Abcd",
+    "onboardingWelcome":  "Welcome to Ghasaq",
+    "onboardingChooseLanguage":  "Choose your preferred language",
+    "onboardingSelectCountry":  "Select your country",
+    "onboardingSelectCity":  "Select your city",
+    "onboardingStepLanguage":  "Language",
+    "onboardingStepLocation":  "Country",
+    "onboardingStepCity":  "City",
+    "onboardingNext":  "Next",
+    "onboardingFinish":  "Get started",
+    "todayPrayerTimes":  "Today's prayer times",
+    "remainingHours":  "in {hours}h",
+    "@remainingHours":  {
+                            "placeholders":  {
+                                                 "hours":  { "type":  "int" }
+                                             }
+                        },
+    "remainingMinutes":  "in {minutes}m",
+    "@remainingMinutes":  {
+                              "placeholders":  {
+                                                   "minutes":  { "type":  "int" }
+                                               }
+                          },
+    "remainingHoursMinutes":  "in {hours}h {minutes}m",
+    "@remainingHoursMinutes":  {
+                                   "placeholders":  {
+                                                        "hours":  { "type":  "int" },
+                                                        "minutes":  { "type":  "int" }
+                                                    }
+                               },
+    "prayerPassed":  "Prayed",
+    "feedbackSection":  "Feedback & Complaints",
+    "feedbackSettingsTile":  "Send Feedback",
+    "feedbackTitle":  "Send Feedback",
+    "feedbackSubtitle":  "Share your thoughts and suggestions",
+    "feedbackTypeBug":  "Bug Report",
+    "feedbackTypeSuggestion":  "Suggestion",
+    "feedbackTypeOther":  "Complaint",
+    "feedbackMessageHint":  "Describe your feedback...",
+    "feedbackSend":  "Send Feedback",
+    "feedbackSuccess":  "Thanks! Your feedback was sent successfully.",
+    "feedbackError":  "An error occurred. Please try again.",
+    "feedbackEmptyError":  "Please enter your feedback first"
 }

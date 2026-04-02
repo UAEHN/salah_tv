@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../bloc/prayer_bloc.dart';
+import '../bloc/prayer_list_item_mapper.dart';
 import '../../../settings/presentation/settings_provider.dart';
 import '../../../../core/app_colors.dart';
 import 'prayer_panel_header.dart';
@@ -22,6 +23,13 @@ class PrayerPanel extends StatelessWidget {
     final isMultiCity = context.select((PrayerBloc b) => b.state.isMultiCity);
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);
+    final items = today == null
+        ? const <PrayerPanelItem>[]
+        : mapPrayerPanelItems(
+            today: today,
+            nextPrayerKey: nextPrayerKey,
+            settings: settings,
+          );
 
     return Container(
       decoration: BoxDecoration(
@@ -76,19 +84,19 @@ class PrayerPanel extends StatelessWidget {
                       ),
                     )
                   : Column(
-                      children: today.prayers.map((p) {
-                        final delay = settings.iqamaDelays[p.key] ?? 10;
-                        final offset = settings.adhanOffsets[p.key] ?? 0;
-                        return Expanded(
-                          child: PrayerRow(
-                            prayer: p,
-                            isNext: p.key == nextPrayerKey,
-                            settings: settings,
-                            iqamaDelay: delay,
-                            adhanOffset: offset,
-                          ),
-                        );
-                      }).toList(),
+                      children: items
+                          .map(
+                            (item) => Expanded(
+                              child: PrayerRow(
+                                prayer: item.prayer,
+                                isNext: item.isNext,
+                                settings: settings,
+                                iqamaDelay: item.iqamaDelay,
+                                adhanOffset: item.adhanOffset,
+                              ),
+                            ),
+                          )
+                          .toList(growable: false),
                     ),
             ),
           ],

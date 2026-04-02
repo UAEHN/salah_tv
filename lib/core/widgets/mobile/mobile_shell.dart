@@ -11,10 +11,6 @@ import '../../../features/qibla/domain/i_qibla_repository.dart';
 import '../../../features/qibla/presentation/bloc/qibla_cubit.dart';
 import '../../../features/qibla/presentation/bloc/qibla_state.dart';
 import '../../../features/qibla/presentation/screens/mobile/mobile_qibla_screen.dart';
-import '../../../features/settings/domain/i_location_detector.dart';
-import '../../../features/settings/domain/i_settings_repository.dart';
-import '../../../features/settings/domain/usecases/first_launch_location_usecase.dart';
-import '../../calculation_method_info.dart';
 import '../../../features/settings/presentation/screens/mobile_settings_screen.dart';
 import '../../../features/settings/presentation/settings_provider.dart';
 import 'mobile_bottom_nav.dart';
@@ -44,25 +40,6 @@ class _MobileShellState extends State<MobileShell> {
     _adhkarCubit = AdhkarReaderCubit(GetIt.I<IAdhkarTextRepository>())
         ..loadCategories();
     _qiblaCubit = QiblaCubit(GetIt.I<IQiblaRepository>());
-    _tryAutoDetectLocation();
-  }
-
-  Future<void> _tryAutoDetectLocation() async {
-    final useCase = FirstLaunchLocationUseCase(
-      context.read<ISettingsRepository>(), context.read<ILocationDetector>(),
-    );
-    final loc = await useCase();
-    if (!mounted || loc == null) return;
-    final provider = context.read<SettingsProvider>();
-    if (loc.isInDb) {
-      provider.updateLocation(loc.dbCountryKey!, loc.dbCityKey!);
-    } else {
-      provider.updateWorldLocation(
-        loc.countryName, loc.cityName,
-        loc.latitude, loc.longitude,
-        defaultMethodForCountryIso(loc.isoCountryCode),
-      );
-    }
   }
 
   void _onTabChanged(int index) {

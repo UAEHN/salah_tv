@@ -27,12 +27,17 @@
 - **`build()` purity:** No state mutations, BLoC dispatches, or audio/network calls in `build()`. Use `didChangeDependencies()` + `addListener`, `BlocListener`, or lifecycle methods for side effects.
 - **Cross-feature BLoC access:** Widgets may read/dispatch to another feature's BLoC via the widget tree (`context.read/watch/select`). Direct file-level instantiation of another feature's data or presentation classes is prohibited.
 - **Datasource exceptions:** Datasources throw typed exceptions (`ServerException`, `StorageException` in `core/error/failures.dart`). Repositories catch all datasource exceptions and return `Either<Failure, T>`. No raw `Exception` types.
+- **UI boundaries:** Never instantiate `UseCase`/Repository inside Widgets. UI only reads state and emits events.
+- **Presentation DI guard:** Avoid `context.read<...Repository>()` in page/widget code; allow only in dedicated container/bridge widgets.
+- **No logic helpers in widgets:** Time math, filtering, key-policy, and selection rules must live in `presentation/bloc|logic|mapper` files.
+- **Startup composition:** Keep `app_startup.dart` as coordinator only; split platform/settings/prayer/feature registration into focused startup files.
 
 ## 4. STRICT CODING CONSTRAINTS
 - **SRP & Size:** Max 150 lines per file. Split UI into smaller `StatelessWidget`s if it exceeds this.
 - **Tech Stack:** `get_it` + `injectable` for DI. `BLoC` for state management.
 - **Naming:** `camelCase` (vars/methods), `PascalCase` (classes). Boolean variables must start with `is/has/can`.
 - **Formatting:** Always use trailing commas in Flutter widgets.
+- **DRY:** If style constants/maps/formatting logic repeat in 2+ places, extract a shared file (`core/` or feature-level `*_style.dart`/`*_visuals.dart`).
 
 ## 5. EXECUTION GUIDELINES (Token Saving)
 - Output code immediately without conversational filler.
@@ -41,3 +46,9 @@
 - No side effects in `build()` for critical widgets.
 - Use `select/watch` for reactive values; avoid `context.read()` in `build()` when UI must react.
 - Any remaining cross-feature imports are documented here as accepted exceptions.
+
+## 7. QUALITY GATE (MANDATORY)
+- Run `flutter analyze` before finalizing; app-layer errors must be zero.
+- For moved logic (policy/mapper/calculator), add or update focused unit tests.
+- Refactors must preserve behavior: no route, prayer-cycle, or settings-flow changes unless requested.
+- Any temporary exception to these rules must be documented in this file with rationale.

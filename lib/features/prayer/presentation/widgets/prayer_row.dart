@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart' hide TextDirection;
 import '../../domain/entities/daily_prayer_times.dart';
 import '../../../../core/localization/prayer_name_localizer.dart';
 import '../../../settings/domain/entities/app_settings.dart';
 import '../../../../core/app_colors.dart';
+import '../bloc/prayer_ui_logic.dart';
 import 'prayer_time_column.dart';
 
 class PrayerRow extends StatelessWidget {
@@ -22,20 +22,17 @@ class PrayerRow extends StatelessWidget {
     this.adhanOffset = 0,
   });
 
-  String _formatTime(DateTime dt) {
-    if (settings.use24HourFormat) {
-      return DateFormat('HH:mm').format(dt);
-    } else {
-      return DateFormat('hh:mm').format(dt);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);
-    final adjustedTime = prayer.time.add(Duration(minutes: adhanOffset));
-    final iqamaTime = adjustedTime.add(Duration(minutes: iqamaDelay));
+    final timeModel = mapPrayerTimeUiModel(
+      baseTime: prayer.time,
+      adhanOffsetMinutes: adhanOffset,
+      iqamaDelayMinutes: iqamaDelay,
+      use24HourFormat: settings.use24HourFormat,
+      localeCode: settings.locale,
+    );
     final screenH = MediaQuery.of(context).size.height;
 
     // Colors depend on the active mode only, regardless of theme color.
@@ -75,8 +72,8 @@ class PrayerRow extends StatelessWidget {
       child: Row(
         children: [
           PrayerTimeColumn(
-            adhanTime: _formatTime(adjustedTime),
-            iqamaTime: _formatTime(iqamaTime),
+            adhanTime: timeModel.timeText,
+            iqamaTime: timeModel.iqamaText,
             isCountable: prayer.isCountable,
             isNext: isNext,
             tc: tc,

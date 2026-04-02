@@ -5,11 +5,7 @@ import '../../../../core/app_colors.dart';
 import '../../../../core/localization/prayer_name_localizer.dart';
 import '../../../../core/platform_config.dart';
 import '../bloc/prayer_bloc.dart';
-import '../../../settings/domain/i_location_detector.dart';
-import '../../../settings/domain/i_settings_repository.dart';
-import '../../../settings/domain/usecases/first_launch_location_usecase.dart';
 import '../../../settings/presentation/settings_provider.dart';
-import '../../../../core/calculation_method_info.dart';
 import '../widgets/home_main_view.dart';
 import '../../../audio/presentation/screens/adhan_screen.dart';
 import '../../../audio/presentation/screens/dua_screen.dart';
@@ -33,28 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _focusNode = FocusNode();
     _quranFocusNode = FocusNode();
-    if (!kIsTV) _tryAutoDetectLocation();
-  }
-
-  Future<void> _tryAutoDetectLocation() async {
-    final useCase = FirstLaunchLocationUseCase(
-      context.read<ISettingsRepository>(),
-      context.read<ILocationDetector>(),
-    );
-    final loc = await useCase();
-    if (!mounted || loc == null) return;
-    final provider = context.read<SettingsProvider>();
-    if (loc.isInDb) {
-      provider.updateLocation(loc.dbCountryKey!, loc.dbCityKey!);
-    } else {
-      provider.updateWorldLocation(
-        loc.countryName,
-        loc.cityName,
-        loc.latitude,
-        loc.longitude,
-        defaultMethodForCountryIso(loc.isoCountryCode),
-      );
-    }
   }
 
   @override

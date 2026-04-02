@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -73,7 +73,10 @@ class MobileSettingsList extends StatelessWidget {
               ),
               MobileSettingsTile(
                 title: l.settingsCalculationMethodLabel,
-                subtitle: localizedCalculationMethod(context, s.calculationMethod),
+                subtitle: localizedCalculationMethod(
+                  context,
+                  s.calculationMethod,
+                ),
                 onTap: () => showModalBottomSheet(
                   context: context,
                   backgroundColor: Colors.transparent,
@@ -87,8 +90,9 @@ class MobileSettingsList extends StatelessWidget {
               const SizedBox(height: 10),
               MobileSettingsTile(
                 title: l.settingsMadhabLabel,
-                subtitle:
-                    s.madhab == 'hanafi' ? l.madhabHanafi : l.madhabShafiFamily,
+                subtitle: s.madhab == 'hanafi'
+                    ? l.madhabHanafi
+                    : l.madhabShafiFamily,
                 onTap: () => showModalBottomSheet(
                   context: context,
                   backgroundColor: Colors.transparent,
@@ -111,6 +115,15 @@ class MobileSettingsList extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               MobileSettingsAppearanceSection(settingsProvider: sp),
+              const SizedBox(height: 24),
+              MobileSettingsSectionTitle(
+                title: l.feedbackSection,
+                icon: Icons.mark_chat_read_rounded,
+              ),
+              MobileSettingsTile(
+                title: l.feedbackSettingsTile,
+                onTap: () => Navigator.pushNamed(context, '/feedback'),
+              ),
             ],
           ),
         ),

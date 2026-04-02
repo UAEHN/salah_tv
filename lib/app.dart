@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'core/app_colors.dart';
@@ -7,11 +8,18 @@ import 'core/navigation/app_route_builder.dart';
 import 'core/platform_config.dart';
 import 'core/widgets/mobile/mobile_shell.dart';
 import 'features/adhkar/presentation/screens/adhkar_screen.dart';
+import 'features/feedback/domain/usecases/submit_feedback_usecase.dart';
+import 'features/feedback/presentation/cubit/feedback_cubit.dart';
+import 'features/feedback/presentation/screens/mobile_feedback_screen.dart';
 import 'features/prayer/presentation/screens/home_screen.dart';
 import 'features/qibla/presentation/screens/qibla_screen.dart';
+import 'features/settings/domain/i_settings_repository.dart';
+import 'features/settings/domain/i_world_city_repository.dart';
 import 'features/settings/presentation/screens/mobile_settings_screen.dart';
 import 'features/settings/presentation/settings_provider.dart';
 import 'features/settings/presentation/settings_screen.dart';
+import 'features/onboarding/presentation/onboarding_cubit.dart';
+import 'features/onboarding/presentation/onboarding_screen.dart';
 import 'features/splash/presentation/splash_screen.dart';
 import 'features/tasbih/domain/i_tasbih_repository.dart';
 import 'features/tasbih/presentation/bloc/tasbih_bloc.dart';
@@ -33,6 +41,20 @@ class GhasaqApp extends StatelessWidget {
 
     final schemePrimary = isTV ? palette.primary : MobileColors.primary;
     final schemeSecondary = isTV ? palette.secondary : MobileColors.secondary;
+
+    if (!isTV) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: isDark
+              ? Brightness.light
+              : Brightness.dark,
+        ),
+      );
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    }
 
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
@@ -70,10 +92,7 @@ class GhasaqApp extends StatelessWidget {
         return ColoredBox(
           color: tc.bgMain,
           child: isTV
-              ? Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: content,
-                )
+              ? Directionality(textDirection: TextDirection.ltr, child: content)
               : content,
         );
       },
@@ -118,6 +137,28 @@ class GhasaqApp extends StatelessWidget {
                     TasbihBloc(getIt<ITasbihRepository>())
                       ..add(const TasbihStarted()),
                 child: const MobileTasbihScreen(),
+              ),
+            );
+          case '/onboarding':
+            return buildAppRoute(
+              settings: routeSettings,
+              isInstant: true,
+              page: BlocProvider(
+                create: (ctx) => OnboardingCubit.fromDependencies(
+                  settingsProvider: ctx.read<SettingsProvider>(),
+                  worldRepo: getIt<IWorldCityRepository>(),
+                  settingsRepository: getIt<ISettingsRepository>(),
+                ),
+                child: const OnboardingScreen(),
+              ),
+            );
+          case '/feedback':
+            return buildAppRoute(
+              settings: routeSettings,
+              page: BlocProvider(
+                create: (ctx) =>
+                    FeedbackCubit(ctx.read<SubmitFeedbackUseCase>()),
+                child: const MobileFeedbackScreen(),
               ),
             );
           default:

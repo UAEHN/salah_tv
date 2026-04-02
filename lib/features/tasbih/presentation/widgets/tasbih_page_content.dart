@@ -73,8 +73,16 @@ class TasbihPageContent extends StatelessWidget {
                   isCompleted: isCompleted,
                   onTap: isActive
                       ? () {
-                          HapticFeedback.selectionClick();
-                          context.read<TasbihBloc>().add(const TasbihTapped());
+                          final isLastTap =
+                              state.count + 1 >= state.target;
+                          if (isLastTap) {
+                            HapticFeedback.mediumImpact();
+                          } else {
+                            HapticFeedback.selectionClick();
+                          }
+                          context
+                              .read<TasbihBloc>()
+                              .add(const TasbihTapped());
                         }
                       : null,
                 ),

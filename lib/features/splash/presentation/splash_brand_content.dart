@@ -1,9 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
-
-const _kGold = Color(0xFFD4A843);
-const _kGoldLight = Color(0xFFF5D78E);
+import '../../../core/brand_colors.dart';
 
 /// Center content: pulsing ornament, localized app title with shimmer + glow,
 /// animated separator, and the Quranic verse sliding up.
@@ -32,36 +30,40 @@ class SplashBrandContent extends StatelessWidget {
       parent: brandAnimation,
       curve: const Interval(0.08, 0.35, curve: Curves.easeOut),
     );
-    final titleScale = Tween(begin: 0.75, end: 1.0).animate(CurvedAnimation(
-      parent: brandAnimation,
-      curve: const Interval(0.08, 0.35, curve: Curves.easeOutCubic),
-    ));
-    final sepScale = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-      parent: brandAnimation,
-      curve: const Interval(0.30, 0.50, curve: Curves.easeInOut),
-    ));
+    final titleScale = Tween(begin: 0.75, end: 1.0).animate(
+      CurvedAnimation(
+        parent: brandAnimation,
+        curve: const Interval(0.08, 0.35, curve: Curves.easeOutCubic),
+      ),
+    );
+    final sepScale = Tween(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: brandAnimation,
+        curve: const Interval(0.30, 0.50, curve: Curves.easeInOut),
+      ),
+    );
     final verseFade = CurvedAnimation(
       parent: brandAnimation,
       curve: const Interval(0.45, 0.70, curve: Curves.easeOut),
     );
-    final verseSlide = Tween(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: brandAnimation,
-      curve: const Interval(0.45, 0.70, curve: Curves.easeOutCubic),
-    ));
+    final verseSlide = Tween(begin: const Offset(0, 0.3), end: Offset.zero)
+        .animate(
+          CurvedAnimation(
+            parent: brandAnimation,
+            curve: const Interval(0.45, 0.70, curve: Curves.easeOutCubic),
+          ),
+        );
     final refFade = CurvedAnimation(
       parent: brandAnimation,
       curve: const Interval(0.60, 0.80, curve: Curves.easeOut),
     );
-    final refSlide = Tween(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: brandAnimation,
-      curve: const Interval(0.60, 0.80, curve: Curves.easeOutCubic),
-    ));
+    final refSlide = Tween(begin: const Offset(0, 0.3), end: Offset.zero)
+        .animate(
+          CurvedAnimation(
+            parent: brandAnimation,
+            curve: const Interval(0.60, 0.80, curve: Curves.easeOutCubic),
+          ),
+        );
 
     return AnimatedBuilder(
       animation: Listenable.merge([brandAnimation, shimmerAnimation]),
@@ -79,10 +81,10 @@ class SplashBrandContent extends StatelessWidget {
                   '✦',
                   style: TextStyle(
                     fontSize: h * 0.035,
-                    color: _kGold,
+                    color: brandGold,
                     shadows: [
                       Shadow(
-                        color: _kGold.withValues(alpha: 0.3 + pulse * 0.5),
+                        color: brandGold.withValues(alpha: 0.3 + pulse * 0.5),
                         blurRadius: 8 + pulse * 16,
                       ),
                     ],
@@ -114,7 +116,7 @@ class SplashBrandContent extends StatelessWidget {
                 height: 1.5,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.transparent, _kGold, Colors.transparent],
+                    colors: [Colors.transparent, brandGold, Colors.transparent],
                   ),
                 ),
               ),
@@ -137,11 +139,9 @@ class SplashBrandContent extends StatelessWidget {
                       TextSpan(
                         text: l.splashVerseHighlight,
                         style: TextStyle(
-                          color: _kGold,
+                          color: brandGold,
                           fontWeight: FontWeight.w700,
-                          shadows: [
-                            Shadow(color: _kGold, blurRadius: 12),
-                          ],
+                          shadows: [Shadow(color: brandGold, blurRadius: 12)],
                         ),
                       ),
                       TextSpan(text: l.splashVerseEnd),
@@ -159,10 +159,7 @@ class SplashBrandContent extends StatelessWidget {
                 opacity: refFade,
                 child: Text(
                   l.splashVerseReference,
-                  style: TextStyle(
-                    fontSize: h * 0.020,
-                    color: Colors.white38,
-                  ),
+                  style: TextStyle(fontSize: h * 0.020, color: Colors.white38),
                 ),
               ),
             ),
@@ -186,15 +183,17 @@ class SplashBrandContent extends StatelessWidget {
         Text(
           title,
           style: style.copyWith(
-            color: _kGold.withValues(alpha: 0.25),
-            shadows: [Shadow(color: _kGold.withValues(alpha: 0.4), blurRadius: 40)],
+            color: brandGold.withValues(alpha: 0.25),
+            shadows: [
+              Shadow(color: brandGold.withValues(alpha: 0.4), blurRadius: 40),
+            ],
           ),
         ),
         // Shimmer layer on top
         ShaderMask(
           blendMode: BlendMode.srcIn,
           shaderCallback: (bounds) => LinearGradient(
-            colors: const [_kGold, _kGoldLight, _kGold],
+            colors: const [brandGold, brandGoldLight, brandGold],
             stops: [
               (center - 0.15).clamp(0.0, 1.0),
               center.clamp(0.0, 1.0),

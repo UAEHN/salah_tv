@@ -1,5 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../../../core/brand_colors.dart';
+import '../../../core/platform_config.dart';
+import '../../../injection.dart';
+import '../../settings/domain/i_settings_repository.dart';
 import 'splash_star_field.dart';
 import 'splash_particles.dart';
 import 'splash_brand_content.dart';
@@ -20,7 +24,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   static const _bgTop = Color(0xFF050A18);
   static const _bgBottom = Color(0xFF0F1B33);
-  static const _kGold = Color(0xFFD4A843);
 
   @override
   void initState() {
@@ -44,10 +47,16 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _fadeAndNavigate() {
-    Future.delayed(const Duration(milliseconds: 1800), () {
+    Future.delayed(const Duration(milliseconds: 1800), () async {
+      if (!mounted) return;
+      String route = '/';
+      if (!kIsTV) {
+        final isFirst = await getIt<ISettingsRepository>().isFirstLaunch();
+        if (isFirst) route = '/onboarding';
+      }
       if (!mounted) return;
       _fadeOutController.forward().whenComplete(() {
-        if (mounted) Navigator.of(context).pushReplacementNamed('/');
+        if (mounted) Navigator.of(context).pushReplacementNamed(route);
       });
     });
   }
@@ -106,8 +115,7 @@ class _SplashScreenState extends State<SplashScreen>
             AnimatedBuilder(
               animation: _shimmerController,
               builder: (_, _) {
-                final pulse =
-                    (sin(_shimmerController.value * pi * 2) + 1) / 2;
+                final pulse = (sin(_shimmerController.value * pi * 2) + 1) / 2;
                 return Center(
                   child: Container(
                     width: screenH * 0.55,
@@ -115,7 +123,7 @@ class _SplashScreenState extends State<SplashScreen>
                     decoration: BoxDecoration(
                       gradient: RadialGradient(
                         colors: [
-                          _kGold.withValues(alpha: 0.04 + pulse * 0.03),
+                          brandGold.withValues(alpha: 0.04 + pulse * 0.03),
                           Colors.transparent,
                         ],
                       ),

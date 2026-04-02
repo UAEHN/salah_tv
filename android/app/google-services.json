@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "859614334857",
+    "project_id": "ghasaq-75883",
+    "storage_bucket": "ghasaq-75883.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:859614334857:android:1578f0b4656c948e729b58",
+        "android_client_info": {
+          "package_name": "com.ghasaq.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDR3NMjfD2me2htTxLAwLP7Sp9zOZDO6nY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

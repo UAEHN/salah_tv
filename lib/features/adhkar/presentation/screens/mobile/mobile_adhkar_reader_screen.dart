@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
@@ -32,7 +33,14 @@ class MobileAdhkarReaderScreen extends StatelessWidget {
         return GestureDetector(
           onTap: state.isCurrentCompleted
               ? null
-              : () => context.read<AdhkarReaderCubit>().decrementCount(),
+              : () {
+                  if (state.currentRemaining == 1) {
+                    HapticFeedback.mediumImpact();
+                  } else {
+                    HapticFeedback.selectionClick();
+                  }
+                  context.read<AdhkarReaderCubit>().decrementCount();
+                },
           behavior: HitTestBehavior.opaque,
           child: Stack(
             children: [

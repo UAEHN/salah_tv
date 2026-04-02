@@ -1495,6 +1495,162 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'أبجد هوز'**
   String get fontPreviewSample;
+
+  /// No description provided for @onboardingWelcome.
+  ///
+  /// In ar, this message translates to:
+  /// **'مرحباً بك في غسق'**
+  String get onboardingWelcome;
+
+  /// No description provided for @onboardingChooseLanguage.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر لغتك المفضلة'**
+  String get onboardingChooseLanguage;
+
+  /// No description provided for @onboardingSelectCountry.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر بلدك'**
+  String get onboardingSelectCountry;
+
+  /// No description provided for @onboardingSelectCity.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر مدينتك'**
+  String get onboardingSelectCity;
+
+  /// No description provided for @onboardingStepLanguage.
+  ///
+  /// In ar, this message translates to:
+  /// **'اللغة'**
+  String get onboardingStepLanguage;
+
+  /// No description provided for @onboardingStepLocation.
+  ///
+  /// In ar, this message translates to:
+  /// **'البلد'**
+  String get onboardingStepLocation;
+
+  /// No description provided for @onboardingStepCity.
+  ///
+  /// In ar, this message translates to:
+  /// **'المدينة'**
+  String get onboardingStepCity;
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In ar, this message translates to:
+  /// **'التالي'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingFinish.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابدأ'**
+  String get onboardingFinish;
+
+  /// No description provided for @todayPrayerTimes.
+  ///
+  /// In ar, this message translates to:
+  /// **'أوقات الصلاة اليوم'**
+  String get todayPrayerTimes;
+
+  /// No description provided for @remainingHours.
+  ///
+  /// In ar, this message translates to:
+  /// **'بعد {hours} س'**
+  String remainingHours(int hours);
+
+  /// No description provided for @remainingMinutes.
+  ///
+  /// In ar, this message translates to:
+  /// **'بعد {minutes} د'**
+  String remainingMinutes(int minutes);
+
+  /// No description provided for @remainingHoursMinutes.
+  ///
+  /// In ar, this message translates to:
+  /// **'بعد {hours} س {minutes} د'**
+  String remainingHoursMinutes(int hours, int minutes);
+
+  /// No description provided for @prayerPassed.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُديت'**
+  String get prayerPassed;
+
+  /// No description provided for @feedbackSection.
+  ///
+  /// In ar, this message translates to:
+  /// **'اقتراحات وشكاوي'**
+  String get feedbackSection;
+
+  /// No description provided for @feedbackSettingsTile.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل ملاحظة'**
+  String get feedbackSettingsTile;
+
+  /// No description provided for @feedbackTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل ملاحظة'**
+  String get feedbackTitle;
+
+  /// No description provided for @feedbackSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'شاركنا آراءك واقتراحاتك'**
+  String get feedbackSubtitle;
+
+  /// No description provided for @feedbackTypeBug.
+  ///
+  /// In ar, this message translates to:
+  /// **'مشكلة'**
+  String get feedbackTypeBug;
+
+  /// No description provided for @feedbackTypeSuggestion.
+  ///
+  /// In ar, this message translates to:
+  /// **'اقتراح'**
+  String get feedbackTypeSuggestion;
+
+  /// No description provided for @feedbackTypeOther.
+  ///
+  /// In ar, this message translates to:
+  /// **'شكوى'**
+  String get feedbackTypeOther;
+
+  /// No description provided for @feedbackMessageHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'صف ملاحظتك...'**
+  String get feedbackMessageHint;
+
+  /// No description provided for @feedbackSend.
+  ///
+  /// In ar, this message translates to:
+  /// **'إرسال الملاحظة'**
+  String get feedbackSend;
+
+  /// No description provided for @feedbackSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'شكراً! تم إرسال ملاحظتك بنجاح.'**
+  String get feedbackSuccess;
+
+  /// No description provided for @feedbackError.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدث خطأ. حاول مرة أخرى.'**
+  String get feedbackError;
+
+  /// No description provided for @feedbackEmptyError.
+  ///
+  /// In ar, this message translates to:
+  /// **'يرجى كتابة ملاحظتك أولاً'**
+  String get feedbackEmptyError;
 }
 
 class _AppLocalizationsDelegate

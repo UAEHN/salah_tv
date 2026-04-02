@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+
 import 'app.dart';
 import 'core/app_startup.dart';
 import 'features/adhkar/domain/i_adhkar_audio_port.dart';
 import 'features/adhkar/domain/i_adhkar_state_repository.dart';
+import 'features/feedback/domain/i_feedback_repository.dart';
+import 'features/feedback/domain/usecases/submit_feedback_usecase.dart';
 import 'features/prayer/domain/i_prayer_audio_port.dart';
 import 'features/notifications/domain/i_prayer_notification_port.dart';
 import 'features/prayer/domain/i_prayer_times_repository.dart';
@@ -14,6 +17,7 @@ import 'features/settings/domain/entities/app_settings.dart';
 import 'features/settings/domain/entities/app_settings_copy_with.dart';
 import 'features/settings/domain/i_location_detector.dart';
 import 'features/settings/domain/i_settings_repository.dart';
+import 'features/settings/presentation/bloc/first_launch_location_cubit.dart';
 import 'features/settings/presentation/settings_provider.dart';
 import 'injection.dart';
 
@@ -23,25 +27,31 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        Provider<IAdhkarAudioPort>.value(
-          value: getIt<IAdhkarAudioPort>(),
-        ),
+        Provider<IAdhkarAudioPort>.value(value: getIt<IAdhkarAudioPort>()),
         Provider<IAdhkarStateRepository>.value(
           value: getIt<IAdhkarStateRepository>(),
         ),
         Provider<ISettingsRepository>.value(
           value: getIt<ISettingsRepository>(),
         ),
+        if (getIt.isRegistered<IFeedbackRepository>())
+          Provider<SubmitFeedbackUseCase>(
+            create: (_) => SubmitFeedbackUseCase(getIt<IFeedbackRepository>()),
+          ),
         if (getIt.isRegistered<ILocationDetector>())
-          Provider<ILocationDetector>.value(
-            value: getIt<ILocationDetector>(),
-          ),
+          Provider<ILocationDetector>.value(value: getIt<ILocationDetector>()),
         ChangeNotifierProvider(
-          create: (_) => SettingsProvider(
-            getIt<ISettingsRepository>(),
-            settings,
-          ),
+          create: (_) =>
+              SettingsProvider(getIt<ISettingsRepository>(), settings),
         ),
+        if (getIt.isRegistered<ILocationDetector>())
+          BlocProvider(
+            create: (context) => FirstLaunchLocationCubit(
+              context.read<SettingsProvider>(),
+              context.read<ISettingsRepository>(),
+              context.read<ILocationDetector>(),
+            )..runOnce(),
+          ),
         BlocProvider(
           create: (_) => PrayerBloc(
             getIt<IPrayerTimesRepository>(),
@@ -82,7 +92,10 @@ class _SettingsBridgeWrapperState extends State<_SettingsBridgeWrapper> {
 
   void _onSettingsChanged() {
     final next = _sp.settings;
-    if (_prev.prayerFieldsEqual(next)) { _prev = next; return; }
+    if (_prev.prayerFieldsEqual(next)) {
+      _prev = next;
+      return;
+    }
     _prev = next;
     context.read<PrayerBloc>().add(PrayerSettingsUpdated(next));
   }

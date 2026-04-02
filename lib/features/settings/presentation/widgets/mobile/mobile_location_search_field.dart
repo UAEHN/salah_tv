@@ -6,6 +6,7 @@ class MobileLocationSearchField extends StatelessWidget {
   final String hintText;
   final ValueChanged<String> onChanged;
   final VoidCallback onClear;
+  final bool showClearIcon;
 
   const MobileLocationSearchField({
     super.key,
@@ -13,6 +14,7 @@ class MobileLocationSearchField extends StatelessWidget {
     required this.hintText,
     required this.onChanged,
     required this.onClear,
+    this.showClearIcon = false,
   });
 
   @override
@@ -35,7 +37,7 @@ class MobileLocationSearchField extends StatelessWidget {
             Icons.search,
             color: MobileColors.onSurfaceMuted(context),
           ),
-          suffixIcon: controller.text.isEmpty
+          suffixIcon: !showClearIcon || controller.text.isEmpty
               ? null
               : IconButton(
                   onPressed: onClear,

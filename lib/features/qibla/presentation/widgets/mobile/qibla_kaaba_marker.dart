@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/mobile_theme.dart';
 
 /// Gold Kaaba marker placed on the rotating compass ring at [qiblaBearing].
 class QiblaKaabaMarker extends StatelessWidget {
@@ -11,14 +12,14 @@ class QiblaKaabaMarker extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(top: 10),
         child: Container(
-          width: 28,
-          height: 28,
+          width: 32,
+          height: 32,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: const Color(0xFFFFD700),
+            color: MobileColors.primaryContainer,
             boxShadow: [
               BoxShadow(
-                color: Colors.amber.withValues(alpha: 0.7),
+                color: MobileColors.primary.withValues(alpha: 0.7),
                 blurRadius: 10,
                 spreadRadius: 2,
               ),
@@ -26,7 +27,7 @@ class QiblaKaabaMarker extends StatelessWidget {
           ),
           child: const Icon(
             Icons.mosque_rounded,
-            size: 16,
+            size: 18,
             color: Colors.black,
           ),
         ),

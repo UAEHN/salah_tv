@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
 import '../../../settings/presentation/settings_provider.dart';
 import '../bloc/prayer_bloc.dart';
+import '../bloc/prayer_list_item_mapper.dart';
+import '../bloc/prayer_ui_logic.dart';
 import 'prayer_card.dart';
 
 class PrayerCardStrip extends StatelessWidget {
@@ -18,12 +20,16 @@ class PrayerCardStrip extends StatelessWidget {
 
     // During adhan -> dua -> iqama countdown -> iqama, keep the active prayer
     // highlighted instead of jumping to the next one.
-    final nextKey = context.select((PrayerBloc b) {
-      final cycle = b.state.activeCyclePrayerKey;
-      return cycle.isNotEmpty ? cycle : b.state.nextPrayerKey;
-    });
+    final nextKey = context.select(
+      (PrayerBloc b) => effectiveActivePrayerKey(
+        activeCyclePrayerKey: b.state.activeCyclePrayerKey,
+        nextPrayerKey: b.state.nextPrayerKey,
+      ),
+    );
 
-    final isPreAlert = context.select((PrayerBloc b) => b.state.isPrePrayerAlert);
+    final isPreAlert = context.select(
+      (PrayerBloc b) => b.state.isPrePrayerAlert,
+    );
     final settings = context.watch<SettingsProvider>().settings;
     final tc = ThemeColors.of(settings.isDarkMode);
     final screenW = MediaQuery.of(context).size.width;
@@ -37,42 +43,33 @@ class PrayerCardStrip extends StatelessWidget {
       );
     }
 
-    final prayers = today.prayers.reversed.toList();
-    const prayerOrder = [
-      'fajr',
-      'sunrise',
-      'dhuhr',
-      'asr',
-      'maghrib',
-      'isha',
-    ];
-    final nextIndex = prayerOrder.indexOf(nextKey);
+    final items = mapPrayerCardStripItems(
+      today: today,
+      activePrayerKey: nextKey,
+      isPrePrayerAlert: isPreAlert,
+      settings: settings,
+    );
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: screenW * 0.025),
       child: Row(
-        children: List.generate(prayers.length, (i) {
-          final p = prayers[i];
-          final isNext = p.key == nextKey;
-          final pIndex = prayerOrder.indexOf(p.key);
-          final isPassed = nextIndex >= 0 && pIndex < nextIndex;
-          final delay = settings.iqamaDelays[p.key] ?? 10;
-          final offset = settings.adhanOffsets[p.key] ?? 0;
+        children: List.generate(items.length, (i) {
+          final item = items[i];
 
           return Expanded(
             child: Padding(
               padding: EdgeInsets.only(
-                left: i < prayers.length - 1 ? screenW * 0.006 : 0,
+                left: i < items.length - 1 ? screenW * 0.006 : 0,
                 right: i > 0 ? screenW * 0.006 : 0,
               ),
               child: PrayerCard(
-                prayer: p,
-                isNext: isNext,
-                isPassed: isPassed,
-                isPreAlert: isNext && isPreAlert,
+                prayer: item.prayer,
+                isNext: item.isNext,
+                isPassed: item.isPassed,
+                isPreAlert: item.isPreAlert,
                 settings: settings,
-                iqamaDelay: delay,
-                adhanOffset: offset,
+                iqamaDelay: item.iqamaDelay,
+                adhanOffset: item.adhanOffset,
               ),
             ),
           );

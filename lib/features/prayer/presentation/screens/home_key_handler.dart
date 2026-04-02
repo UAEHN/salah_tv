@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../settings/domain/entities/app_settings.dart';
+import '../bloc/home_key_policy.dart';
 import '../bloc/prayer_bloc.dart';
 import '../bloc/prayer_event.dart';
 
@@ -17,44 +18,53 @@ KeyEventResult handleHomeKey(
   required FocusNode quranFocusNode,
 }) {
   if (event is! KeyDownEvent) return KeyEventResult.ignored;
-  final key = event.logicalKey;
+  final intent = decideHomeKeyIntent(
+    HomeKeyInput(
+      key: _mapLogicalKey(event.logicalKey),
+      isAdhanPlaying: isAdhanPlaying,
+      isDuaPlaying: isDuaPlaying,
+      isIqamaPlaying: isIqamaPlaying,
+      isIqamaCountdown: isIqamaCountdown,
+      isQuranEnabled: settings.isQuranEnabled,
+      hasQuranReciter: settings.hasQuranReciter,
+    ),
+  );
 
-  if (key == LogicalKeyboardKey.mediaPlayPause ||
-      key == LogicalKeyboardKey.mediaPlay ||
-      key == LogicalKeyboardKey.mediaPause) {
-    if (!isAdhanPlaying && !isDuaPlaying && !isIqamaPlaying) {
+  switch (intent) {
+    case HomeKeyIntent.toggleQuran:
       context.read<PrayerBloc>().add(
         PrayerQuranToggled(settings.quranReciterServerUrl),
       );
-    }
-    return KeyEventResult.handled;
-  }
-
-  if (key == LogicalKeyboardKey.arrowDown &&
-      settings.isQuranEnabled &&
-      settings.hasQuranReciter &&
-      !isIqamaCountdown &&
-      !isAdhanPlaying &&
-      !isDuaPlaying &&
-      !isIqamaPlaying) {
-    quranFocusNode.requestFocus();
-    return KeyEventResult.handled;
-  }
-
-  if (key == LogicalKeyboardKey.select ||
-      key == LogicalKeyboardKey.enter ||
-      key == LogicalKeyboardKey.contextMenu) {
-    if (isAdhanPlaying) {
+      return KeyEventResult.handled;
+    case HomeKeyIntent.focusQuran:
+      quranFocusNode.requestFocus();
+      return KeyEventResult.handled;
+    case HomeKeyIntent.stopAdhan:
       context.read<PrayerBloc>().add(const PrayerAdhanStopped());
-    } else if (isDuaPlaying) {
+      return KeyEventResult.handled;
+    case HomeKeyIntent.stopDua:
       context.read<PrayerBloc>().add(const PrayerDuaStopped());
-    } else if (isIqamaPlaying) {
+      return KeyEventResult.handled;
+    case HomeKeyIntent.stopIqama:
       context.read<PrayerBloc>().add(const PrayerIqamaStopped());
-    } else {
+      return KeyEventResult.handled;
+    case HomeKeyIntent.openSettings:
       Navigator.pushNamed(context, '/settings');
-    }
-    return KeyEventResult.handled;
+      return KeyEventResult.handled;
+    case HomeKeyIntent.ignored:
+      return KeyEventResult.ignored;
   }
+}
 
-  return KeyEventResult.ignored;
+HomeRemoteKey _mapLogicalKey(LogicalKeyboardKey key) {
+  if (key == LogicalKeyboardKey.mediaPlayPause) {
+    return HomeRemoteKey.mediaPlayPause;
+  }
+  if (key == LogicalKeyboardKey.mediaPlay) return HomeRemoteKey.mediaPlay;
+  if (key == LogicalKeyboardKey.mediaPause) return HomeRemoteKey.mediaPause;
+  if (key == LogicalKeyboardKey.arrowDown) return HomeRemoteKey.arrowDown;
+  if (key == LogicalKeyboardKey.select) return HomeRemoteKey.select;
+  if (key == LogicalKeyboardKey.enter) return HomeRemoteKey.enter;
+  if (key == LogicalKeyboardKey.contextMenu) return HomeRemoteKey.contextMenu;
+  return HomeRemoteKey.other;
 }

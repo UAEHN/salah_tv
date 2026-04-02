@@ -8,4 +8,21 @@ abstract class AppConfig {
       'https://gist.githubusercontent.com/UAEHN/'
       '0f3dbd6d07c1217e97e414e777a28bd4/raw/app_version.json';
 
+  static const String telegramBotToken = String.fromEnvironment(
+    'TELEGRAM_BOT_TOKEN',
+    defaultValue: '',
+  );
+
+  static const String telegramChatId = String.fromEnvironment(
+    'TELEGRAM_CHAT_ID',
+    defaultValue: '',
+  );
+
+  static bool get hasTelegramConfig =>
+      telegramBotToken.isNotEmpty && telegramChatId.isNotEmpty;
+
+  static String? get telegramSendUrl {
+    if (!hasTelegramConfig) return null;
+    return 'https://api.telegram.org/bot$telegramBotToken/sendMessage';
+  }
 }

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
-import '../../../../settings/presentation/settings_provider.dart';
 import '../../bloc/prayer_bloc.dart';
 import '../../bloc/prayer_event.dart';
+import '../../bloc/prayer_progress_calculator.dart' as progress_calc;
 import 'mobile_hero_helpers.dart';
 import 'mobile_hero_countdown.dart';
 import 'mobile_hero_hijri_row.dart';
 
+/// Coordinator widget for the hero section: countdown + date nav.
 class MobileHeroCard extends StatelessWidget {
   const MobileHeroCard({super.key});
 
@@ -16,61 +16,26 @@ class MobileHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final state = context.watch<PrayerBloc>().state;
-    final nextPrayerKey = context.select(
-      (PrayerBloc b) => b.state.nextPrayerKey,
-    );
-    final countdown = context.select((PrayerBloc b) => b.state.countdown);
-    final isCycleActive = context.select(
-      (PrayerBloc b) => b.state.isCycleActive,
-    );
-    final isIqamaCountdown = context.select(
-      (PrayerBloc b) => b.state.isIqamaCountdown,
-    );
-    final iqamaCountdown = context.select(
-      (PrayerBloc b) => b.state.iqamaCountdown,
-    );
-    final iqamaPrayerKey = context.select(
-      (PrayerBloc b) => b.state.iqamaPrayerKey,
-    );
-    final activeCyclePrayerKey = context.select(
-      (PrayerBloc b) => b.state.activeCyclePrayerKey,
-    );
-    final displayedDate = context.select(
-      (PrayerBloc b) => b.state.displayedDate,
-    );
-    final isViewingToday = context.select(
-      (PrayerBloc b) => b.state.isViewingToday,
-    );
-    final isDateNavigationBusy = context.select(
-      (PrayerBloc b) => b.state.isDateNavigationBusy,
-    );
 
-    final iqamaDelays = context.select(
-      (SettingsProvider p) => p.settings.iqamaDelays,
-    );
-    final iqamaDelayMinutes = iqamaDelays[activeCyclePrayerKey] ?? 10;
-
-    final progress = countdownArcProgress(state);
-    final iqamaProgress = iqamaArcProgress(iqamaCountdown, iqamaDelayMinutes);
+    final progress = progress_calc.countdownArcProgress(state);
 
     return Column(
       children: [
         MobileHeroCountdown(
-          nextPrayerKey: nextPrayerKey,
-          countdown: countdown,
-          isCycleActive: isCycleActive,
-          isIqamaCountdown: isIqamaCountdown,
-          iqamaCountdown: iqamaCountdown,
-          iqamaPrayerKey: iqamaPrayerKey,
+          nextPrayerKey: state.nextPrayerKey,
+          countdown: state.countdown,
+          isCycleActive: state.isCycleActive,
+          isIqamaCountdown: state.isIqamaCountdown,
+          iqamaCountdown: state.iqamaCountdown,
+          iqamaPrayerKey: state.iqamaPrayerKey,
           progress: progress,
-          iqamaProgress: iqamaProgress,
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
         MobileHeroHijriRow(
-          hijriDate: formatHijriDate(l, displayedDate),
-          gregorianDate: formatGregorianDate(l, displayedDate),
-          isViewingToday: isViewingToday,
-          isBusy: isDateNavigationBusy,
+          hijriDate: formatHijriDate(l, state.displayedDate),
+          gregorianDate: formatGregorianDate(l, state.displayedDate),
+          isViewingToday: state.isViewingToday,
+          isBusy: state.isDateNavigationBusy,
           onPrevious: () =>
               context.read<PrayerBloc>().add(const PrayerDateChanged(-1)),
           onNext: () =>

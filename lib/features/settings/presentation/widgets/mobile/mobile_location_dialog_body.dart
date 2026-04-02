@@ -59,8 +59,7 @@ class MobileLocationDialogBody extends StatelessWidget {
         height: MediaQuery.of(context).size.height * 0.75,
         decoration: BoxDecoration(
           color: MobileColors.cardColor(context),
-          borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(32)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
           border: Border.all(color: MobileColors.border(context)),
         ),
         child: Column(
@@ -72,14 +71,13 @@ class MobileLocationDialogBody extends StatelessWidget {
               onClose: () => Navigator.pop(context),
             ),
             if (!showCities)
-              MobileDetectLocationButton(
-                onDetected: onLocationDetected,
-              ),
+              MobileDetectLocationButton(onDetected: onLocationDetected),
             MobileLocationSearchField(
               controller: searchController,
               hintText: locationSearchHint(context, showCities),
               onChanged: onQueryChanged,
               onClear: onClear,
+              showClearIcon: true,
             ),
             Expanded(
               child: AnimatedSwitcher(

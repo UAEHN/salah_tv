@@ -741,4 +741,88 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get fontPreviewSample => 'أبجد هوز';
+
+  @override
+  String get onboardingWelcome => 'مرحباً بك في غسق';
+
+  @override
+  String get onboardingChooseLanguage => 'اختر لغتك المفضلة';
+
+  @override
+  String get onboardingSelectCountry => 'اختر بلدك';
+
+  @override
+  String get onboardingSelectCity => 'اختر مدينتك';
+
+  @override
+  String get onboardingStepLanguage => 'اللغة';
+
+  @override
+  String get onboardingStepLocation => 'البلد';
+
+  @override
+  String get onboardingStepCity => 'المدينة';
+
+  @override
+  String get onboardingNext => 'التالي';
+
+  @override
+  String get onboardingFinish => 'ابدأ';
+
+  @override
+  String get todayPrayerTimes => 'أوقات الصلاة اليوم';
+
+  @override
+  String remainingHours(int hours) {
+    return 'بعد $hours س';
+  }
+
+  @override
+  String remainingMinutes(int minutes) {
+    return 'بعد $minutes د';
+  }
+
+  @override
+  String remainingHoursMinutes(int hours, int minutes) {
+    return 'بعد $hours س $minutes د';
+  }
+
+  @override
+  String get prayerPassed => 'أُديت';
+
+  @override
+  String get feedbackSection => 'اقتراحات وشكاوي';
+
+  @override
+  String get feedbackSettingsTile => 'أرسل ملاحظة';
+
+  @override
+  String get feedbackTitle => 'أرسل ملاحظة';
+
+  @override
+  String get feedbackSubtitle => 'شاركنا آراءك واقتراحاتك';
+
+  @override
+  String get feedbackTypeBug => 'مشكلة';
+
+  @override
+  String get feedbackTypeSuggestion => 'اقتراح';
+
+  @override
+  String get feedbackTypeOther => 'شكوى';
+
+  @override
+  String get feedbackMessageHint => 'صف ملاحظتك...';
+
+  @override
+  String get feedbackSend => 'إرسال الملاحظة';
+
+  @override
+  String get feedbackSuccess => 'شكراً! تم إرسال ملاحظتك بنجاح.';
+
+  @override
+  String get feedbackError => 'حدث خطأ. حاول مرة أخرى.';
+
+  @override
+  String get feedbackEmptyError => 'يرجى كتابة ملاحظتك أولاً';
 }
