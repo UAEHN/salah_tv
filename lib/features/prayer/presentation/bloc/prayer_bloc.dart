@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../settings/domain/entities/app_settings.dart';
 import '../../domain/i_prayer_audio_port.dart';
+import '../../../analytics/domain/i_analytics_service.dart';
 import '../../../notifications/domain/i_prayer_notification_port.dart';
 import '../../domain/i_prayer_times_repository.dart';
 import '../../domain/prayer_cycle_engine.dart';
@@ -15,13 +16,16 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     with WidgetsBindingObserver {
   late final PrayerCycleEngine _engine;
   late final PrayerDisplayedDateController _dateController;
+  final IAnalyticsService? _analytics;
 
   PrayerBloc(
     IPrayerTimesRepository repo,
     IPrayerAudioPort audio,
     AppSettings initialSettings, {
     IPrayerNotificationPort? notifications,
-  }) : super(PrayerState.initial()) {
+    IAnalyticsService? analytics,
+  })  : _analytics = analytics,
+        super(PrayerState.initial()) {
     _dateController = PrayerDisplayedDateController.fromRepository(repo);
     _engine = PrayerCycleEngine(
       repo,
@@ -51,7 +55,15 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
 
   void _emitCurrent(Emitter<PrayerState> emit) {
     _dateController.resetIfViewingToday(_engine.now);
-    emit(_dateController.buildState(_engine));
+    final prev = state;
+    final next = _dateController.buildState(_engine);
+    if (next.isAdhanPlaying && !prev.isAdhanPlaying) {
+      _analytics?.logAdhanStarted(next.currentAdhanPrayerKey);
+    }
+    if (next.isIqamaPlaying && !prev.isIqamaPlaying) {
+      _analytics?.logIqamaStarted(next.iqamaPrayerKey);
+    }
+    emit(next);
   }
 
   void _onRefreshed(PrayerEngineRefreshed _, Emitter<PrayerState> emit) =>
@@ -106,8 +118,10 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     _emitCurrent(emit);
   }
 
-  void _onQuranToggled(PrayerQuranToggled event, Emitter<PrayerState> emit) =>
-      _runSync(() => _engine.toggleQuran(event.serverUrl), emit);
+  void _onQuranToggled(PrayerQuranToggled event, Emitter<PrayerState> emit) {
+    _analytics?.logQuranStreamToggled(isPlaying: !_engine.isQuranPlaying);
+    _runSync(() => _engine.toggleQuran(event.serverUrl), emit);
+  }
 
   Future<void> _onReloaded(PrayerReloaded _, Emitter<PrayerState> emit) async {
     _engine.reload();

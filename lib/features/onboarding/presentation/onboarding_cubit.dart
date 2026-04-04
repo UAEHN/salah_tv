@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../analytics/domain/i_analytics_service.dart';
 import '../../settings/domain/entities/detected_location.dart';
 import '../../settings/domain/entities/world_city.dart';
 import '../../settings/domain/i_settings_repository.dart';
@@ -19,16 +20,19 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   final OnboardingCountryLoader _countryLoader;
   final OnboardingCompletionService _completion;
   final OnboardingFilterController _filterController;
+  final IAnalyticsService? _analytics;
 
   OnboardingCubit({
     required SettingsProvider settingsProvider,
     required OnboardingCountryLoader countryLoader,
     required OnboardingCompletionService completionService,
     required OnboardingFilterController filterController,
+    IAnalyticsService? analytics,
   }) : _settingsProvider = settingsProvider,
        _countryLoader = countryLoader,
        _completion = completionService,
        _filterController = filterController,
+       _analytics = analytics,
        super(const OnboardingState()) {
     _initCountries();
   }
@@ -37,6 +41,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     required SettingsProvider settingsProvider,
     required IWorldCityRepository worldRepo,
     required ISettingsRepository settingsRepository,
+    IAnalyticsService? analytics,
   }) {
     return OnboardingCubit(
       settingsProvider: settingsProvider,
@@ -46,6 +51,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         settingsRepository,
       ),
       filterController: OnboardingFilterController(),
+      analytics: analytics,
     );
   }
 
@@ -134,6 +140,10 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     emit(state.copyWith(isLoading: true));
     await _completion.persistSelection(state);
     if (isClosed) return;
+    _analytics?.logOnboardingCompleted(
+      state.selectedCountryKey ?? '',
+      state.selectedCityKey ?? state.selectedWorldCity?.name ?? '',
+    );
     emit(state.copyWith(isLoading: false, isComplete: true));
   }
 

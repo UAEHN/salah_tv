@@ -83,7 +83,7 @@ class MobileHeroCountdown extends StatelessWidget {
           ),
           // Main content
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

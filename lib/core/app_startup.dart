@@ -1,6 +1,7 @@
 import 'city_translations.dart';
 import '../features/settings/domain/entities/app_settings.dart';
 import 'startup/startup_features.dart';
+import 'startup/startup_firebase.dart';
 import 'startup/startup_platform.dart';
 import 'startup/startup_prayer.dart';
 import 'startup/startup_settings.dart';
@@ -15,6 +16,7 @@ Future<AppSettings> initDependencies() async {
   final settingsRepo = registerSettingsRepository();
   final settings = await loadInitialSettings(settingsRepo);
   await registerPrayerServices(settings, platformConfig);
+  await initializeFirebase();
   await registerFeatureServices(platformConfig);
 
   return settings;

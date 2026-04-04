@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'app.dart';
 import 'core/app_startup.dart';
 import 'features/adhkar/domain/i_adhkar_audio_port.dart';
+import 'features/analytics/domain/i_analytics_service.dart';
 import 'features/adhkar/domain/i_adhkar_state_repository.dart';
 import 'features/feedback/domain/i_feedback_repository.dart';
 import 'features/feedback/domain/usecases/submit_feedback_usecase.dart';
@@ -41,8 +42,11 @@ void main() async {
         if (getIt.isRegistered<ILocationDetector>())
           Provider<ILocationDetector>.value(value: getIt<ILocationDetector>()),
         ChangeNotifierProvider(
-          create: (_) =>
-              SettingsProvider(getIt<ISettingsRepository>(), settings),
+          create: (_) => SettingsProvider(
+            getIt<ISettingsRepository>(),
+            settings,
+            analytics: getIt<IAnalyticsService>(),
+          ),
         ),
         if (getIt.isRegistered<ILocationDetector>())
           BlocProvider(
@@ -60,6 +64,7 @@ void main() async {
             notifications: getIt.isRegistered<IPrayerNotificationPort>()
                 ? getIt<IPrayerNotificationPort>()
                 : null,
+            analytics: getIt<IAnalyticsService>(),
           )..add(const PrayerStarted()),
         ),
       ],

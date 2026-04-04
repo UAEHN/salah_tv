@@ -7,6 +7,7 @@ import 'core/mobile_theme.dart';
 import 'core/navigation/app_route_builder.dart';
 import 'core/platform_config.dart';
 import 'core/widgets/mobile/mobile_shell.dart';
+import 'features/analytics/domain/i_analytics_service.dart';
 import 'features/adhkar/presentation/screens/adhkar_screen.dart';
 import 'features/feedback/domain/usecases/submit_feedback_usecase.dart';
 import 'features/feedback/presentation/cubit/feedback_cubit.dart';
@@ -56,7 +57,10 @@ class GhasaqApp extends StatelessWidget {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     }
 
+    final observer = getIt<IAnalyticsService>().navigatorObserver;
+
     return MaterialApp(
+      navigatorObservers: [observer as NavigatorObserver],
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
       locale: Locale(appSettings.locale),
@@ -133,9 +137,10 @@ class GhasaqApp extends StatelessWidget {
             return buildAppRoute(
               settings: routeSettings,
               page: BlocProvider(
-                create: (_) =>
-                    TasbihBloc(getIt<ITasbihRepository>())
-                      ..add(const TasbihStarted()),
+                create: (_) => TasbihBloc(
+                      getIt<ITasbihRepository>(),
+                      analytics: getIt<IAnalyticsService>(),
+                    )..add(const TasbihStarted()),
                 child: const MobileTasbihScreen(),
               ),
             );
@@ -148,6 +153,7 @@ class GhasaqApp extends StatelessWidget {
                   settingsProvider: ctx.read<SettingsProvider>(),
                   worldRepo: getIt<IWorldCityRepository>(),
                   settingsRepository: getIt<ISettingsRepository>(),
+                  analytics: getIt<IAnalyticsService>(),
                 ),
                 child: const OnboardingScreen(),
               ),
@@ -156,8 +162,10 @@ class GhasaqApp extends StatelessWidget {
             return buildAppRoute(
               settings: routeSettings,
               page: BlocProvider(
-                create: (ctx) =>
-                    FeedbackCubit(ctx.read<SubmitFeedbackUseCase>()),
+                create: (ctx) => FeedbackCubit(
+                    ctx.read<SubmitFeedbackUseCase>(),
+                    analytics: getIt<IAnalyticsService>(),
+                  ),
                 child: const MobileFeedbackScreen(),
               ),
             );

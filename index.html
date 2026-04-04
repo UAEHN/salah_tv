@@ -15,22 +15,33 @@
 </head>
 <body>
   <h1>Privacy Policy for Ghasaq (غسق)</h1>
-  <p><em>Last updated: March 25, 2026</em></p>
+  <p><em>Last updated: April 4, 2026</em></p>
 
   <h2>Introduction</h2>
   <p>Ghasaq (غسق) is an Islamic prayer times app for Android TV and mobile devices. It displays prayer times, plays Adhan audio, streams Quran, and provides Adhkar and Qibla compass features. This policy explains how the app handles your data.</p>
 
-  <div class="note">All user data is stored <strong>locally on your device only</strong>. We do not operate any servers, and we do not collect, transmit, or store any personal data on our end.</div>
+  <div class="note">Most user data is stored <strong>locally on your device only</strong>. The app collects anonymous usage analytics to improve the user experience, but this data cannot be used to identify you personally.</div>
 
   <h2>Data We Do NOT Collect</h2>
   <p>The app does not collect, transmit, or share:</p>
   <ul>
     <li>Names, email addresses, or account information</li>
     <li>Device identifiers or advertising IDs</li>
-    <li>Usage analytics or crash reports</li>
     <li>Any data with third parties for marketing or profiling</li>
   </ul>
-  <p>There is no Firebase, no analytics SDK, and no ad library in this app.</p>
+
+  <h2>Anonymous Usage Analytics</h2>
+  <p>The app uses <strong>Firebase Analytics</strong> (provided by Google) to collect anonymous usage data for the purpose of improving the app. The data collected includes:</p>
+  <ul>
+    <li>Screens opened within the app</li>
+    <li>App features used (e.g., Adhan playback, Quran streaming, Tasbih, Qibla)</li>
+    <li>Settings changes (e.g., city selection, theme, layout) — without identifying values where possible</li>
+    <li>Session duration and engagement metrics</li>
+    <li>Device type (TV or mobile) as a non-personal user property</li>
+  </ul>
+  <p>This data is <strong>anonymous and aggregated</strong>. It cannot be used to identify you personally. It is processed by Google in accordance with the <a href="https://policies.google.com/privacy" target="_blank">Google Privacy Policy</a>.</p>
+  <p><strong>Data retention:</strong> Analytics and diagnostic data is automatically deleted by Google after a maximum of 14 months. Event-level data is deleted after 60 days by default.</p>
+  <p>You can opt out of analytics collection at any time through your device settings: <strong>Settings → Google → Ads → Opt out of Ads Personalization</strong>, or by resetting your advertising ID.</p>
 
   <h2>Location Data</h2>
   <p>The app requests location permission for two optional features:</p>
@@ -69,11 +80,29 @@
   <h2>Notifications</h2>
   <p>On mobile devices, the app can send local notifications for prayer times, Adhan reminders, and Iqama times. These notifications are scheduled entirely on-device using Android's alarm system. No notification data passes through any external server.</p>
 
+  <h2>User Feedback</h2>
+  <p>The app includes an optional feedback feature (mobile only) that allows you to send a message to the developer. When you submit feedback, the following data is collected and stored:</p>
+  <ul>
+    <li>Your feedback message (text you write)</li>
+    <li>Feedback type (e.g., bug report, suggestion)</li>
+    <li>Operating system platform (Android)</li>
+    <li>Submission timestamp</li>
+  </ul>
+  <p><strong>No personal information is collected</strong> — no name, email, account, or device identifier is attached to feedback submissions.</p>
+  <p>Feedback is stored in <strong>Cloud Firestore</strong> (Google Firebase) and delivered to the developer via a private Telegram notification. Feedback data is used solely to improve the app and is not shared with any third party.</p>
+
   <h2>Third-Party Services</h2>
-  <p>The only external service the app communicates with for content is <strong>mp3quran.net</strong> (Quran audio streaming). Please refer to their privacy policy for how they handle streaming requests. The app update check uses a public GitHub endpoint with no personal data sent.</p>
+  <p>The app communicates with the following external services:</p>
+  <ul>
+    <li><strong>mp3quran.net</strong> — Quran audio streaming. Please refer to their privacy policy for how they handle streaming requests.</li>
+    <li><strong>Firebase Analytics (Google)</strong> — Anonymous usage analytics. Data is processed by Google under the <a href="https://policies.google.com/privacy" target="_blank">Google Privacy Policy</a>.</li>
+    <li><strong>Cloud Firestore (Google)</strong> — Stores optional user feedback messages. No personal data is attached.</li>
+    <li><strong>Telegram</strong> — Used by the developer to receive feedback notifications. No user data is stored on Telegram's servers beyond the notification content.</li>
+    <li><strong>GitHub</strong> — App update check via a public endpoint. No personal data is sent.</li>
+  </ul>
 
   <h2>Children's Privacy</h2>
-  <p>The app does not collect any data from users of any age.</p>
+  <p>The app does not collect any personal data from users of any age. The anonymous analytics data collected cannot be used to identify children or any individual user.</p>
 
   <h2>Changes to This Policy</h2>
   <p>If we update this privacy policy, the revised version will be published at the same URL with an updated date.</p>

@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
@@ -64,7 +65,7 @@ class MobilePrayerRow extends StatelessWidget {
                 constraints.maxHeight > 0 && constraints.maxHeight < 64;
             final containerSize = isCompact ? 38.0 : 48.0;
             final contentSize = isCompact ? 26.0 : 34.0;
-            final vPad = isCompact ? 8.0 : 14.0;
+            final vPad = isCompact ? 14.0 : 18.0;
 
             return Stack(
               children: [

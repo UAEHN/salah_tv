@@ -4,12 +4,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/feedback_entry.dart';
 import '../../domain/usecases/submit_feedback_usecase.dart';
+import '../../../analytics/domain/i_analytics_service.dart';
 import 'feedback_state.dart';
 
 class FeedbackCubit extends Cubit<FeedbackState> {
-  FeedbackCubit(this._submitFeedback) : super(const FeedbackState());
+  FeedbackCubit(this._submitFeedback, {IAnalyticsService? analytics})
+      : _analytics = analytics,
+        super(const FeedbackState());
 
   final SubmitFeedbackUseCase _submitFeedback;
+  final IAnalyticsService? _analytics;
 
   void selectType(String type) {
     emit(state.copyWith(selectedType: type, clearError: true));
@@ -30,7 +34,10 @@ class FeedbackCubit extends Cubit<FeedbackState> {
     result.fold(
       (failure) =>
           emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
-      (_) => emit(state.copyWith(isLoading: false, isSuccess: true)),
+      (_) {
+        _analytics?.logFeedbackSubmitted(state.selectedType);
+        emit(state.copyWith(isLoading: false, isSuccess: true));
+      },
     );
   }
 }

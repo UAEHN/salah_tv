@@ -70,7 +70,7 @@ class MobilePrayerInfo extends StatelessWidget {
         Text(
           name,
           style: MobileTextStyles.titleMd(context).copyWith(
-            fontSize: isCompact ? 15 : 18,
+            fontSize: isCompact ? 17 : 20,
             color: isActive ? Colors.white : MobileColors.onSurface(context),
             height: 1.0,
           ),

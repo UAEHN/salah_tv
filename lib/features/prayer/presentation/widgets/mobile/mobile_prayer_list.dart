@@ -84,7 +84,7 @@ class _PrayerCardsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const spacing = 10.0;
+    const spacing = 8.0;
     const hPad = 20.0;
 
     return Padding(

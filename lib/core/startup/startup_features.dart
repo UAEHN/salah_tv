@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 import '../../features/adhkar/data/adhkar_audio_service.dart';
 import '../../features/adhkar/data/adhkar_json_repository.dart';
@@ -7,6 +6,8 @@ import '../../features/adhkar/data/adhkar_text_repository.dart';
 import '../../features/adhkar/domain/i_adhkar_audio_port.dart';
 import '../../features/adhkar/domain/i_adhkar_state_repository.dart';
 import '../../features/adhkar/domain/i_adhkar_text_repository.dart';
+import '../../features/analytics/data/firebase_analytics_service.dart';
+import '../../features/analytics/domain/i_analytics_service.dart';
 import '../../features/notifications/data/prayer_notification_service.dart';
 import '../../features/notifications/domain/i_prayer_notification_port.dart';
 import '../../features/qibla/data/qibla_repository.dart';
@@ -22,11 +23,11 @@ import '../../features/feedback/data/firestore_feedback_repository.dart';
 import '../../features/feedback/domain/i_feedback_repository.dart';
 import '../../features/tasbih/data/tasbih_repository.dart';
 import '../../features/tasbih/domain/i_tasbih_repository.dart';
-import '../../firebase_options.dart';
 import '../../injection.dart';
 import '../platform_config.dart';
 
 Future<void> registerFeatureServices(PlatformConfig platformConfig) async {
+  await _registerAnalytics(platformConfig);
   await _registerAdhkarCore();
   _registerQuranAndQibla();
   if (!platformConfig.isTV) {
@@ -56,9 +57,13 @@ Future<void> _registerAdhkarReader() async {
   getIt.registerSingleton<IAdhkarTextRepository>(adhkarTextRepo);
 }
 
-Future<void> _registerMobileOnly() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+Future<void> _registerAnalytics(PlatformConfig platformConfig) async {
+  final analyticsService = FirebaseAnalyticsService();
+  await analyticsService.initialize(isTV: platformConfig.isTV);
+  getIt.registerSingleton<IAnalyticsService>(analyticsService);
+}
 
+Future<void> _registerMobileOnly() async {
   final notifService = PrayerNotificationService();
   await notifService.initialize();
   getIt.registerSingleton<IPrayerNotificationPort>(notifService);
