@@ -6,7 +6,7 @@ class IslamicArchClipper extends CustomClipper<Path> {
   final double archRatio;
   final double cornerRadius;
 
-  IslamicArchClipper({this.archRatio = 0.30, this.cornerRadius = 14});
+  IslamicArchClipper({this.archRatio = 0.38, this.cornerRadius = 14});
 
   @override
   Path getClip(Size size) => archPath(size, archRatio, cornerRadius);
@@ -34,19 +34,9 @@ class IslamicArchClipper extends CustomClipper<Path> {
     // Right edge up to where the arch begins
     path.lineTo(w, archH);
 
-    // Right half of ogee arch: concave inward then convex to peak
-    path.cubicTo(
-      w, archH * 0.40,
-      w * 0.72, archH * 0.08,
-      w * 0.5, 0,
-    );
-
-    // Left half of ogee arch (mirror)
-    path.cubicTo(
-      w * 0.28, archH * 0.08,
-      0, archH * 0.40,
-      0, archH,
-    );
+    // True Islamic pointed arch: CP near top corners pulls curves strongly inward
+    path.quadraticBezierTo(w * 0.92, 0, w / 2, 0); // right half → apex
+    path.quadraticBezierTo(w * 0.08, 0, 0, archH); // left half → left edge
 
     path.close();
     return path;
@@ -75,7 +65,7 @@ class IslamicArchPainter extends CustomPainter {
     this.shadowBlur = 0,
     this.shadowSpread = 0,
     this.shadowOffset = Offset.zero,
-    this.archRatio = 0.30,
+    this.archRatio = 0.38,
     this.cornerRadius = 14,
   });
 

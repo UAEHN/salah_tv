@@ -81,19 +81,7 @@ class PrayerCardContent extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Accent bar for the active prayer
-        if (isNext)
-          Container(
-            height: 3,
-            margin: const EdgeInsets.only(left: 20, right: 20, bottom: 4),
-            decoration: BoxDecoration(
-              color: isPreAlert
-                  ? palette.primary.withValues(alpha: 0.4 + pulse * 0.2)
-                  : null,
-              gradient: isPreAlert ? null : palette.horizontalGradient,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
+
         SizedBox(height: screenH * 0.008),
         Icon(
           icon,

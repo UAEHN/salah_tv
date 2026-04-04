@@ -1,6 +1,6 @@
 name: ghasaq
 description: "غسق — مواقيت الصلاة لأجهزة Android TV"
-version: 1.0.3+5
+version: 1.0.4+8
 publish_to: none
 
 environment:
