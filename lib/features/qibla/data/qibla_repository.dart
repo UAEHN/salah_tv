@@ -1,4 +1,5 @@
-﻿import 'dart:async';
+import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
@@ -6,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
 import '../../../core/error/failures.dart';
+import '../domain/entities/qibla_accuracy.dart';
 import '../domain/entities/qibla_data.dart';
 import '../domain/i_qibla_repository.dart';
 import 'qibla_math.dart';
@@ -23,6 +25,10 @@ class QiblaRepository implements IQiblaRepository {
   double _smoothedHeading = 0;
   bool _hasFirstReading = false;
   DateTime _lastEmitTime = DateTime(0);
+
+  // Rolling buffer of magnetometer magnitudes for variance-based accuracy.
+  final _magHistory = <double>[];
+  static const _kMagHistorySize = 20;
 
   @override
   Stream<Either<Failure, QiblaData>> watchQibla() {
@@ -80,6 +86,11 @@ class QiblaRepository implements IQiblaRepository {
     if (now.difference(_lastEmitTime).inMilliseconds < 50) return;
     _lastEmitTime = now;
 
+    // Track magnetometer magnitude for interference detection.
+    final magMag = math.sqrt(mag.x * mag.x + mag.y * mag.y + mag.z * mag.z);
+    _magHistory.add(magMag);
+    if (_magHistory.length > _kMagHistorySize) _magHistory.removeAt(0);
+
     final raw = computeHeading(
       ax: acc.x,
       ay: acc.y,
@@ -102,9 +113,21 @@ class QiblaRepository implements IQiblaRepository {
           qiblaBearing: bearing,
           deviceHeading: _smoothedHeading,
           distanceKm: distance,
+          accuracy: _computeAccuracy(),
         ),
       ),
     );
+  }
+
+  /// Maps magnetometer range over the last [_kMagHistorySize] readings
+  /// to a confidence level. High range = nearby interference = low accuracy.
+  QiblaAccuracy _computeAccuracy() {
+    if (_magHistory.length < _kMagHistorySize) return QiblaAccuracy.low;
+    final sorted = [..._magHistory]..sort();
+    final range = sorted.last - sorted.first;
+    if (range < 3.0) return QiblaAccuracy.high;
+    if (range < 8.0) return QiblaAccuracy.medium;
+    return QiblaAccuracy.low;
   }
 
   Future<Failure?> _ensureLocation() async {
@@ -115,7 +138,8 @@ class QiblaRepository implements IQiblaRepository {
     if (perm == LocationPermission.denied) {
       perm = await Geolocator.requestPermission();
     }
-    if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) {
+    if (perm == LocationPermission.denied ||
+        perm == LocationPermission.deniedForever) {
       return const LocationPermissionFailure();
     }
     return null;
@@ -131,6 +155,7 @@ class QiblaRepository implements IQiblaRepository {
     _smoothedHeading = 0;
     _hasFirstReading = false;
     _lastEmitTime = DateTime(0);
+    _magHistory.clear();
     await _accSub?.cancel();
     await _magSub?.cancel();
     await _controller?.close();

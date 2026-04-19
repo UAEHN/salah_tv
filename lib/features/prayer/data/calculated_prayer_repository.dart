@@ -22,6 +22,7 @@ class CalculatedPrayerRepository implements IPrayerTimesRepository {
   double _lng = 0;
   String _methodKey = 'muslim_world_league';
   String _madhabKey = 'shafi';
+  String? _timeZoneId;
   double? _utcOffsetHours;
   String _cityLabel = '';
   bool _isInitialized = false;
@@ -55,18 +56,22 @@ class CalculatedPrayerRepository implements IPrayerTimesRepository {
     String methodKey, {
     String madhabKey = 'shafi',
     String cityLabel = '',
+    String? timeZoneId,
     double? utcOffsetHours,
   }) {
     _lat = lat;
     _lng = lng;
     _methodKey = methodKey;
     _madhabKey = madhabKey;
+    _timeZoneId = timeZoneId;
     _utcOffsetHours = utcOffsetHours;
     _cityLabel = cityLabel;
     _isInitialized = true;
     _cache.refresh(
       _source, _lat, _lng, _methodKey,
-      madhabKey: _madhabKey, utcOffsetHours: _utcOffsetHours,
+      madhabKey: _madhabKey,
+      timeZoneId: _timeZoneId,
+      utcOffsetHours: _utcOffsetHours,
     );
   }
 
@@ -97,6 +102,7 @@ class CalculatedPrayerRepository implements IPrayerTimesRepository {
         _source.calculateForDate(
           _lat, _lng, date, _methodKey,
           madhabKey: _madhabKey,
+          timeZoneId: _timeZoneId,
           utcOffsetHours: _utcOffsetHours,
         ),
       );
@@ -109,13 +115,18 @@ class CalculatedPrayerRepository implements IPrayerTimesRepository {
 
   @override
   DailyPrayerTimes? getToday() {
-    if (_cache.isStale()) {
+    if (_cache.isStale(timeZoneId: _timeZoneId, utcOffsetHours: _utcOffsetHours)) {
       _cache.refresh(
         _source, _lat, _lng, _methodKey,
-        madhabKey: _madhabKey, utcOffsetHours: _utcOffsetHours,
+        madhabKey: _madhabKey,
+        timeZoneId: _timeZoneId,
+        utcOffsetHours: _utcOffsetHours,
       );
     }
-    return _cache.getToday();
+    return _cache.getToday(
+      timeZoneId: _timeZoneId,
+      utcOffsetHours: _utcOffsetHours,
+    );
   }
 
   @override

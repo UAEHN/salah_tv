@@ -1,0 +1,1 @@
+enum LocationPickerSource { db, world }

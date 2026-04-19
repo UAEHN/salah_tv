@@ -1,4 +1,5 @@
 import '../domain/entities/daily_prayer_times.dart';
+import '../domain/prayer_time_zone.dart';
 import 'adhan_calculation_source.dart';
 
 /// 3-day rolling in-memory cache for calculated (adhan_dart) prayer times.
@@ -11,9 +12,24 @@ class CalculatedPrayerCache {
 
   bool get isNotEmpty => _map.isNotEmpty;
 
-  bool isStale() => _dateKey(DateTime.now()) != _cachedDateKey;
+  bool isStale({String? timeZoneId, double? utcOffsetHours}) =>
+      _dateKey(
+        PrayerTimeZone.now(
+          timeZoneId: timeZoneId,
+          utcOffsetHours: utcOffsetHours,
+        ),
+      ) !=
+      _cachedDateKey;
 
-  DailyPrayerTimes? getToday() => _map[_dateKey(DateTime.now())];
+  DailyPrayerTimes? getToday({String? timeZoneId, double? utcOffsetHours}) =>
+      _map[
+        _dateKey(
+          PrayerTimeZone.now(
+            timeZoneId: timeZoneId,
+            utcOffsetHours: utcOffsetHours,
+          ),
+        )
+      ];
 
   DailyPrayerTimes? getByKey(String key) => _map[key];
 
@@ -29,23 +45,28 @@ class CalculatedPrayerCache {
     double lng,
     String methodKey, {
     String madhabKey = 'shafi',
+    String? timeZoneId,
     double? utcOffsetHours,
   }) {
     final newCache = <String, DailyPrayerTimes>{};
-    final now = DateTime.now();
+    final now = PrayerTimeZone.now(
+      timeZoneId: timeZoneId,
+      utcOffsetHours: utcOffsetHours,
+    );
     for (var offset = 0; offset < 3; offset++) {
       final date = now.add(Duration(days: offset));
       final key = _dateKey(date);
       newCache[key] = source.calculateForDate(
         lat, lng, date, methodKey,
         madhabKey: madhabKey,
+        timeZoneId: timeZoneId,
         utcOffsetHours: utcOffsetHours,
       );
     }
     _map
       ..clear()
       ..addAll(newCache);
-    _cachedDateKey = _dateKey(DateTime.now());
+    _cachedDateKey = _dateKey(now);
   }
 
   String _dateKey(DateTime d) =>

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../../core/mobile_theme.dart';
 import 'qibla_compass_center.dart';
 import 'qibla_compass_pointer.dart';
@@ -12,11 +13,13 @@ import 'qibla_kaaba_marker.dart';
 class QiblaCompass extends StatefulWidget {
   final double qiblaBearing;  // absolute GPS bearing to Mecca (0–360°)
   final double deviceHeading; // current compass heading of device (0–360°)
+  final bool isAligned;       // true when within ±5° of Qibla
 
   const QiblaCompass({
     super.key,
     required this.qiblaBearing,
     required this.deviceHeading,
+    required this.isAligned,
   });
 
   @override
@@ -28,12 +31,14 @@ class _QiblaCompassState extends State<QiblaCompass>
   late final AnimationController _ticker;
   double _smoothHeading = 0;
   double _targetHeading = 0;
+  bool _wasAligned = false;
 
   @override
   void initState() {
     super.initState();
     _smoothHeading = widget.deviceHeading;
     _targetHeading = widget.deviceHeading;
+    _wasAligned = widget.isAligned;
     _ticker = AnimationController(
       vsync: this,
       duration: const Duration(days: 1),
@@ -46,6 +51,11 @@ class _QiblaCompassState extends State<QiblaCompass>
   void didUpdateWidget(QiblaCompass old) {
     super.didUpdateWidget(old);
     _targetHeading = widget.deviceHeading;
+    // Fire haptic once on the moment of alignment.
+    if (widget.isAligned && !_wasAligned) {
+      HapticFeedback.mediumImpact();
+    }
+    _wasAligned = widget.isAligned;
   }
 
   void _onFrame() {
@@ -77,7 +87,9 @@ class _QiblaCompassState extends State<QiblaCompass>
           color: MobileColors.cardColor(context),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.5),
+              color: widget.isAligned
+                  ? MobileColors.primaryContainer.withValues(alpha: 0.4)
+                  : Colors.black.withValues(alpha: 0.5),
               blurRadius: 30,
               spreadRadius: 10,
               offset: const Offset(0, 10),
@@ -108,7 +120,12 @@ class _QiblaCompassState extends State<QiblaCompass>
                   const QiblaDirectionLabel(label: 'W', alignment: Alignment.centerLeft),
                   Transform.rotate(
                     angle: widget.qiblaBearing * (math.pi / 180),
-                    child: const QiblaKaabaMarker(),
+                    child: AnimatedScale(
+                      scale: widget.isAligned ? 1.3 : 1.0,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.elasticOut,
+                      child: const QiblaKaabaMarker(),
+                    ),
                   ),
                 ],
               ),

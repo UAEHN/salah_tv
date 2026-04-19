@@ -90,31 +90,37 @@ class _SettingsNavCardState extends State<SettingsNavCard> {
               size: 26,
             ),
             const SizedBox(width: 14),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  widget.title,
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: _highlighted ? Colors.white : tc.textPrimary,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: _highlighted ? Colors.white : tc.textPrimary,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  widget.subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: _highlighted
-                        ? Colors.white.withValues(alpha: 0.70)
-                        : tc.textMuted,
+                  const SizedBox(height: 3),
+                  Text(
+                    widget.subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _highlighted
+                          ? Colors.white.withValues(alpha: 0.70)
+                          : tc.textMuted,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            const Spacer(),
+            const SizedBox(width: 8),
             Icon(
               Icons.chevron_right_rounded,
               color: _highlighted ? Colors.white70 : Colors.white24,

@@ -14,6 +14,7 @@ abstract class PrayerCycleBase {
   AppSettings get settings;
   set settings(AppSettings value);
   void Function() get notify;
+  DateTime currentTime();
 
   /// Null on TV — notifications are mobile-only.
   IPrayerNotificationPort? get notifications;

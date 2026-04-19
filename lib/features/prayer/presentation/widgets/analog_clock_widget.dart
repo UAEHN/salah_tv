@@ -31,15 +31,19 @@ class AnalogClockWidget extends StatelessWidget {
             ? screenH * 0.26
             : screenH * 0.40;
 
-    return SizedBox(
-      width: diameter,
-      height: diameter,
-      child: CustomPaint(
-        painter: AnalogClockPainter(
-          now: now,
-          palette: palette,
-          tc: tc,
-          isDarkMode: settings.isDarkMode,
+    // RepaintBoundary isolates the per-second `now` invalidation so only the
+    // clock's own layer is rasterized each tick — never the parent card.
+    return RepaintBoundary(
+      child: SizedBox(
+        width: diameter,
+        height: diameter,
+        child: CustomPaint(
+          painter: AnalogClockPainter(
+            now: now,
+            palette: palette,
+            tc: tc,
+            isDarkMode: settings.isDarkMode,
+          ),
         ),
       ),
     );

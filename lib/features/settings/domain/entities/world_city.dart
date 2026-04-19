@@ -10,6 +10,7 @@ class WorldCity {
   final double latitude;
   final double longitude;
   final String calculationMethod;
+  final String? timeZoneId;
 
   /// UTC offset in hours (e.g. 2.0 for GMT+2, -5.0 for GMT-5).
   final double utcOffset;
@@ -22,6 +23,7 @@ class WorldCity {
     required this.latitude,
     required this.longitude,
     required this.calculationMethod,
+    this.timeZoneId,
     required this.utcOffset,
   });
 }

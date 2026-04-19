@@ -4,8 +4,9 @@ import '../../../core/city_translations.dart';
 import 'location_text_normalizer.dart';
 
 class LocationCityMatcher {
+  // Keys are DB country keys (lowercase, as stored in prayer_times.db).
   static const _aliasesByCountry = <String, Map<String, String>>{
-    'UAE': {
+    'uae': {
       'abu zaby': 'Abu Dhabi',
       'abu dhabi emirate': 'Abu Dhabi',
       'ash shariqah': 'Sharjah',
@@ -27,18 +28,18 @@ class LocationCityMatcher {
       'umm al quwain emirate': 'Umm Al Quwain',
       'umm al qaywayn': 'Umm Al Quwain',
     },
-    'Saudi': {
+    'saudi': {
       'ar riyad': 'Riyadh',
       'makkah': 'Mecca',
       'makkah al mukarramah': 'Mecca',
       'al madinah al munawwarah': 'Medina',
     },
-    'Egypt': {
+    'egypt': {
       'al qahirah': 'Cairo',
       'cairo governorate': 'Cairo',
       'al iskandariyah': 'Alexandria',
     },
-    'Morocco': {
+    'morocco': {
       'dar el beida': 'Casablanca',
       'casablanca settat': 'Casablanca',
       'tanger assilah': 'Tangier',

@@ -33,6 +33,9 @@ class OnboardingState {
     this.worldRepo,
   });
 
+  /// True when the user has selected any city (DB or world).
+  bool get hasCity => selectedCityKey != null || selectedWorldCity != null;
+
   OnboardingState copyWith({
     int? step,
     String? locale,

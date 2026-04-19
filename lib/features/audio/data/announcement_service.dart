@@ -16,12 +16,15 @@ class AnnouncementService {
 
   final AudioPlayer _player = AudioPlayer();
 
-  /// Plays the announcement for [prayerKey] and returns the instant it ends.
-  /// [sub.cancel] is fire-and-forget so there is zero latency before adhan.
+  /// Plays the announcement for [prayerKey] and returns when it ends.
   Future<void> play(String prayerKey) async {
     final asset = _assets[prayerKey];
     if (asset == null) return;
     try {
+      // Release ExoPlayer resources after each clip so no native threads idle
+      // between prayers. Without this, the player holds decoder threads alive
+      // for hours and contributes to ANR mutex contention on TV boxes.
+      await _player.setReleaseMode(ReleaseMode.release);
       final completer = Completer<void>();
       final sub = _player.onPlayerComplete.listen((_) {
         if (!completer.isCompleted) completer.complete();

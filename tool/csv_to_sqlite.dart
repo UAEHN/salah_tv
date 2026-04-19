@@ -41,6 +41,7 @@ const _csvFiles = [
   'syria_prayer_times_2026.csv',
   'tunisia_prayer_times_2026.csv',
   'yemen_prayer_times_2026.csv',
+  'algeria_prayer_times_2026.csv',
 ];
 
 Future<void> main() async {
@@ -161,8 +162,16 @@ String _deriveCountryKey(String fileName) {
   return fileName.replaceAll(RegExp(r'_prayer_times_\d+\.csv$'), '');
 }
 
-/// Parses "dd/MM/yyyy" → YYYYMMDD integer (e.g. "11/03/2026" → 20260311).
+/// Parses date string → YYYYMMDD integer.
+/// Supports "dd/MM/yyyy" (e.g. "11/03/2026" → 20260311)
+/// and     "yyyy-MM-dd" (e.g. "2026-03-11" → 20260311).
 int _dateToInt(String s) {
+  if (s.contains('-')) {
+    // ISO format: yyyy-MM-dd
+    final p = s.split('-');
+    return int.parse(p[0]) * 10000 + int.parse(p[1]) * 100 + int.parse(p[2]);
+  }
+  // Slash format: dd/MM/yyyy
   final p = s.split('/');
   return int.parse(p[2]) * 10000 + int.parse(p[1]) * 100 + int.parse(p[0]);
 }

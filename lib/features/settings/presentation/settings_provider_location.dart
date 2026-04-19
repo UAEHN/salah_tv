@@ -12,6 +12,7 @@ extension SettingsProviderLocation on SettingsProvider {
       selectedCountry: country,
       selectedCity: city,
       isCalculatedLocation: false,
+      clearSelectedTimeZoneId: true,
       clearUtcOffset: true,
     ),
   );
@@ -22,6 +23,7 @@ extension SettingsProviderLocation on SettingsProvider {
     double lat,
     double lng,
     String method, {
+    String? timeZoneId,
     double? utcOffsetHours,
   }) => _update(
     _settings.copyWith(
@@ -31,6 +33,8 @@ extension SettingsProviderLocation on SettingsProvider {
       selectedLongitude: lng,
       calculationMethod: method,
       isCalculatedLocation: true,
+      selectedTimeZoneId: timeZoneId,
+      clearSelectedTimeZoneId: timeZoneId == null,
       utcOffsetHours: utcOffsetHours,
       clearUtcOffset: utcOffsetHours == null,
     ),

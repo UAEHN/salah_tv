@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../../core/mobile_theme.dart';
 import '../../../../settings/presentation/settings_provider.dart';
 import '../../bloc/prayer_bloc.dart';
 import '../../bloc/prayer_progress_calculator.dart' as progress_calc;
+import '../../bloc/prayer_state.dart';
 import '../../bloc/prayer_ui_logic.dart';
 import 'mobile_prayer_row.dart';
 
@@ -19,48 +19,61 @@ class MobilePrayerList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final state = context.watch<PrayerBloc>().state;
-    final prayers = state.displayedPrayers?.prayersOnly ?? const [];
-    final isViewingToday = state.isViewingToday;
-    final isBusy = state.isDateNavigationBusy;
-    final nextPrayerKey = state.nextPrayerKey;
-    final activeCyclePrayerKey = state.activeCyclePrayerKey;
     final adhanOffsets = context.select(
       (SettingsProvider p) => p.settings.adhanOffsets,
     );
 
-    final activeKey = resolveMobileActivePrayerKey(
-      isViewingToday: isViewingToday,
-      activeCyclePrayerKey: activeCyclePrayerKey,
-      nextPrayerKey: nextPrayerKey,
-    );
+    // Narrow rebuild trigger: ignore unrelated state (adhan/quran flags, etc.).
+    // Rebuilds every tick anyway because of now/countdown — but decoupled
+    // from audio/settings noise.
+    return BlocBuilder<PrayerBloc, PrayerState>(
+      buildWhen: (prev, cur) =>
+          prev.now != cur.now ||
+          prev.countdown != cur.countdown ||
+          prev.displayedPrayers != cur.displayedPrayers ||
+          prev.todayPrayers != cur.todayPrayers ||
+          prev.isViewingToday != cur.isViewingToday ||
+          prev.isDateNavigationBusy != cur.isDateNavigationBusy ||
+          prev.nextPrayerKey != cur.nextPrayerKey ||
+          prev.activeCyclePrayerKey != cur.activeCyclePrayerKey ||
+          prev.isIqamaCountdown != cur.isIqamaCountdown,
+      builder: (context, state) {
+        final prayers = state.displayedPrayers?.prayersOnly ?? const [];
+        final isViewingToday = state.isViewingToday;
+        final isBusy = state.isDateNavigationBusy;
+        final activeKey = resolveMobileActivePrayerKey(
+          isViewingToday: isViewingToday,
+          activeCyclePrayerKey: state.activeCyclePrayerKey,
+          nextPrayerKey: state.nextPrayerKey,
+        );
+        final progress = progress_calc.countdownArcProgress(state);
 
-    final progress = progress_calc.countdownArcProgress(state);
+        if (prayers.isEmpty) {
+          return Center(
+            child: isBusy
+                ? const CircularProgressIndicator(
+                    color: MobileColors.primaryContainer,
+                    strokeWidth: 2,
+                  )
+                : Text(
+                    l.noPrayerDataForDate,
+                    style: MobileTextStyles.bodyMd(context).copyWith(
+                      color: MobileColors.onSurfaceMuted(context),
+                    ),
+                    textDirection: TextDirection.rtl,
+                  ),
+          );
+        }
 
-    if (prayers.isEmpty) {
-      return Center(
-        child: isBusy
-            ? const CircularProgressIndicator(
-                color: MobileColors.primaryContainer,
-                strokeWidth: 2,
-              )
-            : Text(
-                l.noPrayerDataForDate,
-                style: MobileTextStyles.bodyMd(
-                  context,
-                ).copyWith(color: MobileColors.onSurfaceMuted(context)),
-                textDirection: TextDirection.rtl,
-              ),
-      );
-    }
-
-    return _PrayerCardsList(
-      prayers: prayers,
-      activeKey: activeKey,
-      is24HourFormat: is24HourFormat,
-      adhanOffsets: adhanOffsets,
-      progress: progress,
-      now: isViewingToday ? state.now : null,
+        return _PrayerCardsList(
+          prayers: prayers,
+          activeKey: activeKey,
+          is24HourFormat: is24HourFormat,
+          adhanOffsets: adhanOffsets,
+          progress: progress,
+          now: isViewingToday ? state.now : null,
+        );
+      },
     );
   }
 }

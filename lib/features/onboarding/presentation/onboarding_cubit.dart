@@ -72,6 +72,21 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     _settingsProvider.updateLocale(locale);
   }
 
+  /// Selects the language and advances to the country step atomically.
+  /// Using a single emit avoids a race condition where the locale change
+  /// triggers a widget rebuild that invalidates the caller's context before
+  /// [advanceToCountry] can be dispatched separately.
+  void selectLanguageAndAdvance(String locale) {
+    _settingsProvider.updateLocale(locale);
+    emit(
+      state.copyWith(
+        locale: locale,
+        step: 1,
+        filteredCountries: state.allCountries,
+      ),
+    );
+  }
+
   void advanceToCountry() {
     emit(state.copyWith(step: 1, filteredCountries: state.allCountries));
   }
@@ -130,6 +145,20 @@ class OnboardingCubit extends Cubit<OnboardingState> {
 
   void selectWorldCity(WorldCity city) =>
       emit(state.copyWith(selectedWorldCity: city));
+
+  /// Selects a DB city and immediately completes onboarding atomically.
+  /// Avoids calling two cubit methods from the UI layer (CLAUDE.md §3).
+  Future<void> selectDbCityAndComplete(String key) async {
+    emit(state.copyWith(selectedCityKey: key));
+    await complete();
+  }
+
+  /// Selects a world city and immediately completes onboarding atomically.
+  /// Avoids calling two cubit methods from the UI layer (CLAUDE.md §3).
+  Future<void> selectWorldCityAndComplete(WorldCity city) async {
+    emit(state.copyWith(selectedWorldCity: city));
+    await complete();
+  }
 
   Future<void> onLocationDetected(DetectedLocation location) async {
     emit(mapDetectedLocationState(state, location));

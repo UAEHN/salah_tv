@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../../core/mobile_theme.dart';
 import '../../../domain/entities/detected_location.dart';
@@ -53,9 +52,7 @@ class MobileLocationDialogBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final showCities = selectedCountryKey != null;
 
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-      child: Container(
+    return Container(
         height: MediaQuery.of(context).size.height * 0.75,
         decoration: BoxDecoration(
           color: MobileColors.cardColor(context),
@@ -89,7 +86,6 @@ class MobileLocationDialogBody extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 

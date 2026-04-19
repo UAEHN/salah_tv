@@ -1,6 +1,4 @@
-﻿import 'dart:ui';
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
@@ -45,12 +43,6 @@ class MobileQiblaScreen extends StatelessWidget {
               shape: BoxShape.circle,
               color: MobileColors.primaryContainer.withValues(alpha: 0.1),
             ),
-          ),
-        ),
-        Positioned.fill(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
-            child: const SizedBox(),
           ),
         ),
         SafeArea(

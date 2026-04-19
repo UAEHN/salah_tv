@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../core/app_config.dart';
+import '../../../../../core/platform_launcher.dart';
+
 import '../../../../../core/calculation_method_info.dart';
 import '../../../../../core/city_translations.dart';
 import '../../screens/mobile_notification_settings_screen.dart';
@@ -39,7 +42,7 @@ class MobileSettingsList extends StatelessWidget {
               MobileSettingsTile(
                 title: l.settingsCountryAndCity,
                 subtitle:
-                    '${cityLabel(s.selectedCity, locale: l.localeName)}${l.localeComma} ${countryLabel(s.selectedCountry, locale: l.localeName)}',
+                    '${cityLabel(s.selectedCity, locale: l.localeName, countryKey: s.selectedCountry)}${l.localeComma} ${countryLabel(s.selectedCountry, locale: l.localeName)}',
                 onTap: () => showModalBottomSheet(
                   context: context,
                   backgroundColor: Colors.transparent,
@@ -123,6 +126,15 @@ class MobileSettingsList extends StatelessWidget {
               MobileSettingsTile(
                 title: l.feedbackSettingsTile,
                 onTap: () => Navigator.pushNamed(context, '/feedback'),
+              ),
+              const SizedBox(height: 24),
+              MobileSettingsSectionTitle(
+                title: l.settingsOther,
+                icon: Icons.more_horiz,
+              ),
+              MobileSettingsTile(
+                title: l.settingsPrivacyPolicy,
+                onTap: () => PlatformLauncher.openUrl(AppConfig.privacyPolicyUrl),
               ),
             ],
           ),

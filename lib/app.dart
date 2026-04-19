@@ -19,12 +19,13 @@ import 'features/settings/domain/i_world_city_repository.dart';
 import 'features/settings/presentation/screens/mobile_settings_screen.dart';
 import 'features/settings/presentation/settings_provider.dart';
 import 'features/settings/presentation/settings_screen.dart';
+import 'features/app_tour/presentation/app_tour_cubit.dart';
+import 'features/app_update/presentation/app_update_trigger.dart';
 import 'features/onboarding/presentation/onboarding_cubit.dart';
 import 'features/onboarding/presentation/onboarding_screen.dart';
+import 'features/onboarding/presentation/tv_onboarding_screen.dart';
 import 'features/splash/presentation/splash_screen.dart';
-import 'features/tasbih/domain/i_tasbih_repository.dart';
 import 'features/tasbih/presentation/bloc/tasbih_bloc.dart';
-import 'features/tasbih/presentation/bloc/tasbih_event.dart';
 import 'features/tasbih/presentation/screens/mobile_tasbih_screen.dart';
 import 'injection.dart';
 
@@ -111,7 +112,12 @@ class GhasaqApp extends StatelessWidget {
           case '/':
             return buildAppRoute(
               settings: routeSettings,
-              page: isTV ? const HomeScreen() : const MobileShell(),
+              page: isTV
+                  ? const AppUpdateTrigger(child: HomeScreen())
+                  : BlocProvider.value(
+                      value: getIt<AppTourCubit>(),
+                      child: const MobileShell(),
+                    ),
             );
           case '/settings':
             return buildAppRoute(
@@ -137,10 +143,8 @@ class GhasaqApp extends StatelessWidget {
             return buildAppRoute(
               settings: routeSettings,
               page: BlocProvider(
-                create: (_) => TasbihBloc(
-                      getIt<ITasbihRepository>(),
-                      analytics: getIt<IAnalyticsService>(),
-                    )..add(const TasbihStarted()),
+                create: (_) =>
+                    TasbihBloc(analytics: getIt<IAnalyticsService>()),
                 child: const MobileTasbihScreen(),
               ),
             );
@@ -158,21 +162,40 @@ class GhasaqApp extends StatelessWidget {
                 child: const OnboardingScreen(),
               ),
             );
+          case '/tv_onboarding':
+            return buildAppRoute(
+              settings: routeSettings,
+              isInstant: true,
+              page: BlocProvider(
+                create: (ctx) => OnboardingCubit.fromDependencies(
+                  settingsProvider: ctx.read<SettingsProvider>(),
+                  worldRepo: getIt<IWorldCityRepository>(),
+                  settingsRepository: getIt<ISettingsRepository>(),
+                  analytics: getIt<IAnalyticsService>(),
+                ),
+                child: const TvOnboardingScreen(),
+              ),
+            );
           case '/feedback':
             return buildAppRoute(
               settings: routeSettings,
               page: BlocProvider(
                 create: (ctx) => FeedbackCubit(
-                    ctx.read<SubmitFeedbackUseCase>(),
-                    analytics: getIt<IAnalyticsService>(),
-                  ),
+                  ctx.read<SubmitFeedbackUseCase>(),
+                  analytics: getIt<IAnalyticsService>(),
+                ),
                 child: const MobileFeedbackScreen(),
               ),
             );
           default:
             return buildAppRoute(
               settings: routeSettings,
-              page: isTV ? const HomeScreen() : const MobileShell(),
+              page: isTV
+                  ? const AppUpdateTrigger(child: HomeScreen())
+                  : BlocProvider.value(
+                      value: getIt<AppTourCubit>(),
+                      child: const MobileShell(),
+                    ),
             );
         }
       },

@@ -39,6 +39,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonSaveChanges => 'Save changes';
 
   @override
+  String get commonCancel => 'Cancel';
+
+  @override
+  String get commonDelete => 'Delete';
+
+  @override
   String get navSettings => 'Settings';
 
   @override
@@ -101,6 +107,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tasbihResetTooltip => 'Reset counter';
+
+  @override
+  String get tasbihAllCompletedTitle => 'May Allah bless you';
+
+  @override
+  String get tasbihAllCompletedBody =>
+      'You have completed the tasbih, may Allah accept it';
 
   @override
   String get duaAfterAdhanTitle => 'Supplication after Adhan';
@@ -191,12 +204,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String notificationAdhanBody(Object prayerName) {
-    return 'It is time for $prayerName';
+    return 'It is now time for $prayerName adhan';
   }
 
   @override
   String notificationPreAdhanBody(Object prayerName, Object minutes) {
-    return '$prayerName in $minutes minutes';
+    return '$minutes minutes until $prayerName adhan';
   }
 
   @override
@@ -285,6 +298,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAdhanSoundLabel => 'Adhan sound';
 
   @override
+  String get settingsCustomAdhansTitle => 'Custom adhan sounds';
+
+  @override
+  String get settingsAddCustomAdhan => 'Add from device';
+
+  @override
+  String get settingsRenameAdhan => 'Rename adhan';
+
+  @override
+  String get settingsDeleteAdhan => 'Delete adhan?';
+
+  @override
+  String get settingsAdhanNameHint => 'Adhan name';
+
+  @override
+  String get settingsPickFromDevice => 'Pick an audio file';
+
+  @override
+  String get settingsAdhanImportFailed => 'Failed to import file';
+
+  @override
   String get settingsPreAdhanReminder => 'Reminder before adhan';
 
   @override
@@ -359,6 +393,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsDetectMyLocation => 'Detect my location automatically';
+
+  @override
+  String get settingsDetectLocationHint =>
+      'If you cannot find your country in the list, or want a faster way, use this button to detect your location automatically.';
 
   @override
   String get settingsNoMatchingCountries => 'No matching countries';
@@ -580,6 +618,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qiblaDeviation => 'Deviation';
+
+  @override
+  String get qiblaAccuracyHigh => 'High accuracy';
+
+  @override
+  String get qiblaAccuracyMedium => 'Medium accuracy';
+
+  @override
+  String get qiblaAccuracyLow => 'Low accuracy';
+
+  @override
+  String get qiblaCalibrationTitle => 'Magnetic interference';
+
+  @override
+  String get qiblaCalibrationBody =>
+      'Move your phone in a figure-8 to calibrate the compass';
 
   @override
   String get unitKm => 'km';
@@ -824,4 +878,91 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feedbackEmptyError => 'Please enter your feedback first';
+
+  @override
+  String get ratingDialogTitle => 'How was your experience?';
+
+  @override
+  String get ratingDialogSubtitle =>
+      'Your 5-star rating helps us improve and grow the app 💖';
+
+  @override
+  String get ratingDialogYes => 'Rate now ⭐';
+
+  @override
+  String get ratingDialogQrRate => 'Or scan to rate from your phone';
+
+  @override
+  String get ratingDialogSuggest => 'I have a suggestion / issue 💡';
+
+  @override
+  String get ratingDialogLater => 'Remind me later';
+
+  @override
+  String get tourStepCountdownTitle => 'Countdown';
+
+  @override
+  String get tourStepCountdownDesc =>
+      'Shows the remaining time until the next prayer';
+
+  @override
+  String get tourStepPrayerListTitle => 'Prayer Times';
+
+  @override
+  String get tourStepPrayerListDesc => 'List of all daily prayer times';
+
+  @override
+  String get tourStepDateNavTitle => 'Date';
+
+  @override
+  String get tourStepDateNavDesc => 'Browse Hijri and Gregorian dates';
+
+  @override
+  String get tourStepLocationTitle => 'Location';
+
+  @override
+  String get tourStepLocationDesc =>
+      'Tap to change your location (country and city)';
+
+  @override
+  String get tourStepBottomNavTitle => 'Navigation Bar';
+
+  @override
+  String get tourStepBottomNavDesc =>
+      'Navigate between sections: Settings, Qibla, Adhkar, and Prayer';
+
+  @override
+  String get tourSkip => 'Skip';
+
+  @override
+  String get tourNext => 'Next';
+
+  @override
+  String get tourFinish => 'Done';
+
+  @override
+  String get replayAppTour => 'Replay App Tour';
+
+  @override
+  String get updateAvailableTitle => 'Update Available';
+
+  @override
+  String updateAvailableBody(Object version) {
+    return 'Version $version is now available in the store.';
+  }
+
+  @override
+  String get updateNow => 'Update Now';
+
+  @override
+  String get updateLater => 'Later';
+
+  @override
+  String get whatsNewTitle => 'What\'s New';
+
+  @override
+  String get whatsNewDismiss => 'Got it';
+
+  @override
+  String get settingsCheckUpdate => 'Check for updates';
 }

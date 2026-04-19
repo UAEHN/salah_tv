@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 // â”€â”€â”€ Light theme base colors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const Color kBgDeep      = Color(0xFFF0F4F8);
@@ -122,9 +122,9 @@ const Map<String, AccentPalette> kThemePalettes = {
     glow:      Color(0x4014B8A6),
   ),
   'gold': AccentPalette(
-    primary:   Color(0xFFF59E0B),
-    secondary: Color(0xFFD97706),
-    glow:      Color(0x40F59E0B),
+    primary:   Color(0xFFD4A843),
+    secondary: Color(0xFFB8922E),
+    glow:      Color(0x40D4A843),
   ),
   'blue': AccentPalette(
     primary:   Color(0xFF2980B9),

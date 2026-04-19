@@ -1,3 +1,5 @@
+import 'custom_adhan.dart';
+
 class AppSettings {
   final String themeColorKey;
   final bool use24HourFormat;
@@ -26,6 +28,10 @@ class AppSettings {
   final String madhab; // 'shafi' | 'hanafi'
   final bool isCalculatedLocation;
 
+  /// IANA timezone identifier of the selected city (e.g. Europe/Berlin).
+  /// Preferred over [utcOffsetHours] because it supports DST changes.
+  final String? selectedTimeZoneId;
+
   /// UTC offset (hours) of the selected city. Used to display prayer times
   /// in the city's local timezone instead of device timezone. Null means
   /// use device local timezone (e.g. GPS-detected location where user is).
@@ -33,6 +39,7 @@ class AppSettings {
 
   final String layoutStyle;
   final String adhanSound;
+  final List<CustomAdhan> customAdhans;
   final bool isAnalogClock;
   final bool isAdhkarEnabled;
 
@@ -51,16 +58,18 @@ class AppSettings {
     this.isDarkMode = false,
     this.fontFamily = 'Kufi',
     this.locale = 'ar',
-    this.selectedCountry = 'UAE',
+    this.selectedCountry = 'uae',
     this.selectedCity = 'Dubai',
     this.selectedLatitude,
     this.selectedLongitude,
     this.calculationMethod = 'muslim_world_league',
     this.madhab = 'shafi',
     this.isCalculatedLocation = false,
+    this.selectedTimeZoneId,
     this.utcOffsetHours,
     this.layoutStyle = 'modern',
     this.adhanSound = 'default',
+    this.customAdhans = const [],
     this.isAnalogClock = false,
     this.isAdhkarEnabled = true,
     this.preAdhanReminderMinutes = 15,

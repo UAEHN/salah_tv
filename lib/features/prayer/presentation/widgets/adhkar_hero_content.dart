@@ -19,9 +19,15 @@ class AdhkarHeroContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final prayerState = context.watch<PrayerBloc>().state;
-    final settings = context.watch<SettingsProvider>().settings;
-    final tc = ThemeColors.of(settings.isDarkMode);
+    final data = context.select<PrayerBloc, (String, Duration)>(
+      (b) => (b.state.nextPrayerKey, b.state.countdown),
+    );
+    final nextPrayerKey = data.$1;
+    final countdown = data.$2;
+    final isDark = context.select<SettingsProvider, bool>(
+      (p) => p.settings.isDarkMode,
+    );
+    final tc = ThemeColors.of(isDark);
     final screenH = MediaQuery.of(context).size.height;
     final sessionLabel = session == AdhkarSession.morning
         ? l.adhkarMorningSession
@@ -37,9 +43,9 @@ class AdhkarHeroContent extends StatelessWidget {
               sessionLabel: sessionLabel,
               prayerName: localizedPrayerName(
                 context,
-                prayerState.nextPrayerKey,
+                nextPrayerKey,
               ),
-              countdown: formatCountdown(prayerState.countdown),
+              countdown: formatCountdown(countdown),
               screenH: screenH,
               tc: tc,
             ),

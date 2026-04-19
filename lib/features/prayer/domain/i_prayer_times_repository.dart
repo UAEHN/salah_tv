@@ -23,6 +23,7 @@ abstract class IPrayerTimesRepository {
     String methodKey, {
     String madhabKey = 'shafi',
     String cityLabel = '',
+    String? timeZoneId,
     double? utcOffsetHours,
   });
 

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
@@ -12,27 +12,29 @@ class TasbihTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final color = MobileColors.onSurface(context);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
             onPressed: () => Navigator.of(context).pop(),
-            color: MobileColors.onSurface(context),
+            color: color,
           ),
-          Expanded(
-            child: Text(
-              l.navTasbih,
-              style: MobileTextStyles.titleMd(context),
-              textAlign: TextAlign.center,
-            ),
+          const Spacer(),
+          Text(
+            l.navTasbih,
+            style: MobileTextStyles.headlineMd(context),
           ),
+          const Spacer(),
           IconButton(
-            icon: const Icon(Icons.refresh_rounded),
+            icon: const Icon(Icons.refresh_rounded, size: 22),
             tooltip: l.tasbihResetTooltip,
-            color: MobileColors.onSurface(context),
-            onPressed: () => context.read<TasbihBloc>().add(const TasbihReset()),
+            color: color,
+            onPressed: () =>
+                context.read<TasbihBloc>().add(const TasbihReset()),
           ),
         ],
       ),

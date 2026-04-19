@@ -34,9 +34,15 @@ class IslamicArchClipper extends CustomClipper<Path> {
     // Right edge up to where the arch begins
     path.lineTo(w, archH);
 
-    // True Islamic pointed arch: CP near top corners pulls curves strongly inward
-    path.quadraticBezierTo(w * 0.92, 0, w / 2, 0); // right half → apex
-    path.quadraticBezierTo(w * 0.08, 0, 0, archH); // left half → left edge
+    // True Islamic pointed arch (shouldered/ogee style)
+    // 1. Right shoulder concave scoop
+    path.quadraticBezierTo(w, archH * 0.80, w * 0.80, archH * 0.80);
+    // 2. Right convex dome to apex
+    path.quadraticBezierTo(w * 0.80, archH * 0.25, w / 2, 0);
+    // 3. Left convex dome from apex to left shoulder
+    path.quadraticBezierTo(w * 0.20, archH * 0.25, w * 0.20, archH * 0.80);
+    // 4. Left shoulder concave scoop to left edge
+    path.quadraticBezierTo(0, archH * 0.80, 0, archH);
 
     path.close();
     return path;

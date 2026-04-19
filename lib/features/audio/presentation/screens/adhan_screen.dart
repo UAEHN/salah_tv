@@ -22,8 +22,10 @@ class AdhanScreen extends StatelessWidget {
         children: [
           // Background pattern
           Positioned.fill(
-            child: CustomPaint(
-              painter: ArabescPainter(color: palette.primary, opacity: 0.1),
+            child: RepaintBoundary(
+              child: CustomPaint(
+                painter: ArabescPainter(color: palette.primary, opacity: 0.1),
+              ),
             ),
           ),
 
@@ -65,7 +67,6 @@ class AdhanScreen extends StatelessWidget {
                     fontSize: 80,
                     fontWeight: FontWeight.w800,
                     color: palette.primary,
-                    shadows: [Shadow(color: palette.glow, blurRadius: 20)],
                   ),
                 ),
                 const SizedBox(height: 60),

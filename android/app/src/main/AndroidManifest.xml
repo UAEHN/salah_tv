@@ -19,8 +19,24 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <!-- Prayer time notifications (mobile) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- SCHEDULE_EXACT_ALARM: covers API 31-32; user can revoke on API 31+ -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <!-- USE_EXACT_ALARM: API 33+, auto-granted for alarm/reminder apps, not revocable.
+         Prayer apps qualify; replaces SCHEDULE_EXACT_ALARM as primary on API 33+. -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <!-- Required to re-schedule alarms after device reboot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Required to request battery optimization exemption via system dialog -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <!-- Custom adhan import via SAF file picker (Android 13+). Below Android 13
+         the SAF picker doesn't require any permission. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+    <!-- MediaStore insert of notification sounds on Android ≤ 9 requires
+         WRITE_EXTERNAL_STORAGE. Android 10+ uses scoped storage instead. -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28"/>
     <!-- Explicitly remove AD_ID permission injected by Firebase/Google SDKs -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID"
         tools:node="remove"/>
@@ -77,6 +93,8 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <!-- Fires before user unlocks the device after reboot -->
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
                 <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
@@ -90,6 +108,14 @@
         </intent>
         <intent>
             <action android:name="android.intent.action.GET_CONTENT"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="market"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
         </intent>
     </queries>
 </manifest>

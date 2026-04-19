@@ -12,7 +12,7 @@ import 'recovery_mixin.dart';
 mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
   void tick(Timer t) {
     final prev = s.now;
-    s.now = DateTime.now();
+    s.now = currentTime();
 
     // Detect system time change: if the clock jumped by more than 5 seconds
     // (forward or backward), treat it as a manual time adjustment and reload.
@@ -56,7 +56,16 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
     s.lastLoadedDay = s.now.day; // Issue 6: record the day we loaded for
     updateNextPrayer();
     if (s.todayPrayers != null) {
-      unawaited(notifications?.scheduleForDay(s.todayPrayers!, settings));
+      // Schedule today + tomorrow so notifications survive overnight app
+      // closures and device reboots (boot receiver re-registers persisted
+      // alarms; tomorrow's times remain in the future after a midnight restart).
+      final tomorrowKey = calc.dateKey(
+        DateTime(s.now.year, s.now.month, s.now.day + 1),
+      );
+      final tomorrow = repo.getTomorrowByKey(tomorrowKey);
+      unawaited(
+        notifications?.scheduleForDay(s.todayPrayers!, tomorrow, settings),
+      );
     }
   }
 

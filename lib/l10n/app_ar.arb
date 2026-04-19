@@ -1,4 +1,4 @@
-﻿{
+{
     "@@locale":  "ar",
     "appTitle":  "غسق",
     "languageArabic":  "العربية",
@@ -10,6 +10,8 @@
     "commonError":  "خطأ",
     "commonSave":  "حفظ",
     "commonSaveChanges":  "حفظ التغييرات",
+    "commonCancel":  "إلغاء",
+    "commonDelete":  "حذف",
     "navSettings":  "الإعدادات",
     "navQibla":  "القبلة",
     "navAdhkar":  "الأذكار",
@@ -44,6 +46,8 @@
     "tasbihCompletedMessage":  "تم الإنجاز",
     "tasbihSwipeHint":  "اسحب للتبديل بين الأذكار",
     "tasbihResetTooltip":  "إعادة العداد",
+    "tasbihAllCompletedTitle":  "بارك الله فيك",
+    "tasbihAllCompletedBody":  "أتممت التسبيح، تقبّل الله منك",
     "duaAfterAdhanTitle":  "دعاء بعد الأذان",
     "duaAfterAdhanText":  "اللَّهُمَّ رَبَّ هَذِهِ الدَّعْوَةِ التَّامَّةِ وَالصَّلَاةِ الْقَائِمَةِ، آتِ مُحَمَّدًا الْوَسِيلَةَ وَالْفَضِيلَةَ، وَابْعَثْهُ مَقَامًا مَحْمُودًا الَّذِي وَعَدْتَهُ.",
     "prayerFajr":  "الفجر",
@@ -98,7 +102,7 @@
     "backToToday":  "العودة إلى اليوم",
     "notificationReminderTitle":  "تذكير",
     "notificationIqamaTitle":  "الإقامة",
-    "notificationAdhanBody":  "حان وقت {prayerName}",
+    "notificationAdhanBody":  "حان الآن موعد أذان {prayerName}",
     "@notificationAdhanBody":  {
                                    "placeholders":  {
                                                         "prayerName":  {
@@ -106,7 +110,7 @@
                                                                        }
                                                     }
                                },
-    "notificationPreAdhanBody":  "{prayerName} بعد {minutes} دقيقة",
+    "notificationPreAdhanBody":  "باقي على أذان {prayerName} {minutes} دقيقة",
     "@notificationPreAdhanBody":  {
                                       "placeholders":  {
                                                            "prayerName":  {
@@ -161,6 +165,13 @@
     "settingsGeneralSettings":  "إعدادات عامة",
     "settingsPrayerAlerts":  "تنبيهات الصلوات",
     "settingsAdhanSoundLabel":  "صوت الأذان",
+    "settingsCustomAdhansTitle":  "أصوات أذان مخصّصة",
+    "settingsAddCustomAdhan":  "إضافة من الجهاز",
+    "settingsRenameAdhan":  "إعادة تسمية الأذان",
+    "settingsDeleteAdhan":  "حذف الأذان؟",
+    "settingsAdhanNameHint":  "اسم الأذان",
+    "settingsPickFromDevice":  "اختر ملفاً صوتياً",
+    "settingsAdhanImportFailed":  "تعذّر استيراد الملف",
     "settingsPreAdhanReminder":  "تذكير قبل الأذان",
     "settingsAdhanAlert":  "تنبيه الأذان",
     "settingsPreIqamaReminder":  "تذكير قبل الإقامة",
@@ -198,6 +209,7 @@
     "settingsChooseAdhanSound":  "اختر صوت الأذان",
     "settingsDetectingLocation":  "جارِ تحديد الموقع...",
     "settingsDetectMyLocation":  "تحديد موقعي تلقائياً",
+    "settingsDetectLocationHint":  "إذا لم تجد دولتك في القائمة، أو أردت الوصول إليها بسرعة، استخدم هذا الزر لتحديد موقعك تلقائياً.",
     "settingsNoMatchingCountries":  "لا توجد دول مطابقة",
     "settingsNoMatchingCities":  "لا توجد مدن مطابقة",
     "settingsSelectCountry":  "اختر الدولة",
@@ -270,6 +282,11 @@
     "qiblaFindSub":  "FIND THE KAABA",
     "qiblaDistanceToKaaba":  "المسافة للكعبة",
     "qiblaDeviation":  "الانحراف",
+    "qiblaAccuracyHigh":  "دقة عالية",
+    "qiblaAccuracyMedium":  "دقة متوسطة",
+    "qiblaAccuracyLow":  "دقة منخفضة",
+    "qiblaCalibrationTitle":  "يوجد تداخل مغناطيسي",
+    "qiblaCalibrationBody":  "حرّك الهاتف على شكل رقم 8 لمعايرة البوصلة",
     "unitKm":  "كم",
     "unitDegree":  "درجة",
     "weekdayMonday":  "الاثنين",
@@ -364,5 +381,37 @@
     "feedbackSend":  "إرسال الملاحظة",
     "feedbackSuccess":  "شكراً! تم إرسال ملاحظتك بنجاح.",
     "feedbackError":  "حدث خطأ. حاول مرة أخرى.",
-    "feedbackEmptyError":  "يرجى كتابة ملاحظتك أولاً"
+    "feedbackEmptyError":  "يرجى كتابة ملاحظتك أولاً",
+    "ratingDialogTitle":  "كيف كانت تجربتك معنا؟",
+    "ratingDialogSubtitle":  "دعمك لنا بالتقييم 5 نجوم يساعدنا في الاستمرار وتطوير التطبيق للأفضل 💖",
+    "ratingDialogYes":  "التقييم الآن ⭐",
+    "ratingDialogQrRate":  "أو امسح الرمز للتقييم بهاتفك",
+    "ratingDialogSuggest":  "لدي اقتراح / مشكلة 💡",
+    "ratingDialogLater":  "ذكرني لاحقاً",
+    "tourStepCountdownTitle":  "العد التنازلي",
+    "tourStepCountdownDesc":  "هنا يظهر الوقت المتبقي للصلاة القادمة",
+    "tourStepPrayerListTitle":  "أوقات الصلاة",
+    "tourStepPrayerListDesc":  "قائمة بجميع أوقات الصلاة اليومية",
+    "tourStepDateNavTitle":  "التاريخ",
+    "tourStepDateNavDesc":  "تصفح التواريخ الهجرية والميلادية",
+    "tourStepLocationTitle":  "الموقع",
+    "tourStepLocationDesc":  "اضغط لتغيير موقعك (الدولة والمدينة)",
+    "tourStepBottomNavTitle":  "شريط التنقل",
+    "tourStepBottomNavDesc":  "تنقل بين الأقسام: الإعدادات، القبلة، الأذكار، والصلاة",
+    "tourSkip":  "تخطي",
+    "tourNext":  "التالي",
+    "tourFinish":  "تم",
+    "replayAppTour":  "إعادة جولة التطبيق",
+    "updateAvailableTitle":  "تحديث متاح",
+    "updateAvailableBody":  "الإصدار {version} متاح الآن في المتجر.",
+    "@updateAvailableBody":  {
+                                 "placeholders":  {
+                                                      "version":  {}
+                                                  }
+                             },
+    "updateNow":  "تحديث الآن",
+    "updateLater":  "لاحقاً",
+    "whatsNewTitle":  "ما الجديد",
+    "whatsNewDismiss":  "حسناً",
+    "settingsCheckUpdate": "تحقق من وجود تحديث"
 }

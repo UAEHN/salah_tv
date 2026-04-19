@@ -40,13 +40,13 @@ class PrayerCardContent extends StatelessWidget {
     final borderColor = isPreAlert
         ? palette.primary.withValues(alpha: 0.30 + pulse * 0.20)
         : isNext
-            ? palette.primary.withValues(alpha: 0.5)
+            ? palette.primary.withValues(alpha: 0.85) // Bright active border
             : tc.borderGlass;
 
     final shadowColor = isPreAlert
         ? palette.primary.withValues(alpha: 0.08 + pulse * 0.12)
         : isNext
-            ? palette.glow.withValues(alpha: 0.2)
+            ? palette.glow.withValues(alpha: 0.4) // Stronger green glow
             : Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.04);
 
     final fillColor = isNext ? null : tc.bgSurface;
@@ -66,7 +66,7 @@ class PrayerCardContent extends StatelessWidget {
         fillColor: fillColor,
         gradient: fillGradient,
         borderColor: borderColor,
-        borderWidth: isNext ? 1.5 : 1,
+        borderWidth: isNext ? 2.5 : 1,
         shadowColor: shadowColor,
         shadowBlur: isPreAlert ? 8 + pulse * 6 : (isNext ? 12 : 8),
       ),
@@ -97,16 +97,7 @@ class PrayerCardContent extends StatelessWidget {
             color: tc.textPrimary,
           ),
         ),
-        Container(
-          height: 1,
-          margin: EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: screenH * 0.006,
-          ),
-          color: isNext
-              ? palette.primary.withValues(alpha: 0.25)
-              : tc.borderGlass,
-        ),
+        SizedBox(height: screenH * 0.010),
         Text(
           formattedTime,
           textDirection: TextDirection.ltr,

@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'app_settings.dart';
+import 'app_settings_decoders.dart';
 
 /// Serialization helpers for [AppSettings] — kept separate to stay within
 /// the 150-line file limit while still living in the same domain/entities layer.
@@ -25,6 +27,7 @@ extension AppSettingsMapper on AppSettings {
     'calculationMethod': calculationMethod,
     'madhab': madhab,
     'isCalculatedLocation': isCalculatedLocation,
+    'selectedTimeZoneId': selectedTimeZoneId,
     'utcOffsetHours': utcOffsetHours,
     'layoutStyle': layoutStyle,
     'adhanSound': adhanSound,
@@ -36,71 +39,25 @@ extension AppSettingsMapper on AppSettings {
     'iqamaNotificationEnabled': jsonEncode(iqamaNotificationEnabled),
     'preIqamaReminderEnabled': jsonEncode(preIqamaReminderEnabled),
     'preIqamaReminderMinutes': preIqamaReminderMinutes,
+    'customAdhans': jsonEncode(customAdhans.map((c) => c.toJson()).toList()),
   };
 }
 
-String _validatedQuranUrl(String url) {
-  if (url.isEmpty) return '';
-  final uri = Uri.tryParse(url);
-  if (uri == null ||
-      uri.scheme != 'https' ||
-      !uri.host.endsWith('mp3quran.net')) {
-    return '';
-  }
-  return url;
-}
-
-Map<String, bool> _decodeBoolMap(dynamic raw, Map<String, bool> fallback) {
-  if (raw == null) return fallback;
-  try {
-    final decoded = jsonDecode(raw as String) as Map;
-    return decoded.map((k, v) => MapEntry(k.toString(), v as bool));
-  } on Object {
-    // Malformed stored JSON — return safe default.
-    return fallback;
-  }
-}
-
-Map<String, int> _decodeIntMap(dynamic raw, Map<String, int> fallback) {
-  if (raw == null) return fallback;
-  try {
-    final decoded = jsonDecode(raw as String) as Map;
-    return decoded.map((k, v) => MapEntry(k.toString(), v as int));
-  } on Object {
-    // Malformed stored JSON — return safe default.
-    return fallback;
-  }
-}
-
-const _defaultBoolMapTrue = {
-  'fajr': true,
-  'dhuhr': true,
-  'asr': true,
-  'maghrib': true,
-  'isha': true,
-};
-const _defaultBoolMapFalse = {
-  'fajr': false,
-  'dhuhr': false,
-  'asr': false,
-  'maghrib': false,
-  'isha': false,
-};
-
 AppSettings appSettingsFromMap(Map<String, dynamic> map) {
+  final customAdhans = decodeCustomAdhans(map['customAdhans']);
   return AppSettings(
     themeColorKey: map['themeColorKey'] as String? ?? 'green',
     use24HourFormat: map['use24HourFormat'] as bool? ?? false,
     playAdhan: map['playAdhan'] as bool? ?? true,
     isDarkMode: map['isDarkMode'] as bool? ?? false,
-    iqamaDelays: _decodeIntMap(map['iqamaDelays'], const {
+    iqamaDelays: decodeIntMap(map['iqamaDelays'], const {
       'fajr': 20,
       'dhuhr': 10,
       'asr': 10,
       'maghrib': 5,
       'isha': 15,
     }),
-    adhanOffsets: _decodeIntMap(map['adhanOffsets'], const {
+    adhanOffsets: decodeIntMap(map['adhanOffsets'], const {
       'fajr': 0,
       'sunrise': 0,
       'dhuhr': 0,
@@ -108,21 +65,21 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
       'maghrib': 0,
       'isha': 0,
     }),
-    prayerNotificationEnabled: _decodeBoolMap(
+    prayerNotificationEnabled: decodeBoolMap(
       map['prayerNotificationEnabled'],
-      _defaultBoolMapTrue,
+      defaultBoolMapTrue,
     ),
-    preAdhanReminderEnabled: _decodeBoolMap(
+    preAdhanReminderEnabled: decodeBoolMap(
       map['preAdhanReminderEnabled'],
-      _defaultBoolMapFalse,
+      defaultBoolMapFalse,
     ),
-    iqamaNotificationEnabled: _decodeBoolMap(
+    iqamaNotificationEnabled: decodeBoolMap(
       map['iqamaNotificationEnabled'],
-      _defaultBoolMapFalse,
+      defaultBoolMapFalse,
     ),
-    preIqamaReminderEnabled: _decodeBoolMap(
+    preIqamaReminderEnabled: decodeBoolMap(
       map['preIqamaReminderEnabled'],
-      _defaultBoolMapFalse,
+      defaultBoolMapFalse,
     ),
     hadithText:
         map['hadithText'] as String? ??
@@ -137,10 +94,10 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
         : 'ar',
     isQuranEnabled: map['isQuranEnabled'] as bool? ?? false,
     quranReciterName: map['quranReciterName'] as String? ?? '',
-    quranReciterServerUrl: _validatedQuranUrl(
+    quranReciterServerUrl: validatedQuranUrl(
       map['quranReciterServerUrl'] as String? ?? '',
     ),
-    selectedCountry: map['selectedCountry'] as String? ?? 'UAE',
+    selectedCountry: map['selectedCountry'] as String? ?? 'uae',
     selectedCity: map['selectedCity'] as String? ?? 'Dubai',
     selectedLatitude: map['selectedLatitude'] as double?,
     selectedLongitude: map['selectedLongitude'] as double?,
@@ -150,16 +107,16 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
         ? map['madhab'] as String
         : 'shafi',
     isCalculatedLocation: map['isCalculatedLocation'] as bool? ?? false,
+    selectedTimeZoneId: map['selectedTimeZoneId'] as String?,
     utcOffsetHours: (map['utcOffsetHours'] as num?)?.toDouble(),
     layoutStyle: const ['classic', 'modern'].contains(map['layoutStyle'])
         ? map['layoutStyle'] as String
         : 'modern',
-    adhanSound: const ['default', 'adhan2'].contains(map['adhanSound'])
-        ? map['adhanSound'] as String
-        : 'default',
+    adhanSound: validatedAdhanSound(map['adhanSound'] as String?, customAdhans),
     isAnalogClock: map['isAnalogClock'] as bool? ?? false,
     isAdhkarEnabled: map['isAdhkarEnabled'] as bool? ?? true,
     preAdhanReminderMinutes: map['preAdhanReminderMinutes'] as int? ?? 15,
     preIqamaReminderMinutes: map['preIqamaReminderMinutes'] as int? ?? 5,
+    customAdhans: customAdhans,
   );
 }

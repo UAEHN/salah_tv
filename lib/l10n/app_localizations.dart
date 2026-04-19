@@ -158,6 +158,18 @@ abstract class AppLocalizations {
   /// **'حفظ التغييرات'**
   String get commonSaveChanges;
 
+  /// No description provided for @commonCancel.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء'**
+  String get commonCancel;
+
+  /// No description provided for @commonDelete.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف'**
+  String get commonDelete;
+
   /// No description provided for @navSettings.
   ///
   /// In ar, this message translates to:
@@ -277,6 +289,18 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'إعادة العداد'**
   String get tasbihResetTooltip;
+
+  /// No description provided for @tasbihAllCompletedTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'بارك الله فيك'**
+  String get tasbihAllCompletedTitle;
+
+  /// No description provided for @tasbihAllCompletedBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'أتممت التسبيح، تقبّل الله منك'**
+  String get tasbihAllCompletedBody;
 
   /// No description provided for @duaAfterAdhanTitle.
   ///
@@ -437,13 +461,13 @@ abstract class AppLocalizations {
   /// No description provided for @notificationAdhanBody.
   ///
   /// In ar, this message translates to:
-  /// **'حان وقت {prayerName}'**
+  /// **'حان الآن موعد أذان {prayerName}'**
   String notificationAdhanBody(Object prayerName);
 
   /// No description provided for @notificationPreAdhanBody.
   ///
   /// In ar, this message translates to:
-  /// **'{prayerName} بعد {minutes} دقيقة'**
+  /// **'باقي على أذان {prayerName} {minutes} دقيقة'**
   String notificationPreAdhanBody(Object prayerName, Object minutes);
 
   /// No description provided for @notificationPreIqamaBody.
@@ -608,6 +632,48 @@ abstract class AppLocalizations {
   /// **'صوت الأذان'**
   String get settingsAdhanSoundLabel;
 
+  /// No description provided for @settingsCustomAdhansTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أصوات أذان مخصّصة'**
+  String get settingsCustomAdhansTitle;
+
+  /// No description provided for @settingsAddCustomAdhan.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة من الجهاز'**
+  String get settingsAddCustomAdhan;
+
+  /// No description provided for @settingsRenameAdhan.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة تسمية الأذان'**
+  String get settingsRenameAdhan;
+
+  /// No description provided for @settingsDeleteAdhan.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الأذان؟'**
+  String get settingsDeleteAdhan;
+
+  /// No description provided for @settingsAdhanNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم الأذان'**
+  String get settingsAdhanNameHint;
+
+  /// No description provided for @settingsPickFromDevice.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر ملفاً صوتياً'**
+  String get settingsPickFromDevice;
+
+  /// No description provided for @settingsAdhanImportFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر استيراد الملف'**
+  String get settingsAdhanImportFailed;
+
   /// No description provided for @settingsPreAdhanReminder.
   ///
   /// In ar, this message translates to:
@@ -745,6 +811,12 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تحديد موقعي تلقائياً'**
   String get settingsDetectMyLocation;
+
+  /// No description provided for @settingsDetectLocationHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'إذا لم تجد دولتك في القائمة، أو أردت الوصول إليها بسرعة، استخدم هذا الزر لتحديد موقعك تلقائياً.'**
+  String get settingsDetectLocationHint;
 
   /// No description provided for @settingsNoMatchingCountries.
   ///
@@ -1177,6 +1249,36 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'الانحراف'**
   String get qiblaDeviation;
+
+  /// No description provided for @qiblaAccuracyHigh.
+  ///
+  /// In ar, this message translates to:
+  /// **'دقة عالية'**
+  String get qiblaAccuracyHigh;
+
+  /// No description provided for @qiblaAccuracyMedium.
+  ///
+  /// In ar, this message translates to:
+  /// **'دقة متوسطة'**
+  String get qiblaAccuracyMedium;
+
+  /// No description provided for @qiblaAccuracyLow.
+  ///
+  /// In ar, this message translates to:
+  /// **'دقة منخفضة'**
+  String get qiblaAccuracyLow;
+
+  /// No description provided for @qiblaCalibrationTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'يوجد تداخل مغناطيسي'**
+  String get qiblaCalibrationTitle;
+
+  /// No description provided for @qiblaCalibrationBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'حرّك الهاتف على شكل رقم 8 لمعايرة البوصلة'**
+  String get qiblaCalibrationBody;
 
   /// No description provided for @unitKm.
   ///
@@ -1651,6 +1753,168 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'يرجى كتابة ملاحظتك أولاً'**
   String get feedbackEmptyError;
+
+  /// No description provided for @ratingDialogTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'كيف كانت تجربتك معنا؟'**
+  String get ratingDialogTitle;
+
+  /// No description provided for @ratingDialogSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'دعمك لنا بالتقييم 5 نجوم يساعدنا في الاستمرار وتطوير التطبيق للأفضل 💖'**
+  String get ratingDialogSubtitle;
+
+  /// No description provided for @ratingDialogYes.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقييم الآن ⭐'**
+  String get ratingDialogYes;
+
+  /// No description provided for @ratingDialogQrRate.
+  ///
+  /// In ar, this message translates to:
+  /// **'أو امسح الرمز للتقييم بهاتفك'**
+  String get ratingDialogQrRate;
+
+  /// No description provided for @ratingDialogSuggest.
+  ///
+  /// In ar, this message translates to:
+  /// **'لدي اقتراح / مشكلة 💡'**
+  String get ratingDialogSuggest;
+
+  /// No description provided for @ratingDialogLater.
+  ///
+  /// In ar, this message translates to:
+  /// **'ذكرني لاحقاً'**
+  String get ratingDialogLater;
+
+  /// No description provided for @tourStepCountdownTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'العد التنازلي'**
+  String get tourStepCountdownTitle;
+
+  /// No description provided for @tourStepCountdownDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'هنا يظهر الوقت المتبقي للصلاة القادمة'**
+  String get tourStepCountdownDesc;
+
+  /// No description provided for @tourStepPrayerListTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أوقات الصلاة'**
+  String get tourStepPrayerListTitle;
+
+  /// No description provided for @tourStepPrayerListDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'قائمة بجميع أوقات الصلاة اليومية'**
+  String get tourStepPrayerListDesc;
+
+  /// No description provided for @tourStepDateNavTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'التاريخ'**
+  String get tourStepDateNavTitle;
+
+  /// No description provided for @tourStepDateNavDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصفح التواريخ الهجرية والميلادية'**
+  String get tourStepDateNavDesc;
+
+  /// No description provided for @tourStepLocationTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الموقع'**
+  String get tourStepLocationTitle;
+
+  /// No description provided for @tourStepLocationDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'اضغط لتغيير موقعك (الدولة والمدينة)'**
+  String get tourStepLocationDesc;
+
+  /// No description provided for @tourStepBottomNavTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'شريط التنقل'**
+  String get tourStepBottomNavTitle;
+
+  /// No description provided for @tourStepBottomNavDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'تنقل بين الأقسام: الإعدادات، القبلة، الأذكار، والصلاة'**
+  String get tourStepBottomNavDesc;
+
+  /// No description provided for @tourSkip.
+  ///
+  /// In ar, this message translates to:
+  /// **'تخطي'**
+  String get tourSkip;
+
+  /// No description provided for @tourNext.
+  ///
+  /// In ar, this message translates to:
+  /// **'التالي'**
+  String get tourNext;
+
+  /// No description provided for @tourFinish.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم'**
+  String get tourFinish;
+
+  /// No description provided for @replayAppTour.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة جولة التطبيق'**
+  String get replayAppTour;
+
+  /// No description provided for @updateAvailableTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحديث متاح'**
+  String get updateAvailableTitle;
+
+  /// No description provided for @updateAvailableBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإصدار {version} متاح الآن في المتجر.'**
+  String updateAvailableBody(Object version);
+
+  /// No description provided for @updateNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحديث الآن'**
+  String get updateNow;
+
+  /// No description provided for @updateLater.
+  ///
+  /// In ar, this message translates to:
+  /// **'لاحقاً'**
+  String get updateLater;
+
+  /// No description provided for @whatsNewTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما الجديد'**
+  String get whatsNewTitle;
+
+  /// No description provided for @whatsNewDismiss.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسناً'**
+  String get whatsNewDismiss;
+
+  /// No description provided for @settingsCheckUpdate.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحقق من وجود تحديث'**
+  String get settingsCheckUpdate;
 }
 
 class _AppLocalizationsDelegate

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import '../../mobile_theme.dart';
@@ -28,45 +27,39 @@ class MobileBottomNav extends StatelessWidget {
         left: 32,
         right: 32,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(30),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Container(
-            height: 64,
-            decoration: BoxDecoration(
-              color: cardColor.withValues(alpha: 0.85),
-              border: Border.all(
-                color: MobileColors.border(context),
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: MobileColors.shadowDark(context),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
+      child: Container(
+        height: 64,
+        decoration: BoxDecoration(
+          color: cardColor.withValues(alpha: 0.97),
+          border: Border.all(
+            color: MobileColors.border(context),
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: MobileColors.shadowDark(context),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+          child: Row(
+            children: [
+              for (final item in items)
+                Expanded(
+                  // Active item gets more horizontal space for its label
+                  flex: currentIndex == item.index ? 2 : 1,
+                  child: _NavItem(
+                    icon: item.icon,
+                    label: item.label,
+                    isActive: currentIndex == item.index,
+                    onTap: () => _onItemTap(context, item.index, item.route),
+                  ),
                 ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-              child: Row(
-                children: [
-                  for (final item in items)
-                    Expanded(
-                      // Active item gets more horizontal space for its label
-                      flex: currentIndex == item.index ? 2 : 1,
-                      child: _NavItem(
-                        icon: item.icon,
-                        label: item.label,
-                        isActive: currentIndex == item.index,
-                        onTap: () => _onItemTap(context, item.index, item.route),
-                      ),
-                    ),
-                ],
-              ),
-            ),
+            ],
           ),
         ),
       ),

@@ -52,3 +52,10 @@
 - For moved logic (policy/mapper/calculator), add or update focused unit tests.
 - Refactors must preserve behavior: no route, prayer-cycle, or settings-flow changes unless requested.
 - Any temporary exception to these rules must be documented in this file with rationale.
+
+## 8. ACCEPTED CROSS-FEATURE IMPORT EXCEPTIONS
+
+| Import | Used In | Rationale |
+|:---|:---|:---|
+| `settings/presentation/logic/location_picker_logic.dart` (via `mobile_location_search_utils.dart`) | `onboarding/presentation/onboarding_state.dart`, `onboarding_country_loader.dart` | `UnifiedCountry` is defined in `settings/presentation/logic/` and used by 12+ files across `settings/presentation/`. Moving it to `settings/domain/entities/` is the correct long-term fix but carries high refactor risk. Accepted until a dedicated domain-layer migration task is scheduled. |
+

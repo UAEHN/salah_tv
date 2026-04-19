@@ -3,29 +3,37 @@ import '../../domain/entities/tasbih_preset.dart';
 
 @immutable
 class TasbihState {
-  final int count;
   final int presetIndex;
-  final bool isCompleted;
+  final List<int> counts;
 
   const TasbihState({
-    required this.count,
-    required this.presetIndex,
-    this.isCompleted = false,
+    this.presetIndex = 0,
+    this.counts = const [0, 0, 0, 0],
   });
 
-  const TasbihState.initial()
-      : count = 0,
-        presetIndex = 0,
-        isCompleted = false;
-
+  int get count => counts[presetIndex];
   TasbihPreset get preset => kTasbihPresets[presetIndex];
   int get target => preset.target;
+  bool get isCompleted => count >= target;
 
-  TasbihState copyWith({int? count, int? presetIndex, bool? isCompleted}) {
+  bool get isAllCompleted {
+    for (int i = 0; i < kTasbihPresets.length; i++) {
+      if (counts[i] < kTasbihPresets[i].target) return false;
+    }
+    return true;
+  }
+
+  TasbihState copyWith({int? presetIndex, List<int>? counts}) {
     return TasbihState(
-      count: count ?? this.count,
       presetIndex: presetIndex ?? this.presetIndex,
-      isCompleted: isCompleted ?? this.isCompleted,
+      counts: counts ?? this.counts,
     );
+  }
+
+  /// Returns a copy with [value] at [index] in [counts].
+  TasbihState withCount(int index, int value) {
+    final updated = List<int>.of(counts);
+    updated[index] = value;
+    return copyWith(counts: updated);
   }
 }

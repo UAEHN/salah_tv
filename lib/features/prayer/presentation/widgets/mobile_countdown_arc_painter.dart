@@ -72,13 +72,15 @@ class MobileCountdownArcPainter extends CustomPainter {
       center.dy + radius * math.sin(tipAngle),
     );
 
-    // Outer glow bloom
+    // Simulated glow: two concentric semi-transparent circles (no MaskFilter —
+    // MaskFilter.blur forces a GPU compositing layer and is too expensive on TV).
     canvas.drawCircle(
-      tip,
-      strokeWidth * 1.1,
-      Paint()
-        ..color = arcColor.withValues(alpha: 0.3)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
+      tip, strokeWidth * 2.2,
+      Paint()..color = arcColor.withValues(alpha: 0.08),
+    );
+    canvas.drawCircle(
+      tip, strokeWidth * 1.4,
+      Paint()..color = arcColor.withValues(alpha: 0.22),
     );
 
     // Solid dot — white center

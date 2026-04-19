@@ -104,12 +104,6 @@ class DuaScreen extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       color: palette.primary,
                       height: 1.8,
-                      shadows: [
-                        Shadow(
-                          color: palette.glow,
-                          blurRadius: 12,
-                        ),
-                      ],
                     ),
                   ),
                 ],

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import '../../../settings/domain/entities/app_settings.dart';
+import '../prayer_time_calculator.dart' as calc;
 import 'prayer_cycle_base.dart';
 import 'adhan_cycle_mixin.dart';
 import 'iqama_mixin.dart';
@@ -18,7 +19,9 @@ mixin SettingsMixin
     final oldCountry = settings.selectedCountry;
     final oldMethod = settings.calculationMethod;
     final oldMadhab = settings.madhab;
+    final oldAdhanSound = settings.adhanSound;
     settings = newSettings;
+    s.now = currentTime();
 
     // Reload prayer times when location or calculation parameters change.
     // calculationMethod / madhab: syncPrayerRepositoryMode already re-inits
@@ -39,6 +42,20 @@ mixin SettingsMixin
       }
     } else {
       updateNextPrayer();
+      // Re-schedule notifications when the adhan sound changes: Android
+      // binds sound at schedule time to a specific channel, so an already-
+      // scheduled notification keeps its old sound until cancelled and
+      // re-scheduled with the new channel/URI.
+      if (newSettings.adhanSound != oldAdhanSound && s.todayPrayers != null) {
+        final tomorrowKey = calc.dateKey(
+          DateTime(s.now.year, s.now.month, s.now.day + 1),
+        );
+        unawaited(notifications?.scheduleForDay(
+          s.todayPrayers!,
+          repo.getTomorrowByKey(tomorrowKey),
+          settings,
+        ));
+      }
     }
 
     // If iqama delay changed while the countdown is running, recalculate
@@ -70,6 +87,7 @@ mixin SettingsMixin
   }
 
   void reload() {
+    s.now = currentTime();
     s.adhansToday.clear();
     s.isIqamaCountdown = false;
     loadToday();

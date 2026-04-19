@@ -2,12 +2,19 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import '../../../core/adhan_sounds.dart';
+import '../../settings/domain/entities/custom_adhan.dart';
+import '../../settings/domain/i_custom_adhan_repository.dart';
 import '../domain/i_audio_repository.dart';
 import '../../prayer/domain/i_prayer_audio_port.dart';
 import 'announcement_service.dart';
 import 'quran_audio_service.dart';
 
 class AudioService implements IAudioRepository, IPrayerAudioPort {
+  /// Optional — only registered on mobile where the custom-adhan feature is
+  /// exposed. On TV, stays null and `custom:*` keys fall back to the default
+  /// bundled sound.
+  final ICustomAdhanRepository? _customAdhans;
+
   // Issue 4/5: custom broadcast stream so we can fire it from both natural
   // completion AND external interruption (audio focus loss).
   final StreamController<void> _onCompleteController =
@@ -18,7 +25,8 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
   // external interruptions (audio focus lost, another app takes over).
   bool _isAppInitiatedStop = false;
 
-  AudioService() {
+  AudioService({ICustomAdhanRepository? customAdhans})
+    : _customAdhans = customAdhans {
     // Natural completion → advance state machine
     _player.onPlayerComplete.listen((_) {
       _isPlaying = false;
@@ -58,14 +66,14 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
       _isAppInitiatedStop = true;
       await _player.stop();
       _isAppInitiatedStop = false;
+      // ReleaseMode.release tells ExoPlayer to free decoder/buffer resources
+      // after each play. Without this the player holds native threads alive
+      // between prayers (hours of idle), which causes mutex contention on the
+      // platform channel and ANRs on TV boxes after ~2 hours.
+      await _player.setReleaseMode(ReleaseMode.release);
       _isPlaying = true;
-      final asset = kAdhanSounds
-              .firstWhere(
-                (s) => s.key == soundKey,
-                orElse: () => kAdhanSounds.first,
-              )
-              .asset;
-      await _player.play(AssetSource(asset));
+      final source = await _resolveAdhanSource(soundKey);
+      await _player.play(source);
       return true;
     } catch (e) {
       debugPrint('[Audio] playAdhan failed: $e');
@@ -75,12 +83,30 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
     }
   }
 
+  Future<Source> _resolveAdhanSource(String soundKey) async {
+    final fileName = CustomAdhan.extractFileName(soundKey);
+    final repo = _customAdhans;
+    if (fileName != null && repo != null) {
+      final result = await repo.absolutePathOf(fileName);
+      final path = result.fold((_) => null, (p) => p);
+      if (path != null) return DeviceFileSource(path);
+    }
+    final asset = kAdhanSounds
+        .firstWhere(
+          (s) => s.key == soundKey,
+          orElse: () => kAdhanSounds.first,
+        )
+        .asset;
+    return AssetSource(asset);
+  }
+
   @override
   Future<bool> playDua() async {
     try {
       _isAppInitiatedStop = true;
       await _player.stop();
       _isAppInitiatedStop = false;
+      await _player.setReleaseMode(ReleaseMode.release);
       _isPlaying = true;
       await _player.play(AssetSource('audio/dua.mp3'));
       return true;
@@ -98,6 +124,7 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
       _isAppInitiatedStop = true;
       await _player.stop();
       _isAppInitiatedStop = false;
+      await _player.setReleaseMode(ReleaseMode.release);
       _isPlaying = true;
       await _player.play(AssetSource('audio/iqama.mp3'));
       return true;
@@ -115,6 +142,8 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
     try {
       await _player.stop();
       _isPlaying = false;
+      // Release native ExoPlayer resources so no threads idle between prayers.
+      await _player.setReleaseMode(ReleaseMode.release);
     } catch (e) {
       debugPrint('[Audio] stop failed: $e');
     }
@@ -122,7 +151,10 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
   }
 
   // ── Pre-alert bell (separate player, fire-and-forget) ────────────────────
-  final AudioPlayer _bellPlayer = AudioPlayer();
+  // Lazy: only creates the ExoPlayer instance on first bell play.
+  // An eagerly-created idle AudioPlayer keeps ExoPlayer native threads alive
+  // for hours and contributes to the mutex contention seen in ANR traces.
+  AudioPlayer? _bellPlayer;
 
   // ── Prayer announcement (separate player, awaited before adhan) ──────────
   final AnnouncementService _announcement = AnnouncementService();
@@ -134,8 +166,9 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
   @override
   Future<void> playPreAlertBell() async {
     try {
-      await _bellPlayer.setVolume(0.15);
-      await _bellPlayer.play(AssetSource('audio/bell.wav'));
+      _bellPlayer ??= AudioPlayer();
+      await _bellPlayer!.setVolume(0.15);
+      await _bellPlayer!.play(AssetSource('audio/bell.wav'));
     } catch (e) {
       debugPrint('[Audio] playPreAlertBell failed: $e');
     }
@@ -172,7 +205,7 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
   void dispose() {
     _onCompleteController.close();
     _player.dispose();
-    _bellPlayer.dispose();
+    _bellPlayer?.dispose();
     _announcement.dispose();
     _quranService.dispose();
   }

@@ -17,6 +17,15 @@ class DetectedLocation {
   /// Non-null when the detected city exists in the bundled prayer DB.
   final String? dbCityKey;
 
+  /// Calculation method resolved for non-DB detected locations.
+  final String? calculationMethod;
+
+  /// IANA timezone identifier such as "Europe/Berlin" when available.
+  final String? timeZoneId;
+
+  /// UTC offset of the detected/nearest city for non-DB locations.
+  final double? utcOffsetHours;
+
   const DetectedLocation({
     required this.countryName,
     required this.cityName,
@@ -25,6 +34,9 @@ class DetectedLocation {
     this.isoCountryCode,
     this.dbCountryKey,
     this.dbCityKey,
+    this.calculationMethod,
+    this.timeZoneId,
+    this.utcOffsetHours,
   });
 
   bool get isInDb => dbCountryKey != null && dbCityKey != null;

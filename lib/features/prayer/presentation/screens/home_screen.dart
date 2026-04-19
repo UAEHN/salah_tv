@@ -10,6 +10,8 @@ import '../widgets/home_main_view.dart';
 import '../../../audio/presentation/screens/adhan_screen.dart';
 import '../../../audio/presentation/screens/dua_screen.dart';
 import '../../../audio/presentation/screens/iqama_screen.dart';
+import '../../../../features/app_update/presentation/app_update_trigger.dart';
+import '../../../../features/rating/presentation/tv_rating_trigger.dart';
 import 'home_key_handler.dart';
 import 'mobile_home_screen.dart';
 
@@ -71,9 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
       (PrayerBloc b) => b.state.iqamaPrayerKey,
     );
 
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
+    return TvRatingTrigger(
+      child: AppUpdateTrigger(
+        child: PopScope(
+        canPop: false,
+        child: Scaffold(
         body: Focus(
           focusNode: _focusNode,
           autofocus: true,
@@ -114,6 +118,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
         ),
       ),
-    );
+    ),
+    ),
+  );
   }
 }

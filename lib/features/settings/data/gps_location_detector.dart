@@ -1,11 +1,13 @@
-﻿import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../../core/error/failures.dart';
+import '../domain/entities/world_city.dart';
 import '../domain/entities/detected_location.dart';
 import '../domain/i_location_detector.dart';
+import '../domain/i_world_city_repository.dart';
 import 'location_city_matcher.dart';
 import 'location_country_matcher.dart';
 
@@ -21,11 +23,14 @@ class GpsLocationDetector implements ILocationDetector {
   GpsLocationDetector({
     LocationCountryMatcher? countryMatcher,
     LocationCityMatcher? cityMatcher,
-  })  : _countryMatcher = countryMatcher ?? LocationCountryMatcher(),
-        _cityMatcher = cityMatcher ?? LocationCityMatcher();
+    IWorldCityRepository? worldCityRepository,
+  }) : _countryMatcher = countryMatcher ?? LocationCountryMatcher(),
+       _cityMatcher = cityMatcher ?? LocationCityMatcher(),
+       _worldCityRepository = worldCityRepository;
 
   final LocationCountryMatcher _countryMatcher;
   final LocationCityMatcher _cityMatcher;
+  final IWorldCityRepository? _worldCityRepository;
 
   Future<Either<Failure, DetectedLocation>>? _activeDetection;
 
@@ -65,6 +70,7 @@ class GpsLocationDetector implements ILocationDetector {
 
     String? dbCountryKey = countryResult?.dbKey;
     String? dbCityKey;
+    WorldCity? resolvedWorldCity;
     if (dbCountryKey != null) {
       dbCityKey = _cityMatcher.match(dbCountryKey, placemarks);
     }
@@ -72,6 +78,14 @@ class GpsLocationDetector implements ILocationDetector {
     final countryDisplay =
         countryResult?.displayName ?? placemarks.first.country ?? 'Unknown';
     final cityDisplay = _bestCityName(placemarks) ?? 'Unknown';
+    if (dbCityKey == null) {
+      resolvedWorldCity = await _resolveWorldCity(
+        isoCountryCode: placemarks.first.isoCountryCode,
+        cityName: cityDisplay,
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
+    }
 
     return Right(
       DetectedLocation(
@@ -82,13 +96,35 @@ class GpsLocationDetector implements ILocationDetector {
         isoCountryCode: placemarks.first.isoCountryCode,
         dbCountryKey: dbCityKey != null ? dbCountryKey : null,
         dbCityKey: dbCityKey,
+        calculationMethod: resolvedWorldCity?.calculationMethod,
+        timeZoneId: resolvedWorldCity?.timeZoneId,
+        utcOffsetHours: resolvedWorldCity?.utcOffset,
       ),
+    );
+  }
+
+  Future<WorldCity?> _resolveWorldCity({
+    required String? isoCountryCode,
+    required String cityName,
+    required double latitude,
+    required double longitude,
+  }) async {
+    final repo = _worldCityRepository;
+    final countryKey = isoCountryCode?.trim().toUpperCase();
+    if (repo == null || countryKey == null || countryKey.isEmpty) return null;
+    await repo.initialize();
+    return repo.resolveDetectedCity(
+      countryKey: countryKey,
+      cityName: cityName,
+      latitude: latitude,
+      longitude: longitude,
     );
   }
 
   String? _bestCityName(List<Placemark> placemarks) {
     for (final p in placemarks.take(3)) {
-      final candidate = p.locality ?? p.subAdministrativeArea ?? p.administrativeArea;
+      final candidate =
+          p.locality ?? p.subAdministrativeArea ?? p.administrativeArea;
       if (candidate != null && candidate.trim().isNotEmpty) return candidate;
     }
     return null;
@@ -113,7 +149,8 @@ class GpsLocationDetector implements ILocationDetector {
   bool _isUsableCachedPosition(Position? position) {
     if (position == null) return false;
     if (position.accuracy > _cachedPositionMaxAccuracyMeters) return false;
-    return DateTime.now().difference(position.timestamp) <= _cachedPositionMaxAge;
+    return DateTime.now().difference(position.timestamp) <=
+        _cachedPositionMaxAge;
   }
 
   Future<Position?> _getFreshPosition() async {
@@ -138,7 +175,8 @@ class GpsLocationDetector implements ILocationDetector {
     if (perm == LocationPermission.denied) {
       perm = await Geolocator.requestPermission();
     }
-    if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) {
+    if (perm == LocationPermission.denied ||
+        perm == LocationPermission.deniedForever) {
       return const LocationPermissionFailure();
     }
     return null;

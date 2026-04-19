@@ -8,9 +8,16 @@ abstract class IPrayerNotificationPort {
   /// One-time init: sets up notification channel + requests permission.
   Future<void> initialize();
 
-  /// Cancels all pending notifications then schedules today's 5 prayers.
-  /// [settings] provides adhanOffsets for adjusted times.
-  Future<void> scheduleForDay(DailyPrayerTimes prayers, AppSettings settings);
+  /// Cancels all pending notifications then schedules [today]'s prayers and,
+  /// if provided, [tomorrow]'s prayers. Scheduling two days ahead guarantees
+  /// notifications survive overnight app closures and device reboots: the boot
+  /// receiver re-registers persisted alarms, which remain in the future as long
+  /// as they were scheduled for the next day.
+  Future<void> scheduleForDay(
+    DailyPrayerTimes today,
+    DailyPrayerTimes? tomorrow,
+    AppSettings settings,
+  );
 
   /// Cancels all pending prayer notifications (e.g. before rescheduling).
   Future<void> cancelAll();

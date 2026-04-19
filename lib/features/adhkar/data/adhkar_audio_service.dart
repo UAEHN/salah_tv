@@ -13,15 +13,26 @@ class AdhkarAudioService implements IAdhkarAudioPort {
       StreamController<void>.broadcast();
   bool _appInitiatedStop = false;
 
+  // Mirror of AudioService._isPlaying: prevents the double-completion cascade
+  // that occurs on Android TV, where both onPlayerComplete AND
+  // onPlayerStateChanged(stopped) fire when audio ends naturally.
+  // Without this guard, advance() is called twice per dhikr, which creates
+  // two concurrent play() calls that race on the platform channel and generate
+  // more spurious stopped events — a cascade that overwhelms the channel and
+  // causes an ANR after ~2 hours of operation.
+  bool _isPlaying = false;
+
   AdhkarAudioService() {
+    _player.onPlayerComplete.listen((_) {
+      _isPlaying = false;
+      _onCompleteCtrl.add(null);
+    });
     // Android TV emits PlayerState.stopped instead of PlayerState.completed
-    // when audio ends naturally. We listen to both events:
-    // - onPlayerComplete: standard completion (most platforms)
-    // - onPlayerStateChanged → stopped: natural end on Android TV
-    // _appInitiatedStop guards against spurious events from explicit stop().
-    _player.onPlayerComplete.listen((_) => _onCompleteCtrl.add(null));
+    // when audio ends naturally. The _isPlaying guard ensures only ONE
+    // completion event reaches the cubit regardless of which event fires first.
     _player.onPlayerStateChanged.listen((state) {
-      if (state == PlayerState.stopped && !_appInitiatedStop) {
+      if (state == PlayerState.stopped && _isPlaying && !_appInitiatedStop) {
+        _isPlaying = false;
         _onCompleteCtrl.add(null);
       }
     });
@@ -36,9 +47,11 @@ class AdhkarAudioService implements IAdhkarAudioPort {
       _appInitiatedStop = true;
       await _player.stop();
       _appInitiatedStop = false;
+      _isPlaying = true;
       await _player.play(AssetSource(url));
     } catch (e) {
       _appInitiatedStop = false;
+      _isPlaying = false;
       debugPrint('[AdhkarAudio] play failed: $e');
     }
   }
@@ -48,6 +61,7 @@ class AdhkarAudioService implements IAdhkarAudioPort {
     try {
       _appInitiatedStop = true;
       await _player.stop();
+      _isPlaying = false;
       _appInitiatedStop = false;
     } catch (e) {
       debugPrint('[AdhkarAudio] stop failed: $e');

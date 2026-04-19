@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -12,17 +12,24 @@ import 'widgets/settings_nav_panel.dart';
 import 'widgets/settings_screen_header.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  final int initialIndex;
+  const SettingsScreen({super.key, this.initialIndex = 0});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
 
   late final List<FocusNode> _navFocusNodes =
-      List.generate(7, (_) => FocusNode());
+      List.generate(8, (_) => FocusNode());
 
   final _contentScopeNode = FocusScopeNode(debugLabel: 'settings_content');
 
@@ -75,6 +82,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Icons.auto_stories_rounded,
         l.settingsCategoryAdhkar,
         l.settingsCategoryAdhkarSubtitle,
+      ),
+      (
+        Icons.mark_chat_read_rounded,
+        l.feedbackSection,
+        l.feedbackSettingsTile,
       ),
     ];
 

@@ -55,14 +55,6 @@ class PrayerTimeColumn extends StatelessWidget {
             fontSize: screenH * 0.053,
             fontWeight: isNext ? FontWeight.w600 : FontWeight.w400,
             color: tc.textPrimary,
-            shadows: isNext
-                ? [
-                    Shadow(
-                      color: palette.glow.withValues(alpha: 0.35),
-                      blurRadius: 12,
-                    ),
-                  ]
-                : null,
           ),
         ),
         if (isCountable) ...[

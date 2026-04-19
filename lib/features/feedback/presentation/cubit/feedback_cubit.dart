@@ -15,16 +15,12 @@ class FeedbackCubit extends Cubit<FeedbackState> {
   final SubmitFeedbackUseCase _submitFeedback;
   final IAnalyticsService? _analytics;
 
-  void selectType(String type) {
-    emit(state.copyWith(selectedType: type, clearError: true));
-  }
-
   Future<void> submit(String message) async {
     if (message.trim().isEmpty) return;
     emit(state.copyWith(isLoading: true, clearError: true));
 
     final entry = FeedbackEntry(
-      type: state.selectedType,
+      type: 'general',
       message: message.trim(),
       platform: Platform.isAndroid ? 'android' : 'ios',
       createdAt: DateTime.now(),
@@ -35,7 +31,7 @@ class FeedbackCubit extends Cubit<FeedbackState> {
       (failure) =>
           emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
       (_) {
-        _analytics?.logFeedbackSubmitted(state.selectedType);
+        _analytics?.logFeedbackSubmitted('general');
         emit(state.copyWith(isLoading: false, isSuccess: true));
       },
     );

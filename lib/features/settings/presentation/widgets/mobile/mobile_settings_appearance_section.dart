@@ -7,7 +7,7 @@ import 'mobile_settings_tile.dart';
 import 'mobile_theme_dialog.dart';
 import 'mobile_time_format_dialog.dart';
 
-/// Time format + appearance + other sections of the settings list.
+/// Time format + appearance sections of the settings list.
 class MobileSettingsAppearanceSection extends StatelessWidget {
   final SettingsProvider settingsProvider;
 
@@ -79,12 +79,6 @@ class MobileSettingsAppearanceSection extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 24),
-        MobileSettingsSectionTitle(
-          title: l.settingsOther,
-          icon: Icons.more_horiz,
-        ),
-        MobileSettingsTile(title: l.settingsPrivacyPolicy, onTap: () {}),
       ],
     );
   }

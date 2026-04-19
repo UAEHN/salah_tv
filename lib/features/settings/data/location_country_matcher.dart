@@ -1,33 +1,19 @@
 import '../../../core/city_translations.dart';
+import '../../../core/country_name_resolver.dart';
 import 'location_text_normalizer.dart';
 
 class LocationCountryMatcher {
-  static const _isoToCountryKey = <String, String>{
-    'AE': 'UAE',
-    'OM': 'Oman',
-    'SA': 'Saudi',
-    'KW': 'Kuwait',
-    'QA': 'Qatar',
-    'BH': 'Bahrain',
-    'EG': 'Egypt',
-    'IQ': 'Iraq',
-    'JO': 'Jordan',
-    'LB': 'Lebanon',
-    'MA': 'Morocco',
-    'PS': 'Palestine',
-    'SY': 'Syria',
-    'TN': 'Tunisia',
-    'YE': 'Yemen',
-  };
+  // ISO code → DB key mapping lives in country_name_resolver.dart so there's
+  // a single source of truth for "which ISO codes are DB-backed".
 
   static const _nameToCountryKey = <String, String>{
-    'united arab emirates': 'UAE',
-    'uae': 'UAE',
-    'saudi arabia': 'Saudi',
-    'kingdom of saudi arabia': 'Saudi',
-    'state of palestine': 'Palestine',
-    'palestinian territories': 'Palestine',
-    'syrian arab republic': 'Syria',
+    'united arab emirates': 'uae',
+    'uae': 'uae',
+    'saudi arabia': 'saudi',
+    'kingdom of saudi arabia': 'saudi',
+    'state of palestine': 'palestine',
+    'palestinian territories': 'palestine',
+    'syrian arab republic': 'syria',
   };
 
   /// Returns the DB key (if the country is in the bundled DB) and a
@@ -39,8 +25,8 @@ class LocationCountryMatcher {
   }) {
     final normalizedIsoCode = isoCode?.trim().toUpperCase();
     if (normalizedIsoCode != null) {
-      final isoMatch = _isoToCountryKey[normalizedIsoCode];
-      if (isoMatch != null) {
+      final isoMatch = dbCountryKeyForIso(normalizedIsoCode);
+      if (isoMatch != null && kDbCountryKeys.contains(isoMatch)) {
         return (dbKey: isoMatch, displayName: isoMatch);
       }
     }
@@ -48,7 +34,7 @@ class LocationCountryMatcher {
     for (final name in names) {
       final normalizedName = normalizeLocationText(name);
       final aliasMatch = _nameToCountryKey[normalizedName];
-      if (aliasMatch != null) {
+      if (aliasMatch != null && kDbCountryKeys.contains(aliasMatch)) {
         return (dbKey: aliasMatch, displayName: aliasMatch);
       }
       for (final country in kCountries) {

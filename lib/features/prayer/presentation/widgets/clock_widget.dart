@@ -21,12 +21,12 @@ class ClockWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settings = context.watch<SettingsProvider>().settings;
-
-    if (settings.isAnalogClock) {
+    final isAnalog = context.select<SettingsProvider, bool>(
+      (p) => p.settings.isAnalogClock,
+    );
+    if (isAnalog) {
       return AnalogClockWidget(palette: palette, compact: compact, tiny: tiny);
     }
-
     return _DigitalClock(palette: palette, compact: compact, tiny: tiny);
   }
 }
@@ -44,12 +44,14 @@ class _DigitalClock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settings = context.watch<SettingsProvider>().settings;
+    final (use24h, isDark) = context.select<SettingsProvider, (bool, bool)>(
+      (p) => (p.settings.use24HourFormat, p.settings.isDarkMode),
+    );
     final now = context.select((PrayerBloc b) => b.state.now);
     final screenH = MediaQuery.of(context).size.height;
-    final tc = ThemeColors.of(settings.isDarkMode);
+    final tc = ThemeColors.of(isDark);
 
-    final timeStr = settings.use24HourFormat
+    final timeStr = use24h
         ? DateFormat('HH:mm').format(now)
         : DateFormat('hh:mm').format(now);
     final secondsStr = DateFormat(':ss').format(now);
@@ -65,30 +67,34 @@ class _DigitalClock extends StatelessWidget {
             ? screenH * 0.05
             : screenH * 0.08;
 
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      child: RichText(
-        textDirection: TextDirection.ltr,
-        text: TextSpan(
-          text: timeStr,
-          style: TextStyle(
-            fontSize: mainSize,
-            fontWeight: FontWeight.w700,
-            color: tc.textPrimary,
-            letterSpacing: tiny ? 1 : 4,
-            height: 1.0,
-          ),
-          children: [
-            TextSpan(
-              text: secondsStr,
-              style: TextStyle(
-                fontSize: secSize,
-                fontWeight: FontWeight.w700,
-                color: tc.textSecondary,
-                height: 1.0,
-              ),
+    // RepaintBoundary isolates the per-second text invalidation to this layer
+    // so it never forces parents (info card, background gradients) to repaint.
+    return RepaintBoundary(
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: RichText(
+          textDirection: TextDirection.ltr,
+          text: TextSpan(
+            text: timeStr,
+            style: TextStyle(
+              fontSize: mainSize,
+              fontWeight: FontWeight.w700,
+              color: tc.textPrimary,
+              letterSpacing: tiny ? 1 : 4,
+              height: 1.0,
             ),
-          ],
+            children: [
+              TextSpan(
+                text: secondsStr,
+                style: TextStyle(
+                  fontSize: secSize,
+                  fontWeight: FontWeight.w700,
+                  color: tc.textSecondary,
+                  height: 1.0,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

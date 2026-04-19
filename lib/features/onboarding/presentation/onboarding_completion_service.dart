@@ -17,11 +17,12 @@ class OnboardingCompletionService {
     } else {
       final worldCity = state.selectedWorldCity!;
       await _settings.updateWorldLocation(
-        worldCity.countryArabic,
-        worldCity.arabicName,
+        worldCity.countryKey,
+        worldCity.name,
         worldCity.latitude,
         worldCity.longitude,
         worldCity.calculationMethod,
+        timeZoneId: worldCity.timeZoneId,
         utcOffsetHours: worldCity.utcOffset,
       );
     }

@@ -10,6 +10,7 @@ import '../domain/i_settings_repository.dart';
 class SettingsRepository implements ISettingsRepository {
   static const _prefix = 'salah_tv_';
   static const _firstLaunchKey = '${_prefix}first_launch';
+  static const _appTourKey = '${_prefix}app_tour_completed';
 
   @override
   Future<bool> isFirstLaunch() async {
@@ -21,6 +22,18 @@ class SettingsRepository implements ISettingsRepository {
   Future<void> markLaunched() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_firstLaunchKey, false);
+  }
+
+  @override
+  Future<bool> hasCompletedAppTour() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_appTourKey) ?? false;
+  }
+
+  @override
+  Future<void> markAppTourCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_appTourKey, true);
   }
 
   @override
@@ -52,6 +65,7 @@ class SettingsRepository implements ISettingsRepository {
           'isCalculatedLocation': prefs.getBool(
             '${_prefix}is_calculated_location',
           ),
+          'selectedTimeZoneId': prefs.getString('${_prefix}timezone_id'),
           'utcOffsetHours': prefs.getDouble('${_prefix}utc_offset'),
           'layoutStyle': prefs.getString('${_prefix}layout_style'),
           'adhanSound': prefs.getString('${_prefix}adhan_sound'),
@@ -75,6 +89,7 @@ class SettingsRepository implements ISettingsRepository {
           'preIqamaReminderMinutes': prefs.getInt(
             '${_prefix}pre_iqama_reminder_min',
           ),
+          'customAdhans': prefs.getString('${_prefix}custom_adhans'),
         }),
       );
     } catch (e) {
@@ -118,6 +133,11 @@ class SettingsRepository implements ISettingsRepository {
         '${_prefix}is_calculated_location',
         s.isCalculatedLocation,
       );
+      if (s.selectedTimeZoneId != null && s.selectedTimeZoneId!.isNotEmpty) {
+        await prefs.setString('${_prefix}timezone_id', s.selectedTimeZoneId!);
+      } else {
+        await prefs.remove('${_prefix}timezone_id');
+      }
       if (s.utcOffsetHours != null) {
         await prefs.setDouble('${_prefix}utc_offset', s.utcOffsetHours!);
       } else {
@@ -150,6 +170,10 @@ class SettingsRepository implements ISettingsRepository {
       await prefs.setInt(
         '${_prefix}pre_iqama_reminder_min',
         s.preIqamaReminderMinutes,
+      );
+      await prefs.setString(
+        '${_prefix}custom_adhans',
+        jsonEncode(s.customAdhans.map((c) => c.toJson()).toList()),
       );
       return const Right(Success());
     } catch (e) {

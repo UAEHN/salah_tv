@@ -8,4 +8,6 @@ abstract class ISettingsRepository {
   Future<Either<Failure, Success>> save(AppSettings settings);
   Future<bool> isFirstLaunch();
   Future<void> markLaunched();
+  Future<bool> hasCompletedAppTour();
+  Future<void> markAppTourCompleted();
 }

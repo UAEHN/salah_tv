@@ -6,6 +6,7 @@ import '../../../adhkar/domain/i_adhkar_audio_port.dart';
 import '../../../adhkar/domain/i_adhkar_state_repository.dart';
 import '../../../adhkar/presentation/bloc/adhkar_hero_cubit.dart';
 import 'adhkar_hero_content.dart';
+import 'next_prayer_content.dart';
 
 class AdhkarHeroContainer extends StatelessWidget {
   final AdhkarSession session;
@@ -20,7 +21,15 @@ class AdhkarHeroContainer extends StatelessWidget {
         context.read<IAdhkarAudioPort>(),
         context.read<IAdhkarStateRepository>(),
       )..start(session),
-      child: AdhkarHeroContent(session: session),
+      child: BlocBuilder<AdhkarHeroCubit, AdhkarHeroState>(
+        buildWhen: (prev, curr) => prev.isCompleted != curr.isCompleted,
+        builder: (context, state) {
+          if (state.isCompleted) {
+            return const NextPrayerContent(key: ValueKey('adhkar_completed'));
+          }
+          return AdhkarHeroContent(session: session);
+        },
+      ),
     );
   }
 }

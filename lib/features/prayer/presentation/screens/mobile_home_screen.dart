@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../features/settings/presentation/bloc/location_choice.dart';
 import '../../../../features/settings/presentation/bloc/location_selection_cubit.dart';
 import '../../../../features/settings/presentation/settings_provider.dart';
 import '../../../../features/settings/presentation/widgets/mobile/mobile_location_dialog.dart';
@@ -49,15 +50,28 @@ class MobileHomeScreen extends StatelessWidget {
         child: MobileLocationDialog(
           currentCountry: settings.selectedCountry,
           currentCity: settings.selectedCity,
-          onSave: (c, city) => locationCubit.saveDatabaseLocation(c, city),
-          onSaveWorld: (c, city, lat, lng, method, {double? utcOffsetHours}) =>
-              locationCubit.saveWorldLocation(
-                c,
-                city,
-                lat,
-                lng,
-                method,
-                utcOffsetHours: utcOffsetHours,
+          onSave: (c, city) => locationCubit.save(
+            LocationChoice.database(countryKey: c, cityName: city),
+          ),
+          onSaveWorld: (
+            c,
+            city,
+            lat,
+            lng,
+            method, {
+            String? timeZoneId,
+            double? utcOffsetHours,
+          }) => 
+              locationCubit.save(
+                LocationChoice.worldFromValues(
+                  countryKey: c,
+                  cityName: city,
+                  latitude: lat,
+                  longitude: lng,
+                  calculationMethod: method,
+                  timeZoneId: timeZoneId,
+                  utcOffsetHours: utcOffsetHours,
+                ),
               ),
         ),
       ),

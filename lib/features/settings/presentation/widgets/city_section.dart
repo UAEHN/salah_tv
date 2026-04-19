@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +39,11 @@ class CitySection extends StatelessWidget {
                 Expanded(
                   child: Text(
                     hasCity
-                        ? cityLabel(settings.selectedCity, locale: l.localeName)
+                        ? cityLabel(
+                            settings.selectedCity,
+                            locale: l.localeName,
+                            countryKey: settings.selectedCountry,
+                          )
                         : l.settingsNoCitySelected,
                     style: TextStyle(
                       fontSize: 18,
@@ -61,7 +65,11 @@ class CitySection extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.location_city_rounded, color: Colors.white, size: 20),
+              const Icon(
+                Icons.location_city_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 l.settingsChangeCity,
@@ -79,7 +87,9 @@ class CitySection extends StatelessWidget {
     SettingsProvider settingsProv,
     AccentPalette palette,
   ) {
-    final availableCities = context.select((PrayerBloc b) => b.state.availableCities);
+    final availableCities = context.select(
+      (PrayerBloc b) => b.state.availableCities,
+    );
     final filtered = citiesForCountry(
       settingsProv.settings.selectedCountry,
       availableCities,

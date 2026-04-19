@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../core/mobile_theme.dart';
 import '../widgets/mobile/mobile_prayer_offsets_list.dart';
@@ -48,12 +47,6 @@ class MobilePrayerOffsetsScreen extends StatelessWidget {
                   alpha: MobileColors.isDark(context) ? 0.07 : 0.10,
                 ),
               ),
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-              child: const SizedBox(),
             ),
           ),
           const SafeArea(child: MobilePrayerOffsetsList()),

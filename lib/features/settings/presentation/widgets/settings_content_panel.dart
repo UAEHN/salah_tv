@@ -1,17 +1,17 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import 'adhan_offsets_table.dart';
 import 'adhan_section.dart';
 import 'adhkar_section.dart';
-import 'city_section.dart';
-import 'country_section.dart';
 import 'dark_mode_section.dart';
 import 'iqama_table.dart';
 import 'language_section.dart';
 import 'quran_section.dart';
 import 'section_title.dart';
 import 'simple_sections.dart';
+import 'tv_location_section.dart';
+import '../../../feedback/presentation/widgets/tv_feedback_section.dart';
 
 class SettingsContentPanel extends StatelessWidget {
   final int selectedIndex;
@@ -22,11 +22,7 @@ class SettingsContentPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final slots = [
-      _slot([
-        const CountrySection(),
-        const SizedBox(height: 16),
-        const CitySection(),
-      ]),
+      _slot([const TvLocationSection()]),
       _slot([const QuranSection()]),
       _slot([const AdhanSection()]),
       _slot([const AdhanOffsetsTable()]),
@@ -61,6 +57,7 @@ class SettingsContentPanel extends StatelessWidget {
         const ClockStyleSection(),
       ]),
       _slot([const AdhkarSection()]),
+      _slot([const TvFeedbackSection()]),
     ];
 
     return IndexedStack(

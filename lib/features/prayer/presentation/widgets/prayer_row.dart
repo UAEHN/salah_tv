@@ -55,15 +55,6 @@ class PrayerRow extends StatelessWidget {
             : null,
         color: isNext ? null : Colors.transparent,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: isNext
-            ? [
-                BoxShadow(
-                  color: palette.glow.withValues(alpha: 0.25),
-                  blurRadius: 14,
-                  spreadRadius: 1,
-                ),
-              ]
-            : null,
       ),
       padding: EdgeInsets.symmetric(
         horizontal: screenH * 0.032,

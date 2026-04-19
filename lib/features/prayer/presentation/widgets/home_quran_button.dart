@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,8 +7,10 @@ import '../bloc/prayer_event.dart';
 import '../bloc/prayer_state.dart';
 import 'quran_button_face.dart';
 
-/// Animated Quran pill button with a rotating sweep-gradient border.
-/// Shows play/stop icon and a pause indicator when Quran is paused for adhan.
+/// Quran pill button with a soft idle↔playing fade.
+/// Rotation was removed: the continuous 60 fps SweepGradient repaint
+/// accumulated GPU shader pressure on TV boxes, causing UI freezes after
+/// multi-hour sessions while the audio thread kept running.
 class HomeQuranButton extends StatefulWidget {
   final AccentPalette palette;
   final String serverUrl;
@@ -31,19 +32,15 @@ class HomeQuranButton extends StatefulWidget {
 }
 
 class _HomeQuranButtonState extends State<HomeQuranButton>
-    with TickerProviderStateMixin {
-  late final AnimationController _rotCtrl; // border rotation (4s, repeating)
+    with SingleTickerProviderStateMixin {
   late final AnimationController _glowCtrl; // idle↔playing fade (600ms)
   late final Animation<double> _fade;
   bool _isFocused = false;
+  bool _didInitSync = false;
 
   @override
   void initState() {
     super.initState();
-    _rotCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat();
     _glowCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
@@ -57,20 +54,33 @@ class _HomeQuranButtonState extends State<HomeQuranButton>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInitSync) {
+      _didInitSync = true;
+      final initial = context.read<PrayerBloc>().state;
+      if (initial.isQuranPlaying) _glowCtrl.value = 1.0;
+    }
+  }
+
+  @override
   void dispose() {
     widget.focusNode.removeListener(_onFocusChange);
-    _rotCtrl.dispose();
     _glowCtrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final prayerState = context.watch<PrayerBloc>().state;
-    final isPlaying = prayerState.isQuranPlaying;
-    final isPausedForAdhan = prayerState.quranUserEnabled && !isPlaying;
+    // Narrow select: rebuild only when either field actually changes.
+    final quranFlags = context.select<PrayerBloc, (bool, bool)>(
+      (b) => (b.state.isQuranPlaying, b.state.quranUserEnabled),
+    );
+    final isPlaying = quranFlags.$1;
+    final quranUserEnabled = quranFlags.$2;
+    final isPausedForAdhan = quranUserEnabled && !isPlaying;
 
-    // BlocListener drives the glow animation; keeps build() side-effect-free.
+    // BlocListener drives the glow fade off the build path.
     return BlocListener<PrayerBloc, PrayerState>(
       listenWhen: (prev, cur) => prev.isQuranPlaying != cur.isQuranPlaying,
       listener: (_, state) {
@@ -95,16 +105,19 @@ class _HomeQuranButtonState extends State<HomeQuranButton>
         child: GestureDetector(
           onTap: () =>
               context.read<PrayerBloc>().add(PrayerQuranToggled(widget.serverUrl)),
-          child: AnimatedBuilder(
-            animation: Listenable.merge([_rotCtrl, _fade]),
-            builder: (_, _) => QuranButtonFace(
-              palette: widget.palette,
-              isDarkMode: widget.isDarkMode,
-              isPlaying: isPlaying,
-              isPausedForAdhan: isPausedForAdhan,
-              isFocused: _isFocused,
-              angle: _rotCtrl.value * 2 * math.pi,
-              fadeT: _fade.value,
+          // RepaintBoundary isolates the short glow fade to this layer so the
+          // 600 ms transition doesn't repaint the whole info card.
+          child: RepaintBoundary(
+            child: AnimatedBuilder(
+              animation: _fade,
+              builder: (_, _) => QuranButtonFace(
+                palette: widget.palette,
+                isDarkMode: widget.isDarkMode,
+                isPlaying: isPlaying,
+                isPausedForAdhan: isPausedForAdhan,
+                isFocused: _isFocused,
+                fadeT: _fade.value,
+              ),
             ),
           ),
         ),

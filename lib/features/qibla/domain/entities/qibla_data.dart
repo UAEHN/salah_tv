@@ -1,3 +1,5 @@
+import 'qibla_accuracy.dart';
+
 /// Immutable snapshot of the Qibla compass state.
 class QiblaData {
   /// True north bearing (0–360°) from device location to the Kaaba.
@@ -9,10 +11,15 @@ class QiblaData {
   /// Great-circle distance in km from device location to the Kaaba.
   final double distanceKm;
 
+  /// Confidence level derived from magnetometer variance.
+  /// [low] when nearby metal/electronics cause interference.
+  final QiblaAccuracy accuracy;
+
   const QiblaData({
     required this.qiblaBearing,
     required this.deviceHeading,
     required this.distanceKm,
+    this.accuracy = QiblaAccuracy.low,
   });
 
   /// Angle (0–360°) to rotate the Qibla pointer on screen so it faces Mecca.

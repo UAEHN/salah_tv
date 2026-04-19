@@ -1,6 +1,6 @@
 name: ghasaq
 description: "غسق — مواقيت الصلاة لأجهزة Android TV"
-version: 1.0.4+8
+version: 1.0.5+10
 publish_to: none
 
 environment:
@@ -64,6 +64,21 @@ dependencies:
   get_it: ^9.2.1
   injectable: ^2.7.1+4
   adhan_dart: ^1.2.0
+
+  # Spotlight/tooltip app tour for first-time users (mobile)
+  tutorial_coach_mark: ^1.2.11
+
+  # Pick audio files from device storage for custom adhan sounds (mobile only)
+  file_picker: ^8.1.4
+
+  # Open URLs (Play Store rating link)
+  url_launcher: ^6.3.1
+
+  # QR code widget for TV rating dialog
+  qr_flutter: ^4.1.0
+
+  # Google Play In-App Updates API
+  in_app_update: ^4.2.3
 
 
 dev_dependencies:

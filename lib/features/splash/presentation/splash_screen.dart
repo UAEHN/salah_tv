@@ -50,10 +50,8 @@ class _SplashScreenState extends State<SplashScreen>
     Future.delayed(const Duration(milliseconds: 1800), () async {
       if (!mounted) return;
       String route = '/';
-      if (!kIsTV) {
-        final isFirst = await getIt<ISettingsRepository>().isFirstLaunch();
-        if (isFirst) route = '/onboarding';
-      }
+      final isFirst = await getIt<ISettingsRepository>().isFirstLaunch();
+      if (isFirst) route = kIsTV ? '/tv_onboarding' : '/onboarding';
       if (!mounted) return;
       _fadeOutController.forward().whenComplete(() {
         if (mounted) Navigator.of(context).pushReplacementNamed(route);

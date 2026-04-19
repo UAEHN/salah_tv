@@ -1,4 +1,4 @@
-﻿{
+{
     "@@locale":  "en",
     "appTitle":  "Ghasaq",
     "languageArabic":  "Arabic",
@@ -10,6 +10,8 @@
     "commonError":  "Error",
     "commonSave":  "Save",
     "commonSaveChanges":  "Save changes",
+    "commonCancel":  "Cancel",
+    "commonDelete":  "Delete",
     "navSettings":  "Settings",
     "navQibla":  "Qibla",
     "navAdhkar":  "Adhkar",
@@ -44,6 +46,8 @@
     "tasbihCompletedMessage":  "Completed",
     "tasbihSwipeHint":  "Swipe to switch phrase",
     "tasbihResetTooltip":  "Reset counter",
+    "tasbihAllCompletedTitle":  "May Allah bless you",
+    "tasbihAllCompletedBody":  "You have completed the tasbih, may Allah accept it",
     "duaAfterAdhanTitle":  "Supplication after Adhan",
     "duaAfterAdhanText":  "O Allah, Lord of this perfect call and established prayer, grant Muhammad Al-Wasilah and virtue, and raise him to the praised station You have promised him.",
     "prayerFajr":  "Fajr",
@@ -98,7 +102,7 @@
     "backToToday":  "Back to today",
     "notificationReminderTitle":  "Reminder",
     "notificationIqamaTitle":  "Iqama",
-    "notificationAdhanBody":  "It is time for {prayerName}",
+    "notificationAdhanBody":  "It is now time for {prayerName} adhan",
     "@notificationAdhanBody":  {
                                    "placeholders":  {
                                                         "prayerName":  {
@@ -106,7 +110,7 @@
                                                                        }
                                                     }
                                },
-    "notificationPreAdhanBody":  "{prayerName} in {minutes} minutes",
+    "notificationPreAdhanBody":  "{minutes} minutes until {prayerName} adhan",
     "@notificationPreAdhanBody":  {
                                       "placeholders":  {
                                                            "prayerName":  {
@@ -161,6 +165,13 @@
     "settingsGeneralSettings":  "General settings",
     "settingsPrayerAlerts":  "Prayer alerts",
     "settingsAdhanSoundLabel":  "Adhan sound",
+    "settingsCustomAdhansTitle":  "Custom adhan sounds",
+    "settingsAddCustomAdhan":  "Add from device",
+    "settingsRenameAdhan":  "Rename adhan",
+    "settingsDeleteAdhan":  "Delete adhan?",
+    "settingsAdhanNameHint":  "Adhan name",
+    "settingsPickFromDevice":  "Pick an audio file",
+    "settingsAdhanImportFailed":  "Failed to import file",
     "settingsPreAdhanReminder":  "Reminder before adhan",
     "settingsAdhanAlert":  "Adhan alert",
     "settingsPreIqamaReminder":  "Reminder before iqama",
@@ -198,6 +209,7 @@
     "settingsChooseAdhanSound":  "Choose adhan sound",
     "settingsDetectingLocation":  "Detecting location...",
     "settingsDetectMyLocation":  "Detect my location automatically",
+    "settingsDetectLocationHint":  "If you cannot find your country in the list, or want a faster way, use this button to detect your location automatically.",
     "settingsNoMatchingCountries":  "No matching countries",
     "settingsNoMatchingCities":  "No matching cities",
     "settingsSelectCountry":  "Select country",
@@ -270,6 +282,11 @@
     "qiblaFindSub":  "FIND THE KAABA",
     "qiblaDistanceToKaaba":  "Distance to Kaaba",
     "qiblaDeviation":  "Deviation",
+    "qiblaAccuracyHigh":  "High accuracy",
+    "qiblaAccuracyMedium":  "Medium accuracy",
+    "qiblaAccuracyLow":  "Low accuracy",
+    "qiblaCalibrationTitle":  "Magnetic interference",
+    "qiblaCalibrationBody":  "Move your phone in a figure-8 to calibrate the compass",
     "unitKm":  "km",
     "unitDegree":  "degree",
     "weekdayMonday":  "Monday",
@@ -364,5 +381,37 @@
     "feedbackSend":  "Send Feedback",
     "feedbackSuccess":  "Thanks! Your feedback was sent successfully.",
     "feedbackError":  "An error occurred. Please try again.",
-    "feedbackEmptyError":  "Please enter your feedback first"
+    "feedbackEmptyError":  "Please enter your feedback first",
+    "ratingDialogTitle":  "How was your experience?",
+    "ratingDialogSubtitle":  "Your 5-star rating helps us improve and grow the app 💖",
+    "ratingDialogYes":  "Rate now ⭐",
+    "ratingDialogQrRate":  "Or scan to rate from your phone",
+    "ratingDialogSuggest":  "I have a suggestion / issue 💡",
+    "ratingDialogLater":  "Remind me later",
+    "tourStepCountdownTitle":  "Countdown",
+    "tourStepCountdownDesc":  "Shows the remaining time until the next prayer",
+    "tourStepPrayerListTitle":  "Prayer Times",
+    "tourStepPrayerListDesc":  "List of all daily prayer times",
+    "tourStepDateNavTitle":  "Date",
+    "tourStepDateNavDesc":  "Browse Hijri and Gregorian dates",
+    "tourStepLocationTitle":  "Location",
+    "tourStepLocationDesc":  "Tap to change your location (country and city)",
+    "tourStepBottomNavTitle":  "Navigation Bar",
+    "tourStepBottomNavDesc":  "Navigate between sections: Settings, Qibla, Adhkar, and Prayer",
+    "tourSkip":  "Skip",
+    "tourNext":  "Next",
+    "tourFinish":  "Done",
+    "replayAppTour":  "Replay App Tour",
+    "updateAvailableTitle":  "Update Available",
+    "updateAvailableBody":  "Version {version} is now available in the store.",
+    "@updateAvailableBody":  {
+                                 "placeholders":  {
+                                                      "version":  {}
+                                                  }
+                             },
+    "updateNow":  "Update Now",
+    "updateLater":  "Later",
+    "whatsNewTitle":  "What's New",
+    "whatsNewDismiss":  "Got it",
+    "settingsCheckUpdate": "Check for updates"
 }

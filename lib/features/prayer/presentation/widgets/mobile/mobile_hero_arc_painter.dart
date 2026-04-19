@@ -47,14 +47,18 @@ class HeroArcPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
     canvas.drawArc(rect, startAngle, sweepAngle, false, arcPaint);
 
-    // Glow dot at the tip
+    // Glow dot at the tip — simulated with two concentric circles instead of
+    // MaskFilter.blur (which forces a GPU compositing layer on every frame).
     final tipAngle = startAngle + sweepAngle;
     final tipX = center.dx + radius * math.cos(tipAngle);
     final tipY = center.dy + radius * math.sin(tipAngle);
-    final dotPaint = Paint()
-      ..color = endColor
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
-    canvas.drawCircle(Offset(tipX, tipY), strokeWidth * 0.8, dotPaint);
+    final tip = Offset(tipX, tipY);
+    canvas.drawCircle(tip, strokeWidth * 1.8,
+        Paint()..color = endColor.withValues(alpha: 0.10));
+    canvas.drawCircle(tip, strokeWidth * 1.1,
+        Paint()..color = endColor.withValues(alpha: 0.30));
+    canvas.drawCircle(tip, strokeWidth * 0.7,
+        Paint()..color = endColor);
   }
 
   @override

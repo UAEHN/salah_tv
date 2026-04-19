@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../../analytics/domain/i_analytics_service.dart';
 import '../domain/entities/app_settings.dart';
 import '../domain/entities/app_settings_copy_with.dart';
+import '../domain/entities/custom_adhan.dart';
 import '../domain/i_settings_repository.dart';
 import '../domain/usecases/save_settings_usecase.dart';
 

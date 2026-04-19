@@ -24,3 +24,9 @@
 
 # Flutter Play Store deferred components — not used in this app, suppress missing-class warnings
 -dontwarn com.google.android.play.core.**
+
+# Firebase Analytics & Crashlytics
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.firebase.**
+-dontwarn com.google.android.gms.**

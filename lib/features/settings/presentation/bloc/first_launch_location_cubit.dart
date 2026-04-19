@@ -50,11 +50,14 @@ class FirstLaunchLocationCubit extends Cubit<FirstLaunchLocationState> {
         );
       } else {
         await _settingsProvider.updateWorldLocation(
-          detected.countryName,
+          detected.isoCountryCode ?? detected.countryName,
           detected.cityName,
           detected.latitude,
           detected.longitude,
-          defaultMethodForCountryIso(detected.isoCountryCode),
+          detected.calculationMethod ??
+              defaultMethodForCountryIso(detected.isoCountryCode),
+          timeZoneId: detected.timeZoneId,
+          utcOffsetHours: detected.utcOffsetHours,
         );
       }
 

@@ -5,33 +5,30 @@ import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/localization/prayer_name_localizer.dart';
 import '../../../../core/time_formatters.dart';
-import '../../../../core/widgets/flip_clock.dart';
 import '../bloc/prayer_bloc.dart';
 import '../../../settings/presentation/settings_provider.dart';
 
+/// Outer widget: rebuilds only when [nextPrayerKey] or theme changes.
+/// Countdown digits isolated in [_ContentCountdownClock] to avoid recreating
+/// the AnimatedSwitcher, TextStyles, and Icon on every 1-second tick.
 class NextPrayerContent extends StatelessWidget {
   const NextPrayerContent({super.key});
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final prayerState = context.watch<PrayerBloc>().state;
-    final settings = context.watch<SettingsProvider>().settings;
-    final palette = getThemePalette(settings.themeColorKey);
-    final tc = ThemeColors.of(settings.isDarkMode);
-    final screenH = MediaQuery.of(context).size.height;
-
-    final countdownStyle = TextStyle(
-      fontSize: screenH * 0.10,
-      fontWeight: FontWeight.w600,
-      color: tc.textPrimary,
-      letterSpacing: 2,
+    final nextPrayerKey = context.select<PrayerBloc, String>(
+      (b) => b.state.nextPrayerKey,
     );
+    final isDark = context.select<SettingsProvider, bool>(
+      (p) => p.settings.isDarkMode,
+    );
+    final tc = ThemeColors.of(isDark);
+    final screenH = MediaQuery.of(context).size.height;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Label for remaining time until adhan
         Text(
           l.nextPrayerLabel,
           style: TextStyle(
@@ -41,7 +38,6 @@ class NextPrayerContent extends StatelessWidget {
           ),
         ),
         SizedBox(height: screenH * 0.005),
-        // Prayer name
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 400),
           transitionBuilder: (child, animation) => FadeTransition(
@@ -55,24 +51,17 @@ class NextPrayerContent extends StatelessWidget {
             ),
           ),
           child: Text(
-            localizedPrayerName(context, prayerState.nextPrayerKey),
-            key: ValueKey(prayerState.nextPrayerKey),
+            localizedPrayerName(context, nextPrayerKey),
+            key: ValueKey(nextPrayerKey),
             style: TextStyle(
               fontSize: screenH * 0.12,
               fontWeight: FontWeight.w700,
               color: tc.textPrimary,
               height: 1.1,
-              shadows: [
-                Shadow(
-                  color: palette.glow.withValues(alpha: 0.4),
-                  blurRadius: 18,
-                ),
-              ],
             ),
           ),
         ),
         SizedBox(height: screenH * 0.015),
-        // Countdown
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -82,15 +71,48 @@ class NextPrayerContent extends StatelessWidget {
               size: screenH * 0.05,
             ),
             const SizedBox(width: 12),
-            FlipClock(
-              text: formatCountdown(prayerState.countdown),
-              style: countdownStyle,
-              digitWidth: (screenH * 0.10) * 0.68,
-              digitHeight: (screenH * 0.10) * 1.22,
+            // RepaintBoundary prevents the per-second flip animation from
+            // invalidating the hero card's gradient/border layer.
+            RepaintBoundary(
+              child: _ContentCountdownClock(
+                style: TextStyle(
+                  fontSize: screenH * 0.10,
+                  fontWeight: FontWeight.w600,
+                  color: tc.textPrimary,
+                  letterSpacing: 2,
+                ),
+                digitWidth: (screenH * 0.10) * 0.68,
+                digitHeight: (screenH * 0.10) * 1.22,
+              ),
             ),
           ],
         ),
       ],
+    );
+  }
+}
+
+class _ContentCountdownClock extends StatelessWidget {
+  final TextStyle style;
+  final double digitWidth;
+  final double digitHeight;
+
+  const _ContentCountdownClock({
+    required this.style,
+    required this.digitWidth,
+    required this.digitHeight,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final countdown = context.select<PrayerBloc, Duration>(
+      (b) => b.state.countdown,
+    );
+    // Isolation test: plain text, no flip animation, no per-frame rebuild.
+    return Text(
+      formatCountdown(countdown),
+      style: style,
+      textDirection: TextDirection.ltr,
     );
   }
 }

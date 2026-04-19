@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 
 /// A single digit that slides up when its value changes.
+///
+/// The child [Text] is built once per value change, not per frame, and the
+/// animation is driven by stock [SlideTransition] + [FadeTransition].
+/// The previous implementation created a new [TextStyle] every frame during
+/// the 450 ms transition; on TV boxes that churned Skia's paragraph/shader
+/// caches and caused a slow GPU memory leak that froze the UI after hours.
 class FlipDigit extends StatefulWidget {
   final String value;
   final double width;
@@ -21,7 +27,11 @@ class FlipDigit extends StatefulWidget {
 
 class _FlipDigitState extends State<FlipDigit>
     with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
+  late final AnimationController _ctrl;
+  late final Animation<Offset> _slideOut;
+  late final Animation<Offset> _slideIn;
+  late final Animation<double> _fadeOut;
+  late final Animation<double> _fadeIn;
   String _currentValue = '';
   String _previousValue = '';
 
@@ -33,6 +43,28 @@ class _FlipDigitState extends State<FlipDigit>
     _ctrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 450),
+      value: 1.0, // idle at final position, previous digit fully faded.
+    );
+    final curve = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOutCubic);
+    _slideOut = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0, -0.6),
+    ).animate(curve);
+    _slideIn = Tween<Offset>(
+      begin: const Offset(0, 0.6),
+      end: Offset.zero,
+    ).animate(curve);
+    _fadeOut = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _ctrl,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeInOutCubic),
+      ),
+    );
+    _fadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _ctrl,
+        curve: const Interval(0.3, 1.0, curve: Curves.easeInOutCubic),
+      ),
     );
   }
 
@@ -40,8 +72,10 @@ class _FlipDigitState extends State<FlipDigit>
   void didUpdateWidget(FlipDigit old) {
     super.didUpdateWidget(old);
     if (old.value != widget.value) {
-      _previousValue = _currentValue;
-      _currentValue = widget.value;
+      setState(() {
+        _previousValue = _currentValue;
+        _currentValue = widget.value;
+      });
       _ctrl.forward(from: 0);
     }
   }
@@ -54,43 +88,40 @@ class _FlipDigitState extends State<FlipDigit>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.width,
-      height: widget.height,
-      child: ClipRect(
-        child: AnimatedBuilder(
-          animation: _ctrl,
-          builder: (_, _) {
-            final t = Curves.easeInOutCubic.transform(_ctrl.value);
-            final oldOpacity = (1.0 - t * 2).clamp(0.0, 1.0);
-            final newOpacity = ((t - 0.3) / 0.7).clamp(0.0, 1.0);
-            return Stack(
-              children: [
-                Positioned.fill(
-                  child: Transform.translate(
-                    offset: Offset(0, -widget.height * 0.6 * t),
-                    child: Opacity(
-                      opacity: oldOpacity,
-                      child: Center(
-                        child: Text(_previousValue, style: widget.style),
-                      ),
+    // RepaintBoundary isolates the 60 fps transition to this digit only so
+    // sibling digits and parents keep their cached layers.
+    return RepaintBoundary(
+      child: SizedBox(
+        width: widget.width,
+        height: widget.height,
+        child: ClipRect(
+          clipBehavior: Clip.hardEdge,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: SlideTransition(
+                  position: _slideOut,
+                  child: FadeTransition(
+                    opacity: _fadeOut,
+                    child: Center(
+                      child: Text(_previousValue, style: widget.style),
                     ),
                   ),
                 ),
-                Positioned.fill(
-                  child: Transform.translate(
-                    offset: Offset(0, widget.height * 0.6 * (1 - t)),
-                    child: Opacity(
-                      opacity: newOpacity,
-                      child: Center(
-                        child: Text(_currentValue, style: widget.style),
-                      ),
+              ),
+              Positioned.fill(
+                child: SlideTransition(
+                  position: _slideIn,
+                  child: FadeTransition(
+                    opacity: _fadeIn,
+                    child: Center(
+                      child: Text(_currentValue, style: widget.style),
                     ),
                   ),
                 ),
-              ],
-            );
-          },
+              ),
+            ],
+          ),
         ),
       ),
     );

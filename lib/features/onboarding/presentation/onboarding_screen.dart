@@ -61,7 +61,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           curr.isComplete || prev.step != curr.step,
       listener: (context, state) {
         if (state.isComplete) {
-          Navigator.of(context).pushReplacementNamed('/');
+          Navigator.of(context).pushReplacementNamed(
+            '/',
+            arguments: {'showTour': true},
+          );
           return;
         }
         if (state.step != _prevStep) {

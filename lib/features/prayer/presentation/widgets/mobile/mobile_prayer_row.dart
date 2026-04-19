@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
@@ -45,84 +44,80 @@ class MobilePrayerRow extends StatelessWidget {
     );
 
     return AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
-        decoration: isActive
-            ? buildMobilePrayerActiveDecoration(
-                isDark,
-                accentBright,
-                accentDeep,
-              )
-            : buildMobilePrayerInactiveDecoration(
-                context,
-                isDark,
-                accentBright,
-                accentDeep,
-              ),
-        clipBehavior: Clip.antiAlias,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final isCompact =
-                constraints.maxHeight > 0 && constraints.maxHeight < 64;
-            final containerSize = isCompact ? 38.0 : 48.0;
-            final contentSize = isCompact ? 26.0 : 34.0;
-            final vPad = isCompact ? 14.0 : 18.0;
+      duration: const Duration(milliseconds: 400),
+      decoration: isActive
+          ? buildMobilePrayerActiveDecoration(isDark, accentBright, accentDeep)
+          : buildMobilePrayerInactiveDecoration(
+              context,
+              isDark,
+              accentBright,
+              accentDeep,
+            ),
+      clipBehavior: Clip.antiAlias,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isCompact =
+              constraints.maxHeight > 0 && constraints.maxHeight < 64;
+          final containerSize = isCompact ? 38.0 : 48.0;
+          final contentSize = isCompact ? 26.0 : 34.0;
+          final vPad = isCompact ? 14.0 : 18.0;
 
-            return Stack(
-              children: [
-                if (isActive)
-                  Positioned(
-                    top: -20,
-                    right: -30,
-                    child: Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            accentBright.withValues(alpha: 0.15),
-                            Colors.transparent,
-                          ],
-                        ),
+          return Stack(
+            children: [
+              if (isActive)
+                Positioned(
+                  top: -20,
+                  right: -30,
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          accentBright.withValues(alpha: 0.15),
+                          Colors.transparent,
+                        ],
                       ),
                     ),
                   ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: vPad),
-                  child: Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: Row(
-                      children: [
-                        MobilePrayerIcon(
-                          prayerKey: prayer.key,
-                          isActive: isActive,
-                          isDark: isDark,
-                          containerSize: containerSize,
-                          contentSize: contentSize,
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: MobilePrayerInfo(
-                            name: localizedPrayerName(context, prayer.key),
-                            activeLabel: l.nextPrayerActiveLabel,
-                            isActive: isActive,
-                            isCompact: isCompact,
-                          ),
-                        ),
-                        MobilePrayerTime(
-                          timeText: timeModel.timeText,
-                          periodText: timeModel.periodText,
+                ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: vPad),
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Row(
+                    children: [
+                      MobilePrayerIcon(
+                        prayerKey: prayer.key,
+                        isActive: isActive,
+                        isDark: isDark,
+                        containerSize: containerSize,
+                        contentSize: contentSize,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: MobilePrayerInfo(
+                          name: localizedPrayerName(context, prayer.key),
+                          activeLabel: l.nextPrayerActiveLabel,
                           isActive: isActive,
                           isCompact: isCompact,
                         ),
-                      ],
-                    ),
+                      ),
+                      MobilePrayerTime(
+                        timeText: timeModel.timeText,
+                        periodText: timeModel.periodText,
+                        isActive: isActive,
+                        isCompact: isCompact,
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            );
-          },
-        ),
-      );
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 }

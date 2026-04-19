@@ -25,93 +25,107 @@ class TasbihPageContent extends StatelessWidget {
     return BlocBuilder<TasbihBloc, TasbihState>(
       builder: (context, state) {
         final isActive = state.presetIndex == presetIndex;
-        final count = isActive ? state.count : 0;
-        final isCompleted = isActive && state.isCompleted;
+        final count = state.counts[presetIndex];
+        final isCompleted = count >= preset.target;
 
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            final h = constraints.maxHeight;
-            final arabicSize = (h * 0.065).clamp(24.0, 40.0);
-            final engSize = (h * 0.030).clamp(13.0, 18.0);
-            final spacing1 = (h * 0.04).clamp(8.0, 36.0);
-            final spacing2 = (h * 0.03).clamp(6.0, 24.0);
-
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TasbihPageIndicator(
-                  total: kTasbihPresets.length,
-                  current: state.presetIndex,
-                ),
-                SizedBox(height: spacing1),
-                Text(
-                  arabicTasbihPhrase(preset.key),
-                  style: MobileTextStyles.titleMd(context).copyWith(
-                    fontSize: arabicSize,
-                    fontFamily: 'Cairo',
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                  textDirection: TextDirection.rtl,
-                ),
-                SizedBox(height: spacing2 * 0.5),
-                Text(
-                  englishTasbihPhrase(preset.key),
-                  style: TextStyle(
-                    fontFamily: 'Rubik',
-                    fontSize: engSize,
-                    fontStyle: FontStyle.italic,
-                    color: MobileColors.onSurfaceMuted(context),
-                    height: 1.4,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: spacing2),
-                TasbihCounterDisplay(
-                  count: count,
-                  target: preset.target,
-                  isCompleted: isCompleted,
-                  onTap: isActive
-                      ? () {
-                          final isLastTap =
-                              state.count + 1 >= state.target;
-                          if (isLastTap) {
-                            HapticFeedback.mediumImpact();
-                          } else {
-                            HapticFeedback.selectionClick();
-                          }
-                          context
-                              .read<TasbihBloc>()
-                              .add(const TasbihTapped());
-                        }
-                      : null,
-                ),
-                SizedBox(height: spacing2),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: isCompleted
-                      ? Text(
-                          l.tasbihCompletedMessage,
-                          key: const ValueKey('done'),
-                          style: MobileTextStyles.bodyMd(context).copyWith(
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        )
-                      : Text(
-                          l.tasbihSwipeHint,
-                          key: const ValueKey('hint'),
-                          style: MobileTextStyles.labelSm(context).copyWith(
-                            color: MobileColors.onSurfaceFaint(context),
-                          ),
-                        ),
-                ),
-              ],
-            );
-          },
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TasbihPageIndicator(
+              total: kTasbihPresets.length,
+              current: state.presetIndex,
+            ),
+            const Spacer(flex: 2),
+            _PhraseSection(presetKey: preset.key),
+            const Spacer(),
+            TasbihCounterDisplay(
+              count: count,
+              target: preset.target,
+              isCompleted: isCompleted,
+              onTap: isActive ? () => _onTap(context, state) : null,
+            ),
+            const Spacer(),
+            _BottomHint(isCompleted: isCompleted, l: l),
+            const Spacer(flex: 2),
+          ],
         );
       },
+    );
+  }
+
+  void _onTap(BuildContext context, TasbihState state) {
+    final isLastTap = state.count + 1 >= state.target;
+    HapticFeedback.selectionClick();
+    if (isLastTap) HapticFeedback.mediumImpact();
+    context.read<TasbihBloc>().add(const TasbihTapped());
+  }
+}
+
+class _PhraseSection extends StatelessWidget {
+  final String presetKey;
+
+  const _PhraseSection({required this.presetKey});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        children: [
+          Text(
+            arabicTasbihPhrase(presetKey),
+            style: MobileTextStyles.titleMd(context).copyWith(
+              fontSize: 32,
+              fontFamily: 'Cairo',
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+            textDirection: TextDirection.rtl,
+          ),
+          const SizedBox(height: 6),
+          Text(
+            englishTasbihPhrase(presetKey),
+            style: TextStyle(
+              fontFamily: 'Rubik',
+              fontSize: 15,
+              fontStyle: FontStyle.italic,
+              color: MobileColors.onSurfaceFaint(context),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BottomHint extends StatelessWidget {
+  final bool isCompleted;
+  final AppLocalizations l;
+
+  const _BottomHint({required this.isCompleted, required this.l});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: isCompleted
+          ? Text(
+              l.tasbihCompletedMessage,
+              key: const ValueKey('done'),
+              style: MobileTextStyles.bodyMd(context).copyWith(
+                color: const Color(0xFF4CAF50),
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            )
+          : Text(
+              l.tasbihSwipeHint,
+              key: const ValueKey('hint'),
+              style: MobileTextStyles.labelSm(context).copyWith(
+                color: MobileColors.onSurfaceFaint(context),
+              ),
+            ),
     );
   }
 }

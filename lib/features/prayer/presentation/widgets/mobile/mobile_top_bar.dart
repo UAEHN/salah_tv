@@ -1,10 +1,10 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
+import '../../../../../core/city_translations.dart';
 import '../../../../../core/mobile_theme.dart';
 import '../../../../../core/widgets/mobile/mobile_shell.dart';
+import '../../../../../core/widgets/mobile/tour_target_keys.dart';
 
 /// Header bar: location pill (center) with glowing pin, menu icon (right).
 class MobileTopBar extends StatelessWidget {
@@ -23,6 +23,13 @@ class MobileTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final isDark = MobileColors.isDark(context);
+    final isEn = l.localeName == 'en';
+    final localizedCity = cityLabel(
+      city,
+      locale: l.localeName,
+      countryKey: country,
+    );
+    final tourKeys = TourTargetKeysProvider.maybeOf(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Stack(
@@ -30,28 +37,25 @@ class MobileTopBar extends StatelessWidget {
         children: [
           // Location pill
           GestureDetector(
+            key: tourKeys?.locationPill,
             onTap: onLocationTap,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(22),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: MobileColors.cardColor(context).withValues(
-                      alpha: isDark ? 0.45 : 0.7,
-                    ),
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(
-                      color: MobileColors.border(context).withValues(
-                        alpha: 0.5,
-                      ),
-                    ),
-                  ),
-                  child: Row(
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                color: MobileColors.cardColor(
+                  context,
+                ).withValues(alpha: isDark ? 0.88 : 0.92),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(
+                  color: MobileColors.border(
+                    context,
+                  ).withValues(alpha: 0.5),
+                ),
+              ),
+              child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // Glowing location pin
@@ -72,13 +76,15 @@ class MobileTopBar extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '$city${l.localeComma} $country',
+                        localizedCity,
                         style: MobileTextStyles.labelSm(context).copyWith(
                           color: MobileColors.onSurface(context),
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
-                        textDirection: TextDirection.rtl,
+                        textDirection: isEn
+                            ? TextDirection.ltr
+                            : TextDirection.rtl,
                       ),
                       if (onLocationTap != null) ...[
                         const SizedBox(width: 4),
@@ -89,8 +95,6 @@ class MobileTopBar extends StatelessWidget {
                         ),
                       ],
                     ],
-                  ),
-                ),
               ),
             ),
           ),
@@ -104,9 +108,9 @@ class MobileTopBar extends StatelessWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: MobileColors.cardColor(context).withValues(
-                    alpha: isDark ? 0.3 : 0.5,
-                  ),
+                  color: MobileColors.cardColor(
+                    context,
+                  ).withValues(alpha: isDark ? 0.3 : 0.5),
                 ),
                 child: Icon(
                   Icons.menu_rounded,

@@ -17,6 +17,27 @@ import '../domain/entities/daily_prayer_times.dart';
 class SqlitePrayerQueries {
   // ── City / country lookups ────────────────────────────────────────────────
 
+  /// Returns every DB country mapped to its sorted list of city names.
+  /// Called once at startup so the UI can discover countries from the DB
+  /// itself — no hard-coded list, no drift between DB and JSON.
+  Future<Map<String, List<String>>> fetchAllCountriesWithCities(
+    Database db,
+  ) async {
+    final rows = await db.rawQuery('''
+      SELECT co.key AS country_key, c.name AS city_name
+      FROM   cities    c
+      JOIN   countries co ON co.id = c.country_id
+      WHERE  co.key != 'default'
+      ORDER  BY co.key, c.name
+    ''');
+    final result = <String, List<String>>{};
+    for (final r in rows) {
+      final key = r['country_key'] as String;
+      (result[key] ??= <String>[]).add(r['city_name'] as String);
+    }
+    return result;
+  }
+
   /// Returns all cities for [countryKey] as a map of name → city_id.
   /// Called once per country switch; result is held in the repository.
   Future<Map<String, int>> fetchCityIds(

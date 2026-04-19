@@ -15,6 +15,7 @@ Future<void> syncPrayerRepositoryMode(
       next.calculationMethod,
       madhabKey: next.madhab,
       cityLabel: next.selectedCity,
+      timeZoneId: next.selectedTimeZoneId,
       utcOffsetHours: next.utcOffsetHours,
     );
     return;

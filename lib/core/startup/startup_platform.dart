@@ -9,7 +9,8 @@ Future<PlatformConfig> bootstrapPlatform() async {
   await platformConfig.detect();
   getIt.registerSingleton<PlatformConfig>(platformConfig);
 
-  await WakelockPlus.enable();
+  // TV is always-on by design; mobile lets the OS manage screen timeout normally.
+  if (platformConfig.isTV) await WakelockPlus.enable();
   await _configureSystemUi(platformConfig);
   return platformConfig;
 }

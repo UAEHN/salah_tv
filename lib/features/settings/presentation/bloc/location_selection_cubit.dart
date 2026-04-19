@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../settings_provider.dart';
+import 'location_choice.dart';
 
 enum LocationSelectionStatus { idle, saving, saved, failed }
 
@@ -18,34 +19,25 @@ class LocationSelectionCubit extends Cubit<LocationSelectionState> {
   LocationSelectionCubit(this._settingsProvider)
     : super(LocationSelectionState.idle);
 
-  Future<void> saveDatabaseLocation(String country, String city) async {
+  Future<void> save(LocationChoice choice) async {
     emit(const LocationSelectionState(LocationSelectionStatus.saving));
     try {
-      await _settingsProvider.updateLocation(country, city);
-      emit(const LocationSelectionState(LocationSelectionStatus.saved));
-    } catch (_) {
-      emit(const LocationSelectionState(LocationSelectionStatus.failed));
-    }
-  }
-
-  Future<void> saveWorldLocation(
-    String country,
-    String city,
-    double lat,
-    double lng,
-    String method, {
-    double? utcOffsetHours,
-  }) async {
-    emit(const LocationSelectionState(LocationSelectionStatus.saving));
-    try {
-      await _settingsProvider.updateWorldLocation(
-        country,
-        city,
-        lat,
-        lng,
-        method,
-        utcOffsetHours: utcOffsetHours,
-      );
+      if (choice.isDb) {
+        await _settingsProvider.updateLocation(
+          choice.countryKey,
+          choice.cityName,
+        );
+      } else {
+        await _settingsProvider.updateWorldLocation(
+          choice.countryKey,
+          choice.cityName,
+          choice.latitude!,
+          choice.longitude!,
+          choice.calculationMethod!,
+          timeZoneId: choice.timeZoneId,
+          utcOffsetHours: choice.utcOffsetHours,
+        );
+      }
       emit(const LocationSelectionState(LocationSelectionStatus.saved));
     } catch (_) {
       emit(const LocationSelectionState(LocationSelectionStatus.failed));

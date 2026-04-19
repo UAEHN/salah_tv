@@ -39,6 +39,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get commonSaveChanges => 'حفظ التغييرات';
 
   @override
+  String get commonCancel => 'إلغاء';
+
+  @override
+  String get commonDelete => 'حذف';
+
+  @override
   String get navSettings => 'الإعدادات';
 
   @override
@@ -101,6 +107,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get tasbihResetTooltip => 'إعادة العداد';
+
+  @override
+  String get tasbihAllCompletedTitle => 'بارك الله فيك';
+
+  @override
+  String get tasbihAllCompletedBody => 'أتممت التسبيح، تقبّل الله منك';
 
   @override
   String get duaAfterAdhanTitle => 'دعاء بعد الأذان';
@@ -191,12 +203,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String notificationAdhanBody(Object prayerName) {
-    return 'حان وقت $prayerName';
+    return 'حان الآن موعد أذان $prayerName';
   }
 
   @override
   String notificationPreAdhanBody(Object prayerName, Object minutes) {
-    return '$prayerName بعد $minutes دقيقة';
+    return 'باقي على أذان $prayerName $minutes دقيقة';
   }
 
   @override
@@ -285,6 +297,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsAdhanSoundLabel => 'صوت الأذان';
 
   @override
+  String get settingsCustomAdhansTitle => 'أصوات أذان مخصّصة';
+
+  @override
+  String get settingsAddCustomAdhan => 'إضافة من الجهاز';
+
+  @override
+  String get settingsRenameAdhan => 'إعادة تسمية الأذان';
+
+  @override
+  String get settingsDeleteAdhan => 'حذف الأذان؟';
+
+  @override
+  String get settingsAdhanNameHint => 'اسم الأذان';
+
+  @override
+  String get settingsPickFromDevice => 'اختر ملفاً صوتياً';
+
+  @override
+  String get settingsAdhanImportFailed => 'تعذّر استيراد الملف';
+
+  @override
   String get settingsPreAdhanReminder => 'تذكير قبل الأذان';
 
   @override
@@ -360,6 +393,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsDetectMyLocation => 'تحديد موقعي تلقائياً';
+
+  @override
+  String get settingsDetectLocationHint =>
+      'إذا لم تجد دولتك في القائمة، أو أردت الوصول إليها بسرعة، استخدم هذا الزر لتحديد موقعك تلقائياً.';
 
   @override
   String get settingsNoMatchingCountries => 'لا توجد دول مطابقة';
@@ -581,6 +618,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get qiblaDeviation => 'الانحراف';
+
+  @override
+  String get qiblaAccuracyHigh => 'دقة عالية';
+
+  @override
+  String get qiblaAccuracyMedium => 'دقة متوسطة';
+
+  @override
+  String get qiblaAccuracyLow => 'دقة منخفضة';
+
+  @override
+  String get qiblaCalibrationTitle => 'يوجد تداخل مغناطيسي';
+
+  @override
+  String get qiblaCalibrationBody =>
+      'حرّك الهاتف على شكل رقم 8 لمعايرة البوصلة';
 
   @override
   String get unitKm => 'كم';
@@ -825,4 +878,89 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get feedbackEmptyError => 'يرجى كتابة ملاحظتك أولاً';
+
+  @override
+  String get ratingDialogTitle => 'كيف كانت تجربتك معنا؟';
+
+  @override
+  String get ratingDialogSubtitle =>
+      'دعمك لنا بالتقييم 5 نجوم يساعدنا في الاستمرار وتطوير التطبيق للأفضل 💖';
+
+  @override
+  String get ratingDialogYes => 'التقييم الآن ⭐';
+
+  @override
+  String get ratingDialogQrRate => 'أو امسح الرمز للتقييم بهاتفك';
+
+  @override
+  String get ratingDialogSuggest => 'لدي اقتراح / مشكلة 💡';
+
+  @override
+  String get ratingDialogLater => 'ذكرني لاحقاً';
+
+  @override
+  String get tourStepCountdownTitle => 'العد التنازلي';
+
+  @override
+  String get tourStepCountdownDesc => 'هنا يظهر الوقت المتبقي للصلاة القادمة';
+
+  @override
+  String get tourStepPrayerListTitle => 'أوقات الصلاة';
+
+  @override
+  String get tourStepPrayerListDesc => 'قائمة بجميع أوقات الصلاة اليومية';
+
+  @override
+  String get tourStepDateNavTitle => 'التاريخ';
+
+  @override
+  String get tourStepDateNavDesc => 'تصفح التواريخ الهجرية والميلادية';
+
+  @override
+  String get tourStepLocationTitle => 'الموقع';
+
+  @override
+  String get tourStepLocationDesc => 'اضغط لتغيير موقعك (الدولة والمدينة)';
+
+  @override
+  String get tourStepBottomNavTitle => 'شريط التنقل';
+
+  @override
+  String get tourStepBottomNavDesc =>
+      'تنقل بين الأقسام: الإعدادات، القبلة، الأذكار، والصلاة';
+
+  @override
+  String get tourSkip => 'تخطي';
+
+  @override
+  String get tourNext => 'التالي';
+
+  @override
+  String get tourFinish => 'تم';
+
+  @override
+  String get replayAppTour => 'إعادة جولة التطبيق';
+
+  @override
+  String get updateAvailableTitle => 'تحديث متاح';
+
+  @override
+  String updateAvailableBody(Object version) {
+    return 'الإصدار $version متاح الآن في المتجر.';
+  }
+
+  @override
+  String get updateNow => 'تحديث الآن';
+
+  @override
+  String get updateLater => 'لاحقاً';
+
+  @override
+  String get whatsNewTitle => 'ما الجديد';
+
+  @override
+  String get whatsNewDismiss => 'حسناً';
+
+  @override
+  String get settingsCheckUpdate => 'تحقق من وجود تحديث';
 }

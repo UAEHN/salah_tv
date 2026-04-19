@@ -1,6 +1,4 @@
-﻿import 'dart:math' as math;
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../core/app_colors.dart';
@@ -11,7 +9,6 @@ class QuranButtonFace extends StatelessWidget {
   final bool isPlaying;
   final bool isPausedForAdhan;
   final bool isFocused;
-  final double angle;
   final double fadeT;
 
   const QuranButtonFace({
@@ -21,20 +18,17 @@ class QuranButtonFace extends StatelessWidget {
     required this.isPlaying,
     required this.isPausedForAdhan,
     required this.isFocused,
-    required this.angle,
     required this.fadeT,
   });
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final pulse = (math.sin(angle * 2) + 1) / 2;
     final t = fadeT;
-    final a0 = 0.45 + (0.65 - 0.45) * t;
-    final a1 = 0.70 + (0.95 - 0.70) * t;
-    final shadowAlpha = (0.25 + pulse * 0.35) * t;
-    final blurR = (10 + pulse * 8) * t;
-    final spreadR = (pulse * 1.5) * t;
+    final borderAlpha = 0.55 + (0.85 - 0.55) * t;
+    final shadowAlpha = 0.35 * t;
+    final blurR = 12.0 * t;
+    final spreadR = 0.8 * t;
     final idleInner = isDarkMode
         ? Colors.white.withValues(alpha: 0.10)
         : Colors.black.withValues(alpha: 0.07);
@@ -66,16 +60,7 @@ class QuranButtonFace extends StatelessWidget {
       padding: const EdgeInsets.all(1.5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
-        gradient: SweepGradient(
-          startAngle: angle,
-          endAngle: angle + 2 * math.pi,
-          colors: [
-            palette.primary.withValues(alpha: a0),
-            palette.primary.withValues(alpha: a1),
-            palette.primary.withValues(alpha: a0),
-          ],
-          stops: const [0.0, 0.5, 1.0],
-        ),
+        color: palette.primary.withValues(alpha: borderAlpha),
         border: isFocused
             ? Border.all(
                 color: isDarkMode

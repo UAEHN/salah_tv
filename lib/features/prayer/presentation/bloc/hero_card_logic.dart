@@ -30,17 +30,32 @@ class HeroCardLogic {
   HeroCardModel mapState({
     required PrayerState prayer,
     required AppSettings settings,
-  }) {
-    if (prayer.isIqamaCountdown) return const HeroCardModel.iqama();
+  }) => mapFields(
+    isIqamaCountdown: prayer.isIqamaCountdown,
+    nextPrayerKey: prayer.nextPrayerKey,
+    isCycleActive: prayer.isCycleActive,
+    countdownSeconds: prayer.countdown.inSeconds,
+    isAdhkarEnabled: settings.isAdhkarEnabled,
+  );
 
-    final session = sessionFromNextPrayer(prayer.nextPrayerKey);
+  /// Field-based variant used by widgets that select narrow state slices.
+  HeroCardModel mapFields({
+    required bool isIqamaCountdown,
+    required String nextPrayerKey,
+    required bool isCycleActive,
+    required int countdownSeconds,
+    required bool isAdhkarEnabled,
+  }) {
+    if (isIqamaCountdown) return const HeroCardModel.iqama();
+
+    final session = sessionFromNextPrayer(nextPrayerKey);
     final isAdhkarActive = isAdhkarEligible(
       session: session,
       repo: _repo,
-      isAdhkarEnabled: settings.isAdhkarEnabled,
-      isCycleActive: prayer.isCycleActive,
-      nextPrayerKey: prayer.nextPrayerKey,
-      countdownSeconds: prayer.countdown.inSeconds,
+      isAdhkarEnabled: isAdhkarEnabled,
+      isCycleActive: isCycleActive,
+      nextPrayerKey: nextPrayerKey,
+      countdownSeconds: countdownSeconds,
     );
 
     if (isAdhkarActive) return HeroCardModel.adhkar(session);

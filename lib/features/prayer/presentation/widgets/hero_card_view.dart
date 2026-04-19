@@ -44,13 +44,6 @@ class HeroCardView extends StatelessWidget {
           color: palette.primary.withValues(alpha: isIqama ? 0.7 : 0.4),
           width: isIqama ? 2.5 : 1.5,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: palette.glow.withValues(alpha: isIqama ? 0.2 : 0.1),
-            blurRadius: 20,
-            spreadRadius: 2,
-          ),
-        ],
       ),
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 500),

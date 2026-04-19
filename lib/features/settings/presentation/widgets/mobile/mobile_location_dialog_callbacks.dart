@@ -5,14 +5,16 @@ import '../../../domain/entities/world_city.dart';
 
 /// Typedefs for the two save signatures used by [MobileLocationDialog].
 typedef DbSaveCallback = Future<void> Function(String country, String city);
-typedef WorldSaveCallback = Future<void> Function(
-  String country,
-  String city,
-  double lat,
-  double lng,
-  String method, {
-  double? utcOffsetHours,
-});
+typedef WorldSaveCallback =
+    Future<void> Function(
+      String country,
+      String city,
+      double lat,
+      double lng,
+      String method, {
+      String? timeZoneId,
+      double? utcOffsetHours,
+    });
 
 /// Stateless helpers that handle city/location selection and dismiss.
 ///
@@ -42,8 +44,12 @@ class LocationDialogCallbacks {
   Future<void> selectWorldCity(WorldCity city) async {
     if (onSaveWorld == null) return;
     await onSaveWorld!(
-      city.countryArabic, city.arabicName,
-      city.latitude, city.longitude, city.calculationMethod,
+      city.countryKey,
+      city.name,
+      city.latitude,
+      city.longitude,
+      city.calculationMethod,
+      timeZoneId: city.timeZoneId,
       utcOffsetHours: city.utcOffset,
     );
     if (!isMounted()) return;
@@ -55,9 +61,14 @@ class LocationDialogCallbacks {
       await onSave(location.dbCountryKey!, location.dbCityKey!);
     } else if (onSaveWorld != null) {
       await onSaveWorld!(
-        location.countryName, location.cityName,
-        location.latitude, location.longitude,
-        defaultMethodForCountryIso(location.isoCountryCode),
+        location.isoCountryCode ?? location.countryName,
+        location.cityName,
+        location.latitude,
+        location.longitude,
+        location.calculationMethod ??
+            defaultMethodForCountryIso(location.isoCountryCode),
+        timeZoneId: location.timeZoneId,
+        utcOffsetHours: location.utcOffsetHours,
       );
     }
     if (!isMounted()) return;

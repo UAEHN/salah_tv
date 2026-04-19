@@ -1,6 +1,4 @@
-﻿import 'dart:ui';
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
@@ -85,12 +83,6 @@ class _Background extends StatelessWidget {
                 alpha: MobileColors.isDark(context) ? 0.06 : 0.09,
               ),
             ),
-          ),
-        ),
-        Positioned.fill(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-            child: const SizedBox(),
           ),
         ),
       ],

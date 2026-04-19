@@ -97,6 +97,7 @@ class _OnboardingCityPageState extends State<OnboardingCityPage> {
                   cities: state.filteredWorldCities,
                   selectedCity: state.selectedWorldCity,
                   entranceAnimation: widget.entranceAnimation,
+                  locale: l.localeName,
                   onSelect: cubit.selectWorldCity,
                 ),
         ),
@@ -149,12 +150,14 @@ class _WorldCityList extends StatelessWidget {
   final List<WorldCity> cities;
   final WorldCity? selectedCity;
   final Animation<double> entranceAnimation;
+  final String locale;
   final ValueChanged<WorldCity> onSelect;
 
   const _WorldCityList({
     required this.cities,
     required this.selectedCity,
     required this.entranceAnimation,
+    required this.locale,
     required this.onSelect,
   });
 
@@ -169,7 +172,11 @@ class _WorldCityList extends StatelessWidget {
             selectedCity?.name == city.name &&
             selectedCity?.countryKey == city.countryKey;
         return OnboardingSelectableTile(
-          title: city.arabicName,
+          title: cityLabel(
+            city.name,
+            locale: locale,
+            countryKey: city.countryKey,
+          ),
           isSelected: isSelected,
           onTap: () => onSelect(city),
         );

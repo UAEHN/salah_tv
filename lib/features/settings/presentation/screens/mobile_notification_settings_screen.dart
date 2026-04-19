@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../core/mobile_theme.dart';
 import '../widgets/mobile/mobile_notification_settings_list.dart';
@@ -51,14 +50,6 @@ class MobileNotificationSettingsScreen extends StatelessWidget {
                   alpha: MobileColors.isDark(context) ? 0.07 : 0.10,
                 ),
               ),
-            ),
-          ),
-
-          // Blur
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-              child: const SizedBox(),
             ),
           ),
 

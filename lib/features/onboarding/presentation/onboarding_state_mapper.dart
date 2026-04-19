@@ -50,8 +50,9 @@ OnboardingState mapDetectedLocationState(
       countryArabic: loc.countryName,
       latitude: loc.latitude,
       longitude: loc.longitude,
-      calculationMethod: 'muslim_world_league',
-      utcOffset: 0,
+      calculationMethod: loc.calculationMethod ?? 'muslim_world_league',
+      timeZoneId: loc.timeZoneId,
+      utcOffset: loc.utcOffsetHours ?? 0,
     ),
   );
 }

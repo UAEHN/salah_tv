@@ -56,28 +56,34 @@ class HomeClassicLayout extends StatelessWidget {
                         SizedBox(height: screenH * 0.01),
                         DateWidget(palette: palette),
                         SizedBox(height: screenH * 0.04),
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 500),
-                          transitionBuilder: (child, animation) =>
-                              FadeTransition(
-                            opacity: animation,
-                            child: SlideTransition(
-                              position: Tween<Offset>(
-                                begin: const Offset(0, 0.05),
-                                end: Offset.zero,
-                              ).animate(animation),
-                              child: child,
+                        // RepaintBoundary isolates the FadeTransition/SlideTransition
+                        // animation to this layer only; ClockWidget and DateWidget
+                        // (siblings above) stay on the parent layer and don't repaint
+                        // during the iqama-countdown toggle transition.
+                        RepaintBoundary(
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 500),
+                            transitionBuilder: (child, animation) =>
+                                FadeTransition(
+                              opacity: animation,
+                              child: SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(0, 0.05),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
+                              ),
                             ),
+                            child: isIqamaCountdown
+                                ? IqamaCountdownWidget(
+                                    key: const ValueKey('iqama'),
+                                    palette: palette,
+                                  )
+                                : NextPrayerWidget(
+                                    key: const ValueKey('next'),
+                                    palette: palette,
+                                  ),
                           ),
-                          child: isIqamaCountdown
-                              ? IqamaCountdownWidget(
-                                  key: const ValueKey('iqama'),
-                                  palette: palette,
-                                )
-                              : NextPrayerWidget(
-                                  key: const ValueKey('next'),
-                                  palette: palette,
-                                ),
                         ),
                         AnimatedSize(
                           duration: const Duration(milliseconds: 350),

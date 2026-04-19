@@ -1,4 +1,5 @@
 import 'app_settings.dart';
+import 'custom_adhan.dart';
 
 /// Extension that provides [copyWith] for [AppSettings].
 ///
@@ -26,10 +27,13 @@ extension AppSettingsCopyWith on AppSettings {
     String? calculationMethod,
     String? madhab,
     bool? isCalculatedLocation,
+    String? selectedTimeZoneId,
+    bool clearSelectedTimeZoneId = false,
     double? utcOffsetHours,
     bool clearUtcOffset = false,
     String? layoutStyle,
     String? adhanSound,
+    List<CustomAdhan>? customAdhans,
     bool? isAnalogClock,
     bool? isAdhkarEnabled,
     Map<String, bool>? prayerNotificationEnabled,
@@ -73,11 +77,15 @@ extension AppSettingsCopyWith on AppSettings {
       calculationMethod: calculationMethod ?? this.calculationMethod,
       madhab: madhab ?? this.madhab,
       isCalculatedLocation: isCalculatedLocation ?? this.isCalculatedLocation,
+      selectedTimeZoneId: clearSelectedTimeZoneId
+          ? null
+          : (selectedTimeZoneId ?? this.selectedTimeZoneId),
       utcOffsetHours: clearUtcOffset
           ? null
           : (utcOffsetHours ?? this.utcOffsetHours),
       layoutStyle: layoutStyle ?? this.layoutStyle,
       adhanSound: adhanSound ?? this.adhanSound,
+      customAdhans: List.unmodifiable(customAdhans ?? this.customAdhans),
       isAnalogClock: isAnalogClock ?? this.isAnalogClock,
       isAdhkarEnabled: isAdhkarEnabled ?? this.isAdhkarEnabled,
       preAdhanReminderMinutes:
@@ -97,6 +105,7 @@ extension AppSettingsCopyWith on AppSettings {
       calculationMethod == other.calculationMethod &&
       madhab == other.madhab &&
       isCalculatedLocation == other.isCalculatedLocation &&
+      selectedTimeZoneId == other.selectedTimeZoneId &&
       utcOffsetHours == other.utcOffsetHours &&
       playAdhan == other.playAdhan &&
       adhanSound == other.adhanSound &&

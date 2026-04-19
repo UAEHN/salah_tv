@@ -28,15 +28,6 @@ class InfoCard extends StatelessWidget {
         color: tc.bgSurface.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: tc.borderGlass, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(
-              alpha: settings.isDarkMode ? 0.25 : 0.05,
-            ),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

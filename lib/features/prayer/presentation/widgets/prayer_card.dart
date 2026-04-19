@@ -86,22 +86,26 @@ class _PrayerCardState extends State<PrayerCard>
       localeCode: widget.settings.locale,
     );
 
-    return AnimatedBuilder(
-      animation: _pulseCtrl,
-      builder: (_, _) => PrayerCardContent(
-        pulse: widget.isPreAlert
-            ? Curves.easeInOut.transform(_pulseCtrl.value)
-            : 0.0,
-        isPreAlert: widget.isPreAlert,
-        isNext: widget.isNext,
-        isDarkMode: widget.settings.isDarkMode,
-        palette: palette,
-        tc: tc,
-        screenH: screenH,
-        prayer: widget.prayer,
-        formattedTime: timeModel.timeText,
-        formattedIqama: timeModel.iqamaText,
-        icon: _icon(widget.prayer.key),
+    // RepaintBoundary isolates the 60fps pulse repaints to this card only,
+    // preventing them from propagating up to the row/layout parent.
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _pulseCtrl,
+        builder: (_, _) => PrayerCardContent(
+          pulse: widget.isPreAlert
+              ? Curves.easeInOut.transform(_pulseCtrl.value)
+              : 0.0,
+          isPreAlert: widget.isPreAlert,
+          isNext: widget.isNext,
+          isDarkMode: widget.settings.isDarkMode,
+          palette: palette,
+          tc: tc,
+          screenH: screenH,
+          prayer: widget.prayer,
+          formattedTime: timeModel.timeText,
+          formattedIqama: timeModel.iqamaText,
+          icon: _icon(widget.prayer.key),
+        ),
       ),
     );
   }

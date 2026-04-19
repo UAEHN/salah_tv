@@ -16,13 +16,25 @@ class IqamaCountdownWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final prayer = context.watch<PrayerBloc>().state;
-    final isDark = context.watch<SettingsProvider>().settings.isDarkMode;
+    // Narrow select: only rebuild when these three fields change.
+    final data = context.select<PrayerBloc, (bool, String, Duration)>(
+      (b) => (
+        b.state.isIqamaCountdown,
+        b.state.iqamaPrayerKey,
+        b.state.iqamaCountdown,
+      ),
+    );
+    final isIqamaCountdown = data.$1;
+    final iqamaPrayerKey = data.$2;
+    final iqamaCountdown = data.$3;
+    final isDark = context.select<SettingsProvider, bool>(
+      (p) => p.settings.isDarkMode,
+    );
     final tc = ThemeColors.of(isDark);
     final screenH = MediaQuery.of(context).size.height;
     final screenW = MediaQuery.of(context).size.width;
 
-    if (!prayer.isIqamaCountdown) return const SizedBox.shrink();
+    if (!isIqamaCountdown) return const SizedBox.shrink();
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 400),
@@ -45,7 +57,7 @@ class IqamaCountdownWidget extends StatelessWidget {
           // Label
           Text(
             l.iqamaAfterPrayer(
-              localizedPrayerName(context, prayer.iqamaPrayerKey),
+              localizedPrayerName(context, iqamaPrayerKey),
             ),
             style: TextStyle(
               fontSize: screenH * 0.040,
@@ -66,13 +78,12 @@ class IqamaCountdownWidget extends StatelessWidget {
               ),
               SizedBox(width: screenW * 0.008),
               Text(
-                formatIqamaCountdown(prayer.iqamaCountdown),
+                formatIqamaCountdown(iqamaCountdown),
                 textDirection: TextDirection.ltr,
                 style: TextStyle(
                   fontSize: screenH * 0.065,
                   fontWeight: FontWeight.w700,
                   color: tc.textPrimary,
-                  shadows: [Shadow(color: palette.glow, blurRadius: 12)],
                 ),
               ),
             ],

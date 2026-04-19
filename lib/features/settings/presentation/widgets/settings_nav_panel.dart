@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/app_colors.dart';
 import 'exit_button.dart';
 import 'settings_nav_card.dart';
+import 'update_button.dart';
 
 /// Vertical navigation panel with category cards and exit button.
 class SettingsNavPanel extends StatelessWidget {
@@ -41,13 +42,17 @@ class SettingsNavPanel extends StatelessWidget {
                 focusNode: navFocusNodes[i],
                 palette: palette,
                 isDarkMode: tc.isDark,
-                autofocus: i == 0,
+                autofocus: selectedIndex == i,
               );
             },
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+          child: SettingsUpdateButton(tc: tc, palette: palette),
+        ),
         const Padding(
-          padding: EdgeInsets.all(14),
+          padding: EdgeInsets.fromLTRB(14, 7, 14, 14),
           child: SettingsExitButton(),
         ),
       ],

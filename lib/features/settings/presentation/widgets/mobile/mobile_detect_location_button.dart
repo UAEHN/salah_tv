@@ -48,40 +48,60 @@ class _MobileDetectLocationButtonState
     final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-      child: SizedBox(
-        width: double.infinity,
-        height: 52,
-        child: ElevatedButton.icon(
-          onPressed: _isLoading ? null : _detect,
-          icon: _isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Icon(Icons.my_location_rounded, size: 20),
-          label: Text(
-            _isLoading
-                ? l.settingsDetectingLocation
-                : l.settingsDetectMyLocation,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Tajawal',
-            ),
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: MobileColors.primary.withValues(alpha: 0.12),
-            foregroundColor: MobileColors.primary,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(
-                color: MobileColors.primary.withValues(alpha: 0.3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton.icon(
+              onPressed: _isLoading ? null : _detect,
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.my_location_rounded, size: 20),
+              label: Text(
+                _isLoading
+                    ? l.settingsDetectingLocation
+                    : l.settingsDetectMyLocation,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Tajawal',
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: MobileColors.primary.withValues(alpha: 0.12),
+                foregroundColor: MobileColors.primary,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(
+                    color: MobileColors.primary.withValues(alpha: 0.3),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text(
+              l.settingsDetectLocationHint,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12.5,
+                height: 1.45,
+                color: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.color?.withValues(alpha: 0.72),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,8 +1,11 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../../core/localization/prayer_name_localizer.dart';
+import '../../../../../injection.dart';
+import '../../bloc/adhan_preview_cubit.dart';
+import '../../bloc/custom_adhan_cubit.dart';
 import '../../settings_provider.dart';
 import 'mobile_adhan_sound_dialog.dart';
 import 'mobile_notification_master_toggle.dart';
@@ -94,9 +97,21 @@ class MobileNotificationSettingsList extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (_) => MobileAdhanSoundDialog(
-        currentSound: current,
-        onSave: (key) => sp.updateAdhanSound(key),
+      builder: (_) => MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => getIt<AdhanPreviewCubit>()),
+          BlocProvider(
+            create: (_) => CustomAdhanCubit(
+              import: getIt(),
+              delete: getIt(),
+              settings: sp,
+            ),
+          ),
+        ],
+        child: MobileAdhanSoundDialog(
+          currentSound: current,
+          onSave: (key) => sp.updateAdhanSound(key),
+        ),
       ),
     );
   }

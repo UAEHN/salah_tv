@@ -5,6 +5,7 @@ import 'i_prayer_audio_port.dart';
 import '../../notifications/domain/i_prayer_notification_port.dart';
 import 'i_prayer_times_repository.dart';
 import '../../settings/domain/entities/app_settings.dart';
+import 'prayer_time_zone.dart';
 import 'engine/prayer_cycle_state.dart';
 import 'engine/prayer_cycle_base.dart';
 import 'engine/recovery_mixin.dart';
@@ -91,9 +92,19 @@ class PrayerCycleEngine extends PrayerCycleBase
   bool get isMultiCity => repo.isMultiCity;
   List<String> get availableCities => repo.availableCities;
 
+  @override
+  DateTime currentTime() => PrayerTimeZone.now(
+    timeZoneId: settings.isCalculatedLocation
+        ? settings.selectedTimeZoneId
+        : null,
+    utcOffsetHours: settings.isCalculatedLocation
+        ? settings.utcOffsetHours
+        : null,
+  );
+
   // ── Lifecycle ─────────────────────────────────────────────────────────────
   void start() {
-    s.now = DateTime.now(); // sync before recovery check
+    s.now = currentTime(); // sync before recovery check
     repo.setActiveCity(settings.selectedCity);
     loadToday();
     s.timer?.cancel();
@@ -116,7 +127,7 @@ class PrayerCycleEngine extends PrayerCycleBase
 
   /// Called by PrayerBloc when the app returns to foreground.
   void onResumed() {
-    s.now = DateTime.now();
+    s.now = currentTime();
     // Issue 6 + 11: reload if the date changed — catches new day and
     // timezone changes that shift DateTime.now() to a different calendar day.
     if (s.now.day != s.lastLoadedDay) {

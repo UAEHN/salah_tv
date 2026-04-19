@@ -1,8 +1,7 @@
-﻿import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
+import '../../../../../core/city_translations.dart';
 import '../../../../../core/mobile_theme.dart';
 import '../../../../../core/widgets/mobile/mobile_shell.dart';
 
@@ -19,6 +18,13 @@ class MobileQiblaTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final isEn = l.localeName == 'en';
+    final localizedCity = cityLabel(
+      city,
+      locale: l.localeName,
+      countryKey: country,
+    );
+    final localizedCountry = countryLabel(country, locale: l.localeName);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
@@ -37,40 +43,34 @@ class MobileQiblaTopBar extends StatelessWidget {
               onPressed: () => MobileShell.switchTab(context, 0),
             ),
           ),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              color: MobileColors.cardColor(context).withValues(alpha: 0.92),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: MobileColors.border(context)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '$localizedCity${l.localeComma} $localizedCountry',
+                  style: MobileTextStyles.labelSm(context).copyWith(
+                    color: MobileColors.onSurface(context),
+                    fontSize: 12,
+                  ),
+                  textDirection: isEn ? TextDirection.ltr : TextDirection.rtl,
                 ),
-                decoration: BoxDecoration(
-                  color: MobileColors.cardColor(context).withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: MobileColors.border(context)),
+                const SizedBox(width: 8),
+                const Icon(
+                  Icons.location_on,
+                  color: MobileColors.primaryContainer,
+                  size: 16,
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '$city${l.localeComma} $country',
-                      style: MobileTextStyles.labelSm(context).copyWith(
-                        color: MobileColors.onSurface(context),
-                        fontSize: 12,
-                      ),
-                      textDirection: TextDirection.rtl,
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(
-                      Icons.location_on,
-                      color: MobileColors.primaryContainer,
-                      size: 16,
-                    ),
-                  ],
-                ),
-              ),
+              ],
             ),
           ),
         ],

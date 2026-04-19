@@ -36,15 +36,6 @@ class PrayerPanel extends StatelessWidget {
         color: tc.bgSurface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: tc.borderGlass, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(
-              alpha: settings.isDarkMode ? 0.4 : 0.08,
-            ),
-            blurRadius: 20,
-            offset: const Offset(-4, 0),
-          ),
-        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),

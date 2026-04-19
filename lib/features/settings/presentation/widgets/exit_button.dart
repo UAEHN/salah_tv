@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
@@ -62,12 +62,16 @@ class _SettingsExitButtonState extends State<SettingsExitButton> {
                 size: 22,
               ),
               const SizedBox(width: 10),
-              Text(
-                l.settingsCloseApp,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: _isFocused ? Colors.white : _red,
+              Flexible(
+                child: Text(
+                  l.settingsCloseApp,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: _isFocused ? Colors.white : _red,
+                  ),
                 ),
               ),
             ],

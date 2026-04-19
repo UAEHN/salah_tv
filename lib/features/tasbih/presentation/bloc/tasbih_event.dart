@@ -2,10 +2,6 @@ sealed class TasbihEvent {
   const TasbihEvent();
 }
 
-class TasbihStarted extends TasbihEvent {
-  const TasbihStarted();
-}
-
 class TasbihTapped extends TasbihEvent {
   const TasbihTapped();
 }

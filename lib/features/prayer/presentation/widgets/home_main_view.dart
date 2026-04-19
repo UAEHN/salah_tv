@@ -34,8 +34,12 @@ class HomeMainView extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: CustomPaint(
-              painter: ArabescPainter(color: palette.primary, opacity: 0.12),
+            // RepaintBoundary gives the static background its own GPU layer so
+            // sibling animations (clock, AnimatedSwitcher) never force it to repaint.
+            child: RepaintBoundary(
+              child: CustomPaint(
+                painter: ArabescPainter(color: palette.primary, opacity: 0.12),
+              ),
             ),
           ),
           Positioned.fill(
