@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../analytics/domain/i_analytics_service.dart';
+import '../../prayer/data/composite_prayer_repository.dart';
+import '../../prayer/domain/usecases/i_download_city_use_case.dart';
 import '../../settings/domain/entities/detected_location.dart';
 import '../../settings/domain/entities/world_city.dart';
 import '../../settings/domain/i_settings_repository.dart';
@@ -41,6 +43,8 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     required SettingsProvider settingsProvider,
     required IWorldCityRepository worldRepo,
     required ISettingsRepository settingsRepository,
+    required IDownloadCityUseCase downloadCityUseCase,
+    required CompositePrayerRepository compositeRepo,
     IAnalyticsService? analytics,
   }) {
     return OnboardingCubit(
@@ -49,6 +53,8 @@ class OnboardingCubit extends Cubit<OnboardingState> {
       completionService: OnboardingCompletionService(
         settingsProvider,
         settingsRepository,
+        downloadCityUseCase,
+        compositeRepo,
       ),
       filterController: OnboardingFilterController(),
       analytics: analytics,

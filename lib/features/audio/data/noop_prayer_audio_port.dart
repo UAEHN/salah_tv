@@ -46,6 +46,9 @@ class NoOpPrayerAudioPort implements IPrayerAudioPort {
   Future<void> playQuranFromServer(String serverUrl) async {}
 
   @override
+  Future<void> playQuranSurah(String serverUrl, int surahNumber) async {}
+
+  @override
   Future<void> pauseQuranPlayer() async {}
 
   @override
@@ -56,4 +59,13 @@ class NoOpPrayerAudioPort implements IPrayerAudioPort {
 
   @override
   Future<void> stopQuranPlayer() async {}
+
+  @override
+  int? get currentQuranSurah => null;
+
+  @override
+  Stream<int> get onQuranSurahCompleted => const Stream.empty();
+
+  @override
+  void setQuranNextSurahResolver(NextSurahResolver? resolver) {}
 }

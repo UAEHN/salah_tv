@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../core/app_colors.dart';
+import '../../../../core/widgets/tv_search_bar.dart';
 import '../../../../injection.dart';
 import '../../../quran/domain/entities/quran_reciter.dart';
 import '../../../quran/domain/i_quran_api_repository.dart';
 import '../../../quran/domain/usecases/fetch_reciters_usecase.dart';
+import '../widgets/reciter_picker_list.dart';
+import 'reciter_picker_states.dart';
 
 class ReciterPickerDialog extends StatefulWidget {
   final AccentPalette palette;
@@ -28,6 +31,7 @@ class ReciterPickerDialog extends StatefulWidget {
 class _ReciterPickerDialogState extends State<ReciterPickerDialog> {
   List<QuranApiReciter>? _reciters;
   String? _error;
+  String _query = '';
 
   @override
   void initState() {
@@ -45,13 +49,11 @@ class _ReciterPickerDialogState extends State<ReciterPickerDialog> {
     );
   }
 
-  void _retry() {
-    setState(() {
-      _error = null;
-      _reciters = null;
-      _load();
-    });
-  }
+  void _retry() => setState(() {
+        _error = null;
+        _reciters = null;
+        _load();
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -63,30 +65,31 @@ class _ReciterPickerDialogState extends State<ReciterPickerDialog> {
         backgroundColor: const Color(0xFF0A1628),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Container(
-          width: 500,
-          height: 540,
-          padding: const EdgeInsets.all(24),
+          width: 540,
+          height: 580,
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Icon(Icons.mic_rounded, color: widget.palette.primary, size: 26),
-                  const SizedBox(width: 12),
-                  Text(
-                    l.settingsSelectReciter,
+              Row(children: [
+                Icon(Icons.mic_rounded,
+                    color: widget.palette.primary, size: 26),
+                const SizedBox(width: 12),
+                Text(l.settingsSelectReciter,
                     style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              const Divider(color: Colors.white12),
-              const SizedBox(height: 4),
-              Expanded(child: _buildBody(l)),
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white)),
+              ]),
+              const SizedBox(height: 12),
+              if (_reciters != null)
+                TvSearchBar(
+                  hintText: l.searchReciterHint,
+                  accent: widget.palette.primary,
+                  onChanged: (v) => setState(() => _query = v),
+                ),
+              if (_reciters != null) const SizedBox(height: 8),
+              Expanded(child: _buildBody()),
             ],
           ),
         ),
@@ -94,74 +97,19 @@ class _ReciterPickerDialogState extends State<ReciterPickerDialog> {
     );
   }
 
-  Widget _buildBody(AppLocalizations l) {
+  Widget _buildBody() {
     if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.wifi_off_rounded, color: Colors.white54, size: 48),
-            const SizedBox(height: 12),
-            Text(
-              l.settingsFailedToLoadReciters,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white54, fontSize: 17),
-            ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: _retry,
-              child: Text(
-                l.commonRetry,
-                style: TextStyle(color: widget.palette.primary, fontSize: 16),
-              ),
-            ),
-          ],
-        ),
-      );
+      return ReciterErrorView(onRetry: _retry, palette: widget.palette);
     }
-
-    if (_reciters == null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(color: widget.palette.primary),
-            const SizedBox(height: 16),
-            Text(
-              l.settingsLoadingReciters,
-              style: const TextStyle(color: Colors.white60, fontSize: 16),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return ListView.separated(
-      itemCount: _reciters!.length,
-      separatorBuilder: (_, _) => const Divider(color: Colors.white10, height: 1),
-      itemBuilder: (context, i) {
-        final r = _reciters![i];
-        final isSelected = r.serverUrl == widget.currentServerUrl;
-        return ListTile(
-          leading: Icon(
-            Icons.mic_rounded,
-            color: isSelected ? widget.palette.primary : Colors.white38,
-          ),
-          title: Text(
-            r.nameAr,
-            style: TextStyle(
-              color: isSelected ? widget.palette.primary : Colors.white,
-              fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
-              fontSize: 18,
-            ),
-          ),
-          trailing:
-              isSelected ? Icon(Icons.check_circle_rounded, color: widget.palette.primary) : null,
-          onTap: () {
-            widget.onSelected(r.nameAr, r.serverUrl);
-            Navigator.pop(context);
-          },
-        );
+    if (_reciters == null) return ReciterLoadingView(palette: widget.palette);
+    return ReciterPickerList(
+      reciters: _reciters!,
+      currentServerUrl: widget.currentServerUrl,
+      query: _query,
+      palette: widget.palette,
+      onSelect: (r) {
+        widget.onSelected(r.nameAr, r.serverUrl);
+        Navigator.pop(context);
       },
     );
   }

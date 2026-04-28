@@ -26,6 +26,7 @@ class PrayerState {
   final bool isDateNavigationBusy;
   final bool isMultiCity;
   final List<String> availableCities;
+  final int? currentSurahNumber;
 
   const PrayerState({
     required this.now,
@@ -50,6 +51,7 @@ class PrayerState {
     required this.isDateNavigationBusy,
     required this.isMultiCity,
     required this.availableCities,
+    this.currentSurahNumber,
   });
 
   factory PrayerState.fromEngine(
@@ -82,6 +84,7 @@ class PrayerState {
     isDateNavigationBusy: isDateNavigationBusy,
     isMultiCity: e.isMultiCity,
     availableCities: e.availableCities,
+    currentSurahNumber: e.currentSurahNumber,
   );
 
   factory PrayerState.initial() => PrayerState(

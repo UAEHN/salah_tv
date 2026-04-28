@@ -38,6 +38,11 @@ class PrayerQuranToggled extends PrayerEvent {
   const PrayerQuranToggled(this.serverUrl);
 }
 
+/// User pressed "next surah" — only meaningful in playlist mode.
+class PrayerSurahSkipped extends PrayerEvent {
+  const PrayerSurahSkipped();
+}
+
 class PrayerReloaded extends PrayerEvent {
   const PrayerReloaded();
 }

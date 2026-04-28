@@ -8,7 +8,7 @@ import '../../../../core/city_translations.dart';
 import '../../../prayer/presentation/bloc/prayer_bloc.dart';
 import '../dialogs/country_picker_dialog.dart';
 import '../settings_provider.dart';
-import 'tv_button.dart';
+import '../../../../core/widgets/tv_button.dart';
 
 class CountrySection extends StatelessWidget {
   const CountrySection({super.key});

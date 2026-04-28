@@ -5,6 +5,10 @@ import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../core/app_colors.dart';
 import '../../../../core/city_translations.dart';
+import '../../../../features/prayer/data/composite_prayer_repository.dart';
+import '../../../../features/prayer/domain/usecases/download_city_use_case.dart';
+import '../../../../features/prayer/presentation/bloc/prayer_bloc.dart';
+import '../../../../features/prayer/presentation/bloc/prayer_event.dart';
 import '../../../../injection.dart';
 import '../../domain/i_world_city_repository.dart';
 import '../bloc/location_selection_cubit.dart';
@@ -62,7 +66,15 @@ class TvLocationSection extends StatelessWidget {
       context: context,
       builder: (_) => MultiBlocProvider(
         providers: [
-          BlocProvider(create: (_) => LocationSelectionCubit(settingsProvider)),
+          BlocProvider(
+            create: (_) => LocationSelectionCubit(
+              settingsProvider,
+              getIt<DownloadCityUseCase>(),
+              getIt<CompositePrayerRepository>(),
+              onCityReady: () =>
+                  context.read<PrayerBloc>().add(const PrayerReloaded()),
+            ),
+          ),
           BlocProvider(
             create: (_) => TvLocationPickerCubit(
               getIt<IWorldCityRepository>(),

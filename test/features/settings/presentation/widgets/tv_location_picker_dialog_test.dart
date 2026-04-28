@@ -7,6 +7,7 @@ import 'package:ghasaq/features/settings/presentation/bloc/location_selection_cu
 import 'package:ghasaq/features/settings/presentation/bloc/tv_location_picker_cubit.dart';
 import 'package:ghasaq/features/settings/presentation/settings_provider.dart';
 import 'package:ghasaq/features/settings/presentation/widgets/tv_location_picker/tv_location_picker_dialog.dart';
+import 'package:ghasaq/features/prayer/data/composite_prayer_repository.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../support/settings_test_fakes.dart';
@@ -16,6 +17,12 @@ void main() {
 
   setUpAll(() async {
     await loadCityTranslations();
+  });
+
+  late CompositePrayerRepository fakeCompositeRepo;
+
+  setUp(() async {
+    fakeCompositeRepo = await buildFakeCompositeRepo();
   });
 
   Future<void> pumpDialog(
@@ -37,7 +44,11 @@ void main() {
                   builder: (_) => MultiBlocProvider(
                     providers: [
                       BlocProvider(
-                        create: (_) => LocationSelectionCubit(settingsProvider),
+                        create: (_) => LocationSelectionCubit(
+                          settingsProvider,
+                          FakeDownloadCityUseCase(),
+                          fakeCompositeRepo,
+                        ),
                       ),
                       BlocProvider(
                         create: (_) => TvLocationPickerCubit(

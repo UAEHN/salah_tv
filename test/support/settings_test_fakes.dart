@@ -1,11 +1,45 @@
 import 'package:dartz/dartz.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'package:ghasaq/core/error/failures.dart';
 import 'package:ghasaq/core/usecases/success.dart';
+import 'package:ghasaq/features/prayer/data/adhan_calculation_source.dart';
+import 'package:ghasaq/features/prayer/data/calculated_prayer_repository.dart';
+import 'package:ghasaq/features/prayer/data/composite_prayer_repository.dart';
+import 'package:ghasaq/features/prayer/data/downloaded_prayer_repository.dart';
+import 'package:ghasaq/features/prayer/data/prayer_cache_db_initializer.dart';
+import 'package:ghasaq/features/prayer/domain/cancellation_token.dart';
+import 'package:ghasaq/features/prayer/domain/usecases/i_download_city_use_case.dart';
 import 'package:ghasaq/features/settings/domain/entities/app_settings.dart';
 import 'package:ghasaq/features/settings/domain/entities/world_city.dart';
 import 'package:ghasaq/features/settings/domain/i_settings_repository.dart';
 import 'package:ghasaq/features/settings/domain/i_world_city_repository.dart';
+
+/// Always returns success without hitting the network or a real DB.
+class FakeDownloadCityUseCase implements IDownloadCityUseCase {
+  @override
+  Future<Either<Failure, Success>> call({
+    required String countryKey,
+    required String cityName,
+    required CancellationToken cancelToken,
+  }) async =>
+      const Right(Success());
+}
+
+/// Creates a real in-memory [CompositePrayerRepository] for widget tests.
+Future<CompositePrayerRepository> buildFakeCompositeRepo() async {
+  sqfliteFfiInit();
+  final db = await databaseFactoryFfi.openDatabase(
+    inMemoryDatabasePath,
+    options: OpenDatabaseOptions(
+      version: 1,
+      onCreate: (db, _) => PrayerCacheDbInitializer().createSchemaForTest(db),
+    ),
+  );
+  final downloadedRepo = DownloadedPrayerRepository(db);
+  final calcRepo = CalculatedPrayerRepository(AdhanCalculationSource());
+  return CompositePrayerRepository(downloadedRepo, calcRepo);
+}
 
 class FakeSettingsRepository implements ISettingsRepository {
   AppSettings savedSettings = const AppSettings();

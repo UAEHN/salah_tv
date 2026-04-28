@@ -7,6 +7,7 @@ import '../../../../core/city_translations.dart';
 import '../../../settings/presentation/settings_provider.dart';
 import '../bloc/prayer_bloc.dart';
 import 'clock_widget.dart';
+import 'current_surah_strip.dart';
 import 'date_widget.dart';
 
 class InfoCard extends StatelessWidget {
@@ -79,6 +80,7 @@ class InfoCard extends StatelessWidget {
           if (quranButton != null) ...[
             SizedBox(height: screenH * 0.012),
             quranButton!,
+            CurrentSurahStrip(palette: palette),
           ],
         ],
       ),

@@ -33,6 +33,14 @@ abstract class AppConfig {
   /// Update this on every release alongside the Gist JSON.
   static const String kCurrentAppVersion = '0.9.9';
 
+  static const _prayerDataBase =
+      'https://uaehn.github.io/salah_tv/prayer_data';
+
+  static String prayerCityUrl(String country, String slug) =>
+      '$_prayerDataBase/$country/$slug.json';
+
+  static String prayerManifestUrl() => '$_prayerDataBase/manifest.json';
+
   static bool get hasTelegramConfig =>
       telegramBotToken.isNotEmpty && telegramChatId.isNotEmpty;
 

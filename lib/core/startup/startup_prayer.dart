@@ -1,12 +1,21 @@
+import 'dart:async';
+
 import '../../features/audio/data/audio_service.dart';
 import '../../features/audio/data/noop_prayer_audio_port.dart';
 import '../../features/audio/domain/i_audio_repository.dart';
 import '../../features/prayer/data/adhan_calculation_source.dart';
 import '../../features/prayer/data/calculated_prayer_repository.dart';
 import '../../features/prayer/data/composite_prayer_repository.dart';
-import '../../features/prayer/data/sqlite_prayer_repository.dart';
+import '../../features/prayer/data/downloaded_prayer_repository.dart';
+import '../../features/prayer/data/prayer_cache_db_initializer.dart';
+import '../../features/prayer/data/prayer_cache_db_queries.dart';
+import '../../features/prayer/data/prayer_cache_db_writer.dart';
+import '../../features/prayer/data/prayer_city_downloader.dart';
+import '../../features/prayer/domain/cancellation_token.dart';
 import '../../features/prayer/domain/i_prayer_audio_port.dart';
 import '../../features/prayer/domain/i_prayer_times_repository.dart';
+import '../../features/prayer/domain/usecases/check_city_update_use_case.dart';
+import '../../features/prayer/domain/usecases/download_city_use_case.dart';
 import '../../features/settings/data/android_media_store_publisher.dart';
 import '../../features/settings/data/custom_adhan_repository.dart';
 import '../../features/settings/data/datasources/custom_adhan_file_datasource.dart';
@@ -14,29 +23,38 @@ import '../../features/settings/domain/entities/app_settings.dart';
 import '../../features/settings/domain/i_custom_adhan_repository.dart';
 import '../../features/settings/domain/i_notification_sound_publisher.dart';
 import '../../injection.dart';
-import '../city_translations.dart';
 import '../platform_config.dart';
 
 Future<void> registerPrayerServices(
   AppSettings settings,
   PlatformConfig platformConfig,
 ) async {
-  final sqliteRepo = SqlitePrayerRepository();
+  // ── Open prayer_cache.db ─────────────────────────────────────────────────
+  final cacheDb = await PrayerCacheDbInitializer().openOrCreate();
+
+  // ── Build repos ──────────────────────────────────────────────────────────
+  final downloadedRepo = DownloadedPrayerRepository(cacheDb);
   final calcRepo = CalculatedPrayerRepository(AdhanCalculationSource());
-  final compositeRepo = CompositePrayerRepository(sqliteRepo, calcRepo);
+  final compositeRepo = CompositePrayerRepository(downloadedRepo, calcRepo);
 
-  // Open DB first so we can enumerate the countries it actually contains —
-  // this is the single source of truth. The UI picks up any new country as
-  // soon as the bundled DB ships it; no JSON edit required.
-  await sqliteRepo.openOnly();
-  final dbCountries = await sqliteRepo.fetchAllCountriesWithCities();
-  registerDbCountries(dbCountries);
+  // ── Build use cases ──────────────────────────────────────────────────────
+  final queries = PrayerCacheDbQueries();
+  final downloader = PrayerCityDownloader();
+  final writer = PrayerCacheDbWriter();
+  final downloadUseCase = DownloadCityUseCase(
+    cacheDb, queries, downloader, writer,
+  );
+  final checkUpdateUseCase = CheckCityUpdateUseCase(
+    cacheDb, queries, downloader, downloadUseCase,
+  );
 
+  // ── Register in DI ───────────────────────────────────────────────────────
+  getIt.registerSingleton<CompositePrayerRepository>(compositeRepo);
+  getIt.registerSingleton<DownloadCityUseCase>(downloadUseCase);
+  getIt.registerSingleton<IPrayerTimesRepository>(compositeRepo);
+
+  // ── Configure initial mode ───────────────────────────────────────────────
   if (_isCalculated(settings)) {
-    // Bootstrap sqlite repo with any valid country so switches back to DB
-    // mode don't race against an unloaded repo.
-    final bootstrap = _resolveCountryKey(settings.selectedCountry, dbCountries);
-    if (bootstrap != null) await sqliteRepo.loadCountry(bootstrap);
     calcRepo.configureCalculatedMode(
       settings.selectedLatitude!,
       settings.selectedLongitude!,
@@ -46,17 +64,51 @@ Future<void> registerPrayerServices(
       timeZoneId: settings.selectedTimeZoneId,
       utcOffsetHours: settings.utcOffsetHours,
     );
-    compositeRepo.setMode(isCalculated: true);
+    // compositeRepo defaults to calculated mode
   } else {
-    final resolved = _resolveCountryKey(settings.selectedCountry, dbCountries);
-    if (resolved != null) await sqliteRepo.loadCountry(resolved);
-    compositeRepo.setMode(isCalculated: false);
+    final countryKey = settings.selectedCountry.toLowerCase();
+    final isCached = await queries.isCityCached(
+      cacheDb, countryKey, settings.selectedCity, DateTime.now().year,
+    );
+    if (isCached) {
+      await downloadedRepo.loadCity(countryKey, settings.selectedCity);
+      compositeRepo.configureDatabaseMode();
+      // Background hash check — silent on any failure
+      unawaited(checkUpdateUseCase(
+        countryKey: countryKey,
+        cityName: settings.selectedCity,
+      ));
+    } else {
+      // City not cached → download now under the splash screen (~14 KB, fast).
+      final result = await downloadUseCase(
+        countryKey: countryKey,
+        cityName: settings.selectedCity,
+        cancelToken: CancellationToken(),
+      );
+      await result.fold(
+        (_) async {
+          // Download failed — fall back to last successfully cached city if
+          // available, so the user sees correct times rather than (0°,0°) garbage.
+          final fallback = await queries.getLastCachedCity(cacheDb);
+          if (fallback != null) {
+            await downloadedRepo.loadCity(
+              fallback.countryKey,
+              fallback.cityName,
+            );
+            compositeRepo.configureDatabaseMode();
+          }
+          // No fallback → composite stays in uninitialized calculated mode
+          // (first-ever launch with no internet — unavoidable).
+        },
+        (_) async {
+          await downloadedRepo.loadCity(countryKey, settings.selectedCity);
+          compositeRepo.configureDatabaseMode();
+        },
+      );
+    }
   }
 
-  getIt.registerSingleton<IPrayerTimesRepository>(compositeRepo);
-
-  // Custom-adhan repo is registered regardless of platform so [AudioService]
-  // can resolve `custom:*` keys uniformly; the picker UI is mobile-only.
+  // ── Audio services ───────────────────────────────────────────────────────
   getIt.registerLazySingleton<INotificationSoundPublisher>(
     () => AndroidMediaStorePublisher(),
   );
@@ -80,17 +132,4 @@ bool _isCalculated(AppSettings settings) {
   return settings.isCalculatedLocation &&
       settings.selectedLatitude != null &&
       settings.selectedLongitude != null;
-}
-
-/// Returns [settings.selectedCountry] (lowercased) if it exists in the DB,
-/// otherwise the first DB country, or null if the DB is empty. This prevents
-/// the app from sitting on a stale country key after a DB rebuild drops it.
-String? _resolveCountryKey(
-  String saved,
-  Map<String, List<String>> dbCountries,
-) {
-  if (dbCountries.isEmpty) return null;
-  final lower = saved.toLowerCase();
-  if (dbCountries.containsKey(lower)) return lower;
-  return dbCountries.keys.first;
 }

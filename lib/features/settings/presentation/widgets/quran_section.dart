@@ -1,11 +1,11 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/app_colors.dart';
-import '../dialogs/reciter_picker_dialog.dart';
 import '../settings_provider.dart';
-import 'tv_button.dart';
+import 'quran_playback_mode_section.dart';
+import 'quran_reciter_row.dart';
 import 'tv_switch_row.dart';
 
 class QuranSection extends StatelessWidget {
@@ -25,7 +25,7 @@ class QuranSection extends StatelessWidget {
         TvSwitchRow(
           value: settings.isQuranEnabled,
           accent: palette.primary,
-          onChanged: (v) => settingsProv.updateIsQuranEnabled(v),
+          onChanged: settingsProv.updateIsQuranEnabled,
           children: [
             Icon(
               Icons.menu_book_rounded,
@@ -43,7 +43,7 @@ class QuranSection extends StatelessWidget {
               activeTrackColor: palette.primary,
               inactiveTrackColor: tc.textMuted.withValues(alpha: 0.3),
               thumbColor: WidgetStateProperty.all(Colors.white),
-              onChanged: (v) => settingsProv.updateIsQuranEnabled(v),
+              onChanged: settingsProv.updateIsQuranEnabled,
             ),
             const SizedBox(width: 12),
             Text(
@@ -58,68 +58,9 @@ class QuranSection extends StatelessWidget {
         ),
         if (settings.isQuranEnabled) ...[
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  decoration: tc.glass(opacity: 0.06, borderRadius: 10),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.mic_rounded,
-                        color: settings.hasQuranReciter ? palette.primary : tc.textMuted,
-                        size: 22,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          settings.hasQuranReciter
-                              ? settings.quranReciterName
-                              : l.settingsNoReciterSelected,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: settings.hasQuranReciter ? tc.textPrimary : tc.textMuted,
-                            fontWeight: settings.hasQuranReciter
-                                ? FontWeight.w600
-                                : FontWeight.normal,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              TvButton(
-                onPressed: () => showDialog<void>(
-                  context: context,
-                  builder: (_) => ReciterPickerDialog(
-                    palette: palette,
-                    currentServerUrl: settings.quranReciterServerUrl,
-                    language: l.localeName,
-                    onSelected: (name, serverUrl) =>
-                        settingsProv.updateQuranReciter(name, serverUrl),
-                  ),
-                ),
-                accent: palette.primary,
-                filled: true,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.person_search_rounded, color: Colors.white, size: 20),
-                    const SizedBox(width: 8),
-                    Text(
-                      l.settingsChangeReciter,
-                      style: const TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
+          const QuranReciterRow(),
+          const QuranPlaybackModeSection(),
+          const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(12),
             decoration: tc.glass(opacity: 0.05, borderRadius: 10),

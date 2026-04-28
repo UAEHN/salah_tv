@@ -20,6 +20,7 @@ extension AppSettingsMapper on AppSettings {
     'isQuranEnabled': isQuranEnabled,
     'quranReciterName': quranReciterName,
     'quranReciterServerUrl': quranReciterServerUrl,
+    'favoriteReciterServerUrls': jsonEncode(favoriteReciterServerUrls),
     'selectedCountry': selectedCountry,
     'selectedCity': selectedCity,
     'selectedLatitude': selectedLatitude,
@@ -40,8 +41,16 @@ extension AppSettingsMapper on AppSettings {
     'preIqamaReminderEnabled': jsonEncode(preIqamaReminderEnabled),
     'preIqamaReminderMinutes': preIqamaReminderMinutes,
     'customAdhans': jsonEncode(customAdhans.map((c) => c.toJson()).toList()),
+    'quranPlaybackMode': quranPlaybackMode.name,
+    'selectedSurahNumber': selectedSurahNumber,
+    'surahPlaylist': jsonEncode(surahPlaylist),
+    'surahRepeatCount': surahRepeatCount,
+    'playlistCycleCount': playlistCycleCount,
+    'continuousStartMode': continuousStartMode.name,
+    'lastPlayedSurah': lastPlayedSurah,
   };
 }
+
 
 AppSettings appSettingsFromMap(Map<String, dynamic> map) {
   final customAdhans = decodeCustomAdhans(map['customAdhans']);
@@ -97,6 +106,8 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     quranReciterServerUrl: validatedQuranUrl(
       map['quranReciterServerUrl'] as String? ?? '',
     ),
+    favoriteReciterServerUrls:
+        decodeStringList(map['favoriteReciterServerUrls']),
     selectedCountry: map['selectedCountry'] as String? ?? 'uae',
     selectedCity: map['selectedCity'] as String? ?? 'Dubai',
     selectedLatitude: map['selectedLatitude'] as double?,
@@ -118,5 +129,15 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     preAdhanReminderMinutes: map['preAdhanReminderMinutes'] as int? ?? 15,
     preIqamaReminderMinutes: map['preIqamaReminderMinutes'] as int? ?? 5,
     customAdhans: customAdhans,
+    quranPlaybackMode:
+        decodePlaybackMode(map['quranPlaybackMode'], map['surahRepeatMode']),
+    selectedSurahNumber: (map['selectedSurahNumber'] as num?)?.toInt(),
+    surahPlaylist: decodeSurahPlaylist(map['surahPlaylist']),
+    surahRepeatCount: (map['surahRepeatCount'] as num?)?.toInt() ??
+        legacyRepeatCountFor(map['surahRepeatMode'], 1),
+    playlistCycleCount: (map['playlistCycleCount'] as num?)?.toInt() ?? 1,
+    continuousStartMode: decodeContinuousStartMode(map['continuousStartMode']),
+    lastPlayedSurah: ((map['lastPlayedSurah'] as num?)?.toInt() ?? 1)
+        .clamp(1, 114),
   );
 }

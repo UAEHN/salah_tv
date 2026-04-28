@@ -571,6 +571,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsLoadingReciters => 'جاري تحميل القراء...';
 
   @override
+  String get reciterFavoritesSection => 'المفضلة';
+
+  @override
+  String get reciterAllSection => 'كل القراء';
+
+  @override
   String get adhanSound1 => 'أذان 1';
 
   @override
@@ -963,4 +969,95 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsCheckUpdate => 'تحقق من وجود تحديث';
+
+  @override
+  String get settingsQuranPlaybackMode => 'ماذا تريد أن تسمع؟';
+
+  @override
+  String get settingsQuranModeContinuous => 'المصحف كاملاً';
+
+  @override
+  String get settingsQuranModeContinuousDesc => 'من الفاتحة إلى الناس بالترتيب';
+
+  @override
+  String get settingsQuranContinuousStart => 'نقطة البداية';
+
+  @override
+  String get settingsQuranContinuousResume => 'متابعة من آخر سورة';
+
+  @override
+  String get settingsQuranContinuousResumeDesc =>
+      'يبدأ من السورة التي توقفت عندها';
+
+  @override
+  String get settingsQuranContinuousRandom => 'عشوائي';
+
+  @override
+  String get settingsQuranContinuousRandomDesc =>
+      'يختار سوراً عشوائية في كل مرة';
+
+  @override
+  String get settingsQuranModeSingleSurah => 'سورة واحدة';
+
+  @override
+  String get settingsQuranModeSingleSurahDesc => 'اختر سورة وكرّرها كما تريد';
+
+  @override
+  String get settingsQuranModePlaylist => 'قائمة تلاوة';
+
+  @override
+  String get settingsQuranModePlaylistDesc =>
+      'اختر مجموعة من السُّوَر تُتلى بالتتابع';
+
+  @override
+  String get settingsQuranSelectSurah => 'اختر السورة';
+
+  @override
+  String get settingsQuranNoSurahSelected => 'لم تختر سورة بعد';
+
+  @override
+  String get settingsQuranEditPlaylist => 'اختيار السُّوَر';
+
+  @override
+  String get settingsQuranPlaylistEmpty => 'لم تختر أي سورة بعد';
+
+  @override
+  String settingsQuranPlaylistCount(Object count) {
+    return '$count سورة';
+  }
+
+  @override
+  String get settingsQuranRepeatCount => 'كم مرة تسمعها؟';
+
+  @override
+  String get settingsQuranCycleCount => 'كم دورة؟';
+
+  @override
+  String settingsQuranCountValue(Object count) {
+    return '$count';
+  }
+
+  @override
+  String get settingsQuranCountInfinite => 'بلا توقف';
+
+  @override
+  String get searchSurahHint => 'ابحث عن سورة…';
+
+  @override
+  String get searchReciterHint => 'ابحث عن قارئ…';
+
+  @override
+  String get searchNoResults => 'لا توجد نتائج';
+
+  @override
+  String get surahPickerTitle => 'اختيار سورة';
+
+  @override
+  String get surahPlaylistEditorTitle => 'اختيار السُّوَر';
+
+  @override
+  String get surahPlaylistEditorSelectAll => 'تحديد الكل';
+
+  @override
+  String get surahPlaylistEditorClear => 'مسح الكل';
 }

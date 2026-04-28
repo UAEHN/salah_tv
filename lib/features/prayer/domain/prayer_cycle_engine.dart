@@ -9,6 +9,7 @@ import 'prayer_time_zone.dart';
 import 'engine/prayer_cycle_state.dart';
 import 'engine/prayer_cycle_base.dart';
 import 'engine/recovery_mixin.dart';
+import 'engine/continuous_mode_mixin.dart';
 import 'engine/quran_mixin.dart';
 import 'engine/iqama_mixin.dart';
 import 'engine/adhan_cycle_mixin.dart';
@@ -22,6 +23,7 @@ import 'engine/settings_mixin.dart';
 class PrayerCycleEngine extends PrayerCycleBase
     with
         RecoveryMixin,
+        ContinuousModeMixin,
         QuranMixin,
         IqamaMixin,
         AdhanCycleMixin,
@@ -46,6 +48,7 @@ class PrayerCycleEngine extends PrayerCycleBase
   final void Function() notify;
 
   StreamSubscription<void>? _completionSub;
+  StreamSubscription<int>? _quranCompletionSub;
 
   PrayerCycleEngine(
     this.repo,
@@ -65,6 +68,8 @@ class PrayerCycleEngine extends PrayerCycleBase
         await stopIqama();
       }
     });
+    _quranCompletionSub =
+        audio.onQuranSurahCompleted.listen(onSurahCompleted);
   }
 
   // ── Public getters (delegated to PrayerCycleState) ───────────────────────
@@ -86,6 +91,9 @@ class PrayerCycleEngine extends PrayerCycleBase
 
   /// True when the user has Quran enabled (playing or paused by adhan).
   bool get quranUserEnabled => s.isQuranPlaying;
+
+  /// 1..114 — null when no Quran is playing.
+  int? get currentSurahNumber => s.currentSurahNumber;
 
   bool get isCycleActive => s.isCycleActive;
   bool get isPrePrayerAlert => s.isPrePrayerAlert;
@@ -154,6 +162,7 @@ class PrayerCycleEngine extends PrayerCycleBase
 
   void dispose() {
     _completionSub?.cancel(); // Issue 2: cancel to prevent subscription leak
+    _quranCompletionSub?.cancel();
     s.timer?.cancel();
     s.adhanFallbackTimer?.cancel();
     s.duaFallbackTimer?.cancel();

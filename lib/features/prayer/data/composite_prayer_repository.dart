@@ -3,32 +3,31 @@ import '../../../core/error/failures.dart';
 import '../../../core/usecases/success.dart';
 import '../domain/i_prayer_times_repository.dart';
 import '../domain/entities/daily_prayer_times.dart';
-import 'sqlite_prayer_repository.dart';
+import 'downloaded_prayer_repository.dart';
 import 'calculated_prayer_repository.dart';
 
-/// Routes prayer-time lookups to either [SqlitePrayerRepository] (bundled DB)
-/// or [CalculatedPrayerRepository] (adhan_dart) depending on current mode.
-///
-/// The engine and BLoC interact only with [IPrayerTimesRepository];
-/// they never need to know which concrete source is active.
-class CompositePrayerRepository implements IPrayerTimesRepository {
-  CompositePrayerRepository(this._sqliteRepo, this._calcRepo);
+enum _RepoMode { downloaded, calculated }
 
-  final SqlitePrayerRepository _sqliteRepo;
+/// Routes prayer-time lookups to either [DownloadedPrayerRepository] (local
+/// cache DB) or [CalculatedPrayerRepository] (adhan_dart) depending on mode.
+class CompositePrayerRepository implements IPrayerTimesRepository {
+  CompositePrayerRepository(this._downloadedRepo, this._calcRepo);
+
+  final DownloadedPrayerRepository _downloadedRepo;
   final CalculatedPrayerRepository _calcRepo;
-  bool _isCalculatedMode = false;
+  _RepoMode _mode = _RepoMode.calculated;
 
   IPrayerTimesRepository get _active =>
-      _isCalculatedMode ? _calcRepo : _sqliteRepo;
+      _mode == _RepoMode.downloaded ? _downloadedRepo : _calcRepo;
 
-  bool get isCalculatedMode => _isCalculatedMode;
+  bool get isCalculatedMode => _mode == _RepoMode.calculated;
 
-  SqlitePrayerRepository get sqliteRepo => _sqliteRepo;
+  DownloadedPrayerRepository get downloadedRepo => _downloadedRepo;
 
   CalculatedPrayerRepository get calcRepo => _calcRepo;
 
   void setMode({required bool isCalculated}) {
-    _isCalculatedMode = isCalculated;
+    _mode = isCalculated ? _RepoMode.calculated : _RepoMode.downloaded;
   }
 
   @override
@@ -48,12 +47,12 @@ class CompositePrayerRepository implements IPrayerTimesRepository {
       timeZoneId: timeZoneId,
       utcOffsetHours: utcOffsetHours,
     );
-    _isCalculatedMode = true;
+    _mode = _RepoMode.calculated;
   }
 
   @override
   void configureDatabaseMode() {
-    _isCalculatedMode = false;
+    _mode = _RepoMode.downloaded;
   }
 
   @override

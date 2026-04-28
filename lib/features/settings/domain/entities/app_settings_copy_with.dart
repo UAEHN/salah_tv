@@ -1,3 +1,4 @@
+import '../../../quran/domain/entities/quran_playback_mode.dart';
 import 'app_settings.dart';
 import 'custom_adhan.dart';
 
@@ -20,6 +21,7 @@ extension AppSettingsCopyWith on AppSettings {
     bool? isQuranEnabled,
     String? quranReciterName,
     String? quranReciterServerUrl,
+    List<String>? favoriteReciterServerUrls,
     String? selectedCountry,
     String? selectedCity,
     double? selectedLatitude,
@@ -42,6 +44,14 @@ extension AppSettingsCopyWith on AppSettings {
     Map<String, bool>? iqamaNotificationEnabled,
     Map<String, bool>? preIqamaReminderEnabled,
     int? preIqamaReminderMinutes,
+    QuranPlaybackMode? quranPlaybackMode,
+    int? selectedSurahNumber,
+    bool clearSelectedSurahNumber = false,
+    List<int>? surahPlaylist,
+    int? surahRepeatCount,
+    int? playlistCycleCount,
+    ContinuousStartMode? continuousStartMode,
+    int? lastPlayedSurah,
   }) {
     return AppSettings(
       themeColorKey: themeColorKey ?? this.themeColorKey,
@@ -70,6 +80,9 @@ extension AppSettingsCopyWith on AppSettings {
       quranReciterName: quranReciterName ?? this.quranReciterName,
       quranReciterServerUrl:
           quranReciterServerUrl ?? this.quranReciterServerUrl,
+      favoriteReciterServerUrls: List.unmodifiable(
+        favoriteReciterServerUrls ?? this.favoriteReciterServerUrls,
+      ),
       selectedCountry: selectedCountry ?? this.selectedCountry,
       selectedCity: selectedCity ?? this.selectedCity,
       selectedLatitude: selectedLatitude ?? this.selectedLatitude,
@@ -92,6 +105,15 @@ extension AppSettingsCopyWith on AppSettings {
           preAdhanReminderMinutes ?? this.preAdhanReminderMinutes,
       preIqamaReminderMinutes:
           preIqamaReminderMinutes ?? this.preIqamaReminderMinutes,
+      quranPlaybackMode: quranPlaybackMode ?? this.quranPlaybackMode,
+      selectedSurahNumber: clearSelectedSurahNumber
+          ? null
+          : (selectedSurahNumber ?? this.selectedSurahNumber),
+      surahPlaylist: List.unmodifiable(surahPlaylist ?? this.surahPlaylist),
+      surahRepeatCount: surahRepeatCount ?? this.surahRepeatCount,
+      playlistCycleCount: playlistCycleCount ?? this.playlistCycleCount,
+      continuousStartMode: continuousStartMode ?? this.continuousStartMode,
+      lastPlayedSurah: lastPlayedSurah ?? this.lastPlayedSurah,
     );
   }
 
@@ -123,5 +145,12 @@ extension AppSettingsCopyWith on AppSettings {
       preIqamaReminderEnabled.toString() ==
           other.preIqamaReminderEnabled.toString() &&
       preAdhanReminderMinutes == other.preAdhanReminderMinutes &&
-      preIqamaReminderMinutes == other.preIqamaReminderMinutes;
+      preIqamaReminderMinutes == other.preIqamaReminderMinutes &&
+      quranPlaybackMode == other.quranPlaybackMode &&
+      selectedSurahNumber == other.selectedSurahNumber &&
+      surahPlaylist.toString() == other.surahPlaylist.toString() &&
+      surahRepeatCount == other.surahRepeatCount &&
+      playlistCycleCount == other.playlistCycleCount &&
+      continuousStartMode == other.continuousStartMode &&
+      lastPlayedSurah == other.lastPlayedSurah;
 }

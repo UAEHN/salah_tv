@@ -13,7 +13,10 @@ import 'features/feedback/domain/usecases/submit_feedback_usecase.dart';
 import 'features/feedback/presentation/cubit/feedback_cubit.dart';
 import 'features/feedback/presentation/screens/mobile_feedback_screen.dart';
 import 'features/prayer/presentation/screens/home_screen.dart';
+import 'features/rating/domain/i_rating_service.dart';
 import 'features/qibla/presentation/screens/qibla_screen.dart';
+import 'features/prayer/data/composite_prayer_repository.dart';
+import 'features/prayer/domain/usecases/download_city_use_case.dart';
 import 'features/settings/domain/i_settings_repository.dart';
 import 'features/settings/domain/i_world_city_repository.dart';
 import 'features/settings/presentation/screens/mobile_settings_screen.dart';
@@ -157,6 +160,8 @@ class GhasaqApp extends StatelessWidget {
                   settingsProvider: ctx.read<SettingsProvider>(),
                   worldRepo: getIt<IWorldCityRepository>(),
                   settingsRepository: getIt<ISettingsRepository>(),
+                  downloadCityUseCase: getIt<DownloadCityUseCase>(),
+                  compositeRepo: getIt<CompositePrayerRepository>(),
                   analytics: getIt<IAnalyticsService>(),
                 ),
                 child: const OnboardingScreen(),
@@ -171,6 +176,8 @@ class GhasaqApp extends StatelessWidget {
                   settingsProvider: ctx.read<SettingsProvider>(),
                   worldRepo: getIt<IWorldCityRepository>(),
                   settingsRepository: getIt<ISettingsRepository>(),
+                  downloadCityUseCase: getIt<DownloadCityUseCase>(),
+                  compositeRepo: getIt<CompositePrayerRepository>(),
                   analytics: getIt<IAnalyticsService>(),
                 ),
                 child: const TvOnboardingScreen(),
@@ -183,6 +190,7 @@ class GhasaqApp extends StatelessWidget {
                 create: (ctx) => FeedbackCubit(
                   ctx.read<SubmitFeedbackUseCase>(),
                   analytics: getIt<IAnalyticsService>(),
+                  rating: getIt<IRatingService>(),
                 ),
                 child: const MobileFeedbackScreen(),
               ),

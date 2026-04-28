@@ -571,6 +571,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsLoadingReciters => 'Loading reciters...';
 
   @override
+  String get reciterFavoritesSection => 'Favorites';
+
+  @override
+  String get reciterAllSection => 'All reciters';
+
+  @override
   String get adhanSound1 => 'Adhan 1';
 
   @override
@@ -965,4 +971,97 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsCheckUpdate => 'Check for updates';
+
+  @override
+  String get settingsQuranPlaybackMode => 'What would you like to hear?';
+
+  @override
+  String get settingsQuranModeContinuous => 'The full Mushaf';
+
+  @override
+  String get settingsQuranModeContinuousDesc =>
+      'From Al-Fatiha to An-Nas in order';
+
+  @override
+  String get settingsQuranContinuousStart => 'Starting point';
+
+  @override
+  String get settingsQuranContinuousResume => 'Resume from last surah';
+
+  @override
+  String get settingsQuranContinuousResumeDesc =>
+      'Continues where you stopped last time';
+
+  @override
+  String get settingsQuranContinuousRandom => 'Random';
+
+  @override
+  String get settingsQuranContinuousRandomDesc =>
+      'Picks surahs in random order';
+
+  @override
+  String get settingsQuranModeSingleSurah => 'A single surah';
+
+  @override
+  String get settingsQuranModeSingleSurahDesc =>
+      'Pick one surah and repeat as you like';
+
+  @override
+  String get settingsQuranModePlaylist => 'A group of surahs';
+
+  @override
+  String get settingsQuranModePlaylistDesc =>
+      'Pick several surahs to play in sequence';
+
+  @override
+  String get settingsQuranSelectSurah => 'Choose surah';
+
+  @override
+  String get settingsQuranNoSurahSelected => 'No surah selected yet';
+
+  @override
+  String get settingsQuranEditPlaylist => 'Choose surahs';
+
+  @override
+  String get settingsQuranPlaylistEmpty => 'No surahs selected yet';
+
+  @override
+  String settingsQuranPlaylistCount(Object count) {
+    return '$count surahs';
+  }
+
+  @override
+  String get settingsQuranRepeatCount => 'How many times?';
+
+  @override
+  String get settingsQuranCycleCount => 'How many rounds?';
+
+  @override
+  String settingsQuranCountValue(Object count) {
+    return '$count';
+  }
+
+  @override
+  String get settingsQuranCountInfinite => 'Without stopping';
+
+  @override
+  String get searchSurahHint => 'Search a surah…';
+
+  @override
+  String get searchReciterHint => 'Search a reciter…';
+
+  @override
+  String get searchNoResults => 'No results';
+
+  @override
+  String get surahPickerTitle => 'Select surah';
+
+  @override
+  String get surahPlaylistEditorTitle => 'Choose surahs';
+
+  @override
+  String get surahPlaylistEditorSelectAll => 'Select all';
+
+  @override
+  String get surahPlaylistEditorClear => 'Clear all';
 }

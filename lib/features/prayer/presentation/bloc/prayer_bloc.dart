@@ -17,6 +17,7 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
   late final PrayerCycleEngine _engine;
   late final PrayerDisplayedDateController _dateController;
   final IAnalyticsService? _analytics;
+  final void Function(int)? _onCurrentSurahChanged;
 
   PrayerBloc(
     IPrayerTimesRepository repo,
@@ -24,7 +25,9 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     AppSettings initialSettings, {
     IPrayerNotificationPort? notifications,
     IAnalyticsService? analytics,
+    void Function(int)? onCurrentSurahChanged,
   })  : _analytics = analytics,
+        _onCurrentSurahChanged = onCurrentSurahChanged,
         super(PrayerState.initial()) {
     _dateController = PrayerDisplayedDateController.fromRepository(repo);
     _engine = PrayerCycleEngine(
@@ -43,6 +46,7 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     on<PrayerDuaStopped>(_onDuaStopped);
     on<PrayerIqamaStopped>(_onIqamaStopped);
     on<PrayerQuranToggled>(_onQuranToggled);
+    on<PrayerSurahSkipped>(_onSurahSkipped);
     on<PrayerReloaded>(_onReloaded);
     on<PrayerDateChanged>(_onDateChanged);
     on<PrayerDateReset>(_onDateReset);
@@ -62,6 +66,10 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     }
     if (next.isIqamaPlaying && !prev.isIqamaPlaying) {
       _analytics?.logIqamaStarted(next.iqamaPrayerKey);
+    }
+    final surah = next.currentSurahNumber;
+    if (surah != null && surah != prev.currentSurahNumber) {
+      _onCurrentSurahChanged?.call(surah);
     }
     emit(next);
   }
@@ -122,6 +130,9 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     _analytics?.logQuranStreamToggled(isPlaying: !_engine.isQuranPlaying);
     _runSync(() => _engine.toggleQuran(event.serverUrl), emit);
   }
+
+  void _onSurahSkipped(PrayerSurahSkipped _, Emitter<PrayerState> emit) =>
+      _runSync(_engine.skipToNextSurah, emit);
 
   Future<void> _onReloaded(PrayerReloaded _, Emitter<PrayerState> emit) async {
     _engine.reload();

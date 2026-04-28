@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../injection.dart';
+import '../../../../features/prayer/data/composite_prayer_repository.dart';
+import '../../../../features/prayer/domain/usecases/download_city_use_case.dart';
+import '../bloc/prayer_bloc.dart';
+import '../bloc/prayer_event.dart';
 import '../../../../features/settings/presentation/bloc/location_choice.dart';
 import '../../../../features/settings/presentation/bloc/location_selection_cubit.dart';
 import '../../../../features/settings/presentation/settings_provider.dart';
@@ -40,6 +45,10 @@ class MobileHomeScreen extends StatelessWidget {
     final settings = context.read<SettingsProvider>().settings;
     final locationCubit = LocationSelectionCubit(
       context.read<SettingsProvider>(),
+      getIt<DownloadCityUseCase>(),
+      getIt<CompositePrayerRepository>(),
+      onCityReady: () =>
+          context.read<PrayerBloc>().add(const PrayerReloaded()),
     );
     showModalBottomSheet<void>(
       context: context,

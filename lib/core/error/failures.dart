@@ -33,3 +33,11 @@ class StorageException implements Exception {
   final String message;
   const StorageException(this.message);
 }
+
+class NetworkFailure extends Failure {
+  const NetworkFailure(super.message);
+}
+
+class CancelledFailure extends Failure {
+  const CancelledFailure() : super('Cancelled');
+}

@@ -5,15 +5,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/feedback_entry.dart';
 import '../../domain/usecases/submit_feedback_usecase.dart';
 import '../../../analytics/domain/i_analytics_service.dart';
+import '../../../rating/domain/i_rating_service.dart';
 import 'feedback_state.dart';
 
 class FeedbackCubit extends Cubit<FeedbackState> {
-  FeedbackCubit(this._submitFeedback, {IAnalyticsService? analytics})
-      : _analytics = analytics,
+  FeedbackCubit(
+    this._submitFeedback, {
+    IAnalyticsService? analytics,
+    IRatingService? rating,
+  })  : _analytics = analytics,
+        _rating = rating,
         super(const FeedbackState());
 
   final SubmitFeedbackUseCase _submitFeedback;
   final IAnalyticsService? _analytics;
+  final IRatingService? _rating;
 
   Future<void> submit(String message) async {
     if (message.trim().isEmpty) return;
@@ -32,6 +38,8 @@ class FeedbackCubit extends Cubit<FeedbackState> {
           emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
       (_) {
         _analytics?.logFeedbackSubmitted('general');
+        // إرسال الملاحظة = تفاعل كافٍ، لا داعي لإزعاج المستخدم بنافذة التقييم لاحقاً.
+        _rating?.markAsRated();
         emit(state.copyWith(isLoading: false, isSuccess: true));
       },
     );

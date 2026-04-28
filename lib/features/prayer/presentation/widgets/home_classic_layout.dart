@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/app_colors.dart';
 import '../../../settings/domain/entities/app_settings.dart';
 import 'clock_widget.dart';
+import 'current_surah_strip.dart';
 import 'date_widget.dart';
 import 'home_quran_button.dart';
 import 'iqama_countdown_widget.dart';
@@ -93,12 +94,19 @@ class HomeClassicLayout extends StatelessWidget {
                                   !isIqamaCountdown)
                               ? Padding(
                                   padding: EdgeInsets.only(top: screenH * 0.022),
-                                  child: HomeQuranButton(
-                                    palette: palette,
-                                    isDarkMode: settings.isDarkMode,
-                                    serverUrl: settings.quranReciterServerUrl,
-                                    focusNode: quranFocusNode,
-                                    onEscape: () => mainFocusNode.requestFocus(),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      HomeQuranButton(
+                                        palette: palette,
+                                        isDarkMode: settings.isDarkMode,
+                                        serverUrl: settings.quranReciterServerUrl,
+                                        focusNode: quranFocusNode,
+                                        onEscape: () =>
+                                            mainFocusNode.requestFocus(),
+                                      ),
+                                      CurrentSurahStrip(palette: palette),
+                                    ],
                                   ),
                                 )
                               : const SizedBox.shrink(),

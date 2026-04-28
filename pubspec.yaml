@@ -1,6 +1,6 @@
 name: ghasaq
 description: "غسق — مواقيت الصلاة لأجهزة Android TV"
-version: 1.0.5+10
+version: 1.0.6+11
 publish_to: none
 
 environment:
@@ -114,7 +114,7 @@ flutter:
     - assets/audio/adhkar.json
     - assets/audio/dua/
     - assets/adhkar/adhkar_text.json
-    - assets/prayer_times.db
+    - assets/db_city_lists.json
     - assets/world_cities.json
     - assets/db_countries.json
     - assets/animations/

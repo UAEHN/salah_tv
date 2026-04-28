@@ -1154,6 +1154,18 @@ abstract class AppLocalizations {
   /// **'جاري تحميل القراء...'**
   String get settingsLoadingReciters;
 
+  /// No description provided for @reciterFavoritesSection.
+  ///
+  /// In ar, this message translates to:
+  /// **'المفضلة'**
+  String get reciterFavoritesSection;
+
+  /// No description provided for @reciterAllSection.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل القراء'**
+  String get reciterAllSection;
+
   /// No description provided for @adhanSound1.
   ///
   /// In ar, this message translates to:
@@ -1915,6 +1927,174 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تحقق من وجود تحديث'**
   String get settingsCheckUpdate;
+
+  /// No description provided for @settingsQuranPlaybackMode.
+  ///
+  /// In ar, this message translates to:
+  /// **'ماذا تريد أن تسمع؟'**
+  String get settingsQuranPlaybackMode;
+
+  /// No description provided for @settingsQuranModeContinuous.
+  ///
+  /// In ar, this message translates to:
+  /// **'المصحف كاملاً'**
+  String get settingsQuranModeContinuous;
+
+  /// No description provided for @settingsQuranModeContinuousDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'من الفاتحة إلى الناس بالترتيب'**
+  String get settingsQuranModeContinuousDesc;
+
+  /// No description provided for @settingsQuranContinuousStart.
+  ///
+  /// In ar, this message translates to:
+  /// **'نقطة البداية'**
+  String get settingsQuranContinuousStart;
+
+  /// No description provided for @settingsQuranContinuousResume.
+  ///
+  /// In ar, this message translates to:
+  /// **'متابعة من آخر سورة'**
+  String get settingsQuranContinuousResume;
+
+  /// No description provided for @settingsQuranContinuousResumeDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'يبدأ من السورة التي توقفت عندها'**
+  String get settingsQuranContinuousResumeDesc;
+
+  /// No description provided for @settingsQuranContinuousRandom.
+  ///
+  /// In ar, this message translates to:
+  /// **'عشوائي'**
+  String get settingsQuranContinuousRandom;
+
+  /// No description provided for @settingsQuranContinuousRandomDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'يختار سوراً عشوائية في كل مرة'**
+  String get settingsQuranContinuousRandomDesc;
+
+  /// No description provided for @settingsQuranModeSingleSurah.
+  ///
+  /// In ar, this message translates to:
+  /// **'سورة واحدة'**
+  String get settingsQuranModeSingleSurah;
+
+  /// No description provided for @settingsQuranModeSingleSurahDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر سورة وكرّرها كما تريد'**
+  String get settingsQuranModeSingleSurahDesc;
+
+  /// No description provided for @settingsQuranModePlaylist.
+  ///
+  /// In ar, this message translates to:
+  /// **'قائمة تلاوة'**
+  String get settingsQuranModePlaylist;
+
+  /// No description provided for @settingsQuranModePlaylistDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر مجموعة من السُّوَر تُتلى بالتتابع'**
+  String get settingsQuranModePlaylistDesc;
+
+  /// No description provided for @settingsQuranSelectSurah.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر السورة'**
+  String get settingsQuranSelectSurah;
+
+  /// No description provided for @settingsQuranNoSurahSelected.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تختر سورة بعد'**
+  String get settingsQuranNoSurahSelected;
+
+  /// No description provided for @settingsQuranEditPlaylist.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختيار السُّوَر'**
+  String get settingsQuranEditPlaylist;
+
+  /// No description provided for @settingsQuranPlaylistEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تختر أي سورة بعد'**
+  String get settingsQuranPlaylistEmpty;
+
+  /// No description provided for @settingsQuranPlaylistCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} سورة'**
+  String settingsQuranPlaylistCount(Object count);
+
+  /// No description provided for @settingsQuranRepeatCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'كم مرة تسمعها؟'**
+  String get settingsQuranRepeatCount;
+
+  /// No description provided for @settingsQuranCycleCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'كم دورة؟'**
+  String get settingsQuranCycleCount;
+
+  /// No description provided for @settingsQuranCountValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count}'**
+  String settingsQuranCountValue(Object count);
+
+  /// No description provided for @settingsQuranCountInfinite.
+  ///
+  /// In ar, this message translates to:
+  /// **'بلا توقف'**
+  String get settingsQuranCountInfinite;
+
+  /// No description provided for @searchSurahHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث عن سورة…'**
+  String get searchSurahHint;
+
+  /// No description provided for @searchReciterHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث عن قارئ…'**
+  String get searchReciterHint;
+
+  /// No description provided for @searchNoResults.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد نتائج'**
+  String get searchNoResults;
+
+  /// No description provided for @surahPickerTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختيار سورة'**
+  String get surahPickerTitle;
+
+  /// No description provided for @surahPlaylistEditorTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختيار السُّوَر'**
+  String get surahPlaylistEditorTitle;
+
+  /// No description provided for @surahPlaylistEditorSelectAll.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحديد الكل'**
+  String get surahPlaylistEditorSelectAll;
+
+  /// No description provided for @surahPlaylistEditorClear.
+  ///
+  /// In ar, this message translates to:
+  /// **'مسح الكل'**
+  String get surahPlaylistEditorClear;
 }
 
 class _AppLocalizationsDelegate

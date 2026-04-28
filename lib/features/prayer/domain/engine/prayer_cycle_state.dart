@@ -45,6 +45,24 @@ class PrayerCycleState {
   /// Internally paused because adhan/dua/iqama is active. Will auto-resume.
   bool isQuranPausedForAdhan = false;
 
+  /// Currently audible surah (1..114), null when no Quran is playing.
+  /// Mirrored from [IPrayerAudioPort.currentQuranSurah]; updated on surah
+  /// completions and explicit play actions.
+  int? currentSurahNumber;
+
+  /// Cursor into [playlistOrder] when in playlist mode (0-based).
+  int playlistCursor = 0;
+
+  /// Materialized playback order — copy of settings.surahPlaylist (Mushaf
+  /// order) or a shuffled permutation when [settings.playlistShuffle] is on.
+  List<int> playlistOrder = const [];
+
+  /// How many full cycles of the playlist have completed since playback started.
+  int playlistCyclesCompleted = 0;
+
+  /// How many times the selected surah has played (single-surah mode).
+  int surahPlayCount = 0;
+
   // ── Pre-alert dedup sets ─────────────────────────────────────────────────
   final Set<String> preAlertBellPlayed = {};
   final Set<String> preAnnouncementPlayed = {};

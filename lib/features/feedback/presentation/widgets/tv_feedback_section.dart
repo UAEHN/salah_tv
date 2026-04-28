@@ -6,6 +6,7 @@ import 'package:ghasaq/l10n/app_localizations.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../injection.dart';
 import '../../../analytics/domain/i_analytics_service.dart';
+import '../../../rating/domain/i_rating_service.dart';
 import '../../domain/usecases/submit_feedback_usecase.dart';
 import '../cubit/feedback_cubit.dart';
 import '../cubit/feedback_state.dart';
@@ -22,6 +23,7 @@ class TvFeedbackSection extends StatelessWidget {
       create: (ctx) => FeedbackCubit(
         ctx.read<SubmitFeedbackUseCase>(),
         analytics: getIt<IAnalyticsService>(),
+        rating: getIt<IRatingService>(),
       ),
       child: const _TvFeedbackContent(),
     );

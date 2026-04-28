@@ -42,6 +42,7 @@ const _csvFiles = [
   'tunisia_prayer_times_2026.csv',
   'yemen_prayer_times_2026.csv',
   'algeria_prayer_times_2026.csv',
+  'libya_prayer_times_2026.csv',
 ];
 
 Future<void> main() async {

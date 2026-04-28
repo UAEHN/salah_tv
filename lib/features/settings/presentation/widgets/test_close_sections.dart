@@ -2,7 +2,7 @@
 import 'package:flutter/services.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
-import 'tv_button.dart';
+import '../../../../core/widgets/tv_button.dart';
 
 class CloseAppSection extends StatelessWidget {
   const CloseAppSection({super.key});

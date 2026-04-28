@@ -5,12 +5,19 @@ import '../prayer_time_calculator.dart' as calc;
 import 'prayer_cycle_base.dart';
 import 'adhan_cycle_mixin.dart';
 import 'iqama_mixin.dart';
+import 'quran_mixin.dart';
 import 'recovery_mixin.dart';
 import 'tick_mixin.dart';
 
 /// Handles settings propagation and city/country change resets.
 mixin SettingsMixin
-    on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin, TickMixin {
+    on
+        PrayerCycleBase,
+        AdhanCycleMixin,
+        IqamaMixin,
+        QuranMixin,
+        RecoveryMixin,
+        TickMixin {
   /// Called via bridge when settings change. Async because city/country reset
   /// must await audio.stop() before clearing flags (Issue 1 guard).
   Future<void> updateSettings(AppSettings newSettings) async {
@@ -20,6 +27,11 @@ mixin SettingsMixin
     final oldMethod = settings.calculationMethod;
     final oldMadhab = settings.madhab;
     final oldAdhanSound = settings.adhanSound;
+    final oldMode = settings.quranPlaybackMode;
+    final oldSurah = settings.selectedSurahNumber;
+    final oldPlaylist = settings.surahPlaylist.toString();
+    final oldRepeatCount = settings.surahRepeatCount;
+    final oldCycleCount = settings.playlistCycleCount;
     settings = newSettings;
     s.now = currentTime();
 
@@ -75,12 +87,21 @@ mixin SettingsMixin
       }
     }
 
-    // If reciter changed while Quran is actively playing, switch immediately
+    // Restart Quran if reciter OR playback mode/surah/repeat/playlist changed
+    // while Quran is actively playing.
+    final reciterChanged = newSettings.quranReciterServerUrl.isNotEmpty &&
+        newSettings.quranReciterServerUrl != oldUrl;
+    final modeChanged = newSettings.quranPlaybackMode != oldMode ||
+        newSettings.selectedSurahNumber != oldSurah ||
+        newSettings.surahPlaylist.toString() != oldPlaylist ||
+        newSettings.surahRepeatCount != oldRepeatCount ||
+        newSettings.playlistCycleCount != oldCycleCount;
     if (s.isQuranPlaying &&
         !s.isQuranPausedForAdhan &&
-        newSettings.quranReciterServerUrl.isNotEmpty &&
-        newSettings.quranReciterServerUrl != oldUrl) {
-      audio.playQuranFromServer(newSettings.quranReciterServerUrl);
+        (reciterChanged || modeChanged)) {
+      // Re-toggle: stop then start using the new settings.
+      toggleQuran(null); // stops
+      toggleQuran(newSettings.quranReciterServerUrl); // starts in current mode
     }
 
     notify();

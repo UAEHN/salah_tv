@@ -10,7 +10,12 @@ void main() {
     test('saves database choice through updateLocation', () async {
       final repo = FakeSettingsRepository();
       final provider = SettingsProvider(repo, repo.savedSettings);
-      final cubit = LocationSelectionCubit(provider);
+      final compositeRepo = await buildFakeCompositeRepo();
+      final cubit = LocationSelectionCubit(
+        provider,
+        FakeDownloadCityUseCase(),
+        compositeRepo,
+      );
 
       await cubit.save(
         LocationChoice.database(countryKey: 'UAE', cityName: 'Dubai'),
@@ -25,7 +30,12 @@ void main() {
     test('saves world choice through updateWorldLocation', () async {
       final repo = FakeSettingsRepository();
       final provider = SettingsProvider(repo, repo.savedSettings);
-      final cubit = LocationSelectionCubit(provider);
+      final compositeRepo = await buildFakeCompositeRepo();
+      final cubit = LocationSelectionCubit(
+        provider,
+        FakeDownloadCityUseCase(),
+        compositeRepo,
+      );
 
       await cubit.save(
         LocationChoice.worldFromValues(

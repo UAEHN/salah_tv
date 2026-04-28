@@ -1,40 +1,50 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 
-/// Manages background Quran streaming from the mp3quran.net CDN.
-/// Streams surah-by-surah (1→2→…→114→1) and handles pause/resume/restart.
+import '../../prayer/domain/i_prayer_audio_port.dart' show NextSurahResolver;
+import 'quran_fade_controller.dart';
+
+/// Background Quran streaming from the mp3quran.net CDN. Default mode is
+/// continuous (1→2→…→114→1); a [NextSurahResolver] overrides for repeat/playlist.
 class QuranAudioService {
   final AudioPlayer _quranPlayer = AudioPlayer();
+  final StreamController<int> _surahCompletedCtrl =
+      StreamController<int>.broadcast();
   String _quranServerUrl = '';
   int _quranSurahIndex = 0; // 0-based (surah 1 = index 0)
-  DateTime? _quranPausedAt; // tracks when Quran was paused (Issue 7)
-
-  // Guards the onPlayerComplete listener against re-entrant double-fire.
-  // On Android TV, onPlayerComplete can fire more than once per natural
-  // completion. The flag is set to true in the listener before the async
-  // _playCurrentSurah() call, then reset via whenComplete() so the NEXT
-  // surah's completion is handled normally.
-  //
-  // Intentionally NOT checked inside _playCurrentSurah() itself — external
-  // callers (playQuranFromServer, resumeOrRestartQuranPlayer, etc.) must
-  // always be able to restart the player regardless of transition state.
-  // Those callers reset _isTransitioning = false before stopping/restarting
-  // so the listener guard is consistent.
+  DateTime? _quranPausedAt; // Issue 7: tracks when Quran was paused
+  NextSurahResolver? _nextSurahResolver;
+  late final QuranFadeController _fade = QuranFadeController(_quranPlayer);
+  // Guards onPlayerComplete against re-entrant double-fire on Android TV.
   bool _isTransitioning = false;
 
   int get quranSurahIndex => _quranSurahIndex;
+  int? get currentSurahNumber =>
+      _quranServerUrl.isEmpty ? null : _quranSurahIndex + 1;
+  Stream<int> get onSurahCompleted => _surahCompletedCtrl.stream;
+  void setNextSurahResolver(NextSurahResolver? resolver) =>
+      _nextSurahResolver = resolver;
 
   QuranAudioService() {
-    // When a surah finishes, advance to the next (1→2→…→114→1).
-    // _isTransitioning prevents a double-fired completion event from
-    // incrementing _quranSurahIndex twice and issuing two concurrent
-    // play() calls that corrupt the ExoPlayer state over time.
     _quranPlayer.onPlayerComplete.listen((_) {
-      if (_quranServerUrl.isNotEmpty && !_isTransitioning) {
-        _isTransitioning = true;
-        _quranSurahIndex = (_quranSurahIndex + 1) % 114;
-        _playCurrentSurah().whenComplete(() => _isTransitioning = false);
+      if (_quranServerUrl.isEmpty || _isTransitioning) return;
+      final completedSurahNumber = _quranSurahIndex + 1;
+      _surahCompletedCtrl.add(completedSurahNumber);
+      _isTransitioning = true;
+      final resolver = _nextSurahResolver;
+      final nextNumber = resolver == null
+          ? ((_quranSurahIndex + 1) % 114) + 1 // default rolling (1..114)
+          : resolver(completedSurahNumber);
+      if (nextNumber == null || nextNumber < 1 || nextNumber > 114) {
+        _quranServerUrl = '';
+        _quranSurahIndex = 0;
+        _isTransitioning = false;
+        return;
       }
+      _quranSurahIndex = nextNumber - 1;
+      _playCurrentSurah().whenComplete(() => _isTransitioning = false);
     });
   }
 
@@ -50,30 +60,33 @@ class QuranAudioService {
     try {
       final surahNum = (_quranSurahIndex + 1).toString().padLeft(3, '0');
       final url = '$_quranServerUrl$surahNum.mp3';
-      // Explicit stop before play releases the previous MediaSource on the
-      // native ExoPlayer. Skipping it let decoders accumulate on TV boxes
-      // across many surah transitions over multi-hour sessions.
+      // Explicit stop releases the previous MediaSource on native ExoPlayer.
       await _quranPlayer.stop();
       await _quranPlayer.setReleaseMode(ReleaseMode.release);
+      await _fade.applyImmediate(0.0);
       await _quranPlayer.play(UrlSource(url));
+      unawaited(_fade.rampTo(1.0));
     } catch (e) {
       debugPrint('[QuranAudio] _playCurrentSurah failed: $e');
     }
   }
 
-  /// Start streaming from the given CDN server URL, beginning at surah 1.
-  Future<void> playQuranFromServer(String serverUrl) async {
+  Future<void> playQuranFromServer(String serverUrl) =>
+      playSurah(serverUrl, 1);
+
+  Future<void> playSurah(String serverUrl, int surahNumber) async {
     if (!_isAllowedQuranUrl(serverUrl)) return;
+    if (surahNumber < 1 || surahNumber > 114) return;
     _quranServerUrl = serverUrl;
-    _quranSurahIndex = 0;
-    _isTransitioning = false; // explicit restart: clear any in-flight guard
+    _quranSurahIndex = surahNumber - 1;
+    _isTransitioning = false;
+    _quranPausedAt = null;
     await _quranPlayer.stop();
     await _playCurrentSurah();
   }
 
-  /// Pause Quran (called automatically when adhan fires).
   Future<void> pauseQuranPlayer() async {
-    _quranPausedAt = DateTime.now(); // record pause time for Issue 7 check
+    _quranPausedAt = DateTime.now(); // Issue 7
     try {
       await _quranPlayer.pause();
     } catch (e) {
@@ -81,40 +94,29 @@ class QuranAudioService {
     }
   }
 
-  /// Resume or restart Quran after iqama ends (Issue 7).
-  /// If paused >60s the HTTP stream will have timed out — restart from current surah.
+  /// Issue 7: if paused >60s the HTTP stream timed out — restart current surah.
   Future<void> resumeOrRestartQuranPlayer(String serverUrl) async {
     final pausedAt = _quranPausedAt;
     _quranPausedAt = null;
-    final longPause =
-        pausedAt != null &&
+    final longPause = pausedAt != null &&
         DateTime.now().difference(pausedAt).inSeconds > 60;
-    if (longPause) {
-      _quranServerUrl = serverUrl;
-      _isTransitioning = false; // explicit restart: clear any in-flight guard
-      await _quranPlayer.stop();
-      await _playCurrentSurah();
-    } else {
-      try {
-        await _quranPlayer.resume();
-      } catch (e) {
-        debugPrint('[QuranAudio] resume after pause failed: $e');
-      }
+    if (longPause) return restartQuranCurrentSurah(serverUrl);
+    try {
+      await _quranPlayer.resume();
+    } catch (e) {
+      debugPrint('[QuranAudio] resume after pause failed: $e');
     }
   }
 
-  /// Restart from the current surah position (fresh audio session).
-  /// Used when returning from Makkah stream audio.
   Future<void> restartQuranCurrentSurah(String serverUrl) async {
     _quranPausedAt = null;
     if (!_isAllowedQuranUrl(serverUrl)) return;
     _quranServerUrl = serverUrl;
-    _isTransitioning = false; // explicit restart: clear any in-flight guard
+    _isTransitioning = false;
     await _quranPlayer.stop();
     await _playCurrentSurah();
   }
 
-  /// Resume Quran. Prefer [resumeOrRestartQuranPlayer] for the adhan/iqama cycle.
   Future<void> resumeQuranPlayer() async {
     try {
       await _quranPlayer.resume();
@@ -123,17 +125,20 @@ class QuranAudioService {
     }
   }
 
-  /// Fully stop Quran (user pressed the stop button).
   Future<void> stopQuranPlayer() async {
     try {
-      _isTransitioning = false; // reset guard: player is being fully stopped
+      _isTransitioning = false;
       _quranServerUrl = '';
       _quranSurahIndex = 0;
+      await _fade.rampTo(0.0, total: const Duration(milliseconds: 700));
       await _quranPlayer.stop();
     } catch (e) {
       debugPrint('[QuranAudio] stopQuranPlayer failed: $e');
     }
   }
 
-  void dispose() => _quranPlayer.dispose();
+  void dispose() {
+    _surahCompletedCtrl.close();
+    _quranPlayer.dispose();
+  }
 }

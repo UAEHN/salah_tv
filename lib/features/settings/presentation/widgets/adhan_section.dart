@@ -8,7 +8,7 @@ import '../../../../core/localization/adhan_sound_localizer.dart';
 import '../dialogs/adhan_sound_picker_dialog.dart';
 import '../settings_provider.dart';
 import 'section_title.dart';
-import 'tv_button.dart';
+import '../../../../core/widgets/tv_button.dart';
 import 'tv_switch_row.dart';
 
 class AdhanSection extends StatelessWidget {

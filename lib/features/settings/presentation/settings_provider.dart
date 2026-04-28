@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../../analytics/domain/i_analytics_service.dart';
+import '../../quran/domain/entities/quran_playback_mode.dart';
 import '../domain/entities/app_settings.dart';
 import '../domain/entities/app_settings_copy_with.dart';
 import '../domain/entities/custom_adhan.dart';

@@ -14,6 +14,7 @@ import 'features/notifications/domain/i_prayer_notification_port.dart';
 import 'features/prayer/domain/i_prayer_times_repository.dart';
 import 'features/prayer/presentation/bloc/prayer_bloc.dart';
 import 'features/prayer/presentation/bloc/prayer_event.dart';
+import 'features/quran/domain/entities/quran_playback_mode.dart';
 import 'features/settings/domain/entities/app_settings.dart';
 import 'features/settings/domain/entities/app_settings_copy_with.dart';
 import 'features/settings/domain/i_location_detector.dart';
@@ -57,7 +58,7 @@ void main() async {
             )..runOnce(),
           ),
         BlocProvider(
-          create: (_) => PrayerBloc(
+          create: (context) => PrayerBloc(
             getIt<IPrayerTimesRepository>(),
             getIt<IPrayerAudioPort>(),
             settings,
@@ -65,6 +66,13 @@ void main() async {
                 ? getIt<IPrayerNotificationPort>()
                 : null,
             analytics: getIt<IAnalyticsService>(),
+            onCurrentSurahChanged: (surah) {
+              final sp = context.read<SettingsProvider>();
+              if (sp.settings.quranPlaybackMode ==
+                  QuranPlaybackMode.continuous) {
+                sp.updateLastPlayedSurah(surah);
+              }
+            },
           )..add(const PrayerStarted()),
         ),
       ],

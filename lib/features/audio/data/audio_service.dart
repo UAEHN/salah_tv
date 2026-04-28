@@ -185,6 +185,20 @@ class AudioService implements IAudioRepository, IPrayerAudioPort {
       _quranService.playQuranFromServer(serverUrl);
 
   @override
+  Future<void> playQuranSurah(String serverUrl, int surahNumber) =>
+      _quranService.playSurah(serverUrl, surahNumber);
+
+  @override
+  int? get currentQuranSurah => _quranService.currentSurahNumber;
+
+  @override
+  Stream<int> get onQuranSurahCompleted => _quranService.onSurahCompleted;
+
+  @override
+  void setQuranNextSurahResolver(NextSurahResolver? resolver) =>
+      _quranService.setNextSurahResolver(resolver);
+
+  @override
   Future<void> pauseQuranPlayer() => _quranService.pauseQuranPlayer();
 
   @override

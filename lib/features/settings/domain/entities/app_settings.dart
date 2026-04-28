@@ -1,3 +1,4 @@
+import '../../../quran/domain/entities/quran_playback_mode.dart';
 import 'custom_adhan.dart';
 
 class AppSettings {
@@ -16,6 +17,22 @@ class AppSettings {
   final bool isQuranEnabled;
   final String quranReciterName;
   final String quranReciterServerUrl;
+
+  /// Reciter `serverUrl`s the user has marked as favorites. Order is insertion
+  /// order; rendered above the full list in the picker for quick access.
+  final List<String> favoriteReciterServerUrls;
+
+  // Quran playback mode (continuous / single surah / playlist)
+  final QuranPlaybackMode quranPlaybackMode;
+  final int? selectedSurahNumber; // 1..114, null when none selected
+  final List<int> surahPlaylist; // Mushaf-ordered surah numbers
+
+  final int surahRepeatCount; // 1..N, or kInfiniteRepeat (single-surah mode)
+  final int playlistCycleCount; // 1..N, or kInfiniteRepeat (playlist mode)
+
+  // Continuous-mode customization
+  final ContinuousStartMode continuousStartMode;
+  final int lastPlayedSurah; // 1..114 — auto-tracked, used by 'resume' mode
 
   // Country & city selection (for multi-city CSV files)
   final String selectedCountry;
@@ -123,8 +140,19 @@ class AppSettings {
     this.isQuranEnabled = false,
     this.quranReciterName = '',
     this.quranReciterServerUrl = '',
+    this.favoriteReciterServerUrls = const [],
+    this.quranPlaybackMode = QuranPlaybackMode.continuous,
+    this.selectedSurahNumber,
+    this.surahPlaylist = const [],
+    this.surahRepeatCount = 1,
+    this.playlistCycleCount = 1,
+    this.continuousStartMode = ContinuousStartMode.resume,
+    this.lastPlayedSurah = 1,
   });
 
   bool get hasQuranReciter =>
       quranReciterServerUrl.isNotEmpty && quranReciterName.isNotEmpty;
+
+  bool isReciterFavorite(String serverUrl) =>
+      favoriteReciterServerUrls.contains(serverUrl);
 }

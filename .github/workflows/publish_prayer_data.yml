@@ -1,0 +1,38 @@
+name: Publish Prayer Data
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/csv/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Generate prayer JSON files
+        run: dart run tool/csv_to_json.dart
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          keep_files: true
+          destination_dir: prayer_data
+          commit_message: "chore: update prayer data [skip ci]"
