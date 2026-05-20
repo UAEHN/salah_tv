@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/mobile_theme.dart';
+import '../settings_provider.dart';
 import '../widgets/mobile/mobile_settings_list.dart';
 
 class MobileSettingsScreen extends StatelessWidget {
@@ -8,47 +10,35 @@ class MobileSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gradientColors = MobileColors.homeGradient(context);
+    final mq = MediaQuery.of(context);
+    final fontFamily = context.select<SettingsProvider, String>(
+      (p) => p.settings.fontFamily,
+    );
+    final isRubik = fontFamily == 'Rubik';
+    final scaledMq = isRubik
+        ? mq
+        : mq.copyWith(
+            textScaler: mq.textScaler
+                .clamp(minScaleFactor: 1.15, maxScaleFactor: 1.3),
+          );
 
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: gradientColors,
-              stops: const [0.0, 0.4, 0.7, 1.0],
-            ),
-          ),
-        ),
-        Positioned(
-          top: -100,
-          right: -50,
-          child: Container(
-            width: 300,
-            height: 300,
+    return MediaQuery(
+      data: scaledMq,
+      child: Stack(
+        children: [
+          Container(
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: MobileColors.primary.withValues(alpha: 0.15),
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 100,
-          left: -100,
-          child: Container(
-            width: 400,
-            height: 400,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: MobileColors.secondary.withValues(
-                alpha: MobileColors.isDark(context) ? 0.07 : 0.10,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: gradientColors,
+                stops: const [0.0, 0.4, 0.7, 1.0],
               ),
             ),
           ),
-        ),
-        const SafeArea(bottom: false, child: MobileSettingsList()),
-      ],
+          const SafeArea(bottom: false, child: MobileSettingsList()),
+        ],
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/adhkar_category.dart';
+import '../../domain/entities/adhkar_session.dart';
 import '../../domain/i_adhkar_text_repository.dart';
 import 'adhkar_reader_state.dart';
 
@@ -68,6 +69,19 @@ class AdhkarReaderCubit extends Cubit<AdhkarReaderState> {
   }
 
   void backToCategories() => loadCategories();
+
+  /// Jumps directly into reading the morning or evening session — used when
+  /// the user taps an adhkar reminder notification.
+  void openSession(AdhkarSession session) {
+    final id = session == AdhkarSession.morning ? 'morning' : 'evening';
+    final categories = _repository.getCategories();
+    final match = categories.where((c) => c.id == id).toList();
+    if (match.isEmpty) {
+      emit(AdhkarReaderCategories(categories));
+      return;
+    }
+    openCategory(match.first);
+  }
 
   @override
   Future<void> close() {

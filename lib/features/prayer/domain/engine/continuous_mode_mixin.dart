@@ -25,6 +25,8 @@ mixin ContinuousModeMixin on PrayerCycleBase {
       case ContinuousStartMode.resume:
         final last = settings.lastPlayedSurah;
         return (last >= 1 && last <= 114) ? last : 1;
+      case ContinuousStartMode.fromStart:
+        return 1; // every session begins at Al-Fatiha
       case ContinuousStartMode.random:
         return _rng.nextInt(114) + 1;
     }

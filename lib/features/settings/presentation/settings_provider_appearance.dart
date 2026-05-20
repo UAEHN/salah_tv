@@ -30,8 +30,14 @@ extension SettingsProviderAppearance on SettingsProvider {
   Future<void> updateTheme(String colorKey) =>
       _update(_settings.copyWith(themeColorKey: colorKey));
 
-  Future<void> updatePlayAdhan(bool value) =>
-      _update(_settings.copyWith(playAdhan: value));
+  Future<void> updateAdhanMode(PrayerSoundMode mode) =>
+      _update(_settings.copyWith(adhanMode: mode));
+
+  Future<void> updateIqamaMode(PrayerSoundMode mode) =>
+      _update(_settings.copyWith(iqamaMode: mode));
+
+  Future<void> updateIsMosqueMode(bool value) =>
+      _update(_settings.copyWith(isMosqueMode: value));
 
   Future<void> updateTimeFormat(bool use24h) =>
       _update(_settings.copyWith(use24HourFormat: use24h));
@@ -62,4 +68,16 @@ extension SettingsProviderAppearance on SettingsProvider {
 
   Future<void> updateIsAdhkarEnabled(bool value) =>
       _update(_settings.copyWith(isAdhkarEnabled: value));
+
+  Future<void> updateMorningAdhkarNotification(bool value) =>
+      _update(_settings.copyWith(isMorningAdhkarNotificationEnabled: value));
+
+  Future<void> updateEveningAdhkarNotification(bool value) =>
+      _update(_settings.copyWith(isEveningAdhkarNotificationEnabled: value));
+
+  Future<void> updateMorningAdhkarMinuteOfDay(int minuteOfDay) =>
+      _update(_settings.copyWith(morningAdhkarMinuteOfDay: minuteOfDay));
+
+  Future<void> updateEveningAdhkarMinuteOfDay(int minuteOfDay) =>
+      _update(_settings.copyWith(eveningAdhkarMinuteOfDay: minuteOfDay));
 }

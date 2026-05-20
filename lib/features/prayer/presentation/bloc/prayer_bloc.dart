@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../settings/domain/entities/app_settings.dart';
 import '../../domain/i_prayer_audio_port.dart';
+import '../../domain/i_takbeerat_audio_port.dart';
 import '../../../analytics/domain/i_analytics_service.dart';
 import '../../../notifications/domain/i_prayer_notification_port.dart';
 import '../../domain/i_prayer_times_repository.dart';
@@ -22,6 +23,7 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
   PrayerBloc(
     IPrayerTimesRepository repo,
     IPrayerAudioPort audio,
+    ITakbeeratAudioPort takbeeratAudio,
     AppSettings initialSettings, {
     IPrayerNotificationPort? notifications,
     IAnalyticsService? analytics,
@@ -33,6 +35,7 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     _engine = PrayerCycleEngine(
       repo,
       audio,
+      takbeeratAudio,
       initialSettings,
       _onEngineChanged,
       notifications: notifications,
@@ -46,7 +49,8 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     on<PrayerDuaStopped>(_onDuaStopped);
     on<PrayerIqamaStopped>(_onIqamaStopped);
     on<PrayerQuranToggled>(_onQuranToggled);
-    on<PrayerSurahSkipped>(_onSurahSkipped);
+    on<PrayerQuranStopped>(_onQuranStopped);
+    on<PrayerTakbeeratToggled>(_onTakbeeratToggled);
     on<PrayerReloaded>(_onReloaded);
     on<PrayerDateChanged>(_onDateChanged);
     on<PrayerDateReset>(_onDateReset);
@@ -131,8 +135,13 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     _runSync(() => _engine.toggleQuran(event.serverUrl), emit);
   }
 
-  void _onSurahSkipped(PrayerSurahSkipped _, Emitter<PrayerState> emit) =>
-      _runSync(_engine.skipToNextSurah, emit);
+  void _onQuranStopped(PrayerQuranStopped _, Emitter<PrayerState> emit) =>
+      _runSync(_engine.stopQuranAndClear, emit);
+
+  void _onTakbeeratToggled(
+    PrayerTakbeeratToggled event,
+    Emitter<PrayerState> emit,
+  ) => _runSync(() => _engine.toggleTakbeerat(event.url), emit);
 
   Future<void> _onReloaded(PrayerReloaded _, Emitter<PrayerState> emit) async {
     _engine.reload();

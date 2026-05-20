@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
-import '../../../../../core/widgets/mobile/tour_target_keys.dart';
 import '../../bloc/prayer_bloc.dart';
 import '../../bloc/prayer_event.dart';
 import '../../bloc/prayer_progress_calculator.dart' as progress_calc;
@@ -20,16 +19,11 @@ class MobileHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tourKeys = TourTargetKeysProvider.maybeOf(context);
-
-    return Column(
+    return const Column(
       children: [
-        const _MobileHeroCountdownSection(),
-        const SizedBox(height: 16),
-        KeyedSubtree(
-          key: tourKeys?.dateNavigator,
-          child: const _MobileHeroDateSection(),
-        ),
+        _MobileHeroCountdownSection(),
+        SizedBox(height: 16),
+        _MobileHeroDateSection(),
       ],
     );
   }

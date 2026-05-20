@@ -38,9 +38,19 @@ class PrayerQuranToggled extends PrayerEvent {
   const PrayerQuranToggled(this.serverUrl);
 }
 
-/// User pressed "next surah" — only meaningful in playlist mode.
-class PrayerSurahSkipped extends PrayerEvent {
-  const PrayerSurahSkipped();
+/// Toggles the Eid Takbeerat background track. Empty/null [url] is a no-op
+/// when starting (nothing to play); when stopping the engine ignores it
+/// and tears down whatever is loaded.
+class PrayerTakbeeratToggled extends PrayerEvent {
+  final String url;
+  const PrayerTakbeeratToggled(this.url);
+}
+
+/// Full stop: clears surah/cursor/counts so the next start begins from the
+/// position dictated by the current playback mode (playlist[0], selected
+/// surah, or continuous start mode).
+class PrayerQuranStopped extends PrayerEvent {
+  const PrayerQuranStopped();
 }
 
 class PrayerReloaded extends PrayerEvent {

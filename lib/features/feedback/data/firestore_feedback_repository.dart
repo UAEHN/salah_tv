@@ -19,6 +19,8 @@ class FirestoreFeedbackRepository implements IFeedbackRepository {
         'type': entry.type,
         'message': entry.message,
         'platform': entry.platform,
+        'contact': entry.contact,
+        'diagnostics': entry.diagnostics,
         'createdAt': FieldValue.serverTimestamp(),
       });
       _sendTelegramNotification(entry);
@@ -35,13 +37,23 @@ class FirestoreFeedbackRepository implements IFeedbackRepository {
     final sendUrl = AppConfig.telegramSendUrl;
     if (sendUrl == null) return;
 
+    final contactLine = (entry.contact == null || entry.contact!.isEmpty)
+        ? '— لا يوجد'
+        : entry.contact!;
+
+    final diagLines = entry.diagnostics.entries
+        .map((e) => '• ${e.key}: ${e.value}')
+        .join('\n');
+
     final text =
         '📬 ملاحظة جديدة من غسق\n'
         '━━━━━━━━━━━━━━\n'
         '📌 النوع: ${entry.type}\n'
         '📱 المنصة: ${entry.platform}\n'
-        '🕐 الوقت: ${entry.createdAt}\n\n'
-        '💬 الرسالة:\n${entry.message}';
+        '🕐 الوقت: ${entry.createdAt}\n'
+        '📧 وسيلة التواصل: $contactLine\n\n'
+        '💬 الرسالة:\n${entry.message}\n\n'
+        '🔧 بيانات تشخيصية:\n$diagLines';
 
     _dio
         .post<void>(

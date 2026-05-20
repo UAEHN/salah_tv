@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
+import '../../../../../core/app_colors.dart';
+import '../../settings_provider.dart';
 import '../../bloc/location_selection_cubit.dart';
 import '../../bloc/tv_location_picker_cubit.dart';
 import '../../bloc/tv_location_picker_state.dart';
@@ -31,10 +33,21 @@ class TvLocationPickerDialog extends StatelessWidget {
         builder: (context, pickerState) {
           return BlocBuilder<LocationSelectionCubit, LocationSelectionState>(
             builder: (context, selState) {
-              return Dialog(
-                backgroundColor: const Color(0xFF0A1628),
+              final settings = context.watch<SettingsProvider>().settings;
+              final tc = ThemeColors.of(settings.isDarkMode);
+              final accent = getThemePalette(settings.themeColorKey).primary;
+              final isBusy = selState.downloadStatus ==
+                  CityDownloadStatus.downloading;
+              return PopScope(
+                canPop: !isBusy,
+                child: Dialog(
+                backgroundColor: tc.bgSurface,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
+                  side: BorderSide(
+                    color: accent.withValues(alpha: 0.20),
+                    width: 1,
+                  ),
                 ),
                 child: SizedBox(
                   width: 920,
@@ -82,8 +95,8 @@ class TvLocationPickerDialog extends StatelessWidget {
                             ),
                             if (selState.downloadStatus ==
                                 CityDownloadStatus.downloading)
-                              const Padding(
-                                padding: EdgeInsets.only(bottom: 20),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -92,14 +105,15 @@ class TvLocationPickerDialog extends StatelessWidget {
                                       height: 18,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        color: Colors.white70,
+                                        valueColor:
+                                            AlwaysStoppedAnimation(accent),
                                       ),
                                     ),
-                                    SizedBox(width: 12),
+                                    const SizedBox(width: 12),
                                     Text(
                                       'جارٍ تحميل بيانات المدينة...',
                                       style: TextStyle(
-                                        color: Colors.white70,
+                                        color: tc.textSecondary,
                                         fontSize: 14,
                                       ),
                                     ),
@@ -132,9 +146,9 @@ class TvLocationPickerDialog extends StatelessWidget {
                                       onPressed: () => context
                                           .read<LocationSelectionCubit>()
                                           .retry(),
-                                      child: const Text(
+                                      child: Text(
                                         'إعادة المحاولة',
-                                        style: TextStyle(color: Colors.white),
+                                        style: TextStyle(color: accent),
                                       ),
                                     ),
                                   ],
@@ -143,6 +157,7 @@ class TvLocationPickerDialog extends StatelessWidget {
                           ],
                         ),
                 ),
+              ),
               );
             },
           );

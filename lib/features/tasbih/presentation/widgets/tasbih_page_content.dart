@@ -74,9 +74,10 @@ class _PhraseSection extends StatelessWidget {
         children: [
           Text(
             arabicTasbihPhrase(presetKey),
+            // titleMd already resolves the active font via Theme; the explicit
+            // override here forced 'Cairo' regardless of the user's choice.
             style: MobileTextStyles.titleMd(context).copyWith(
               fontSize: 32,
-              fontFamily: 'Cairo',
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,

@@ -39,10 +39,6 @@ class _MobileSettingsTileState extends State<MobileSettingsTile> {
               ? cardColor.withValues(alpha: 0.8)
               : cardColor.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: MobileColors.border(context).withValues(alpha: 0.7),
-            width: 1,
-          ),
           boxShadow: MobileShadows.sleekCard(context),
         ),
         child: Row(

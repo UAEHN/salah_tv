@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/app_colors.dart';
+import '../../../../core/widgets/focus_scroll.dart';
 
 class SettingsNavCard extends StatefulWidget {
   final IconData icon;
@@ -43,7 +44,10 @@ class _SettingsNavCardState extends State<SettingsNavCard> {
       autofocus: widget.autofocus,
       onFocusChange: (f) {
         setState(() => _isFocused = f);
-        if (f) widget.onFocused();
+        if (f) {
+          widget.onFocused();
+          ensureFocusedVisible(context);
+        }
       },
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&

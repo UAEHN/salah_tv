@@ -1,0 +1,391 @@
+/* ======================================================
+   Ghasaq - Animation & Typography Stylesheet
+   ======================================================
+   All @keyframes and font utility classes
+   ====================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Aref+Ruqaa+Ink:wght@400;700&family=El+Messiri:wght@400;500;600;700&family=Markazi+Text:wght@400;500;600;700&family=Reem+Kufi+Fun:wght@400;500;700&family=Tajawal:wght@300;400;500;700;800&display=swap");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+body, html {
+  background: #03060f;
+}
+
+/* ============================================
+   GENERIC ANIMATIONS
+   ============================================ */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.7); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes bounce-in {
+  0%   { opacity: 0; transform: scale(0.3); }
+  60%  { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   AMBIENT MOTION (always-running)
+   ============================================ */
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.04); opacity: 0.85; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes spin-rev {
+  from { transform: rotate(360deg); }
+  to   { transform: rotate(0deg); }
+}
+
+@keyframes drift {
+  0%, 100% { opacity: 0.05; transform: translateY(0) scale(1); }
+  50%      { opacity: 0.18; transform: translateY(-6px) scale(1.15); }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+@keyframes letter-glow {
+  0%, 100% {
+    text-shadow:
+      0 0 30px rgba(245, 210, 122, 0.3),
+      0 0 60px rgba(212, 168, 67, 0.15);
+  }
+  50% {
+    text-shadow:
+      0 0 60px rgba(245, 210, 122, 0.7),
+      0 0 120px rgba(212, 168, 67, 0.4);
+  }
+}
+
+@keyframes mesh-1 {
+  0%, 100% { transform: translate(-30%, -30%) scale(1); }
+  50%      { transform: translate(-25%, -35%) scale(1.2); }
+}
+
+@keyframes mesh-2 {
+  0%, 100% { transform: translate(20%, 30%) scale(1); }
+  50%      { transform: translate(15%, 25%) scale(1.15); }
+}
+
+@keyframes scene-num-glow {
+  0%, 100% { opacity: 0.06; }
+  50%      { opacity: 0.12; }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes chip-breathe {
+  0%, 100% {
+    box-shadow: 0 0 0 1px rgba(212, 168, 67, 0.3), 0 0 0 transparent;
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(212, 168, 67, 0.6),
+      0 0 14px rgba(212, 168, 67, 0.25);
+  }
+}
+
+/* ============================================
+   HOOK SCENE (cinematic intro)
+   ============================================ */
+
+@keyframes ambient-converge {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translate(var(--tx, 0), var(--ty, 0));
+  }
+  60% { opacity: 1; }
+  100% {
+    opacity: 0;
+    transform: scale(1) translate(0, 0);
+  }
+}
+
+@keyframes horizon-draw {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: scaleX(1); opacity: 0.6; }
+}
+
+@keyframes sun-arc {
+  0%   { transform: translate(-260px, 90px) scale(0.6);  opacity: 0; filter: blur(4px); }
+  15%  { transform: translate(-160px, 0px)  scale(0.95); opacity: 1; filter: blur(0); }
+  35%  { transform: translate(-60px, -55px) scale(1.05); opacity: 1; }
+  50%  { transform: translate(0, -70px)     scale(1.1);  opacity: 1; filter: hue-rotate(0deg) brightness(1); }
+  65%  { transform: translate(60px, -55px)  scale(1.05); opacity: 0.9; filter: hue-rotate(15deg) brightness(0.95); }
+  85%  { transform: translate(160px, 0)     scale(0.9);  opacity: 0.5; filter: hue-rotate(30deg) brightness(0.8); }
+  100% { transform: translate(260px, 90px)  scale(0.7);  opacity: 0; filter: hue-rotate(40deg) brightness(0.6); }
+}
+
+@keyframes moon-arc {
+  0%   { transform: translate(260px, 90px) scale(0.5); opacity: 0; }
+  30%  { transform: translate(160px, 0)    scale(0.85); opacity: 0.7; }
+  55%  { transform: translate(60px, -55px) scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: translate(0, -45px)    scale(1.05) rotate(8deg); opacity: 1; }
+}
+
+@keyframes ghasaq-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(1.2);
+    filter: blur(15px);
+    letter-spacing: 0.4em;
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+    letter-spacing: -0.04em;
+  }
+}
+
+@keyframes shooting-star {
+  0%   { opacity: 0; transform: translate(-300px, -150px) rotate(-25deg) scaleX(0); }
+  10%  { opacity: 1; }
+  60%  { opacity: 1; transform: translate(150px, 100px) rotate(-25deg) scaleX(1); }
+  100% { opacity: 0; transform: translate(300px, 200px) rotate(-25deg) scaleX(0); }
+}
+
+@keyframes light-flare {
+  0%   { opacity: 0; transform: translateX(-100%) skewX(-20deg); }
+  50%  { opacity: 0.8; }
+  100% { opacity: 0; transform: translateX(200%) skewX(-20deg); }
+}
+
+@keyframes letter-cascade {
+  0%   { opacity: 0; transform: translateY(40px) scale(0.5); filter: blur(8px); }
+  100% { opacity: 1; transform: translateY(0)    scale(1);   filter: blur(0); }
+}
+
+/* ============================================
+   PHONE / FEATURE SCENES
+   ============================================ */
+
+@keyframes phone-tilt {
+  0% {
+    opacity: 0;
+    transform: perspective(1000px) rotateY(15deg) translateY(60px);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1000px) rotateY(-3deg) translateY(0);
+  }
+}
+
+/* PHONE: 3D entrance from depth */
+@keyframes phone-rise-3d {
+  0% {
+    opacity: 0;
+    transform: perspective(1400px) rotateY(22deg) rotateX(-8deg) translateY(80px) translateZ(-200px);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1400px) rotateY(-3deg) rotateX(2deg) translateY(0) translateZ(0);
+  }
+}
+
+/* PHONE: continuous gentle breathing tilt */
+@keyframes phone-breathe {
+  0%, 100% { transform: perspective(1400px) rotateY(-3deg)  rotateX(2deg)  translateY(0); }
+  50%      { transform: perspective(1400px) rotateY(3deg)   rotateX(-1deg) translateY(-5px); }
+}
+
+/* PHONE: Qibla scene — slow Z-axis settle, simulating a user
+   turning their phone in hand to align with Mecca. */
+@keyframes phone-qibla-search {
+  0%   { transform: perspective(1400px) rotateY(-3deg) rotateX(2deg) rotateZ(-22deg); }
+  60%  { transform: perspective(1400px) rotateY(-3deg) rotateX(2deg) rotateZ(-5deg); }
+  82%  { transform: perspective(1400px) rotateY(-3deg) rotateX(2deg) rotateZ(2deg); }
+  100% { transform: perspective(1400px) rotateY(-3deg) rotateX(2deg) rotateZ(0deg); }
+}
+
+/* PHONE: glass sheen sweep */
+@keyframes phone-sheen {
+  0%, 80%, 100% { opacity: 0; transform: translateX(-30%); }
+  40%           { opacity: 1; transform: translateX(30%); }
+}
+
+/* PHONE: aura particles drifting around */
+@keyframes phone-aura-drift {
+  0%, 100% { opacity: 0;   transform: translate(0, 0)         scale(0.6); }
+  20%      { opacity: 0.7;                                                }
+  50%      { opacity: 0.9; transform: translate(-12px, -18px) scale(1.1); }
+  80%      { opacity: 0.6; transform: translate(8px, -10px)   scale(1);   }
+}
+
+@keyframes word-pop-stay {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.8); }
+  60%  { opacity: 1; transform: translateY(-2px) scale(1.05); }
+  100% { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+/* ============================================
+   VERSE / ORNAMENT SCENES
+   ============================================ */
+
+@keyframes verse-reveal {
+  0%   { opacity: 0; clip-path: inset(0 100% 0 0); }
+  100% { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+@keyframes ornament-grow {
+  from { opacity: 0; transform: scaleX(0); }
+  to   { opacity: 1; transform: scaleX(1); }
+}
+
+/* ============================================
+   NOTIFICATION SCENE
+   ============================================ */
+
+@keyframes notif-drop {
+  0%   { opacity: 0; transform: translateY(-90px) scale(0.95); }
+  60%  { opacity: 1; transform: translateY(4px)   scale(1.01); }
+  100% { opacity: 1; transform: translateY(0)     scale(1); }
+}
+
+@keyframes spark {
+  0%   { opacity: 0; transform: scale(0); }
+  30%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* ============================================
+   PROBLEM SCENE (question → dramatic answer)
+   ============================================ */
+
+@keyframes answer-sweep {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  40%  { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes answer-burst {
+  0%   { opacity: 0; transform: scale(0.5) translateY(20px); filter: blur(10px); }
+  60%  { opacity: 1; transform: scale(1.06) translateY(-2px); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+@keyframes halo-breathe {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.08); }
+}
+
+/* ============================================
+   CTA SCENE (closing climax)
+   ============================================ */
+
+@keyframes cta-halo-bloom {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.6); }
+  100% { opacity: 0.9; transform: translateX(-50%) scale(1); }
+}
+
+@keyframes cta-rotor-fade {
+  0%   { opacity: 0; }
+  100% { opacity: 0.55; }
+}
+
+@keyframes cta-logo-bounce {
+  0%   { opacity: 0; transform: scale(0.4) translateY(20px); filter: blur(10px); }
+  60%  { opacity: 1; transform: scale(1.08) translateY(-4px); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+@keyframes tagline-rise-cta {
+  0%   { opacity: 0; transform: translateY(12px); letter-spacing: 0.2em; }
+  100% { opacity: 1; transform: translateY(0);    letter-spacing: 0.02em; }
+}
+
+@keyframes cta-button-rise {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* CTA: massive "غسق" watermark slowly breathing in the back */
+@keyframes cta-watermark-pulse {
+  0%, 100% { opacity: 0.04; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 0.07; transform: translate(-50%, -50%) scale(1.02); }
+}
+
+/* CTA: echo rings rippling outward from the phone */
+@keyframes cta-phone-echo {
+  0%   { transform: scale(0.7); opacity: 0; border-width: 1.5px; }
+  20%  { opacity: 0.55; }
+  100% { transform: scale(1.8); opacity: 0; border-width: 0px; }
+}
+
+/* ============================================
+   GLOBAL — Cinematic scene transition veil
+   ============================================ */
+@keyframes scene-veil-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Adhan call waves (used in Notification scene) */
+@keyframes adhan-wave {
+  0%   { transform: scale(0.6); opacity: 0; border-width: 2px; }
+  20%  { opacity: 0.55; }
+  100% { transform: scale(3.2); opacity: 0; border-width: 0px; }
+}
+
+/* ============================================
+   TYPOGRAPHY UTILITY CLASSES
+   ============================================ */
+
+.font-brand     { font-family: "Aref Ruqaa Ink", "Aref Ruqaa", serif; font-weight: 700; }
+.font-luxury    { font-family: "Amiri", "Aref Ruqaa", serif; font-weight: 700; font-feature-settings: "liga" on, "calt" on, "dlig" on; }
+.font-display   { font-family: "El Messiri", "Reem Kufi Fun", serif; font-weight: 700; }
+.font-headline  { font-family: "El Messiri", "Markazi Text", serif; font-weight: 600; }
+.font-quran     { font-family: "Amiri Quran", "Amiri", serif; font-weight: 400; }
+.font-body      { font-family: "Tajawal", sans-serif; font-weight: 500; }
+.font-body-bold { font-family: "Tajawal", sans-serif; font-weight: 700; }
+.font-light     { font-family: "Tajawal", sans-serif; font-weight: 300; }
+.font-mono      { font-family: "SF Pro Display", -apple-system, system-ui, sans-serif; }

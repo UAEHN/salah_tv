@@ -38,7 +38,9 @@ class NextPrayerWidget extends StatelessWidget {
         vertical: screenH * 0.025,
       ),
       decoration: BoxDecoration(
-        color: Colors.transparent,
+        // Light: opaque to detach from the warm parchment background.
+        // Dark: transparent so the dark gradient bleeds through naturally.
+        color: isDark ? Colors.transparent : tc.bgSurface,
         border: Border.all(
           color: palette.primary.withValues(alpha: 0.55),
           width: 1.5,

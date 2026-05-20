@@ -98,4 +98,22 @@ class FirebaseAnalyticsService implements IAnalyticsService {
       parameters: {'country': country, 'city': city},
     );
   }
+
+  // ── Customization ───────────────────────────────────────────────
+
+  @override
+  void logThemeChanged(String themeKey) {
+    _analytics.logEvent(
+      name: 'theme_changed',
+      parameters: {'theme_key': themeKey},
+    );
+  }
+
+  @override
+  void logFontChanged(String fontFamily) {
+    _analytics.logEvent(
+      name: 'font_changed',
+      parameters: {'font_family': fontFamily},
+    );
+  }
 }

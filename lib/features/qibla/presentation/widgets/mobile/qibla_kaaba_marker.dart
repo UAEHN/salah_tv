@@ -16,10 +16,12 @@ class QiblaKaabaMarker extends StatelessWidget {
           height: 32,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: MobileColors.primaryContainer,
+            color: MobileColors.activePrimaryContainer(context),
             boxShadow: [
               BoxShadow(
-                color: MobileColors.primary.withValues(alpha: 0.7),
+                color: MobileColors.activePrimary(
+                  context,
+                ).withValues(alpha: 0.7),
                 blurRadius: 10,
                 spreadRadius: 2,
               ),

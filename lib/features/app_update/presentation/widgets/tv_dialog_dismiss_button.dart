@@ -11,11 +11,13 @@ class TvDialogDismissButton extends StatefulWidget {
     required this.label,
     required this.onPressed,
     required this.tc,
+    this.autofocus = true,
   });
 
   final String label;
   final VoidCallback onPressed;
   final ThemeColors tc;
+  final bool autofocus;
 
   @override
   State<TvDialogDismissButton> createState() => _TvDialogDismissButtonState();
@@ -27,7 +29,7 @@ class _TvDialogDismissButtonState extends State<TvDialogDismissButton> {
   @override
   Widget build(BuildContext context) {
     return Focus(
-      autofocus: true,
+      autofocus: widget.autofocus,
       onFocusChange: (v) => setState(() => _isFocused = v),
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&

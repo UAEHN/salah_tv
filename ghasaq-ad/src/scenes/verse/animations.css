@@ -1,0 +1,86 @@
+/* ======================================================
+   Verse Scene - Specialized Animations
+   ======================================================
+   Reverent, rhythmic, climactic. Designed around the
+   word "غَسَقِ" as the dramatic peak.
+   ====================================================== */
+
+/* Spotlight backdrop */
+@keyframes spotlight-in {
+  0%   { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes spotlight-breath {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.04); }
+}
+
+/* Floating dust motes (light particles) */
+@keyframes mote-rise {
+  0%   { opacity: 0; transform: translateY(60px) scale(0.6); }
+  15%  { opacity: var(--mote-o, 0.7); }
+  85%  { opacity: var(--mote-o, 0.7); }
+  100% { opacity: 0; transform: translateY(-180px) scale(1); }
+}
+
+/* Ornament — draws horizontally */
+@keyframes ornament-draw {
+  0%   { opacity: 0; transform: scaleX(0); }
+  100% { opacity: 0.85; transform: scaleX(1); }
+}
+
+/* Chip / pill pop */
+@keyframes chip-pop {
+  0%   { opacity: 0; transform: translateY(-8px) scale(0.9); }
+  100% { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* Per-word reveal (verse cadence) */
+@keyframes word-fade-up {
+  0%   { opacity: 0; transform: translateY(14px); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+
+/* KEY WORD — the climax bloom (callback to scene 1 meeting flash) */
+@keyframes key-word-bloom {
+  0%   { opacity: 0; transform: scale(0.5); filter: blur(14px) brightness(2); }
+  45%  { opacity: 1; transform: scale(1.22); filter: blur(0) brightness(1.5); }
+  75%  { transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1);   filter: blur(0) brightness(1.05); }
+}
+
+/* Halo disc behind the key word */
+@keyframes key-halo {
+  0%   { opacity: 0; transform: scale(0.4); }
+  50%  { opacity: 0.9; transform: scale(1.15); }
+  100% { opacity: 0.7; transform: scale(1); }
+}
+
+/* Light burst at the key word moment */
+@keyframes key-burst {
+  0%   { opacity: 0; transform: scale(0.2); }
+  35%  { opacity: 0.9; transform: scale(1.6); }
+  100% { opacity: 0; transform: scale(3.4); }
+}
+
+/* Sparkle particles around key word */
+@keyframes sparkle-burst {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0); }
+  30%  { opacity: 1; transform: translate(var(--sx), var(--sy)) scale(1); }
+  100% { opacity: 0; transform: translate(calc(var(--sx) * 1.6), calc(var(--sy) * 1.6)) scale(0.3); }
+}
+
+/* Ambient glow ring around key word — sustained */
+@keyframes key-pulse {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(245,210,122,0.5))
+                     drop-shadow(0 0 24px rgba(212,168,67,0.3)); }
+  50%      { filter: drop-shadow(0 0 22px rgba(245,210,122,0.8))
+                     drop-shadow(0 0 48px rgba(212,168,67,0.5)); }
+}
+
+/* Tagline gentle rise */
+@keyframes tagline-rise-soft {
+  0%   { opacity: 0; transform: translateY(10px); letter-spacing: 0.12em; }
+  100% { opacity: 1; transform: translateY(0);    letter-spacing: 0.02em; }
+}

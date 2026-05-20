@@ -13,6 +13,8 @@ class HomeMainView extends StatelessWidget {
   final double screenW;
   final double screenH;
   final FocusNode quranFocusNode;
+  final FocusNode takbeeratFocusNode;
+  final String takbeeratReciterUrl;
   final FocusNode mainFocusNode;
 
   const HomeMainView({
@@ -24,12 +26,17 @@ class HomeMainView extends StatelessWidget {
     required this.screenW,
     required this.screenH,
     required this.quranFocusNode,
+    required this.takbeeratFocusNode,
+    required this.takbeeratReciterUrl,
     required this.mainFocusNode,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    // Mosque mode boosts text so the home view stays legible from across a
+    // prayer hall. Scaling is applied via [MediaQuery.textScaler] so every
+    // descendant Text honours it without per-widget plumbing.
+    final base = Container(
       decoration: BoxDecoration(gradient: tc.bgGradient),
       child: Stack(
         children: [
@@ -66,6 +73,8 @@ class HomeMainView extends StatelessWidget {
                   screenW: screenW,
                   screenH: screenH,
                   quranFocusNode: quranFocusNode,
+                  takbeeratFocusNode: takbeeratFocusNode,
+                  takbeeratReciterUrl: takbeeratReciterUrl,
                   mainFocusNode: mainFocusNode,
                 )
               : HomeClassicLayout(
@@ -75,10 +84,20 @@ class HomeMainView extends StatelessWidget {
                   screenW: screenW,
                   screenH: screenH,
                   quranFocusNode: quranFocusNode,
+                  takbeeratFocusNode: takbeeratFocusNode,
+                  takbeeratReciterUrl: takbeeratReciterUrl,
                   mainFocusNode: mainFocusNode,
                 ),
         ],
       ),
+    );
+    if (!settings.isMosqueMode) return base;
+    final current = MediaQuery.textScalerOf(context);
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(
+        textScaler: TextScaler.linear(current.scale(1.0) * 1.25),
+      ),
+      child: base,
     );
   }
 }

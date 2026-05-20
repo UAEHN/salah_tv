@@ -59,6 +59,7 @@ class _MobileFeedbackTypeChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardColor = MobileColors.cardColor(context);
+    final primary = MobileColors.activePrimary(context);
 
     return GestureDetector(
       onTap: onTap,
@@ -67,12 +68,12 @@ class _MobileFeedbackTypeChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? MobileColors.primary.withValues(alpha: 0.15)
+              ? primary.withValues(alpha: 0.15)
               : cardColor.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isSelected
-                ? MobileColors.primary
+                ? primary
                 : MobileColors.border(context),
             width: isSelected ? 1.5 : 1,
           ),
@@ -83,7 +84,7 @@ class _MobileFeedbackTypeChip extends StatelessWidget {
             Icon(
               icon,
               color: isSelected
-                  ? MobileColors.primary
+                  ? primary
                   : MobileColors.onSurfaceMuted(context),
               size: 22,
             ),
@@ -92,7 +93,7 @@ class _MobileFeedbackTypeChip extends StatelessWidget {
               label,
               style: MobileTextStyles.labelSm(context).copyWith(
                 color: isSelected
-                    ? MobileColors.primary
+                    ? primary
                     : MobileColors.onSurfaceMuted(context),
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 fontSize: 12,

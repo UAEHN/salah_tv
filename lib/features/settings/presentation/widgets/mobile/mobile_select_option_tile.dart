@@ -30,7 +30,9 @@ class MobileSelectOptionTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected
-                ? MobileColors.primaryContainer.withValues(alpha: 0.5)
+                ? MobileColors.activePrimaryContainer(
+                    context,
+                  ).withValues(alpha: 0.5)
                 : MobileColors.border(context),
           ),
         ),
@@ -64,7 +66,7 @@ class MobileSelectOptionTile extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: isSelected
-                      ? MobileColors.primaryContainer
+                      ? MobileColors.activePrimaryContainer(context)
                       : MobileColors.onSurfaceMuted(context),
                   width: 2,
                 ),
@@ -72,9 +74,9 @@ class MobileSelectOptionTile extends StatelessWidget {
               padding: const EdgeInsets.all(4),
               child: isSelected
                   ? Container(
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: MobileColors.primaryContainer,
+                        color: MobileColors.activePrimaryContainer(context),
                       ),
                     )
                   : null,

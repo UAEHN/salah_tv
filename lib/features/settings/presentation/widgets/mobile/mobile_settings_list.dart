@@ -11,7 +11,7 @@ import '../../screens/mobile_notification_settings_screen.dart';
 import '../../screens/mobile_prayer_offsets_screen.dart';
 import '../../settings_provider.dart';
 import 'mobile_calculation_method_dialog.dart';
-import 'mobile_location_dialog.dart';
+import 'mobile_location_dialog_launcher.dart';
 import 'mobile_madhab_dialog.dart';
 import 'mobile_settings_appearance_section.dart';
 import 'mobile_settings_header.dart';
@@ -43,17 +43,7 @@ class MobileSettingsList extends StatelessWidget {
                 title: l.settingsCountryAndCity,
                 subtitle:
                     '${cityLabel(s.selectedCity, locale: l.localeName, countryKey: s.selectedCountry)}${l.localeComma} ${countryLabel(s.selectedCountry, locale: l.localeName)}',
-                onTap: () => showModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.transparent,
-                  isScrollControlled: true,
-                  builder: (_) => MobileLocationDialog(
-                    currentCountry: s.selectedCountry,
-                    currentCity: s.selectedCity,
-                    onSave: sp.updateLocation,
-                    onSaveWorld: sp.updateWorldLocation,
-                  ),
-                ),
+                onTap: () => showMobileLocationDialog(context),
               ),
               const SizedBox(height: 24),
               MobileSettingsSectionTitle(

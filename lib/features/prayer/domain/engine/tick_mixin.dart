@@ -42,6 +42,12 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
       s.needsIqamaRecovery = false;
     }
 
+    // Close the mosque-mode post-iqama prayer window once 10 minutes elapse.
+    final until = s.prayerInProgressEndsAt;
+    if (until != null && !s.now.isBefore(until)) {
+      s.prayerInProgressEndsAt = null;
+    }
+
     updateNextPrayer();
     checkPreAnnouncement();
     checkPreAlertBell();
@@ -66,6 +72,10 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
       unawaited(
         notifications?.scheduleForDay(s.todayPrayers!, tomorrow, settings),
       );
+      // Adhkar reminders are scheduled 7 days ahead so they keep firing even
+      // if the phone has been off or the app has not been opened for days.
+      // Independent of prayer times — the user picks the wall-clock time.
+      unawaited(notifications?.scheduleAdhkar(settings));
     }
   }
 
@@ -101,7 +111,9 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
   }
 
   /// Play the prayer-name announcement 5 seconds before adhan fires.
+  /// Mosque mode: muezzin handles the call live — never play the cue.
   void checkPreAnnouncement() {
+    if (settings.isMosqueMode) return;
     if (s.isCycleActive) return;
     final key = '${s.nextPrayerKey}_${s.now.day}';
     if (s.preAnnouncementPlayed.contains(key)) return;
@@ -112,7 +124,9 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
   }
 
   /// Play a soft bell once when the countdown enters the 1-minute pre-alert window.
+  /// Mosque mode: muezzin handles the call live — never play the cue.
   void checkPreAlertBell() {
+    if (settings.isMosqueMode) return;
     if (!s.isPrePrayerAlert) return;
     final key = '${s.nextPrayerKey}_${s.now.day}';
     if (s.preAlertBellPlayed.contains(key)) return;

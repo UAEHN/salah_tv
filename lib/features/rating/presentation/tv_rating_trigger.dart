@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../../features/prayer/presentation/bloc/prayer_bloc.dart';
 import '../../../features/prayer/presentation/bloc/prayer_state.dart';
+import '../../../features/settings/presentation/settings_provider.dart';
 import '../domain/i_rating_service.dart';
 import 'widgets/tv_rating_dialog.dart';
 
@@ -42,6 +43,8 @@ class _TvRatingTriggerState extends State<TvRatingTrigger> {
 
   Future<void> _checkEligibility() async {
     if (!mounted || _sessionShown) return;
+    // Mosque mode: never interrupt a mosque wall display with a rating prompt.
+    if (context.read<SettingsProvider>().settings.isMosqueMode) return;
     final canShow = kDebugMode || await _service.shouldShowDialog();
     if (!canShow) return;
     // Check current state immediately, then subscribe for future states.
@@ -51,6 +54,9 @@ class _TvRatingTriggerState extends State<TvRatingTrigger> {
 
   void _onPrayerState(PrayerState state) {
     if (!mounted || _sessionShown) return;
+    // Re-check mosque mode on every state — the user may toggle it on after
+    // the initial eligibility check has already passed and we are subscribed.
+    if (context.read<SettingsProvider>().settings.isMosqueMode) return;
     final isCalmMoment = !state.isCycleActive &&
         state.todayPrayers != null &&
         state.countdown.inMinutes >= 5;

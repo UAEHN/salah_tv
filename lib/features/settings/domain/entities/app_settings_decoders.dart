@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../../../quran/domain/entities/quran_playback_mode.dart';
 import 'custom_adhan.dart';
+import 'prayer_sound_mode.dart';
 
 /// Decoder helpers for [AppSettings] serialized state. Extracted from
 /// [app_settings_mapper.dart] to keep each file under the 150-line limit
@@ -96,8 +97,24 @@ int legacyRepeatCountFor(Object? legacyRepeatRaw, int defaultCount) {
   return defaultCount;
 }
 
+/// Decode [PrayerSoundMode] from a stored enum-name string. If absent, fall
+/// back to the legacy bool key (`playAdhan` / `playIqama`) so users upgrading
+/// from earlier versions keep their preference: `true → sound`, `false → off`.
+PrayerSoundMode decodePrayerSoundMode(Object? raw, {Object? legacyBool}) {
+  if (raw is String) {
+    if (raw == 'silent') return PrayerSoundMode.silent;
+    if (raw == 'off') return PrayerSoundMode.off;
+    if (raw == 'sound') return PrayerSoundMode.sound;
+  }
+  if (legacyBool is bool) {
+    return legacyBool ? PrayerSoundMode.sound : PrayerSoundMode.off;
+  }
+  return PrayerSoundMode.sound;
+}
+
 ContinuousStartMode decodeContinuousStartMode(Object? raw) {
   if (raw == 'random') return ContinuousStartMode.random;
+  if (raw == 'fromStart') return ContinuousStartMode.fromStart;
   return ContinuousStartMode.resume;
 }
 

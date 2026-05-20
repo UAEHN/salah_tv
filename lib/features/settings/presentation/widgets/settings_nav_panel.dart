@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../../../core/app_colors.dart';
 import 'exit_button.dart';
+import 'settings_category_definitions.dart';
 import 'settings_nav_card.dart';
 import 'update_button.dart';
 
 /// Vertical navigation panel with category cards and exit button.
+/// Each card holds its canonical [SettingsCategoryDef.id] so the focus node
+/// lookup stays correct when mosque-mode filters the visible list.
 class SettingsNavPanel extends StatelessWidget {
-  final List<(IconData, String, String)> categories;
+  final List<SettingsCategoryDef> categories;
   final int selectedIndex;
   final List<FocusNode> navFocusNodes;
   final AccentPalette palette;
@@ -34,15 +37,15 @@ class SettingsNavPanel extends StatelessWidget {
             itemBuilder: (context, i) {
               final cat = categories[i];
               return SettingsNavCard(
-                icon: cat.$1,
-                title: cat.$2,
-                subtitle: cat.$3,
-                isSelected: selectedIndex == i,
-                onFocused: () => onSelectIndex(i),
-                focusNode: navFocusNodes[i],
+                icon: cat.icon,
+                title: cat.title,
+                subtitle: cat.subtitle,
+                isSelected: selectedIndex == cat.id,
+                onFocused: () => onSelectIndex(cat.id),
+                focusNode: navFocusNodes[cat.id],
                 palette: palette,
                 isDarkMode: tc.isDark,
-                autofocus: selectedIndex == i,
+                autofocus: selectedIndex == cat.id,
               );
             },
           ),

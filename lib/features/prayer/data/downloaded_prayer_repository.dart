@@ -32,7 +32,10 @@ class DownloadedPrayerRepository implements IPrayerTimesRepository {
   bool get hasData => _cache.isNotEmpty;
 
   @override
-  bool get isMultiCity => _cityIds.length > 1;
+  // DB countries are multi-city by definition. Using `_cityIds.length > 1`
+  // would hide the city badge until a second city was downloaded into the
+  // local cache, which is not what the badge represents.
+  bool get isMultiCity => _activeCity.isNotEmpty;
 
   @override
   List<String> get availableCities => _availableCities;
@@ -80,6 +83,10 @@ class DownloadedPrayerRepository implements IPrayerTimesRepository {
   @override
   void setActiveCity(String city) {
     if (!_cityIds.containsKey(city)) return;
+    // Idempotent: when the city was already prepared via [loadCity] (the
+    // download → loadCity → updateLocation flow), the settings-bridge will
+    // re-call this with the same city. Don't invalidate the warm cache.
+    if (_activeCity == city && _cache.isNotEmpty) return;
     _activeCity = city;
     _cache.invalidate();
     _refreshInFlight = null;

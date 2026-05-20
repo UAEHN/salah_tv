@@ -3,15 +3,28 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'core/app_colors.dart';
-import 'core/mobile_theme.dart';
+import 'core/navigation/app_navigator_key.dart';
 import 'core/navigation/app_route_builder.dart';
 import 'core/platform_config.dart';
 import 'core/widgets/mobile/mobile_shell.dart';
 import 'features/analytics/domain/i_analytics_service.dart';
+import 'features/adhkar/domain/entities/adhkar_session.dart';
 import 'features/adhkar/presentation/screens/adhkar_screen.dart';
+import 'features/feedback/domain/i_feedback_diagnostics_collector.dart';
 import 'features/feedback/domain/usecases/submit_feedback_usecase.dart';
+import 'features/customization/data/mobile_theme_palettes.dart';
+import 'features/customization/domain/usecases/apply_quran_font.dart';
+import 'features/customization/domain/usecases/apply_theme_palette.dart';
+import 'features/customization/domain/usecases/get_all_quran_fonts.dart';
+import 'features/customization/domain/usecases/get_all_theme_palettes.dart';
+import 'features/customization/presentation/bloc/font_picker_cubit.dart';
+import 'features/customization/presentation/bloc/settings_appearance_adapter.dart';
+import 'features/customization/presentation/bloc/theme_picker_cubit.dart';
+import 'features/customization/presentation/screens/mobile_font_picker_screen.dart';
+import 'features/customization/presentation/screens/mobile_theme_picker_screen.dart';
 import 'features/feedback/presentation/cubit/feedback_cubit.dart';
 import 'features/feedback/presentation/screens/mobile_feedback_screen.dart';
+import 'features/home_widget/presentation/bridge/home_widget_bridge.dart';
 import 'features/prayer/presentation/screens/home_screen.dart';
 import 'features/rating/domain/i_rating_service.dart';
 import 'features/qibla/presentation/screens/qibla_screen.dart';
@@ -22,12 +35,16 @@ import 'features/settings/domain/i_world_city_repository.dart';
 import 'features/settings/presentation/screens/mobile_settings_screen.dart';
 import 'features/settings/presentation/settings_provider.dart';
 import 'features/settings/presentation/settings_screen.dart';
-import 'features/app_tour/presentation/app_tour_cubit.dart';
+import 'features/announcements/presentation/announcement_trigger.dart';
 import 'features/app_update/presentation/app_update_trigger.dart';
-import 'features/onboarding/presentation/onboarding_cubit.dart';
+import 'features/onboarding/presentation/onboarding_cubit_factory.dart';
 import 'features/onboarding/presentation/onboarding_screen.dart';
 import 'features/onboarding/presentation/tv_onboarding_screen.dart';
+import 'features/notifications/presentation/cubit/notification_health_cubit.dart';
+import 'features/notifications/presentation/onboarding/notification_onboarding_gate.dart';
+import 'features/notifications/presentation/screens/notification_health_screen.dart';
 import 'features/splash/presentation/splash_screen.dart';
+import 'features/takbeerat/presentation/cubit/takbeerat_visibility_cubit.dart';
 import 'features/tasbih/presentation/bloc/tasbih_bloc.dart';
 import 'features/tasbih/presentation/screens/mobile_tasbih_screen.dart';
 import 'injection.dart';
@@ -38,14 +55,25 @@ class GhasaqApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appSettings = context.watch<SettingsProvider>().settings;
-    final palette = getThemePalette(appSettings.themeColorKey);
+    final isTV = kIsTV;
+    // TV exposes only the 5 legacy palettes from `kThemePalettes`. Mobile
+    // additionally surfaces the extra palettes from `kMobileExtraPalettes` —
+    // keep TV/mobile palette resolution split so a mobile-only theme key
+    // never leaks into the TV theme picker.
+    final palette = isTV
+        ? getThemePalette(appSettings.themeColorKey)
+        : getMobileThemePalette(appSettings.themeColorKey);
     final isDark = appSettings.isDarkMode;
     final tc = ThemeColors.of(isDark);
-    final isTV = kIsTV;
     final effectiveFontFamily = appSettings.fontFamily;
 
-    final schemePrimary = isTV ? palette.primary : MobileColors.primary;
-    final schemeSecondary = isTV ? palette.secondary : MobileColors.secondary;
+    // Both TV and mobile drive their `ColorScheme` from the active palette so
+    // theme switches propagate everywhere `Theme.of(context).colorScheme` is
+    // consumed (Material widgets + `MobileColors.activePrimary(context)`
+    // helpers). Components that still reference `MobileColors.primary`
+    // statically retain the legacy Ghasaq Gold identity.
+    final schemePrimary = palette.primary;
+    final schemeSecondary = palette.secondary;
 
     if (!isTV) {
       SystemChrome.setSystemUIOverlayStyle(
@@ -64,6 +92,7 @@ class GhasaqApp extends StatelessWidget {
     final observer = getIt<IAnalyticsService>().navigatorObserver;
 
     return MaterialApp(
+      navigatorKey: appNavigatorKey,
       navigatorObservers: [observer as NavigatorObserver],
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
@@ -115,12 +144,18 @@ class GhasaqApp extends StatelessWidget {
           case '/':
             return buildAppRoute(
               settings: routeSettings,
-              page: isTV
-                  ? const AppUpdateTrigger(child: HomeScreen())
-                  : BlocProvider.value(
-                      value: getIt<AppTourCubit>(),
-                      child: const MobileShell(),
-                    ),
+              page: BlocProvider<TakbeeratVisibilityCubit>(
+                create: (_) => getIt<TakbeeratVisibilityCubit>()..load(),
+                child: isTV
+                    ? const AppUpdateTrigger(
+                        child: AnnouncementTrigger(child: HomeScreen()),
+                      )
+                    : const AnnouncementTrigger(
+                        child: NotificationOnboardingGate(
+                          child: HomeWidgetBridge(child: MobileShell()),
+                        ),
+                      ),
+              ),
             );
           case '/settings':
             return buildAppRoute(
@@ -130,9 +165,12 @@ class GhasaqApp extends StatelessWidget {
                   : const MobileSettingsScreen(),
             );
           case '/adhkar':
+            final session = routeSettings.arguments is AdhkarSession
+                ? routeSettings.arguments as AdhkarSession
+                : null;
             return buildAppRoute(
               settings: routeSettings,
-              page: const AdhkarScreen(),
+              page: AdhkarScreen(initialSession: session),
             );
           case '/qibla':
             return buildAppRoute(
@@ -140,6 +178,14 @@ class GhasaqApp extends StatelessWidget {
               page: QiblaScreen(
                 city: appSettings.selectedCity,
                 country: appSettings.selectedCountry,
+              ),
+            );
+          case '/notification_health':
+            return buildAppRoute(
+              settings: routeSettings,
+              page: BlocProvider<NotificationHealthCubit>(
+                create: (_) => getIt<NotificationHealthCubit>(),
+                child: const NotificationHealthScreen(),
               ),
             );
           case '/tasbih':
@@ -156,7 +202,7 @@ class GhasaqApp extends StatelessWidget {
               settings: routeSettings,
               isInstant: true,
               page: BlocProvider(
-                create: (ctx) => OnboardingCubit.fromDependencies(
+                create: (ctx) => createOnboardingCubit(
                   settingsProvider: ctx.read<SettingsProvider>(),
                   worldRepo: getIt<IWorldCityRepository>(),
                   settingsRepository: getIt<ISettingsRepository>(),
@@ -172,7 +218,7 @@ class GhasaqApp extends StatelessWidget {
               settings: routeSettings,
               isInstant: true,
               page: BlocProvider(
-                create: (ctx) => OnboardingCubit.fromDependencies(
+                create: (ctx) => createOnboardingCubit(
                   settingsProvider: ctx.read<SettingsProvider>(),
                   worldRepo: getIt<IWorldCityRepository>(),
                   settingsRepository: getIt<ISettingsRepository>(),
@@ -189,21 +235,66 @@ class GhasaqApp extends StatelessWidget {
               page: BlocProvider(
                 create: (ctx) => FeedbackCubit(
                   ctx.read<SubmitFeedbackUseCase>(),
+                  getIt<IFeedbackDiagnosticsCollector>(),
                   analytics: getIt<IAnalyticsService>(),
                   rating: getIt<IRatingService>(),
                 ),
                 child: const MobileFeedbackScreen(),
               ),
             );
+          case '/theme_picker':
+            return buildAppRoute(
+              settings: routeSettings,
+              page: BlocProvider<ThemePickerCubit>(
+                create: (ctx) {
+                  final adapter = SettingsAppearanceAdapter(
+                    ctx.read<SettingsProvider>(),
+                  );
+                  final cubit = ThemePickerCubit(
+                    getAll: getIt<GetAllThemePalettesUseCase>(),
+                    apply: getIt<ApplyThemePaletteUseCase>(param1: adapter),
+                    analytics: getIt<IAnalyticsService>(),
+                  );
+                  cubit.load(ctx.read<SettingsProvider>().settings.themeColorKey);
+                  return cubit;
+                },
+                child: const MobileThemePickerScreen(),
+              ),
+            );
+          case '/font_picker':
+            return buildAppRoute(
+              settings: routeSettings,
+              page: BlocProvider<FontPickerCubit>(
+                create: (ctx) {
+                  final adapter = SettingsAppearanceAdapter(
+                    ctx.read<SettingsProvider>(),
+                  );
+                  final cubit = FontPickerCubit(
+                    getAll: getIt<GetAllQuranFontsUseCase>(),
+                    apply: getIt<ApplyQuranFontUseCase>(param1: adapter),
+                    analytics: getIt<IAnalyticsService>(),
+                  );
+                  cubit.load(ctx.read<SettingsProvider>().settings.fontFamily);
+                  return cubit;
+                },
+                child: const MobileFontPickerScreen(),
+              ),
+            );
           default:
             return buildAppRoute(
               settings: routeSettings,
-              page: isTV
-                  ? const AppUpdateTrigger(child: HomeScreen())
-                  : BlocProvider.value(
-                      value: getIt<AppTourCubit>(),
-                      child: const MobileShell(),
-                    ),
+              page: BlocProvider<TakbeeratVisibilityCubit>(
+                create: (_) => getIt<TakbeeratVisibilityCubit>()..load(),
+                child: isTV
+                    ? const AppUpdateTrigger(
+                        child: AnnouncementTrigger(child: HomeScreen()),
+                      )
+                    : const AnnouncementTrigger(
+                        child: NotificationOnboardingGate(
+                          child: HomeWidgetBridge(child: MobileShell()),
+                        ),
+                      ),
+              ),
             );
         }
       },

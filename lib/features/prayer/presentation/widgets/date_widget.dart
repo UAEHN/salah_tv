@@ -44,7 +44,9 @@ class _DateWidgetState extends State<DateWidget> {
       (PrayerBloc b) =>
           DateTime(b.state.now.year, b.state.now.month, b.state.now.day),
     );
-    final isDark = context.watch<SettingsProvider>().settings.isDarkMode;
+    final settings = context.watch<SettingsProvider>().settings;
+    final isDark = settings.isDarkMode;
+    final isMosque = settings.isMosqueMode;
     final tc = ThemeColors.of(isDark);
     final screenH = MediaQuery.of(context).size.height;
     final l = AppLocalizations.of(context);
@@ -53,20 +55,26 @@ class _DateWidgetState extends State<DateWidget> {
         ? formatHijriDateLocalized(l, now)
         : formatGregorianDateLocalized(l, now);
 
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 600),
-      transitionBuilder: (child, animation) => FadeTransition(
-        opacity: animation,
-        child: child,
-      ),
-      child: Text(
-        text,
-        key: ValueKey(text),
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: screenH * (widget.compact ? 0.032 : 0.048),
-          fontWeight: FontWeight.w500,
-          color: tc.textSecondary,
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 600),
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: child,
+        ),
+        child: Text(
+          text,
+          key: ValueKey(text),
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: screenH *
+                (widget.compact
+                    ? (isMosque ? 0.036 : 0.032)
+                    : (isMosque ? 0.052 : 0.048)),
+            fontWeight: FontWeight.w500,
+            color: tc.textSecondary,
+          ),
         ),
       ),
     );

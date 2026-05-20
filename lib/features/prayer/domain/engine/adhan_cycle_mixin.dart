@@ -1,13 +1,19 @@
 import 'dart:async';
 
+import '../../../settings/domain/entities/prayer_sound_mode.dart';
 import '../prayer_time_calculator.dart' as calc;
 import 'prayer_cycle_base.dart';
 import 'iqama_mixin.dart';
 import 'quran_mixin.dart';
+import 'takbeerat_mixin.dart';
 
-/// Handles the adhan → dua phase of the prayer cycle.
-/// Issue comments 1, 3, 4, 9, 10 are preserved verbatim.
-mixin AdhanCycleMixin on PrayerCycleBase, IqamaMixin, QuranMixin {
+// Visual takeover windows. Sound mode keeps a 4–5 min fallback for stuck audio.
+const Duration _kSilentAdhanWindow = Duration(seconds: 25);
+const Duration _kMosqueAdhanWindow = Duration(seconds: 150); // 2:30
+const Duration _kSilentDuaWindow = Duration(seconds: 5);
+
+/// Adhan → dua phase. Issue comments 1, 3, 4, 9, 10 preserved verbatim.
+mixin AdhanCycleMixin on PrayerCycleBase, IqamaMixin, QuranMixin, TakbeeratMixin {
   void checkAdhanTrigger() {
     if (s.todayPrayers == null) return;
     final prayers = s.todayPrayers!.prayersOnly;
@@ -19,105 +25,112 @@ mixin AdhanCycleMixin on PrayerCycleBase, IqamaMixin, QuranMixin {
       );
       if (diff.inSeconds >= 0 && diff.inSeconds <= 2) {
         s.adhansToday.add(key);
+        // Adhan off (and not mosque mode) → mark + skip cycle.
+        final off = settings.adhanMode == PrayerSoundMode.off;
+        if (off && !settings.isMosqueMode) continue;
         unawaited(triggerAdhan(p.key));
       }
     }
   }
 
-  // Issue 3: async so we can detect playAdhan() failure and clean up
-  // state immediately rather than waiting 4 minutes for the fallback timer.
+  // Issue 3: async to detect playAdhan() failure. Mosque mode → silent + 150s.
   Future<void> triggerAdhan(String prayerKey) async {
     s.isAdhanPlaying = true;
     s.currentAdhanPrayerKey = prayerKey;
-    s.activeCyclePrayerKey = prayerKey; // lock card highlight for this prayer
-    s.currentIqamaDelayMin =
-        settings.iqamaDelays[prayerKey] ?? 0; // Issue 9: snapshot
-    s.adhanTriggerTime = s.now; // anchor for iqama countdown calculation
+    s.activeCyclePrayerKey = prayerKey;
+    s.currentIqamaDelayMin = settings.iqamaDelays[prayerKey] ?? 0; // Issue 9
+    s.adhanTriggerTime = s.now;
     s.isIqamaCountdown = false;
-
-    // Pause Quran for adhan/dua/iqama cycle
     pauseQuranForAdhan();
-
-    // Auto-close after 4 minutes max as a fallback
+    pauseTakbeeratForCycle();
+    final mosque = settings.isMosqueMode;
+    final isSilent = mosque || settings.adhanMode == PrayerSoundMode.silent;
+    final window = mosque
+        ? _kMosqueAdhanWindow
+        : (isSilent ? _kSilentAdhanWindow : const Duration(minutes: 4));
     s.adhanFallbackTimer?.cancel();
-    s.adhanFallbackTimer = Timer(const Duration(minutes: 4), () {
-      if (s.isAdhanPlaying) stopAdhan();
-    });
-
+    s.adhanFallbackTimer =
+        Timer(window, () { if (s.isAdhanPlaying) stopAdhan(); });
     notify();
-
+    if (isSilent) return;
     final success = await audio.playAdhan(soundKey: settings.adhanSound);
     if (!success && s.isAdhanPlaying) {
-      // Audio failed to start — cancel fallback and clean up immediately
       s.adhanFallbackTimer?.cancel();
       s.isAdhanPlaying = false;
       resumeQuranAfterAdhan();
+      resumeTakbeeratAfterCycle();
       notify();
     }
   }
 
-  // Issue 1: async + await stop() before triggering dua so the stop platform
-  // call fully resolves before playDua() opens the same AudioPlayer.
-  // Issue 4: entry guard prevents double-invocation from concurrent events.
+  // Issues 1 + 4: await stop() + entry guard. Mosque mode skips dua entirely.
   Future<void> stopAdhan() async {
     if (!s.isAdhanPlaying) return;
     s.isAdhanPlaying = false;
     s.adhanFallbackTimer?.cancel();
     await audio.stop();
-    // Show dua screen after adhan — fire-and-forget, triggerDua notifies UI
+    if (settings.isMosqueMode) {
+      _setupIqamaCountdown();
+      return;
+    }
     unawaited(triggerDua());
     notify();
   }
 
-  // Issue 3: async so we can detect playDua() failure and advance directly
-  // to the iqama countdown rather than leaving isDuaPlaying=true silently.
+  // Issue 3: async — detect playDua() failure to advance to iqama directly.
   Future<void> triggerDua() async {
     s.isDuaPlaying = true;
+    final isSilent = settings.adhanMode == PrayerSoundMode.silent;
     s.duaFallbackTimer?.cancel();
-    s.duaFallbackTimer = Timer(const Duration(minutes: 5), () {
-      if (s.isDuaPlaying) stopDua();
-    });
+    final win = isSilent ? _kSilentDuaWindow : const Duration(minutes: 5);
+    s.duaFallbackTimer =
+        Timer(win, () { if (s.isDuaPlaying) stopDua(); });
     notify();
+    if (isSilent) return;
     final success = await audio.playDua();
     if (!success && s.isDuaPlaying) {
-      // Audio failed — skip dua and proceed to iqama countdown
       s.duaFallbackTimer?.cancel();
       await stopDua();
     }
   }
 
-  // Issue 1: async + await stop() before starting iqama countdown.
-  // Issue 4: entry guard prevents double-invocation.
-  // Issue 9: use currentIqamaDelayMin (snapshot) instead of live settings.
+  // Issues 1, 4, 9: await stop(); entry guard; snapshot delay.
   Future<void> stopDua() async {
     if (!s.isDuaPlaying) return;
     s.isDuaPlaying = false;
     s.duaFallbackTimer?.cancel();
     await audio.stop();
-    // Start iqama countdown after dua — anchored to adhan trigger time
-    // so adhan + dua duration is deducted automatically.
-    final delay = s.currentIqamaDelayMin; // Issue 9: snapshotted at adhan fire
+    _setupIqamaCountdown();
+  }
+
+  // Iqama-phase entry: stopDua() (normal) or stopAdhan() (mosque skip).
+  void _setupIqamaCountdown() {
+    final iqamaOff = settings.iqamaMode == PrayerSoundMode.off;
+    if (iqamaOff && !settings.isMosqueMode) {
+      s.activeCyclePrayerKey = '';
+      resumeQuranAfterAdhan();
+      resumeTakbeeratAfterCycle();
+      notify();
+      return;
+    }
+    final delay = s.currentIqamaDelayMin;
     if (delay > 0) {
       s.iqamaPrayerKey = s.currentAdhanPrayerKey;
-      // Calculate how much of the iqama delay has already elapsed
-      // since the adhan started (adhan duration + dua duration).
-      Duration remaining = Duration(minutes: delay);
+      var remaining = Duration(minutes: delay);
       if (s.adhanTriggerTime != null) {
-        final elapsed = s.now.difference(s.adhanTriggerTime!);
-        remaining = Duration(minutes: delay) - elapsed;
+        remaining -= s.now.difference(s.adhanTriggerTime!);
       }
       if (remaining.inSeconds > 0) {
         s.isIqamaCountdown = true;
         s.iqamaCountdown = remaining;
       } else {
-        // Iqama window already passed — trigger immediately
         unawaited(triggerIqama());
       }
     }
     notify();
   }
 
-  // Issue 1: await audio.stop() so platform call completes before flag reset.
+  // Issue 1: await stop() before flag reset.
   Future<void> resetAdhanCycleForCityChange() async {
     s.adhansToday.clear();
     s.adhanFallbackTimer?.cancel();
@@ -135,5 +148,6 @@ mixin AdhanCycleMixin on PrayerCycleBase, IqamaMixin, QuranMixin {
     s.isIqamaPlaying = false;
     s.isDuaPlaying = false;
     resumeQuranAfterAdhan();
+    resumeTakbeeratAfterCycle();
   }
 }

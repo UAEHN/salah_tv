@@ -22,8 +22,8 @@ double countdownArcProgress(PrayerState state) {
   final total = nextTime.difference(previousTime).inSeconds;
   if (total <= 0) return 0.0;
 
-  final elapsed = now.difference(previousTime).inSeconds;
-  return (elapsed / total).clamp(0.0, 1.0);
+  final remaining = state.countdown.inSeconds;
+  return (remaining / total).clamp(0.0, 1.0);
 }
 
 double iqamaArcProgress(Duration remaining, int totalMinutes) {

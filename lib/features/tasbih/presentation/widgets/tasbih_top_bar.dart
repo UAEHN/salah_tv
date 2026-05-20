@@ -12,7 +12,7 @@ class TasbihTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final color = MobileColors.onSurface(context);
+    final color = MobileColors.activePrimary(context);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),

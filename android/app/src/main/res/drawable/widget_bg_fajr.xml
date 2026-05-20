@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fajr — pre-dawn deep indigo. Applied via PrayerWidgetProvider when
+     gradient key == "fajr". -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="270"
+        android:startColor="#1A1547"
+        android:centerColor="#2E1A57"
+        android:endColor="#0E1130"
+        android:type="linear"/>
+    <corners android:radius="28dp"/>
+    <stroke android:width="1dp" android:color="#2AFFFFFF"/>
+</shape>

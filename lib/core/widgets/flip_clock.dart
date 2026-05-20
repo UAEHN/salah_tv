@@ -23,32 +23,47 @@ class FlipClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chars = text.split('');
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (int i = 0; i < chars.length; i++) ...[
-            if (i > 0 && _isDigit(chars[i]) && _isDigit(chars[i - 1]))
-              SizedBox(width: gap),
-            if (_isDigit(chars[i]))
-              FlipDigit(
-                key: ValueKey('digit_$i'),
-                value: chars[i],
-                width: digitWidth,
-                height: digitHeight,
-                style: style,
-              )
-            else
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: gap),
-                child: Text(
-                  chars[i],
-                  style: style.copyWith(shadows: null, height: 1),
+    // Tabular figures force every digit glyph to the same advance width.
+    // Without this, narrow glyphs like "1" are centered with extra padding
+    // inside their fixed-width slots, so the digit appears to wobble
+    // left/right whenever a neighbour value changes.
+    final tabularStyle = style.copyWith(
+      fontFeatures: const [FontFeature.tabularFigures()],
+    );
+    // Pin TextScaler at 1.0 so an ambient mosque-mode scaler doesn't enlarge
+    // the digits past the precomputed [digitWidth]/[digitHeight] slots —
+    // mismatch causes the digits to "dance" inside their boxes as they flip.
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(
+        textScaler: TextScaler.noScaling,
+      ),
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (int i = 0; i < chars.length; i++) ...[
+              if (i > 0 && _isDigit(chars[i]) && _isDigit(chars[i - 1]))
+                SizedBox(width: gap),
+              if (_isDigit(chars[i]))
+                FlipDigit(
+                  key: ValueKey('digit_$i'),
+                  value: chars[i],
+                  width: digitWidth,
+                  height: digitHeight,
+                  style: tabularStyle,
+                )
+              else
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: gap),
+                  child: Text(
+                    chars[i],
+                    style: tabularStyle.copyWith(shadows: null, height: 1),
+                  ),
                 ),
-              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

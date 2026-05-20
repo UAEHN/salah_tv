@@ -95,7 +95,7 @@ class _DatePill extends StatelessWidget {
               const SizedBox(width: 4),
               Icon(
                 Icons.calendar_today_rounded,
-                color: MobileColors.primaryContainer,
+                color: MobileColors.activePrimaryContainer(context),
                 size: 16,
               ),
               const SizedBox(width: 10),

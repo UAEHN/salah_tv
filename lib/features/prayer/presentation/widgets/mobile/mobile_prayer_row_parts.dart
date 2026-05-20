@@ -21,9 +21,9 @@ class MobilePrayerIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = mobilePrayerAccentPairs[prayerKey];
-    final accentColor = colors?.$1 ?? MobileColors.primaryContainer;
-    final deepColor = colors?.$2 ?? MobileColors.primary;
+    final colors = mobilePrayerAccentPair(context, prayerKey);
+    final accentColor = colors.$1;
+    final deepColor = colors.$2;
 
     final bgColor = isActive
         ? Colors.white.withValues(alpha: 0.18)
@@ -49,45 +49,23 @@ class MobilePrayerIcon extends StatelessWidget {
 
 class MobilePrayerInfo extends StatelessWidget {
   final String name;
-  final String activeLabel;
   final bool isActive;
-  final bool isCompact;
 
   const MobilePrayerInfo({
     super.key,
     required this.name,
-    required this.activeLabel,
     required this.isActive,
-    this.isCompact = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          name,
-          style: MobileTextStyles.titleMd(context).copyWith(
-            fontSize: isCompact ? 17 : 20,
-            color: isActive ? Colors.white : MobileColors.onSurface(context),
-            height: 1.0,
-          ),
-        ),
-        if (isActive && !isCompact)
-          Padding(
-            padding: const EdgeInsets.only(top: 3),
-            child: Text(
-              activeLabel,
-              style: MobileTextStyles.labelSm(context).copyWith(
-                color: Colors.white.withValues(alpha: 0.75),
-                fontSize: 11,
-                height: 1.0,
-              ),
-            ),
-          ),
-      ],
+    return Text(
+      name,
+      style: MobileTextStyles.titleMd(context).copyWith(
+        fontSize: 19,
+        color: isActive ? Colors.white : MobileColors.onSurface(context),
+        height: 1.0,
+      ),
     );
   }
 }

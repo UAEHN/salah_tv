@@ -19,6 +19,10 @@ enum ContinuousStartMode {
   /// in sessions across days. Default.
   resume,
 
+  /// Always start from Al-Fatiha (surah 1), then read 1→2→…→114 in order.
+  /// Each new session restarts from the beginning.
+  fromStart,
+
   /// Pick surahs in random order — fresh order each surah completion.
   random,
 }

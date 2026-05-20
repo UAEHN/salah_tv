@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../core/widgets/focus_scroll.dart';
+
 /// TV-friendly list row with strong focus visualization (background fill +
 /// left/right accent bar). Used inside D-Pad navigable list dialogs.
 class TvFocusableListTile extends StatefulWidget {
@@ -32,7 +34,10 @@ class _TvFocusableListTileState extends State<TvFocusableListTile> {
   Widget build(BuildContext context) {
     return Focus(
       autofocus: widget.autofocus,
-      onFocusChange: (f) => setState(() => _isFocused = f),
+      onFocusChange: (f) {
+        setState(() => _isFocused = f);
+        if (f) ensureFocusedVisible(context);
+      },
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.select ||

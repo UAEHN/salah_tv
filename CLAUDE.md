@@ -3,13 +3,11 @@
 ## 1. PROJECT CONTEXT & TV CONSTRAINTS
 - **App:** Islamic prayer times display app for Android TV / TV boxes. Arabic RTL UI, landscape-locked, always-on screen.
 - **Hardware/OS:** `LEANBACK_LAUNCHER`, `touchscreen required=false`, immersive sticky UI, `WakelockPlus.enable()`.
-- **Audio:** Streams Quran audio from mp3quran.net. Quran stream recovery: If paused >60s (during adhan cycle), the HTTP stream is restarted. External interrupt detection uses `_appInitiatedStop`.
-- **Prayer Data:** Bundled as a SQLite DB (`assets/prayer_times.db`). Source CSVs live in `assets/csv/`; rebuild with `dart run tool/csv_to_sqlite.dart` then bump `_dbVersion` in `SqliteDbInitializer`. Runtime access via `SqlitePrayerRepository`.
 
 ## 2. PRAYER CYCLE MACHINE (CRITICAL DETAILS - DO NOT BREAK)
 - **Flow:** Adhan → Dua → Iqama countdown → Iqama → Resume Quran.
 - **Mechanics:** 1-second tick timer checks if current time matches any prayer time. `_adhansToday` set prevents duplicate fires. Fallback timers (4-5 min) auto-advance if audio fails.
-- **Engine:** `PrayerCycleEngine` (`lib/features/prayer/domain/prayer_cycle_engine.dart`) coordinates 6 mixins under `lib/features/prayer/domain/engine/` (8 files total: 6 mixins + `prayer_cycle_state.dart` + `prayer_cycle_base.dart`). Issue-fix guards (Issues 2–11) are preserved as comments in those mixin files — read them before modifying cycle logic.
+- **Engine:** `PrayerCycleEngine` (`lib/features/prayer/domain/prayer_cycle_engine.dart`) coordinates 8 mixins under `lib/features/prayer/domain/engine/` (10 files total: 8 mixins + `prayer_cycle_state.dart` + `prayer_cycle_base.dart`). Mixins: `adhan_cycle_mixin`, `iqama_mixin`, `quran_mixin`, `quran_modes_mixin`, `continuous_mode_mixin`, `tick_mixin`, `recovery_mixin`, `settings_mixin`. Issue-fix guards (Issues 2–11) are preserved as comments in those mixin files — read them before modifying cycle logic.
 - **Rule:** Never bypass the engine. All cycle transitions (adhan → dua → iqama → quran) must go through engine methods; never call audio or repo directly from the BLoC.
 
 ## 3. ARCHITECTURE RULES (CLEAN ARCHITECTURE)
@@ -58,4 +56,5 @@
 | Import | Used In | Rationale |
 |:---|:---|:---|
 | `settings/presentation/logic/location_picker_logic.dart` (via `mobile_location_search_utils.dart`) | `onboarding/presentation/onboarding_state.dart`, `onboarding_country_loader.dart` | `UnifiedCountry` is defined in `settings/presentation/logic/` and used by 12+ files across `settings/presentation/`. Moving it to `settings/domain/entities/` is the correct long-term fix but carries high refactor risk. Accepted until a dedicated domain-layer migration task is scheduled. |
+| `settings/presentation/settings_provider.dart` | `notifications/presentation/onboarding/notification_onboarding_gate.dart` | The gate uses `context.read<SettingsProvider>()` — the same widget-tree access pattern already used by `app.dart`, `mobile_shell.dart`, `adhkar/.../mobile_adhkar_reader_screen.dart`, etc. Importing the type only to use it in `context.read<T>()` is the spirit of the §3 widget-tree exception. The gate wraps the provider in a private `INotificationOnboardingFlagPort` adapter so every layer downstream sees only the notifications-domain interface. |
 

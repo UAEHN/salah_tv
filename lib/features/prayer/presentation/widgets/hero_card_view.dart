@@ -23,6 +23,18 @@ class HeroCardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isIqama = model.mode == HeroCardMode.iqama;
+    // Light mode: pre-composite the palette tints onto [bgSurface] so the
+    // card stays opaque against the warm parchment background. Dark mode
+    // keeps the original translucent look since the dark gradient already
+    // blends well behind the card.
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final base = isDark ? Colors.transparent : ThemeColors.of(false).bgSurface;
+    final tintTop = isDark
+        ? palette.primary.withValues(alpha: 0.08)
+        : Color.alphaBlend(palette.primary.withValues(alpha: 0.08), base);
+    final tintBottom = isDark
+        ? palette.secondary.withValues(alpha: 0.03)
+        : Color.alphaBlend(palette.secondary.withValues(alpha: 0.03), base);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 400),
@@ -32,10 +44,7 @@ class HeroCardView extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            palette.primary.withValues(alpha: 0.08),
-            palette.secondary.withValues(alpha: 0.03),
-          ],
+          colors: [tintTop, tintBottom],
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
         ),

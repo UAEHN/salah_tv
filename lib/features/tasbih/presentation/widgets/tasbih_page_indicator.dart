@@ -13,6 +13,7 @@ class TasbihPageIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = MobileColors.activePrimary(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(total, (i) {
@@ -26,8 +27,8 @@ class TasbihPageIndicator extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
             color: isActive
-                ? MobileColors.primary
-                : MobileColors.primary.withValues(alpha: 0.22),
+                ? accent
+                : accent.withValues(alpha: 0.22),
           ),
         );
       }),

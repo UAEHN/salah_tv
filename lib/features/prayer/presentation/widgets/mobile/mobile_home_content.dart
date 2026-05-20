@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/widgets/mobile/tour_target_keys.dart';
 import 'mobile_hero_card.dart';
 import 'mobile_prayer_list.dart';
 import 'mobile_top_bar.dart';
@@ -21,8 +20,6 @@ class MobileHomeContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tourKeys = TourTargetKeysProvider.maybeOf(context);
-
     return SafeArea(
       bottom: false,
       child: Column(
@@ -33,18 +30,12 @@ class MobileHomeContent extends StatelessWidget {
             onLocationTap: onLocationTap,
           ),
           const SizedBox(height: 8),
-          KeyedSubtree(
-            key: tourKeys?.countdown,
-            child: const MobileHeroCard(),
-          ),
+          const MobileHeroCard(),
           const SizedBox(height: 12),
           Expanded(
-            child: KeyedSubtree(
-              key: tourKeys?.prayerList,
-              child: MobilePrayerList(is24HourFormat: is24HourFormat),
-            ),
+            child: MobilePrayerList(is24HourFormat: is24HourFormat),
           ),
-          SizedBox(height: MediaQuery.of(context).padding.bottom + 80),
+          SizedBox(height: MediaQuery.of(context).padding.bottom + 104),
         ],
       ),
     );

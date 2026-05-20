@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="prayer_widget_label">غسق — مواقيت الصلاة</string>
+    <string name="prayer_widget_description">عرض الصلاة القادمة والوقت المتبقي على شاشة البدء.</string>
+    <string name="widget_remaining_for">باقي على صلاة</string>
+    <string name="widget_am">ص</string>
+    <string name="widget_pm">م</string>
+</resources>

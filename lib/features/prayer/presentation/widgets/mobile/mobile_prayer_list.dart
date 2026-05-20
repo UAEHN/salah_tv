@@ -103,10 +103,9 @@ class _PrayerCardsList extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: hPad),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           for (int i = 0; i < prayers.length; i++) ...[
-            Flexible(
+            Expanded(
               child: TweenAnimationBuilder<double>(
                 key: ValueKey('prayer_row_${prayers[i].key}'),
                 tween: Tween<double>(begin: 0.0, end: 1.0),

@@ -71,4 +71,7 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    // Native notification engine: periodic safety net that re-arms alarms
+    // every 6 hours so the OS cannot silently drop them on aggressive OEMs.
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
 }

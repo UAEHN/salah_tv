@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
-import '../../../../../../core/city_translations.dart';
+import '../../../../../core/city_translations.dart';
 import '../../bloc/location_choice.dart';
 import '../../bloc/location_selection_cubit.dart';
 import 'tv_location_empty_state.dart';

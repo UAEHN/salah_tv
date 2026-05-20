@@ -5,6 +5,7 @@ import 'clock_widget.dart';
 import 'current_surah_strip.dart';
 import 'date_widget.dart';
 import 'home_quran_button.dart';
+import 'home_takbeerat_button.dart';
 import 'iqama_countdown_widget.dart';
 import 'next_prayer_widget.dart';
 import 'prayer_panel.dart';
@@ -17,6 +18,8 @@ class HomeClassicLayout extends StatelessWidget {
   final double screenW;
   final double screenH;
   final FocusNode quranFocusNode;
+  final FocusNode takbeeratFocusNode;
+  final String takbeeratReciterUrl;
   final FocusNode mainFocusNode;
 
   const HomeClassicLayout({
@@ -26,9 +29,23 @@ class HomeClassicLayout extends StatelessWidget {
     required this.screenW,
     required this.screenH,
     required this.quranFocusNode,
+    required this.takbeeratFocusNode,
+    required this.takbeeratReciterUrl,
     required this.mainFocusNode,
     super.key,
   });
+
+  // Mosque mode hides every audio toggle on the home view — the muezzin/
+  // imam handles all live audio in the room.
+  bool get _showQuran =>
+      !settings.isMosqueMode &&
+      settings.isQuranEnabled &&
+      settings.hasQuranReciter &&
+      !isIqamaCountdown;
+  bool get _showTakbeerat =>
+      !settings.isMosqueMode &&
+      takbeeratReciterUrl.isNotEmpty &&
+      !isIqamaCountdown;
 
   @override
   Widget build(BuildContext context) {
@@ -89,27 +106,7 @@ class HomeClassicLayout extends StatelessWidget {
                         AnimatedSize(
                           duration: const Duration(milliseconds: 350),
                           curve: Curves.easeInOut,
-                          child: (settings.isQuranEnabled &&
-                                  settings.hasQuranReciter &&
-                                  !isIqamaCountdown)
-                              ? Padding(
-                                  padding: EdgeInsets.only(top: screenH * 0.022),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      HomeQuranButton(
-                                        palette: palette,
-                                        isDarkMode: settings.isDarkMode,
-                                        serverUrl: settings.quranReciterServerUrl,
-                                        focusNode: quranFocusNode,
-                                        onEscape: () =>
-                                            mainFocusNode.requestFocus(),
-                                      ),
-                                      CurrentSurahStrip(palette: palette),
-                                    ],
-                                  ),
-                                )
-                              : const SizedBox.shrink(),
+                          child: _buildAudioToggleBlock(screenH),
                         ),
                       ],
                     ),
@@ -120,6 +117,42 @@ class HomeClassicLayout extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildAudioToggleBlock(double screenH) {
+    if (!_showQuran && !_showTakbeerat) return const SizedBox.shrink();
+    return Padding(
+      padding: EdgeInsets.only(top: screenH * 0.022),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_showQuran)
+            HomeQuranButton(
+              palette: palette,
+              isDarkMode: settings.isDarkMode,
+              serverUrl: settings.quranReciterServerUrl,
+              focusNode: quranFocusNode,
+              onEscape: () => mainFocusNode.requestFocus(),
+              onDown: _showTakbeerat
+                  ? () => takbeeratFocusNode.requestFocus()
+                  : null,
+            ),
+          if (_showQuran) CurrentSurahStrip(palette: palette),
+          if (_showQuran && _showTakbeerat)
+            SizedBox(height: screenH * 0.012),
+          if (_showTakbeerat)
+            HomeTakbeeratButton(
+              palette: palette,
+              isDarkMode: settings.isDarkMode,
+              reciterUrl: takbeeratReciterUrl,
+              focusNode: takbeeratFocusNode,
+              onEscape: _showQuran
+                  ? () => quranFocusNode.requestFocus()
+                  : () => mainFocusNode.requestFocus(),
+            ),
+        ],
+      ),
     );
   }
 }

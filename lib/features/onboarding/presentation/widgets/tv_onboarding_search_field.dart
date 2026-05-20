@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../../../core/brand_colors.dart';
+import '../../../../core/brand_colors.dart';
 
 /// A shared, TV-optimized search field for onboarding.
 class TvOnboardingSearchField extends StatelessWidget {

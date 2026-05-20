@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../../core/app_colors.dart';
+import '../../../../../core/widgets/focus_scroll.dart';
+import '../../settings_provider.dart';
+
+/// Selectable row in the city / country picker dialog. Theme-adaptive — the
+/// previous version used hardcoded white/dark-blue colors that broke in light
+/// mode and didn't match the focus design language used elsewhere in
+/// settings (accent border + soft glow + neutral background).
 class TvLocationOptionTile extends StatefulWidget {
   final String title;
   final bool isSelected;
@@ -26,10 +35,26 @@ class _TvLocationOptionTileState extends State<TvLocationOptionTile> {
 
   @override
   Widget build(BuildContext context) {
-    final isActive = _isFocused || widget.isSelected;
+    final settings = context.watch<SettingsProvider>().settings;
+    final tc = ThemeColors.of(settings.isDarkMode);
+    final accent = getThemePalette(settings.themeColorKey).primary;
+    final isDark = tc.isDark;
+    final restingBg = widget.isSelected
+        ? accent.withValues(alpha: 0.12)
+        : (isDark
+            ? Colors.white.withValues(alpha: 0.04)
+            : Colors.black.withValues(alpha: 0.03));
+    final focusedBg = widget.isSelected
+        ? accent.withValues(alpha: 0.18)
+        : (isDark
+            ? Colors.white.withValues(alpha: 0.08)
+            : Colors.black.withValues(alpha: 0.05));
     return Focus(
       autofocus: widget.autofocus,
-      onFocusChange: (isFocused) => setState(() => _isFocused = isFocused),
+      onFocusChange: (f) {
+        setState(() => _isFocused = f);
+        if (f) ensureFocusedVisible(context);
+      },
       onKeyEvent: (_, event) {
         if (widget.isBusy) return KeyEventResult.ignored;
         if (event is KeyDownEvent &&
@@ -42,41 +67,61 @@ class _TvLocationOptionTileState extends State<TvLocationOptionTile> {
       },
       child: GestureDetector(
         onTap: widget.isBusy ? null : widget.onPressed,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          margin: const EdgeInsets.only(bottom: 10),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-          decoration: BoxDecoration(
-            color: isActive
-                ? const Color(0xFF1B4E7A)
-                : Colors.white.withValues(alpha: 0.04),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isActive ? Colors.white : Colors.white12,
-              width: isActive ? 2 : 1,
+        child: AnimatedScale(
+          scale: _isFocused ? 1.02 : 1.0,
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+            decoration: BoxDecoration(
+              color: _isFocused ? focusedBg : restingBg,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: _isFocused
+                    ? accent
+                    : (widget.isSelected
+                        ? accent.withValues(alpha: 0.55)
+                        : accent.withValues(alpha: 0.18)),
+                width: _isFocused ? 2.5 : (widget.isSelected ? 1.5 : 1.0),
+              ),
+              boxShadow: _isFocused
+                  ? [
+                      BoxShadow(
+                        color: accent.withValues(alpha: 0.40),
+                        blurRadius: 24,
+                        spreadRadius: 1.5,
+                      ),
+                    ]
+                  : null,
             ),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  widget.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.title,
+                    style: TextStyle(
+                      color: tc.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
-              if (widget.isBusy)
-                const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              else if (widget.isSelected)
-                const Icon(Icons.check_circle_rounded, color: Colors.white),
-            ],
+                if (widget.isBusy)
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation(accent),
+                    ),
+                  )
+                else if (widget.isSelected)
+                  Icon(Icons.check_circle_rounded, color: accent),
+              ],
+            ),
           ),
         ),
       ),

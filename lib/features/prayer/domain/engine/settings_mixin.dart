@@ -32,7 +32,16 @@ mixin SettingsMixin
     final oldPlaylist = settings.surahPlaylist.toString();
     final oldRepeatCount = settings.surahRepeatCount;
     final oldCycleCount = settings.playlistCycleCount;
+    final oldMorningAdhkar = settings.isMorningAdhkarNotificationEnabled;
+    final oldEveningAdhkar = settings.isEveningAdhkarNotificationEnabled;
+    final oldMorningMinute = settings.morningAdhkarMinuteOfDay;
+    final oldEveningMinute = settings.eveningAdhkarMinuteOfDay;
+    final mosqueJustEnabled =
+        newSettings.isMosqueMode && !settings.isMosqueMode;
     settings = newSettings;
+    if (mosqueJustEnabled && s.isQuranPlaying) {
+      stopQuranAndClear();
+    }
     s.now = currentTime();
 
     // Reload prayer times when location or calculation parameters change.
@@ -68,6 +77,16 @@ mixin SettingsMixin
           settings,
         ));
       }
+      // Re-schedule the 7-day adhkar window whenever the user toggles
+      // morning/evening reminders or changes either chosen wall-clock time.
+      final adhkarChanged = newSettings.isMorningAdhkarNotificationEnabled !=
+              oldMorningAdhkar ||
+          newSettings.isEveningAdhkarNotificationEnabled != oldEveningAdhkar ||
+          newSettings.morningAdhkarMinuteOfDay != oldMorningMinute ||
+          newSettings.eveningAdhkarMinuteOfDay != oldEveningMinute;
+      if (adhkarChanged) {
+        unawaited(notifications?.scheduleAdhkar(settings));
+      }
     }
 
     // If iqama delay changed while the countdown is running, recalculate
@@ -98,10 +117,13 @@ mixin SettingsMixin
         newSettings.playlistCycleCount != oldCycleCount;
     if (s.isQuranPlaying &&
         !s.isQuranPausedForAdhan &&
+        !s.isQuranPausedByUser &&
         (reciterChanged || modeChanged)) {
-      // Re-toggle: stop then start using the new settings.
-      toggleQuran(null); // stops
-      toggleQuran(newSettings.quranReciterServerUrl); // starts in current mode
+      // Hard-reset Quran playback to pick up the new reciter / mode.
+      // Use stopQuranAndClear() (not toggleQuran) so we bypass the user-pause
+      // branch the toggle now exposes.
+      stopQuranAndClear();
+      toggleQuran(newSettings.quranReciterServerUrl);
     }
 
     notify();

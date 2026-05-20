@@ -84,19 +84,52 @@
             android:name="google_analytics_adid_collection_enabled"
             android:value="false" />
 
-        <!-- flutter_local_notifications: fires scheduled prayer notifications -->
+        <!-- Home-screen widget (mobile only): rendered by AppWidgetManager.
+             Native side computes "next prayer" and "remaining" from the raw
+             timestamps written by Flutter via the home_widget plugin. -->
         <receiver
-            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
-            android:exported="false"/>
+            android:name=".PrayerWidgetProvider"
+            android:exported="true"
+            android:label="@string/prayer_widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prayer_widget_info"/>
+        </receiver>
+
+
+        <!-- Re-arms the widget's per-minute alarm after device reboot. -->
         <receiver
-            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+            android:name=".widget.WidgetBootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <!-- Fires before user unlocks the device after reboot -->
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- Native notification engine: receives AlarmManager broadcasts and
+             posts the notification on the system's behalf. exported=false
+             keeps third-party apps from triggering it. -->
+        <receiver
+            android:name="com.ghasaq.app.notifications.receiver.AlarmReceiver"
+            android:exported="false"/>
+
+        <!-- Re-arms every persisted alarm after reboot / package replace. -->
+        <receiver
+            android:name="com.ghasaq.app.notifications.receiver.BootReceiver"
+            android:exported="true"
+            android:directBootAware="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
                 <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
 

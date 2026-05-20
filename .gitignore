@@ -46,3 +46,15 @@ app.*.map.json
 
 # Local environment secrets
 env/dev.json
+
+# Node modules (any subproject)
+**/node_modules/
+
+# Large media at repo root (kept locally, not pushed)
+/videoplayback.mp4
+/takbeerat.mp3
+/ChatGPT Image *.png
+
+# Dart DevTools dumps
+dart_devtools_*.json
+

@@ -16,6 +16,8 @@ KeyEventResult handleHomeKey(
   required bool isIqamaPlaying,
   required bool isIqamaCountdown,
   required FocusNode quranFocusNode,
+  required FocusNode takbeeratFocusNode,
+  required String takbeeratReciterUrl,
 }) {
   if (event is! KeyDownEvent) return KeyEventResult.ignored;
   final intent = decideHomeKeyIntent(
@@ -27,6 +29,7 @@ KeyEventResult handleHomeKey(
       isIqamaCountdown: isIqamaCountdown,
       isQuranEnabled: settings.isQuranEnabled,
       hasQuranReciter: settings.hasQuranReciter,
+      canToggleTakbeerat: takbeeratReciterUrl.isNotEmpty,
     ),
   );
 
@@ -38,6 +41,9 @@ KeyEventResult handleHomeKey(
       return KeyEventResult.handled;
     case HomeKeyIntent.focusQuran:
       quranFocusNode.requestFocus();
+      return KeyEventResult.handled;
+    case HomeKeyIntent.focusTakbeerat:
+      takbeeratFocusNode.requestFocus();
       return KeyEventResult.handled;
     case HomeKeyIntent.stopAdhan:
       context.read<PrayerBloc>().add(const PrayerAdhanStopped());
@@ -63,6 +69,9 @@ HomeRemoteKey _mapLogicalKey(LogicalKeyboardKey key) {
   if (key == LogicalKeyboardKey.mediaPlay) return HomeRemoteKey.mediaPlay;
   if (key == LogicalKeyboardKey.mediaPause) return HomeRemoteKey.mediaPause;
   if (key == LogicalKeyboardKey.arrowDown) return HomeRemoteKey.arrowDown;
+  if (key == LogicalKeyboardKey.arrowUp) return HomeRemoteKey.arrowUp;
+  if (key == LogicalKeyboardKey.arrowLeft) return HomeRemoteKey.arrowLeft;
+  if (key == LogicalKeyboardKey.arrowRight) return HomeRemoteKey.arrowRight;
   if (key == LogicalKeyboardKey.select) return HomeRemoteKey.select;
   if (key == LogicalKeyboardKey.enter) return HomeRemoteKey.enter;
   if (key == LogicalKeyboardKey.contextMenu) return HomeRemoteKey.contextMenu;

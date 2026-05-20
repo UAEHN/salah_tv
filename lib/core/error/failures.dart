@@ -41,3 +41,16 @@ class NetworkFailure extends Failure {
 class CancelledFailure extends Failure {
   const CancelledFailure() : super('Cancelled');
 }
+
+/// Surfaced when the native notification engine refuses or fails a request
+/// (channel missing on TV, platform exception during sync, etc.).
+class NotificationFailure extends Failure {
+  const NotificationFailure(super.message);
+}
+
+/// Datasource-level exception thrown by the native notification channel
+/// adapter; converted to [NotificationFailure] at the repository boundary.
+class NotificationException implements Exception {
+  final String message;
+  const NotificationException(this.message);
+}

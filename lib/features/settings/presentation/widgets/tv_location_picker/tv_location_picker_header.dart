@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../../core/app_colors.dart';
+import '../../settings_provider.dart';
 
 class TvLocationPickerHeader extends StatelessWidget {
   final String title;
@@ -14,6 +18,8 @@ class TvLocationPickerHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>().settings;
+    final tc = ThemeColors.of(settings.isDarkMode);
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 18),
       child: Row(
@@ -21,7 +27,7 @@ class TvLocationPickerHeader extends StatelessWidget {
           if (showBack)
             IconButton(
               onPressed: onBack,
-              icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+              icon: Icon(Icons.arrow_back_rounded, color: tc.textPrimary),
             )
           else
             const SizedBox(width: 48),
@@ -29,8 +35,8 @@ class TvLocationPickerHeader extends StatelessWidget {
             child: Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: tc.textPrimary,
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
               ),
@@ -38,7 +44,7 @@ class TvLocationPickerHeader extends StatelessWidget {
           ),
           IconButton(
             onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.close_rounded, color: Colors.white70),
+            icon: Icon(Icons.close_rounded, color: tc.textSecondary),
           ),
         ],
       ),

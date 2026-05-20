@@ -80,6 +80,10 @@ class NextPrayerContent extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: tc.textPrimary,
                   letterSpacing: 2,
+                  // Tabular figures keep every digit at the same advance
+                  // width so the countdown text doesn't shift left/right
+                  // each tick as narrow glyphs (1) replace wide ones (0/8).
+                  fontFeatures: const [FontFeature.tabularFigures()],
                 ),
                 digitWidth: (screenH * 0.10) * 0.68,
                 digitHeight: (screenH * 0.10) * 1.22,

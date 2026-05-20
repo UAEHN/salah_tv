@@ -3,6 +3,9 @@ enum HomeRemoteKey {
   mediaPlay,
   mediaPause,
   arrowDown,
+  arrowUp,
+  arrowLeft,
+  arrowRight,
   select,
   enter,
   contextMenu,
@@ -13,6 +16,7 @@ enum HomeKeyIntent {
   ignored,
   toggleQuran,
   focusQuran,
+  focusTakbeerat,
   stopAdhan,
   stopDua,
   stopIqama,
@@ -28,6 +32,10 @@ class HomeKeyInput {
   final bool isQuranEnabled;
   final bool hasQuranReciter;
 
+  /// True when the Eid Takbeerat home card is visible AND a reciter URL
+  /// is available — i.e. the toggle is actionable right now.
+  final bool canToggleTakbeerat;
+
   const HomeKeyInput({
     required this.key,
     required this.isAdhanPlaying,
@@ -36,6 +44,7 @@ class HomeKeyInput {
     required this.isIqamaCountdown,
     required this.isQuranEnabled,
     required this.hasQuranReciter,
+    required this.canToggleTakbeerat,
   });
 
   bool get isCycleMediaLocked =>
@@ -54,12 +63,22 @@ HomeKeyIntent decideHomeKeyIntent(HomeKeyInput input) {
         : HomeKeyIntent.toggleQuran;
   }
 
-  if (input.key == HomeRemoteKey.arrowDown &&
-      input.isQuranEnabled &&
-      input.hasQuranReciter &&
-      !input.isIqamaCountdown &&
-      !input.isCycleMediaLocked) {
-    return HomeKeyIntent.focusQuran;
+  // Arrow Down / Right enter the audio toggles. Quran takes precedence;
+  // Takbeerat picks up the key when Quran is off so the pill remains
+  // reachable via D-pad. Right is added because in the RTL UI users
+  // intuitively try the horizontal direction too. Left is reserved for
+  // escaping out of the buttons (handled by the button widgets themselves).
+  final isFocusEntryKey = input.key == HomeRemoteKey.arrowDown ||
+      input.key == HomeRemoteKey.arrowRight;
+  if (isFocusEntryKey &&
+      !input.isCycleMediaLocked &&
+      !input.isIqamaCountdown) {
+    if (input.isQuranEnabled && input.hasQuranReciter) {
+      return HomeKeyIntent.focusQuran;
+    }
+    if (input.canToggleTakbeerat) {
+      return HomeKeyIntent.focusTakbeerat;
+    }
   }
 
   final isSelectKey =

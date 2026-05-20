@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/mobile_theme.dart';
+
 const mobilePrayerIcons = <String, IconData>{
   'fajr': Icons.wb_twilight_rounded,
   'dhuhr': Icons.wb_sunny_rounded,
@@ -8,10 +10,19 @@ const mobilePrayerIcons = <String, IconData>{
   'isha': Icons.bedtime_rounded,
 };
 
-const mobilePrayerAccentPairs = <String, (Color, Color)>{
-  'fajr': (Color(0xFFE8C77A), Color(0xFFD4A843)),
-  'dhuhr': (Color(0xFFE8C77A), Color(0xFFD4A843)),
-  'asr': (Color(0xFFE8C77A), Color(0xFFD4A843)),
-  'maghrib': (Color(0xFFE8C77A), Color(0xFFD4A843)),
-  'isha': (Color(0xFFE8C77A), Color(0xFFD4A843)),
-};
+/// Per-prayer accent pair `(bright, deep)` derived from the active theme
+/// palette so a theme switch propagates to prayer icons and the hero
+/// countdown card.
+///
+/// The [prayerKey] is accepted to keep the call site stable; we currently
+/// return the same `(primaryContainer, primary)` for every prayer, but the
+/// hook lets us tint individual prayers later without touching consumers.
+(Color, Color) mobilePrayerAccentPair(
+  BuildContext context,
+  String prayerKey,
+) {
+  return (
+    MobileColors.activePrimaryContainer(context),
+    MobileColors.activePrimary(context),
+  );
+}

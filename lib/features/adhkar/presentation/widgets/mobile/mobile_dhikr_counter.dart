@@ -37,8 +37,8 @@ class MobileDhikrCounter extends StatelessWidget {
                 backgroundColor: MobileColors.border(context),
                 valueColor: AlwaysStoppedAnimation<Color>(
                   isCompleted
-                      ? MobileColors.primaryContainer
-                      : MobileColors.primary,
+                      ? MobileColors.activePrimaryContainer(context)
+                      : MobileColors.activePrimary(context),
                 ),
               ),
             ),
@@ -46,17 +46,18 @@ class MobileDhikrCounter extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (isCompleted)
-                  const Icon(
+                  Icon(
                     Icons.check_rounded,
-                    color: MobileColors.primaryContainer,
+                    color: MobileColors.activePrimaryContainer(context),
                     size: 32,
                   )
                 else ...[
                   Text(
                     '$remaining',
-                    style: MobileTextStyles.titleMd(
-                      context,
-                    ).copyWith(color: MobileColors.primary, fontSize: 28),
+                    style: MobileTextStyles.titleMd(context).copyWith(
+                      color: MobileColors.activePrimary(context),
+                      fontSize: 28,
+                    ),
                   ),
                 ],
               ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../../../core/brand_colors.dart';
+import '../../../../core/brand_colors.dart';
 
 /// Primary action button for TV onboarding (Next / Finish).
 /// Glows with [brandGold] when focused via D-Pad.

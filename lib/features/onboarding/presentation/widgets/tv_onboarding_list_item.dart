@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../../../core/brand_colors.dart';
+import '../../../../core/brand_colors.dart';
 
 /// A premium, D-Pad navigable list item for TV onboarding.
 /// Features a scale effect, glassmorphism, and golden glow on focus.

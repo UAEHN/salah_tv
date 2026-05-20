@@ -23,32 +23,6 @@ class MobilePrayerOffsetsScreen extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            top: -100,
-            right: -50,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: MobileColors.primary.withValues(alpha: 0.15),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 100,
-            left: -100,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: MobileColors.secondary.withValues(
-                  alpha: MobileColors.isDark(context) ? 0.07 : 0.10,
-                ),
-              ),
-            ),
-          ),
           const SafeArea(child: MobilePrayerOffsetsList()),
         ],
       ),

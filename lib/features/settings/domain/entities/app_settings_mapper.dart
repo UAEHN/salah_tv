@@ -9,7 +9,9 @@ extension AppSettingsMapper on AppSettings {
   Map<String, dynamic> toMap() => {
     'themeColorKey': themeColorKey,
     'use24HourFormat': use24HourFormat,
-    'playAdhan': playAdhan,
+    'adhanMode': adhanMode.name,
+    'iqamaMode': iqamaMode.name,
+    'isMosqueMode': isMosqueMode,
     'isDarkMode': isDarkMode,
     'iqamaDelays': jsonEncode(iqamaDelays),
     'adhanOffsets': jsonEncode(adhanOffsets),
@@ -40,6 +42,11 @@ extension AppSettingsMapper on AppSettings {
     'iqamaNotificationEnabled': jsonEncode(iqamaNotificationEnabled),
     'preIqamaReminderEnabled': jsonEncode(preIqamaReminderEnabled),
     'preIqamaReminderMinutes': preIqamaReminderMinutes,
+    'isMorningAdhkarNotificationEnabled': isMorningAdhkarNotificationEnabled,
+    'isEveningAdhkarNotificationEnabled': isEveningAdhkarNotificationEnabled,
+    'morningAdhkarMinuteOfDay': morningAdhkarMinuteOfDay,
+    'eveningAdhkarMinuteOfDay': eveningAdhkarMinuteOfDay,
+    'isNotificationOnboardingDone': isNotificationOnboardingDone,
     'customAdhans': jsonEncode(customAdhans.map((c) => c.toJson()).toList()),
     'quranPlaybackMode': quranPlaybackMode.name,
     'selectedSurahNumber': selectedSurahNumber,
@@ -55,9 +62,11 @@ extension AppSettingsMapper on AppSettings {
 AppSettings appSettingsFromMap(Map<String, dynamic> map) {
   final customAdhans = decodeCustomAdhans(map['customAdhans']);
   return AppSettings(
-    themeColorKey: map['themeColorKey'] as String? ?? 'green',
+    themeColorKey: map['themeColorKey'] as String? ?? 'gold',
     use24HourFormat: map['use24HourFormat'] as bool? ?? false,
-    playAdhan: map['playAdhan'] as bool? ?? true,
+    adhanMode: decodePrayerSoundMode(map['adhanMode'], legacyBool: map['playAdhan']),
+    iqamaMode: decodePrayerSoundMode(map['iqamaMode'], legacyBool: map['playIqama']),
+    isMosqueMode: map['isMosqueMode'] as bool? ?? false,
     isDarkMode: map['isDarkMode'] as bool? ?? false,
     iqamaDelays: decodeIntMap(map['iqamaDelays'], const {
       'fajr': 20,
@@ -97,7 +106,7 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     fontFamily:
         const ['Cairo', 'Kufi', 'Beiruti', 'Rubik'].contains(map['fontFamily'])
         ? map['fontFamily'] as String
-        : 'Kufi',
+        : 'Rubik',
     locale: const ['ar', 'en'].contains(map['locale'])
         ? map['locale'] as String
         : 'ar',
@@ -128,6 +137,16 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     isAdhkarEnabled: map['isAdhkarEnabled'] as bool? ?? true,
     preAdhanReminderMinutes: map['preAdhanReminderMinutes'] as int? ?? 15,
     preIqamaReminderMinutes: map['preIqamaReminderMinutes'] as int? ?? 5,
+    isMorningAdhkarNotificationEnabled:
+        map['isMorningAdhkarNotificationEnabled'] as bool? ?? false,
+    isEveningAdhkarNotificationEnabled:
+        map['isEveningAdhkarNotificationEnabled'] as bool? ?? false,
+    morningAdhkarMinuteOfDay:
+        (map['morningAdhkarMinuteOfDay'] as num?)?.toInt() ?? 420,
+    eveningAdhkarMinuteOfDay:
+        (map['eveningAdhkarMinuteOfDay'] as num?)?.toInt() ?? 1020,
+    isNotificationOnboardingDone:
+        map['isNotificationOnboardingDone'] as bool? ?? false,
     customAdhans: customAdhans,
     quranPlaybackMode:
         decodePlaybackMode(map['quranPlaybackMode'], map['surahRepeatMode']),

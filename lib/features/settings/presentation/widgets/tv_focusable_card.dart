@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Generic TV-focusable wrapper: scale + ring + glow on focus, identical to
-/// the visual language used by [TvButton] and the Quran toggle. Wraps any
-/// child widget that should be selectable via D-Pad.
+import '../../../../core/widgets/focus_scroll.dart';
+
+/// Generic TV-focusable wrapper: scale + accent ring + soft glow on focus.
+/// Matches the visual language of [TvButton] and [TvSwitchRow]; the focus ring
+/// is intentionally accent-colored (not white) so it integrates cleanly with
+/// child contents that may themselves carry accent-colored text or icons.
 class TvFocusableCard extends StatefulWidget {
   final Widget child;
   final VoidCallback onPressed;
@@ -16,7 +19,7 @@ class TvFocusableCard extends StatefulWidget {
     required this.onPressed,
     required this.accent,
     this.borderRadius = const BorderRadius.all(Radius.circular(10)),
-    this.focusScale = 1.04,
+    this.focusScale = 1.03,
     super.key,
   });
 
@@ -30,7 +33,10 @@ class _TvFocusableCardState extends State<TvFocusableCard> {
   @override
   Widget build(BuildContext context) {
     return Focus(
-      onFocusChange: (f) => setState(() => _isFocused = f),
+      onFocusChange: (f) {
+        setState(() => _isFocused = f);
+        if (f) ensureFocusedVisible(context);
+      },
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.select ||
@@ -44,23 +50,24 @@ class _TvFocusableCardState extends State<TvFocusableCard> {
         onTap: widget.onPressed,
         child: AnimatedScale(
           scale: _isFocused ? widget.focusScale : 1.0,
-          duration: const Duration(milliseconds: 150),
+          duration: const Duration(milliseconds: 180),
           curve: Curves.easeOut,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
             decoration: BoxDecoration(
               borderRadius: widget.borderRadius,
               boxShadow: _isFocused
                   ? [
                       BoxShadow(
-                        color: widget.accent.withValues(alpha: 0.55),
-                        blurRadius: 18,
+                        color: widget.accent.withValues(alpha: 0.50),
+                        blurRadius: 22,
                         spreadRadius: 2,
                       ),
                     ]
                   : null,
               border: _isFocused
-                  ? Border.all(color: Colors.white, width: 2.5)
+                  ? Border.all(color: widget.accent, width: 2.5)
                   : null,
             ),
             child: ClipRRect(

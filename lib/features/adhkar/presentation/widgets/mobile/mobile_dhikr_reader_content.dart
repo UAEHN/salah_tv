@@ -16,13 +16,14 @@ class MobileDhikrReaderContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = MobileColors.onSurface(context);
+    final font = Theme.of(context).textTheme.bodyMedium?.fontFamily ?? 'Cairo';
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           dhikr.text,
           style: TextStyle(
-            fontFamily: 'Cairo',
+            fontFamily: font,
             fontSize: 26,
             fontWeight: FontWeight.w600,
             color: color,
@@ -33,7 +34,7 @@ class MobileDhikrReaderContent extends StatelessWidget {
         ),
         if (isEnglish && dhikr.transliteration.isNotEmpty) ...[
           const SizedBox(height: 16),
-          Divider(color: MobileColors.primary.withValues(alpha: 0.15)),
+          Divider(color: MobileColors.activePrimary(context).withValues(alpha: 0.15)),
           const SizedBox(height: 12),
           Text(
             dhikr.transliteration,
@@ -52,7 +53,7 @@ class MobileDhikrReaderContent extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: MobileColors.primary.withValues(alpha: 0.08),
+              color: MobileColors.activePrimary(context).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -61,7 +62,7 @@ class MobileDhikrReaderContent extends StatelessWidget {
                 Text(
                   dhikr.virtue,
                   style: MobileTextStyles.labelSm(context).copyWith(
-                    color: MobileColors.primary,
+                    color: MobileColors.activePrimary(context),
                     fontWeight: FontWeight.w600,
                   ),
                   textAlign: TextAlign.center,
@@ -75,7 +76,7 @@ class MobileDhikrReaderContent extends StatelessWidget {
                       fontFamily: 'Rubik',
                       fontStyle: FontStyle.italic,
                       fontSize: 12,
-                      color: MobileColors.primary,
+                      color: MobileColors.activePrimary(context),
                     ),
                     textAlign: TextAlign.center,
                   ),

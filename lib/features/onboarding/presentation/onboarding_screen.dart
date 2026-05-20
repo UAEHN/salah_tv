@@ -58,14 +58,23 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   Widget build(BuildContext context) {
     return BlocConsumer<OnboardingCubit, OnboardingState>(
       listenWhen: (prev, curr) =>
-          curr.isComplete || prev.step != curr.step,
+          curr.isComplete ||
+          prev.step != curr.step ||
+          prev.completionError != curr.completionError,
       listener: (context, state) {
         if (state.isComplete) {
-          Navigator.of(context).pushReplacementNamed(
-            '/',
-            arguments: {'showTour': true},
-          );
+          Navigator.of(context).pushReplacementNamed('/');
           return;
+        }
+        if (state.completionError != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.completionError!),
+              backgroundColor: Colors.redAccent,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+          context.read<OnboardingCubit>().clearCompletionError();
         }
         if (state.step != _prevStep) {
           _prevStep = state.step;
@@ -94,9 +103,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         switchInCurve: Curves.easeOutCubic,
                         switchOutCurve: Curves.easeIn,
                         transitionBuilder: (child, animation) {
-                          final isForward =
-                              (child.key as ValueKey<int>?)?.value ==
-                                  state.step;
+                          final keyValue =
+                              (child.key as ValueKey<int>?)?.value ?? -1;
+                          final isForward = keyValue == state.step;
                           final beginOffset = isForward
                               ? const Offset(0.07, 0)
                               : const Offset(-0.07, 0);

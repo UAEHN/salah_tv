@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/brand_colors.dart';
+import '../../../../core/brand_colors.dart';
 import '../onboarding_cubit.dart';
 
 /// A focusable language selection card for TV onboarding.

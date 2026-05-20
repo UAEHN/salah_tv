@@ -4,6 +4,11 @@ extension SettingsProviderNotifications on SettingsProvider {
   Future<void> updatePreAdhanReminderMinutes(int min) =>
       _update(_settings.copyWith(preAdhanReminderMinutes: min));
 
+  /// Marks the notification onboarding as complete so the gate in app.dart
+  /// stops showing the flow on subsequent launches.
+  Future<void> markNotificationOnboardingDone() =>
+      _update(_settings.copyWith(isNotificationOnboardingDone: true));
+
   Future<void> updatePreIqamaReminderMinutes(int min) =>
       _update(_settings.copyWith(preIqamaReminderMinutes: min));
 

@@ -16,18 +16,20 @@ class MobileFeedbackSubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primary = MobileColors.activePrimary(context);
+    final primaryContainer = MobileColors.activePrimaryContainer(context);
     return GestureDetector(
       onTap: isLoading ? null : onTap,
       child: Container(
         height: 54,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [MobileColors.primary, MobileColors.primaryContainer],
+          gradient: LinearGradient(
+            colors: [primary, primaryContainer],
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: MobileColors.primary.withValues(alpha: 0.35),
+              color: primary.withValues(alpha: 0.35),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../../core/app_colors.dart';
+import '../../settings_provider.dart';
 
 class TvLocationSearchField extends StatelessWidget {
   final String hintText;
@@ -12,22 +16,30 @@ class TvLocationSearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>().settings;
+    final tc = ThemeColors.of(settings.isDarkMode);
+    final accent = getThemePalette(settings.themeColorKey).primary;
+    final isDark = tc.isDark;
+    final fill = isDark
+        ? Colors.white.withValues(alpha: 0.05)
+        : Colors.black.withValues(alpha: 0.04);
     return TextField(
       onChanged: onChanged,
-      style: const TextStyle(color: Colors.white, fontSize: 18),
+      style: TextStyle(color: tc.textPrimary, fontSize: 18),
+      cursorColor: accent,
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.white38),
-        prefixIcon: const Icon(Icons.search_rounded, color: Colors.white54),
+        hintStyle: TextStyle(color: tc.textMuted),
+        prefixIcon: Icon(Icons.search_rounded, color: tc.textSecondary),
         filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.05),
+        fillColor: fill,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Colors.white12),
+          borderSide: BorderSide(color: accent.withValues(alpha: 0.18)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Colors.white70, width: 2),
+          borderSide: BorderSide(color: accent, width: 2),
         ),
       ),
     );

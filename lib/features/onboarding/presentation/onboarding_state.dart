@@ -11,6 +11,7 @@ class OnboardingState {
   final WorldCity? selectedWorldCity;
   final bool isLoading;
   final bool isComplete;
+  final String? completionError;
   final List<UnifiedCountry> allCountries;
   final List<UnifiedCountry> filteredCountries;
   final List<String> filteredDbCities;
@@ -26,6 +27,7 @@ class OnboardingState {
     this.selectedWorldCity,
     this.isLoading = false,
     this.isComplete = false,
+    this.completionError,
     this.allCountries = const [],
     this.filteredCountries = const [],
     this.filteredDbCities = const [],
@@ -46,6 +48,8 @@ class OnboardingState {
     bool clearCity = false,
     bool? isLoading,
     bool? isComplete,
+    String? completionError,
+    bool clearCompletionError = false,
     List<UnifiedCountry>? allCountries,
     List<UnifiedCountry>? filteredCountries,
     List<String>? filteredDbCities,
@@ -64,6 +68,9 @@ class OnboardingState {
         : (selectedWorldCity ?? this.selectedWorldCity),
     isLoading: isLoading ?? this.isLoading,
     isComplete: isComplete ?? this.isComplete,
+    completionError: clearCompletionError
+        ? null
+        : (completionError ?? this.completionError),
     allCountries: allCountries ?? this.allCountries,
     filteredCountries: filteredCountries ?? this.filteredCountries,
     filteredDbCities: filteredDbCities ?? this.filteredDbCities,

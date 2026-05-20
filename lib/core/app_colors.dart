@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 // â”€â”€â”€ Light theme base colors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const Color kBgDeep      = Color(0xFFF0F4F8);
-const Color kBgDark      = Color(0xFFFFFFFF);
-const Color kBgSurface   = Color(0xFFF5F7FA);
+// Warm parchment background — keeps the TV home screen distinctly off-white.
+// [kBgSurface] intentionally stays cool/neutral so prayer cards and InfoCard
+// keep their original look against the warm gradient.
+const Color kBgDeep      = Color(0xFFDDD3BD);  // gradient top (deeper sand)
+const Color kBgDark      = Color(0xFFEAE1CC);  // gradient bottom + scaffold
+const Color kBgSurface   = Color(0xFFF5F7FA);  // cards/info panels — unchanged
 const Color kBgGlass     = Color(0x14000000);
 const Color kBorderGlass = Color(0x1A000000);
 const Color kTextPrimary   = Color(0xFF1A1A2E);

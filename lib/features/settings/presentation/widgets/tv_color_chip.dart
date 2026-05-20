@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
+import '../../../../core/widgets/focus_scroll.dart';
 import '../settings_provider.dart';
 
 class TvColorChip extends StatefulWidget {
@@ -31,7 +32,10 @@ class _TvColorChipState extends State<TvColorChip> {
       context.watch<SettingsProvider>().settings.isDarkMode,
     );
     return Focus(
-      onFocusChange: (f) => setState(() => _isFocused = f),
+      onFocusChange: (f) {
+        setState(() => _isFocused = f);
+        if (f) ensureFocusedVisible(context);
+      },
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.select ||

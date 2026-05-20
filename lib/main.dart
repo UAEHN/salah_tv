@@ -9,7 +9,11 @@ import 'features/analytics/domain/i_analytics_service.dart';
 import 'features/adhkar/domain/i_adhkar_state_repository.dart';
 import 'features/feedback/domain/i_feedback_repository.dart';
 import 'features/feedback/domain/usecases/submit_feedback_usecase.dart';
+import 'features/home_widget/domain/i_home_widget_repository.dart';
+import 'features/home_widget/domain/usecases/get_upcoming_schedule.dart';
+import 'features/home_widget/domain/usecases/publish_widget_payload.dart';
 import 'features/prayer/domain/i_prayer_audio_port.dart';
+import 'features/prayer/domain/i_takbeerat_audio_port.dart';
 import 'features/notifications/domain/i_prayer_notification_port.dart';
 import 'features/prayer/domain/i_prayer_times_repository.dart';
 import 'features/prayer/presentation/bloc/prayer_bloc.dart';
@@ -42,6 +46,14 @@ void main() async {
           ),
         if (getIt.isRegistered<ILocationDetector>())
           Provider<ILocationDetector>.value(value: getIt<ILocationDetector>()),
+        if (getIt.isRegistered<IHomeWidgetRepository>()) ...[
+          Provider<PublishWidgetPayloadUseCase>(
+            create: (_) => getIt<PublishWidgetPayloadUseCase>(),
+          ),
+          Provider<GetUpcomingScheduleUseCase>(
+            create: (_) => getIt<GetUpcomingScheduleUseCase>(),
+          ),
+        ],
         ChangeNotifierProvider(
           create: (_) => SettingsProvider(
             getIt<ISettingsRepository>(),
@@ -61,6 +73,7 @@ void main() async {
           create: (context) => PrayerBloc(
             getIt<IPrayerTimesRepository>(),
             getIt<IPrayerAudioPort>(),
+            getIt<ITakbeeratAudioPort>(),
             settings,
             notifications: getIt.isRegistered<IPrayerNotificationPort>()
                 ? getIt<IPrayerNotificationPort>()

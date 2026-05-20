@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import '../../../../core/app_colors.dart';
+import '../../../../core/app_config.dart';
+import '../../../../core/widgets/focus_scroll.dart';
 
 /// Button to check for updates (opens Google Play Store)
 class SettingsUpdateButton extends StatefulWidget {
@@ -23,8 +25,8 @@ class _SettingsUpdateButtonState extends State<SettingsUpdateButton> {
   bool _isFocused = false;
 
   Future<void> _launchPlayStore() async {
-    final Uri marketUri = Uri.parse('market://details?id=com.ghasaq.app');
-    final Uri webUri = Uri.parse('https://play.google.com/store/apps/details?id=com.ghasaq.app');
+    final Uri marketUri = Uri.parse(AppConfig.playStoreMarketUrl);
+    final Uri webUri = Uri.parse(AppConfig.playStoreUrl);
     
     try {
       if (await canLaunchUrl(marketUri)) {
@@ -42,7 +44,10 @@ class _SettingsUpdateButtonState extends State<SettingsUpdateButton> {
     final l = AppLocalizations.of(context);
     
     return Focus(
-      onFocusChange: (f) => setState(() => _isFocused = f),
+      onFocusChange: (f) {
+        setState(() => _isFocused = f);
+        if (f) ensureFocusedVisible(context);
+      },
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.select ||

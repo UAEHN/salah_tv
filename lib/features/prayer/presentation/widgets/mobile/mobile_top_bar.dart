@@ -4,7 +4,6 @@ import 'package:ghasaq/l10n/app_localizations.dart';
 import '../../../../../core/city_translations.dart';
 import '../../../../../core/mobile_theme.dart';
 import '../../../../../core/widgets/mobile/mobile_shell.dart';
-import '../../../../../core/widgets/mobile/tour_target_keys.dart';
 
 /// Header bar: location pill (center) with glowing pin, menu icon (right).
 class MobileTopBar extends StatelessWidget {
@@ -29,7 +28,6 @@ class MobileTopBar extends StatelessWidget {
       locale: l.localeName,
       countryKey: country,
     );
-    final tourKeys = TourTargetKeysProvider.maybeOf(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Stack(
@@ -37,7 +35,6 @@ class MobileTopBar extends StatelessWidget {
         children: [
           // Location pill
           GestureDetector(
-            key: tourKeys?.locationPill,
             onTap: onLocationTap,
             child: Container(
               padding: const EdgeInsets.symmetric(
@@ -64,13 +61,13 @@ class MobileTopBar extends StatelessWidget {
                         height: 22,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: MobileColors.primaryContainer.withValues(
-                            alpha: 0.15,
-                          ),
+                          color: MobileColors.activePrimaryContainer(
+                            context,
+                          ).withValues(alpha: 0.15),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.location_on_rounded,
-                          color: MobileColors.primaryContainer,
+                          color: MobileColors.activePrimaryContainer(context),
                           size: 14,
                         ),
                       ),

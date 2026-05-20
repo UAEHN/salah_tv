@@ -4,12 +4,33 @@ class MobileColors {
   MobileColors._();
 
   // ✨ Accent palette - Ghasaq Night & Gold ✨
+  // Static defaults — kept for legacy widgets that don't take a context.
+  // Theme-aware widgets should prefer the `active*` accessors below so palette
+  // switches (mobile theme picker) propagate visually.
   static const Color primary = Color(0xFFD4A843); // Ghasaq Gold
   static const Color primaryContainer = Color(0xFFE8C77A); // Soft Gold
   static const Color secondary = Color(0xFFE67E22); // Warm Sunset Orange
   static const Color iqamaAccent = Color(
     0xFFE74C3C,
   ); // Amber/Red — iqama countdown phase
+
+  /// Live primary that follows the user's selected palette via `ColorScheme`.
+  /// Mirrors `Theme.of(context).colorScheme.primary` and is the recommended
+  /// accessor for mobile widgets that should react to theme changes.
+  static Color activePrimary(BuildContext context) =>
+      Theme.of(context).colorScheme.primary;
+
+  /// Lighter companion of [activePrimary] used for gradient ends. Falls back
+  /// to a 30% lightened tint of the live primary when the scheme doesn't
+  /// expose a dedicated container.
+  static Color activePrimaryContainer(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Color.lerp(scheme.primary, Colors.white, 0.25) ?? scheme.primary;
+  }
+
+  /// Live secondary that follows the active palette.
+  static Color activeSecondary(BuildContext context) =>
+      Theme.of(context).colorScheme.secondary;
 
   static bool isDark(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark;
@@ -73,8 +94,15 @@ class MobileColors {
 class MobileTextStyles {
   MobileTextStyles._();
 
+  /// Resolves the active font family from the live `ThemeData` so the user's
+  /// font picker selection (`appSettings.fontFamily`) is honoured everywhere
+  /// `MobileTextStyles.*` is consumed. Falls back to `Cairo` if the theme
+  /// hasn't been wired (e.g. tests).
+  static String _font(BuildContext context) =>
+      Theme.of(context).textTheme.bodyMedium?.fontFamily ?? 'Cairo';
+
   static TextStyle displayLg(BuildContext context) => TextStyle(
-    fontFamily: 'Cairo',
+    fontFamily: _font(context),
     fontSize: 56,
     fontWeight: FontWeight.w800,
     color: MobileColors.onSurface(context),
@@ -83,28 +111,28 @@ class MobileTextStyles {
   );
 
   static TextStyle headlineMd(BuildContext context) => TextStyle(
-    fontFamily: 'Cairo',
+    fontFamily: _font(context),
     fontSize: 18,
     fontWeight: FontWeight.w700,
     color: MobileColors.onSurface(context),
   );
 
   static TextStyle titleMd(BuildContext context) => TextStyle(
-    fontFamily: 'Cairo',
+    fontFamily: _font(context),
     fontSize: 22,
     fontWeight: FontWeight.w700,
     color: MobileColors.onSurface(context),
   );
 
   static TextStyle bodyMd(BuildContext context) => TextStyle(
-    fontFamily: 'Cairo',
+    fontFamily: _font(context),
     fontSize: 14,
     fontWeight: FontWeight.w600,
     color: MobileColors.onSurfaceMuted(context),
   );
 
   static TextStyle labelSm(BuildContext context) => TextStyle(
-    fontFamily: 'Cairo',
+    fontFamily: _font(context),
     fontSize: 12,
     fontWeight: FontWeight.w700,
     color: MobileColors.onSurfaceMuted(context),

@@ -44,6 +44,15 @@ class QuranContinuousControls extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         _StartChoice(
+          mode: ContinuousStartMode.fromStart,
+          icon: Icons.first_page_rounded,
+          title: l.settingsQuranContinuousFromStart,
+          subtitle: l.settingsQuranContinuousFromStartDesc,
+          palette: palette,
+          tc: tc,
+        ),
+        const SizedBox(height: 6),
+        _StartChoice(
           mode: ContinuousStartMode.random,
           icon: Icons.shuffle_rounded,
           title: l.settingsQuranContinuousRandom,

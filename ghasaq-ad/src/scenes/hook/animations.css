@@ -1,0 +1,119 @@
+/* ======================================================
+   Hook Scene - Specialized Animations
+   ======================================================
+   One clear metaphor: sun + moon meet at center → flash →
+   the brand name is born from the flash.
+   ====================================================== */
+
+/* PHASE 1: Ambient sky + horizon + dusk colors */
+@keyframes sky-fade {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* The actual dusk sky band — warm sunset that rises then yields to night */
+@keyframes sky-dusk-bloom {
+  0%   { opacity: 0; transform: scaleY(0.7); }
+  35%  { opacity: 0.55; transform: scaleY(1); }
+  70%  { opacity: 0.4; transform: scaleY(1.05); }
+  100% { opacity: 0.08; transform: scaleY(1); }
+}
+
+@keyframes dusk-band-pulse {
+  0%   { opacity: 0; transform: scaleX(0.6); }
+  45%  { opacity: 0.85; transform: scaleX(1.1); }
+  100% { opacity: 0.1; transform: scaleX(1); }
+}
+
+/* Luxury Arabic display font for the brand name */
+.font-luxury {
+  font-family: "Amiri", "Aref Ruqaa", serif;
+  font-weight: 700;
+  font-feature-settings: "liga" on, "calt" on, "dlig" on;
+}
+
+@keyframes horizon-grow {
+  0%   { transform: scaleX(0); opacity: 0; }
+  100% { transform: scaleX(1); opacity: 0.55; }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: var(--base-o, 0.3); transform: scale(1); }
+  50%      { opacity: 1; transform: scale(1.4); }
+}
+
+/* PHASE 2: Celestial approach (curved arcs that MEET at center) */
+@keyframes sun-descend-meet {
+  0%   { transform: translate(-220px, -150px) scale(0.55);
+         opacity: 0; filter: blur(6px) brightness(1.15); }
+  18%  { opacity: 1; filter: blur(0) brightness(1.15); }
+  60%  { transform: translate(-90px, -55px)  scale(0.95);
+         opacity: 1; filter: brightness(1.05); }
+  88%  { transform: translate(-14px, -8px)   scale(0.7);
+         opacity: 0.9; filter: brightness(0.85); }
+  100% { transform: translate(0, 0)          scale(0.35);
+         opacity: 0; filter: brightness(0.6); }
+}
+
+@keyframes moon-rise-meet {
+  0%   { transform: translate(220px, 150px) scale(0.55);
+         opacity: 0; filter: blur(6px) brightness(0.7); }
+  18%  { opacity: 0.7; filter: blur(0); }
+  60%  { transform: translate(90px, 55px)   scale(0.95);
+         opacity: 1; filter: brightness(0.95); }
+  88%  { transform: translate(14px, 8px)    scale(0.7);
+         opacity: 0.9; filter: brightness(1.1); }
+  100% { transform: translate(0, 0)         scale(0.35);
+         opacity: 0; filter: brightness(1.2); }
+}
+
+/* PHASE 3: The meeting — golden flash + expanding ring */
+@keyframes meet-flash {
+  0%   { transform: scale(0.2); opacity: 0; }
+  35%  { transform: scale(1.6); opacity: 0.95; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+
+@keyframes meet-ring {
+  0%   { transform: scale(0.4); opacity: 0;   border-width: 3px; }
+  25%  {                         opacity: 0.9;                    }
+  100% { transform: scale(4.2); opacity: 0;   border-width: 0; }
+}
+
+@keyframes ray-spread {
+  0%   { transform: scale(0)   rotate(0deg);  opacity: 0; }
+  40%  {                                       opacity: 0.55; }
+  100% { transform: scale(2.4) rotate(35deg); opacity: 0; }
+}
+
+/* PHASE 4: "غسق" emerges from the flash */
+@keyframes name-emerge {
+  0%   { opacity: 0; transform: scale(0.55);
+         filter: blur(14px); letter-spacing: 0.45em; }
+  55%  { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: scale(1);
+         filter: blur(0); letter-spacing: -0.02em; }
+}
+
+@keyframes name-halo {
+  0%   { opacity: 0; transform: scale(0.55); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes name-breath {
+  0%, 100% { filter: drop-shadow(0 0 14px rgba(245,210,122,0.45))
+                     drop-shadow(0 0 28px rgba(212,168,67,0.25)); }
+  50%      { filter: drop-shadow(0 0 24px rgba(245,210,122,0.7))
+                     drop-shadow(0 0 56px rgba(212,168,67,0.4)); }
+}
+
+/* PHASE 5: Subtitle + tagline */
+@keyframes letter-spread {
+  0%   { letter-spacing: 0.5em; opacity: 0; filter: blur(8px); }
+  100% { letter-spacing: 0.8em; opacity: 1; filter: blur(0); }
+}
+
+@keyframes tagline-rise {
+  0%   { opacity: 0; transform: translateY(10px); letter-spacing: 0.15em; }
+  100% { opacity: 1; transform: translateY(0);    letter-spacing: 0.05em; }
+}

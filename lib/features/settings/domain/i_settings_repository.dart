@@ -8,6 +8,9 @@ abstract class ISettingsRepository {
   Future<Either<Failure, Success>> save(AppSettings settings);
   Future<bool> isFirstLaunch();
   Future<void> markLaunched();
-  Future<bool> hasCompletedAppTour();
-  Future<void> markAppTourCompleted();
+
+  /// True after the user has seen the full-length splash at least once.
+  /// Used to short-circuit the animation on subsequent app launches.
+  Future<bool> hasSeenSplash();
+  Future<void> markSplashSeen();
 }

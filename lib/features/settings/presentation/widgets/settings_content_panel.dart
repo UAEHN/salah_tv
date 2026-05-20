@@ -7,6 +7,7 @@ import 'adhkar_section.dart';
 import 'dark_mode_section.dart';
 import 'iqama_table.dart';
 import 'language_section.dart';
+import 'mosque_section.dart';
 import 'quran_section.dart';
 import 'section_title.dart';
 import 'simple_sections.dart';
@@ -27,6 +28,7 @@ class SettingsContentPanel extends StatelessWidget {
       _slot([const AdhanSection()]),
       _slot([const AdhanOffsetsTable()]),
       _slot([const IqamaTable()]),
+      _slot([const MosqueSection()]),
       _slot([
         SettingsSectionTitle(title: l.settingsFont),
         const SizedBox(height: 12),

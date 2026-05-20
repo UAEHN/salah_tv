@@ -32,30 +32,44 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: const Duration(seconds: 8),
     )..repeat();
+    // Brand duration is set after the async splash-seen check below.
     _brandController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3800),
-    )..forward().whenComplete(_fadeAndNavigate);
+      duration: const Duration(milliseconds: 1500),
+    );
     _shimmerController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2200),
     )..repeat();
     _fadeOutController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 350),
     );
+    _bootstrap();
   }
 
-  void _fadeAndNavigate() {
-    Future.delayed(const Duration(milliseconds: 1800), () async {
-      if (!mounted) return;
-      String route = '/';
-      final isFirst = await getIt<ISettingsRepository>().isFirstLaunch();
-      if (isFirst) route = kIsTV ? '/tv_onboarding' : '/onboarding';
-      if (!mounted) return;
-      _fadeOutController.forward().whenComplete(() {
-        if (mounted) Navigator.of(context).pushReplacementNamed(route);
-      });
+  /// On first launch ever: full 1500ms brand animation. On every launch
+  /// after that: short 500ms — the user has already seen the brand reveal.
+  Future<void> _bootstrap() async {
+    final repo = getIt<ISettingsRepository>();
+    final hasSeen = await repo.hasSeenSplash();
+    if (!mounted) return;
+    _brandController.duration = Duration(milliseconds: hasSeen ? 500 : 1500);
+    _fadeOutController.duration =
+        Duration(milliseconds: hasSeen ? 200 : 350);
+    if (!hasSeen) await repo.markSplashSeen();
+    if (!mounted) return;
+    _brandController.forward().whenComplete(_fadeAndNavigate);
+  }
+
+  void _fadeAndNavigate() async {
+    if (!mounted) return;
+    String route = '/';
+    final isFirst = await getIt<ISettingsRepository>().isFirstLaunch();
+    if (isFirst) route = kIsTV ? '/tv_onboarding' : '/onboarding';
+    if (!mounted) return;
+    _fadeOutController.forward().whenComplete(() {
+      if (mounted) Navigator.of(context).pushReplacementNamed(route);
     });
   }
 

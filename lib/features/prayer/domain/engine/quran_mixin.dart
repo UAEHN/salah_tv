@@ -1,28 +1,62 @@
-import '../../../quran/domain/entities/quran_playback_mode.dart';
 import 'continuous_mode_mixin.dart';
 import 'prayer_cycle_base.dart';
+import 'quran_modes_mixin.dart';
 
 /// Manages Quran background audio across three independent playback modes.
 ///   • continuous   → see [ContinuousModeMixin] (start mode + random resolver)
 ///   • singleSurah  → repeats the chosen surah [surahRepeatCount] times, stops
 ///   • playlist     → iterates [playlistCycleCount] cycles, then stops
-mixin QuranMixin on PrayerCycleBase, ContinuousModeMixin {
-  /// Toggle Quran on/off using current settings to choose mode.
+/// Mode dispatch / resolvers / teardown live in [QuranModesMixin].
+mixin QuranMixin on PrayerCycleBase, ContinuousModeMixin, QuranModesMixin {
+  /// Tri-state toggle:
+  ///  • playing       → user-pause (audio paused, surah/cursor preserved)
+  ///  • user-paused   → user-resume (resumes the same surah; restarts the
+  ///                    HTTP stream if it timed out — Issue 7)
+  ///  • stopped       → fresh start in the configured playback mode
+  ///
+  /// Paused-by-adhan is owned by the cycle; toggle is a no-op in that state.
   void toggleQuran(String? serverUrl) {
+    if (s.isQuranPausedForAdhan) return;
+    if (s.isQuranPausedByUser) {
+      _resumeByUser(serverUrl);
+      notify();
+      return;
+    }
     if (s.isQuranPlaying) {
-      _stopAndClear();
+      _pauseByUser();
       notify();
       return;
     }
     if (serverUrl == null || serverUrl.isEmpty) return;
     s.isQuranPlaying = true;
     s.isQuranPausedForAdhan = false;
-    _startForCurrentMode(serverUrl);
+    s.isQuranPausedByUser = false;
+    startQuranForCurrentMode(serverUrl);
     notify();
   }
 
+  /// Hard stop used by settings changes (mode/reciter switch). Bypasses the
+  /// user-pause branch of [toggleQuran].
+  void stopQuranAndClear() => stopAndClearQuranPlayback();
+
+  void _pauseByUser() {
+    s.isQuranPausedByUser = true;
+    audio.pauseQuranPlayer();
+  }
+
+  void _resumeByUser(String? serverUrl) {
+    final url = (serverUrl == null || serverUrl.isEmpty)
+        ? settings.quranReciterServerUrl
+        : serverUrl;
+    if (url.isEmpty) return;
+    s.isQuranPausedByUser = false;
+    audio.resumeOrRestartQuranPlayer(url);
+  }
+
   /// Pause Quran when adhan starts (auto-resumes after iqama).
+  /// User-pause takes precedence: nothing to pause if user already paused.
   void pauseQuranForAdhan() {
+    if (s.isQuranPausedByUser) return;
     if (s.isQuranPlaying && !s.isQuranPausedForAdhan) {
       s.isQuranPausedForAdhan = true;
       audio.pauseQuranPlayer();
@@ -31,9 +65,11 @@ mixin QuranMixin on PrayerCycleBase, ContinuousModeMixin {
 
   /// Resume Quran after iqama ends. Issue 7: uses resumeOrRestartQuranPlayer
   /// so a timed-out HTTP stream restarts from the current surah.
+  /// Skips resume if the user manually paused before/during the cycle.
   void resumeQuranAfterAdhan() {
     if (s.isQuranPausedForAdhan) {
       s.isQuranPausedForAdhan = false;
+      if (s.isQuranPausedByUser) return;
       audio.resumeOrRestartQuranPlayer(settings.quranReciterServerUrl);
     }
   }
@@ -43,108 +79,9 @@ mixin QuranMixin on PrayerCycleBase, ContinuousModeMixin {
     s.currentSurahNumber = audio.currentQuranSurah;
     if (s.currentSurahNumber == null && s.isQuranPlaying) {
       // Resolver returned null → finite count/cycles exhausted. Stop.
-      _stopAndClear();
+      stopAndClearQuranPlayback();
     }
     notify();
   }
 
-  /// Manually skip to the next surah in the playlist.
-  void skipToNextSurah() {
-    if (!s.isQuranPlaying) return;
-    if (settings.quranPlaybackMode != QuranPlaybackMode.playlist) return;
-    final order = s.playlistOrder;
-    if (order.length < 2) return;
-    s.playlistCursor = (s.playlistCursor + 1) % order.length;
-    audio.playQuranSurah(settings.quranReciterServerUrl, order[s.playlistCursor]);
-    s.currentSurahNumber = audio.currentQuranSurah;
-    notify();
-  }
-
-  // ── Mode dispatch ──────────────────────────────────────────────────────
-
-  void _startForCurrentMode(String serverUrl) {
-    s.surahPlayCount = 0;
-    s.playlistCyclesCompleted = 0;
-    switch (settings.quranPlaybackMode) {
-      case QuranPlaybackMode.continuous:
-        startContinuousMode(serverUrl);
-        break;
-      case QuranPlaybackMode.singleSurah:
-        _startSingleSurahMode(serverUrl);
-        break;
-      case QuranPlaybackMode.playlist:
-        _startPlaylistMode(serverUrl);
-        break;
-    }
-    s.currentSurahNumber = audio.currentQuranSurah;
-  }
-
-  void _startSingleSurahMode(String serverUrl) {
-    final selected = settings.selectedSurahNumber;
-    if (selected == null || selected < 1 || selected > 114) {
-      _switchToContinuous(serverUrl);
-      return;
-    }
-    audio.setQuranNextSurahResolver(_singleSurahResolver);
-    audio.playQuranSurah(serverUrl, selected);
-  }
-
-  void _startPlaylistMode(String serverUrl) {
-    final base = settings.surahPlaylist;
-    if (base.isEmpty) {
-      _switchToContinuous(serverUrl);
-      return;
-    }
-    s.playlistOrder = base;
-    s.playlistCursor = 0;
-    audio.setQuranNextSurahResolver(_playlistResolver);
-    audio.playQuranSurah(serverUrl, s.playlistOrder.first);
-  }
-
-  // ── Resolvers ──────────────────────────────────────────────────────────
-
-  int? _singleSurahResolver(int finishedSurah) {
-    s.surahPlayCount++;
-    final target = settings.surahRepeatCount;
-    if (target == kInfiniteRepeat) return finishedSurah;
-    if (s.surahPlayCount < target) return finishedSurah;
-    return null; // exhausted → end action applied via onSurahCompleted
-  }
-
-  int? _playlistResolver(int finishedSurah) {
-    final order = s.playlistOrder;
-    if (order.isEmpty) return null;
-    s.playlistCursor++;
-    if (s.playlistCursor < order.length) {
-      return order[s.playlistCursor];
-    }
-    s.playlistCyclesCompleted++;
-    final target = settings.playlistCycleCount;
-    if (target != kInfiniteRepeat &&
-        s.playlistCyclesCompleted >= target) {
-      return null; // exhausted
-    }
-    s.playlistCursor = 0;
-    return s.playlistOrder.first;
-  }
-
-  void _switchToContinuous(String serverUrl) {
-    if (serverUrl.isEmpty) {
-      _stopAndClear();
-      return;
-    }
-    startContinuousMode(serverUrl);
-    s.currentSurahNumber = audio.currentQuranSurah;
-  }
-
-  void _stopAndClear() {
-    s.isQuranPlaying = false;
-    s.isQuranPausedForAdhan = false;
-    s.currentSurahNumber = null;
-    s.playlistCursor = 0;
-    s.playlistCyclesCompleted = 0;
-    s.surahPlayCount = 0;
-    audio.setQuranNextSurahResolver(null);
-    audio.stopQuranPlayer();
-  }
 }

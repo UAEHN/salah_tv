@@ -45,16 +45,16 @@ class FakeSettingsRepository implements ISettingsRepository {
   AppSettings savedSettings = const AppSettings();
 
   @override
-  Future<bool> hasCompletedAppTour() async => false;
-
-  @override
   Future<bool> isFirstLaunch() async => false;
 
   @override
-  Future<Either<Failure, AppSettings>> load() async => Right(savedSettings);
+  Future<bool> hasSeenSplash() async => true;
 
   @override
-  Future<void> markAppTourCompleted() async {}
+  Future<void> markSplashSeen() async {}
+
+  @override
+  Future<Either<Failure, AppSettings>> load() async => Right(savedSettings);
 
   @override
   Future<void> markLaunched() async {}

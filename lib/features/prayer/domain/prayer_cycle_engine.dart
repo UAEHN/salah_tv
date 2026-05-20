@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'entities/daily_prayer_times.dart';
 import 'i_prayer_audio_port.dart';
+import 'i_takbeerat_audio_port.dart';
 import '../../notifications/domain/i_prayer_notification_port.dart';
 import 'i_prayer_times_repository.dart';
 import '../../settings/domain/entities/app_settings.dart';
@@ -10,7 +11,9 @@ import 'engine/prayer_cycle_state.dart';
 import 'engine/prayer_cycle_base.dart';
 import 'engine/recovery_mixin.dart';
 import 'engine/continuous_mode_mixin.dart';
+import 'engine/quran_modes_mixin.dart';
 import 'engine/quran_mixin.dart';
+import 'engine/takbeerat_mixin.dart';
 import 'engine/iqama_mixin.dart';
 import 'engine/adhan_cycle_mixin.dart';
 import 'engine/tick_mixin.dart';
@@ -24,7 +27,9 @@ class PrayerCycleEngine extends PrayerCycleBase
     with
         RecoveryMixin,
         ContinuousModeMixin,
+        QuranModesMixin,
         QuranMixin,
+        TakbeeratMixin,
         IqamaMixin,
         AdhanCycleMixin,
         TickMixin,
@@ -34,6 +39,9 @@ class PrayerCycleEngine extends PrayerCycleBase
 
   @override
   final IPrayerAudioPort audio;
+
+  @override
+  final ITakbeeratAudioPort takbeeratAudio;
 
   @override
   final IPrayerTimesRepository repo;
@@ -53,6 +61,7 @@ class PrayerCycleEngine extends PrayerCycleBase
   PrayerCycleEngine(
     this.repo,
     this.audio,
+    this.takbeeratAudio,
     AppSettings initialSettings,
     this.notify, {
     this.notifications,
@@ -87,16 +96,30 @@ class PrayerCycleEngine extends PrayerCycleBase
   bool get isDuaPlaying => s.isDuaPlaying;
 
   /// True when the user's Quran is "on" AND actually producing audio.
-  bool get isQuranPlaying => s.isQuranPlaying && !s.isQuranPausedForAdhan;
+  bool get isQuranPlaying =>
+      s.isQuranPlaying && !s.isQuranPausedForAdhan && !s.isQuranPausedByUser;
 
-  /// True when the user has Quran enabled (playing or paused by adhan).
+  /// True when the user has Quran enabled (playing, paused by adhan, or
+  /// manually paused — the user has a queued surah waiting to resume).
   bool get quranUserEnabled => s.isQuranPlaying;
+
+  /// True when the user manually paused Quran. UI uses this to render the
+  /// "resume" affordance and keep the saved-position badge.
+  bool get isQuranPausedByUser => s.isQuranPausedByUser;
 
   /// 1..114 — null when no Quran is playing.
   int? get currentSurahNumber => s.currentSurahNumber;
 
+  /// True when the user has Takbeerat "on" and it isn't auto-paused for the cycle.
+  bool get isTakbeeratPlaying =>
+      s.isTakbeeratPlaying && !s.isTakbeeratPausedForCycle;
+
+  /// True when the user has Takbeerat enabled regardless of cycle pause state.
+  bool get takbeeratUserEnabled => s.isTakbeeratPlaying;
+
   bool get isCycleActive => s.isCycleActive;
   bool get isPrePrayerAlert => s.isPrePrayerAlert;
+  bool get isInPostIqamaPrayer => s.isInPostIqamaPrayer;
   bool get isMultiCity => repo.isMultiCity;
   List<String> get availableCities => repo.availableCities;
 
@@ -128,7 +151,9 @@ class PrayerCycleEngine extends PrayerCycleBase
   /// Called by PrayerBloc when the app is sent to the background.
   /// Pauses Quran so it doesn't bleed into the next foreground session.
   void onPaused() {
-    if (s.isQuranPlaying && !s.isQuranPausedForAdhan) {
+    if (s.isQuranPlaying &&
+        !s.isQuranPausedForAdhan &&
+        !s.isQuranPausedByUser) {
       audio.pauseQuranPlayer(); // sets _quranPausedAt timestamp for Issue 7
     }
   }
@@ -154,7 +179,9 @@ class PrayerCycleEngine extends PrayerCycleBase
       unawaited(audio.stop());
     }
     recoverIqamaState();
-    if (s.isQuranPlaying && !s.isQuranPausedForAdhan) {
+    if (s.isQuranPlaying &&
+        !s.isQuranPausedForAdhan &&
+        !s.isQuranPausedByUser) {
       audio.resumeOrRestartQuranPlayer(settings.quranReciterServerUrl);
     }
     notify();

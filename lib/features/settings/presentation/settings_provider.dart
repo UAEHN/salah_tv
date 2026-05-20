@@ -4,6 +4,7 @@ import '../../quran/domain/entities/quran_playback_mode.dart';
 import '../domain/entities/app_settings.dart';
 import '../domain/entities/app_settings_copy_with.dart';
 import '../domain/entities/custom_adhan.dart';
+import '../domain/entities/prayer_sound_mode.dart';
 import '../domain/i_settings_repository.dart';
 import '../domain/usecases/save_settings_usecase.dart';
 

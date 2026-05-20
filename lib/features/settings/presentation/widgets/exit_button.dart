@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
+import '../../../../core/widgets/focus_scroll.dart';
+
 /// Full-width exit/close-app button shown at the bottom of the settings nav panel.
 class SettingsExitButton extends StatefulWidget {
   const SettingsExitButton({super.key});
@@ -18,7 +20,10 @@ class _SettingsExitButtonState extends State<SettingsExitButton> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     return Focus(
-      onFocusChange: (f) => setState(() => _isFocused = f),
+      onFocusChange: (f) {
+        setState(() => _isFocused = f);
+        if (f) ensureFocusedVisible(context);
+      },
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.select ||

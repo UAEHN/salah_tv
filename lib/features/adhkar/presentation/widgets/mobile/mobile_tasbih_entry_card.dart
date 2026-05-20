@@ -11,7 +11,7 @@ class MobileTasbihEntryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final color = MobileColors.primary;
+    final color = MobileColors.activePrimary(context);
     return GestureDetector(
       onTap: () => Navigator.of(context).pushNamed('/tasbih'),
       child: Container(

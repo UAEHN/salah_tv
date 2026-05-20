@@ -36,8 +36,8 @@ class MobileAdhkarProgressBar extends StatelessWidget {
               value: progress,
               minHeight: 4,
               backgroundColor: MobileColors.border(context),
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                MobileColors.primary,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                MobileColors.activePrimary(context),
               ),
             ),
           ),

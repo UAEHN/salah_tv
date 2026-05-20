@@ -1,6 +1,6 @@
 name: ghasaq
 description: "غسق — مواقيت الصلاة لأجهزة Android TV"
-version: 1.0.6+11
+version: 1.0.7+15
 publish_to: none
 
 environment:
@@ -49,14 +49,19 @@ dependencies:
   geolocator: ^13.0.0
   geocoding: ^3.0.0
 
-  # Scheduled local notifications for prayer times (mobile only)
-  flutter_local_notifications: ^18.0.0
-  # Required by flutter_local_notifications for exact-time scheduling
+  # Notification scheduling is now handled by the native Kotlin engine in
+  # android/app/src/main/kotlin/com/ghasaq/app/notifications/ — no Flutter
+  # plugin is required for the mobile notification path. The timezone package
+  # is still needed by lib/features/prayer/domain/prayer_time_zone.dart.
   timezone: ^0.9.4
 
   firebase_core: ^3.13.0
   cloud_firestore: ^5.6.0
   firebase_analytics: ^11.4.0
+  firebase_remote_config: ^5.4.0
+
+  # Reads installed app version (versionCode / build number) at runtime.
+  package_info_plus: ^8.1.0
 
   dio: ^5.9.2
   flutter_bloc: ^9.1.1
@@ -64,9 +69,6 @@ dependencies:
   get_it: ^9.2.1
   injectable: ^2.7.1+4
   adhan_dart: ^1.2.0
-
-  # Spotlight/tooltip app tour for first-time users (mobile)
-  tutorial_coach_mark: ^1.2.11
 
   # Pick audio files from device storage for custom adhan sounds (mobile only)
   file_picker: ^8.1.4
@@ -79,6 +81,9 @@ dependencies:
 
   # Google Play In-App Updates API
   in_app_update: ^4.2.3
+
+  # Home screen widget (Android) — bridge to AppWidgetProvider
+  home_widget: ^0.7.0
 
 
 dev_dependencies:

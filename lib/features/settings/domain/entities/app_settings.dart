@@ -1,10 +1,13 @@
 import '../../../quran/domain/entities/quran_playback_mode.dart';
 import 'custom_adhan.dart';
+import 'prayer_sound_mode.dart';
 
 class AppSettings {
   final String themeColorKey;
   final bool use24HourFormat;
-  final bool playAdhan;
+  final PrayerSoundMode adhanMode;
+  final PrayerSoundMode iqamaMode;
+  final bool isMosqueMode;
   final bool isDarkMode;
   final Map<String, int> iqamaDelays;
   final Map<String, int> adhanOffsets;
@@ -68,12 +71,28 @@ class AppSettings {
   final Map<String, bool> preIqamaReminderEnabled;
   final int preIqamaReminderMinutes;
 
+  // ── Adhkar notification settings (mobile only) ──────────────────────────
+  final bool isMorningAdhkarNotificationEnabled;
+  final bool isEveningAdhkarNotificationEnabled;
+  /// Minutes-from-midnight when the morning adhkar notification fires.
+  /// 420 = 07:00 AM (default).
+  final int morningAdhkarMinuteOfDay;
+  /// Minutes-from-midnight for evening. 1020 = 17:00 PM (default).
+  final int eveningAdhkarMinuteOfDay;
+
+  /// True once the user has been walked through the notification onboarding
+  /// (permissions + battery exemption + OEM autostart guidance). Used by
+  /// the gate in `app.dart` to decide whether to show the flow at startup.
+  final bool isNotificationOnboardingDone;
+
   const AppSettings({
-    this.themeColorKey = 'green',
+    this.themeColorKey = 'gold',
     this.use24HourFormat = false,
-    this.playAdhan = true,
+    this.adhanMode = PrayerSoundMode.sound,
+    this.iqamaMode = PrayerSoundMode.sound,
+    this.isMosqueMode = false,
     this.isDarkMode = false,
-    this.fontFamily = 'Kufi',
+    this.fontFamily = 'Rubik',
     this.locale = 'ar',
     this.selectedCountry = 'uae',
     this.selectedCity = 'Dubai',
@@ -134,6 +153,11 @@ class AppSettings {
       'isha': false,
     },
     this.preIqamaReminderMinutes = 5,
+    this.isMorningAdhkarNotificationEnabled = false,
+    this.isEveningAdhkarNotificationEnabled = false,
+    this.morningAdhkarMinuteOfDay = 420,
+    this.eveningAdhkarMinuteOfDay = 1020,
+    this.isNotificationOnboardingDone = false,
     this.hadithText =
         '"Whoever fasts Ramadan then follows it with six days of Shawwal, it is as if he fasted the whole year."',
     this.hadithSource = 'Sahih Muslim',

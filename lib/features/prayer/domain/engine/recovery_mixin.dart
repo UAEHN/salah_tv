@@ -1,3 +1,4 @@
+import '../../../settings/domain/entities/prayer_sound_mode.dart';
 import '../entities/daily_prayer_times.dart';
 import '../prayer_time_calculator.dart' as calc;
 import 'prayer_cycle_base.dart';
@@ -15,6 +16,19 @@ mixin RecoveryMixin on PrayerCycleBase {
 
     final missed = markMissedPrayers();
     if (missed == null) return;
+
+    // Adhan fully off (and not in mosque mode) — live triggers skip the
+    // cycle entirely, so recovery has nothing to surface either.
+    if (settings.adhanMode == PrayerSoundMode.off &&
+        !settings.isMosqueMode) {
+      return;
+    }
+    // Iqama fully off (and not in mosque mode) — nothing to recover for the
+    // iqama phase.
+    if (settings.iqamaMode == PrayerSoundMode.off &&
+        !settings.isMosqueMode) {
+      return;
+    }
 
     final iqamaDelayMin = settings.iqamaDelays[missed.key] ?? 0;
     if (iqamaDelayMin <= 0) return;

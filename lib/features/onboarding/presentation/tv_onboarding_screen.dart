@@ -52,11 +52,24 @@ class _TvOnboardingScreenState extends State<TvOnboardingScreen>
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<OnboardingCubit, OnboardingState>(
-      listenWhen: (prev, curr) => curr.isComplete || prev.step != curr.step,
+      listenWhen: (prev, curr) =>
+          curr.isComplete ||
+          prev.step != curr.step ||
+          prev.completionError != curr.completionError,
       listener: (context, state) {
         if (state.isComplete) {
           Navigator.of(context).pushReplacementNamed('/');
           return;
+        }
+        if (state.completionError != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.completionError!),
+              backgroundColor: Colors.redAccent,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+          context.read<OnboardingCubit>().clearCompletionError();
         }
         if (state.step != _prevStep) {
           _prevStep = state.step;

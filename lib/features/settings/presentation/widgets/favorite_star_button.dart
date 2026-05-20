@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../core/widgets/focus_scroll.dart';
+
 /// TV-focusable star toggle. Renders a filled star when [isFavorite], an
 /// outline star otherwise. OK / Enter triggers [onToggle]; the surrounding
 /// Focus widget keeps it reachable via D-pad RIGHT/LEFT inside a row.
@@ -27,7 +29,10 @@ class _FavoriteStarButtonState extends State<FavoriteStarButton> {
   Widget build(BuildContext context) {
     final filled = widget.isFavorite;
     return Focus(
-      onFocusChange: (f) => setState(() => _isFocused = f),
+      onFocusChange: (f) {
+        setState(() => _isFocused = f);
+        if (f) ensureFocusedVisible(context);
+      },
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.select ||

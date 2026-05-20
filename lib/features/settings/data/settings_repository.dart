@@ -1,16 +1,14 @@
-import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/error/failures.dart';
 import '../../../core/usecases/success.dart';
 import '../domain/entities/app_settings.dart';
-import '../domain/entities/app_settings_mapper.dart';
 import '../domain/i_settings_repository.dart';
+import 'settings_prefs_codec.dart';
 
 class SettingsRepository implements ISettingsRepository {
-  static const _prefix = 'salah_tv_';
-  static const _firstLaunchKey = '${_prefix}first_launch';
-  static const _appTourKey = '${_prefix}app_tour_completed';
+  static const _firstLaunchKey = 'salah_tv_first_launch';
+  static const _splashSeenKey = 'salah_tv_splash_seen';
 
   @override
   Future<bool> isFirstLaunch() async {
@@ -25,73 +23,22 @@ class SettingsRepository implements ISettingsRepository {
   }
 
   @override
-  Future<bool> hasCompletedAppTour() async {
+  Future<bool> hasSeenSplash() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_appTourKey) ?? false;
+    return prefs.getBool(_splashSeenKey) ?? false;
   }
 
   @override
-  Future<void> markAppTourCompleted() async {
+  Future<void> markSplashSeen() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_appTourKey, true);
+    await prefs.setBool(_splashSeenKey, true);
   }
 
   @override
   Future<Either<Failure, AppSettings>> load() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      return Right(
-        appSettingsFromMap({
-          'themeColorKey': prefs.getString('${_prefix}theme'),
-          'use24HourFormat': prefs.getBool('${_prefix}24h'),
-          'playAdhan': prefs.getBool('${_prefix}adhan'),
-          'isDarkMode': prefs.getBool('${_prefix}dark_mode'),
-          'iqamaDelays': prefs.getString('${_prefix}iqama'),
-          'adhanOffsets': prefs.getString('${_prefix}adhan_offsets'),
-          'hadithText': prefs.getString('${_prefix}hadith_text'),
-          'hadithSource': prefs.getString('${_prefix}hadith_source'),
-          'fontFamily': prefs.getString('${_prefix}font_family'),
-          'locale': prefs.getString('${_prefix}locale'),
-          'isQuranEnabled': prefs.getBool('${_prefix}quran_enabled'),
-          'quranReciterName': prefs.getString('${_prefix}quran_reciter_name'),
-          'quranReciterServerUrl': prefs.getString(
-            '${_prefix}quran_reciter_url',
-          ),
-          'selectedCountry': prefs.getString('${_prefix}selected_country'),
-          'selectedCity': prefs.getString('${_prefix}selected_city'),
-          'selectedLatitude': prefs.getDouble('${_prefix}selected_lat'),
-          'selectedLongitude': prefs.getDouble('${_prefix}selected_lng'),
-          'calculationMethod': prefs.getString('${_prefix}calc_method'),
-          'isCalculatedLocation': prefs.getBool(
-            '${_prefix}is_calculated_location',
-          ),
-          'selectedTimeZoneId': prefs.getString('${_prefix}timezone_id'),
-          'utcOffsetHours': prefs.getDouble('${_prefix}utc_offset'),
-          'layoutStyle': prefs.getString('${_prefix}layout_style'),
-          'adhanSound': prefs.getString('${_prefix}adhan_sound'),
-          'isAnalogClock': prefs.getBool('${_prefix}analog_clock'),
-          'isAdhkarEnabled': prefs.getBool('${_prefix}adhkar_enabled'),
-          'prayerNotificationEnabled': prefs.getString(
-            '${_prefix}prayer_notif_enabled',
-          ),
-          'preAdhanReminderEnabled': prefs.getString(
-            '${_prefix}pre_adhan_reminder_map',
-          ),
-          'preAdhanReminderMinutes': prefs.getInt(
-            '${_prefix}pre_adhan_reminder_min',
-          ),
-          'iqamaNotificationEnabled': prefs.getString(
-            '${_prefix}iqama_notif_map',
-          ),
-          'preIqamaReminderEnabled': prefs.getString(
-            '${_prefix}pre_iqama_reminder_map',
-          ),
-          'preIqamaReminderMinutes': prefs.getInt(
-            '${_prefix}pre_iqama_reminder_min',
-          ),
-          'customAdhans': prefs.getString('${_prefix}custom_adhans'),
-        }),
-      );
+      return Right(loadAppSettings(prefs));
     } catch (e) {
       return Left(CacheFailure('Failed to load settings: $e'));
     }
@@ -101,80 +48,7 @@ class SettingsRepository implements ISettingsRepository {
   Future<Either<Failure, Success>> save(AppSettings s) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('${_prefix}theme', s.themeColorKey);
-      await prefs.setBool('${_prefix}24h', s.use24HourFormat);
-      await prefs.setBool('${_prefix}adhan', s.playAdhan);
-      await prefs.setBool('${_prefix}dark_mode', s.isDarkMode);
-      await prefs.setString('${_prefix}iqama', jsonEncode(s.iqamaDelays));
-      await prefs.setString(
-        '${_prefix}adhan_offsets',
-        jsonEncode(s.adhanOffsets),
-      );
-      await prefs.setString('${_prefix}hadith_text', s.hadithText);
-      await prefs.setString('${_prefix}hadith_source', s.hadithSource);
-      await prefs.setString('${_prefix}font_family', s.fontFamily);
-      await prefs.setString('${_prefix}locale', s.locale);
-      await prefs.setBool('${_prefix}quran_enabled', s.isQuranEnabled);
-      await prefs.setString('${_prefix}quran_reciter_name', s.quranReciterName);
-      await prefs.setString(
-        '${_prefix}quran_reciter_url',
-        s.quranReciterServerUrl,
-      );
-      await prefs.setString('${_prefix}selected_country', s.selectedCountry);
-      await prefs.setString('${_prefix}selected_city', s.selectedCity);
-      if (s.selectedLatitude != null) {
-        await prefs.setDouble('${_prefix}selected_lat', s.selectedLatitude!);
-      }
-      if (s.selectedLongitude != null) {
-        await prefs.setDouble('${_prefix}selected_lng', s.selectedLongitude!);
-      }
-      await prefs.setString('${_prefix}calc_method', s.calculationMethod);
-      await prefs.setBool(
-        '${_prefix}is_calculated_location',
-        s.isCalculatedLocation,
-      );
-      if (s.selectedTimeZoneId != null && s.selectedTimeZoneId!.isNotEmpty) {
-        await prefs.setString('${_prefix}timezone_id', s.selectedTimeZoneId!);
-      } else {
-        await prefs.remove('${_prefix}timezone_id');
-      }
-      if (s.utcOffsetHours != null) {
-        await prefs.setDouble('${_prefix}utc_offset', s.utcOffsetHours!);
-      } else {
-        await prefs.remove('${_prefix}utc_offset');
-      }
-      await prefs.setString('${_prefix}layout_style', s.layoutStyle);
-      await prefs.setString('${_prefix}adhan_sound', s.adhanSound);
-      await prefs.setBool('${_prefix}analog_clock', s.isAnalogClock);
-      await prefs.setBool('${_prefix}adhkar_enabled', s.isAdhkarEnabled);
-      await prefs.setString(
-        '${_prefix}prayer_notif_enabled',
-        jsonEncode(s.prayerNotificationEnabled),
-      );
-      await prefs.setString(
-        '${_prefix}pre_adhan_reminder_map',
-        jsonEncode(s.preAdhanReminderEnabled),
-      );
-      await prefs.setInt(
-        '${_prefix}pre_adhan_reminder_min',
-        s.preAdhanReminderMinutes,
-      );
-      await prefs.setString(
-        '${_prefix}iqama_notif_map',
-        jsonEncode(s.iqamaNotificationEnabled),
-      );
-      await prefs.setString(
-        '${_prefix}pre_iqama_reminder_map',
-        jsonEncode(s.preIqamaReminderEnabled),
-      );
-      await prefs.setInt(
-        '${_prefix}pre_iqama_reminder_min',
-        s.preIqamaReminderMinutes,
-      );
-      await prefs.setString(
-        '${_prefix}custom_adhans',
-        jsonEncode(s.customAdhans.map((c) => c.toJson()).toList()),
-      );
+      await saveAppSettings(prefs, s);
       return const Right(Success());
     } catch (e) {
       return Left(CacheFailure('Failed to save settings: $e'));

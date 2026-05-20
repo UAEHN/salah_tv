@@ -21,4 +21,12 @@ abstract class IPrayerNotificationPort {
 
   /// Cancels all pending prayer notifications (e.g. before rescheduling).
   Future<void> cancelAll();
+
+  /// Schedules morning + evening adhkar reminders for the next 7 days at the
+  /// user's chosen wall-clock times ([AppSettings.morningAdhkarMinuteOfDay] /
+  /// [AppSettings.eveningAdhkarMinuteOfDay]).
+  /// Long horizon protects against reliability gaps when the phone has been
+  /// off or the app has not been opened for several days. Uses exact-alarm
+  /// scheduling so the boot receiver can restore them across reboots.
+  Future<void> scheduleAdhkar(AppSettings settings);
 }

@@ -126,7 +126,10 @@ class _ModeChoice extends StatelessWidget {
                           color: tc.textPrimary)),
                   const SizedBox(height: 2),
                   Text(subtitle,
-                      style: TextStyle(fontSize: 14, color: tc.textMuted)),
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: tc.textSecondary,
+                          height: 1.35)),
                 ],
               ),
             ),

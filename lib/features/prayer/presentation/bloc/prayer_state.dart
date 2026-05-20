@@ -20,8 +20,12 @@ class PrayerState {
   final bool isDuaPlaying;
   final bool isQuranPlaying;
   final bool quranUserEnabled;
+  final bool isQuranPausedByUser;
+  final bool isTakbeeratPlaying;
+  final bool takbeeratUserEnabled;
   final bool isCycleActive;
   final bool isPrePrayerAlert;
+  final bool isInPostIqamaPrayer;
   final bool isViewingToday;
   final bool isDateNavigationBusy;
   final bool isMultiCity;
@@ -45,8 +49,12 @@ class PrayerState {
     required this.isDuaPlaying,
     required this.isQuranPlaying,
     required this.quranUserEnabled,
+    required this.isQuranPausedByUser,
+    required this.isTakbeeratPlaying,
+    required this.takbeeratUserEnabled,
     required this.isCycleActive,
     required this.isPrePrayerAlert,
+    required this.isInPostIqamaPrayer,
     required this.isViewingToday,
     required this.isDateNavigationBusy,
     required this.isMultiCity,
@@ -78,8 +86,12 @@ class PrayerState {
     isDuaPlaying: e.isDuaPlaying,
     isQuranPlaying: e.isQuranPlaying,
     quranUserEnabled: e.quranUserEnabled,
+    isQuranPausedByUser: e.isQuranPausedByUser,
+    isTakbeeratPlaying: e.isTakbeeratPlaying,
+    takbeeratUserEnabled: e.takbeeratUserEnabled,
     isCycleActive: e.isCycleActive,
     isPrePrayerAlert: e.isPrePrayerAlert,
+    isInPostIqamaPrayer: e.isInPostIqamaPrayer,
     isViewingToday: isViewingToday,
     isDateNavigationBusy: isDateNavigationBusy,
     isMultiCity: e.isMultiCity,
@@ -104,8 +116,12 @@ class PrayerState {
     isDuaPlaying: false,
     isQuranPlaying: false,
     quranUserEnabled: false,
+    isQuranPausedByUser: false,
+    isTakbeeratPlaying: false,
+    takbeeratUserEnabled: false,
     isCycleActive: false,
     isPrePrayerAlert: false,
+    isInPostIqamaPrayer: false,
     isViewingToday: true,
     isDateNavigationBusy: false,
     isMultiCity: false,

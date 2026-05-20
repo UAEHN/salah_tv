@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/app_colors.dart';
+import '../../../../core/widgets/focus_scroll.dart';
 import '../settings_provider.dart';
 
 class TvFontChip extends StatefulWidget {
@@ -35,7 +36,10 @@ class _TvFontChipState extends State<TvFontChip> {
     final isActive = _isFocused || widget.isSelected;
 
     return Focus(
-      onFocusChange: (f) => setState(() => _isFocused = f),
+      onFocusChange: (f) {
+        setState(() => _isFocused = f);
+        if (f) ensureFocusedVisible(context);
+      },
       onKeyEvent: (_, event) {
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.select ||

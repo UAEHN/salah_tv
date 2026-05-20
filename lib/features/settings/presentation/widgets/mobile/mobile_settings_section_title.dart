@@ -25,7 +25,11 @@ class MobileSettingsSectionTitle extends StatelessWidget {
             ).copyWith(color: MobileColors.onSurface(context), fontSize: 16),
           ),
           const SizedBox(width: 8),
-          Icon(icon, color: MobileColors.primaryContainer, size: 20),
+          Icon(
+            icon,
+            color: MobileColors.activePrimaryContainer(context),
+            size: 20,
+          ),
         ],
       ),
     );

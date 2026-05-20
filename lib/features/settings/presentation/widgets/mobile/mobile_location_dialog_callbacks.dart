@@ -4,9 +4,11 @@ import '../../../domain/entities/detected_location.dart';
 import '../../../domain/entities/world_city.dart';
 
 /// Typedefs for the two save signatures used by [MobileLocationDialog].
-typedef DbSaveCallback = Future<void> Function(String country, String city);
+/// Both return `true` when the persist+download chain succeeds, `false` if
+/// the dialog should remain open (e.g. download failure).
+typedef DbSaveCallback = Future<bool> Function(String country, String city);
 typedef WorldSaveCallback =
-    Future<void> Function(
+    Future<bool> Function(
       String country,
       String city,
       double lat,
@@ -36,14 +38,14 @@ class LocationDialogCallbacks {
   });
 
   Future<void> selectDbCity(String cityKey) async {
-    await onSave(getSelectedCountryKey()!, cityKey);
-    if (!isMounted()) return;
+    final ok = await onSave(getSelectedCountryKey()!, cityKey);
+    if (!isMounted() || !ok) return;
     Navigator.of(contextGetter()).pop();
   }
 
   Future<void> selectWorldCity(WorldCity city) async {
     if (onSaveWorld == null) return;
-    await onSaveWorld!(
+    final ok = await onSaveWorld!(
       city.countryKey,
       city.name,
       city.latitude,
@@ -52,15 +54,16 @@ class LocationDialogCallbacks {
       timeZoneId: city.timeZoneId,
       utcOffsetHours: city.utcOffset,
     );
-    if (!isMounted()) return;
+    if (!isMounted() || !ok) return;
     Navigator.of(contextGetter()).pop();
   }
 
   Future<void> onLocationDetected(DetectedLocation location) async {
+    bool ok = false;
     if (location.isInDb) {
-      await onSave(location.dbCountryKey!, location.dbCityKey!);
+      ok = await onSave(location.dbCountryKey!, location.dbCityKey!);
     } else if (onSaveWorld != null) {
-      await onSaveWorld!(
+      ok = await onSaveWorld!(
         location.isoCountryCode ?? location.countryName,
         location.cityName,
         location.latitude,
@@ -71,7 +74,7 @@ class LocationDialogCallbacks {
         utcOffsetHours: location.utcOffsetHours,
       );
     }
-    if (!isMounted()) return;
+    if (!isMounted() || !ok) return;
     Navigator.of(contextGetter()).pop();
   }
 }

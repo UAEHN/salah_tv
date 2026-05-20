@@ -1,6 +1,7 @@
 import '../../../quran/domain/entities/quran_playback_mode.dart';
 import 'app_settings.dart';
 import 'custom_adhan.dart';
+import 'prayer_sound_mode.dart';
 
 /// Extension that provides [copyWith] for [AppSettings].
 ///
@@ -10,7 +11,9 @@ extension AppSettingsCopyWith on AppSettings {
   AppSettings copyWith({
     String? themeColorKey,
     bool? use24HourFormat,
-    bool? playAdhan,
+    PrayerSoundMode? adhanMode,
+    PrayerSoundMode? iqamaMode,
+    bool? isMosqueMode,
     bool? isDarkMode,
     Map<String, int>? iqamaDelays,
     Map<String, int>? adhanOffsets,
@@ -44,6 +47,11 @@ extension AppSettingsCopyWith on AppSettings {
     Map<String, bool>? iqamaNotificationEnabled,
     Map<String, bool>? preIqamaReminderEnabled,
     int? preIqamaReminderMinutes,
+    bool? isMorningAdhkarNotificationEnabled,
+    bool? isEveningAdhkarNotificationEnabled,
+    int? morningAdhkarMinuteOfDay,
+    int? eveningAdhkarMinuteOfDay,
+    bool? isNotificationOnboardingDone,
     QuranPlaybackMode? quranPlaybackMode,
     int? selectedSurahNumber,
     bool clearSelectedSurahNumber = false,
@@ -56,7 +64,9 @@ extension AppSettingsCopyWith on AppSettings {
     return AppSettings(
       themeColorKey: themeColorKey ?? this.themeColorKey,
       use24HourFormat: use24HourFormat ?? this.use24HourFormat,
-      playAdhan: playAdhan ?? this.playAdhan,
+      adhanMode: adhanMode ?? this.adhanMode,
+      iqamaMode: iqamaMode ?? this.iqamaMode,
+      isMosqueMode: isMosqueMode ?? this.isMosqueMode,
       isDarkMode: isDarkMode ?? this.isDarkMode,
       iqamaDelays: Map.unmodifiable(iqamaDelays ?? this.iqamaDelays),
       adhanOffsets: Map.unmodifiable(adhanOffsets ?? this.adhanOffsets),
@@ -105,6 +115,16 @@ extension AppSettingsCopyWith on AppSettings {
           preAdhanReminderMinutes ?? this.preAdhanReminderMinutes,
       preIqamaReminderMinutes:
           preIqamaReminderMinutes ?? this.preIqamaReminderMinutes,
+      isMorningAdhkarNotificationEnabled: isMorningAdhkarNotificationEnabled ??
+          this.isMorningAdhkarNotificationEnabled,
+      isEveningAdhkarNotificationEnabled: isEveningAdhkarNotificationEnabled ??
+          this.isEveningAdhkarNotificationEnabled,
+      morningAdhkarMinuteOfDay:
+          morningAdhkarMinuteOfDay ?? this.morningAdhkarMinuteOfDay,
+      eveningAdhkarMinuteOfDay:
+          eveningAdhkarMinuteOfDay ?? this.eveningAdhkarMinuteOfDay,
+      isNotificationOnboardingDone:
+          isNotificationOnboardingDone ?? this.isNotificationOnboardingDone,
       quranPlaybackMode: quranPlaybackMode ?? this.quranPlaybackMode,
       selectedSurahNumber: clearSelectedSurahNumber
           ? null
@@ -129,7 +149,9 @@ extension AppSettingsCopyWith on AppSettings {
       isCalculatedLocation == other.isCalculatedLocation &&
       selectedTimeZoneId == other.selectedTimeZoneId &&
       utcOffsetHours == other.utcOffsetHours &&
-      playAdhan == other.playAdhan &&
+      adhanMode == other.adhanMode &&
+      iqamaMode == other.iqamaMode &&
+      isMosqueMode == other.isMosqueMode &&
       adhanSound == other.adhanSound &&
       isQuranEnabled == other.isQuranEnabled &&
       quranReciterServerUrl == other.quranReciterServerUrl &&
@@ -146,6 +168,13 @@ extension AppSettingsCopyWith on AppSettings {
           other.preIqamaReminderEnabled.toString() &&
       preAdhanReminderMinutes == other.preAdhanReminderMinutes &&
       preIqamaReminderMinutes == other.preIqamaReminderMinutes &&
+      isMorningAdhkarNotificationEnabled ==
+          other.isMorningAdhkarNotificationEnabled &&
+      isEveningAdhkarNotificationEnabled ==
+          other.isEveningAdhkarNotificationEnabled &&
+      morningAdhkarMinuteOfDay == other.morningAdhkarMinuteOfDay &&
+      eveningAdhkarMinuteOfDay == other.eveningAdhkarMinuteOfDay &&
+      isNotificationOnboardingDone == other.isNotificationOnboardingDone &&
       quranPlaybackMode == other.quranPlaybackMode &&
       selectedSurahNumber == other.selectedSurahNumber &&
       surahPlaylist.toString() == other.surahPlaylist.toString() &&

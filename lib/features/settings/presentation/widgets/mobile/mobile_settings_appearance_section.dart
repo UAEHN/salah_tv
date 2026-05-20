@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
+import '../../../../customization/presentation/logic/customization_l10n_resolver.dart';
 import '../../settings_provider.dart';
 import 'mobile_language_dialog.dart';
 import 'mobile_settings_section_title.dart';
@@ -65,6 +66,24 @@ class MobileSettingsAppearanceSection extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         MobileSettingsTile(
+          title: l.settingsThemePicker,
+          subtitle: resolveThemeLabel(
+            l,
+            themeKeyToLabelKey(settings.themeColorKey),
+          ),
+          onTap: () => Navigator.of(context).pushNamed('/theme_picker'),
+        ),
+        const SizedBox(height: 10),
+        MobileSettingsTile(
+          title: l.settingsFontPicker,
+          subtitle: resolveFontLabel(
+            l,
+            fontFamilyToLabelKey(settings.fontFamily),
+          ),
+          onTap: () => Navigator.of(context).pushNamed('/font_picker'),
+        ),
+        const SizedBox(height: 10),
+        MobileSettingsTile(
           title: l.settingsLanguage,
           subtitle: settings.locale == 'ar'
               ? l.languageArabic
@@ -82,4 +101,5 @@ class MobileSettingsAppearanceSection extends StatelessWidget {
       ],
     );
   }
+
 }

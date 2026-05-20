@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 
 import '../../../core/app_colors.dart';
 import '../../../core/platform_config.dart';
+import 'logic/mosque_visible_categories.dart';
 import 'screens/mobile_settings_screen.dart';
 import 'settings_provider.dart';
+import 'widgets/settings_category_definitions.dart';
 import 'widgets/settings_content_panel.dart';
 import 'widgets/settings_key_handlers.dart';
 import 'widgets/settings_nav_panel.dart';
@@ -29,7 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   late final List<FocusNode> _navFocusNodes =
-      List.generate(8, (_) => FocusNode());
+      List.generate(kSettingsCategoryCount, (_) => FocusNode());
 
   final _contentScopeNode = FocusScopeNode(debugLabel: 'settings_content');
 
@@ -47,52 +49,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!kIsTV) return const MobileSettingsScreen();
 
     final l = AppLocalizations.of(context);
-    final categories = [
-      (
-        Icons.location_on_rounded,
-        l.settingsCategoryLocation,
-        l.settingsCategoryLocationSubtitle,
-      ),
-      (
-        Icons.menu_book_rounded,
-        l.settingsCategoryQuran,
-        l.settingsCategoryQuranSubtitle,
-      ),
-      (
-        Icons.volume_up_rounded,
-        l.settingsCategoryAdhan,
-        l.settingsCategoryAdhanSubtitle,
-      ),
-      (
-        Icons.tune_rounded,
-        l.settingsCategoryAdhanOffsets,
-        l.settingsCategoryAdhanOffsetsSubtitle,
-      ),
-      (
-        Icons.timer_rounded,
-        l.settingsCategoryIqama,
-        l.settingsCategoryIqamaSubtitle,
-      ),
-      (
-        Icons.palette_rounded,
-        l.settingsCategoryAppearance,
-        l.settingsCategoryAppearanceSubtitle,
-      ),
-      (
-        Icons.auto_stories_rounded,
-        l.settingsCategoryAdhkar,
-        l.settingsCategoryAdhkarSubtitle,
-      ),
-      (
-        Icons.mark_chat_read_rounded,
-        l.feedbackSection,
-        l.feedbackSettingsTile,
-      ),
-    ];
-
     final settings = context.watch<SettingsProvider>().settings;
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);
+
+    final visibleIds = visibleSettingsCategoryIndices(
+      isMosqueMode: settings.isMosqueMode,
+    );
+    final effectiveIndex = resolveVisibleIndex(_selectedIndex, visibleIds);
+    final allCategories = buildSettingsCategories(l);
+    final visibleCategories = [
+      for (final cat in allCategories)
+        if (visibleIds.contains(cat.id)) cat,
+    ];
 
     return PopScope(
       canPop: true,
@@ -128,8 +97,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             event,
                           ),
                           child: SettingsNavPanel(
-                            categories: categories,
-                            selectedIndex: _selectedIndex,
+                            categories: visibleCategories,
+                            selectedIndex: effectiveIndex,
                             navFocusNodes: _navFocusNodes,
                             palette: palette,
                             tc: tc,
@@ -149,13 +118,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             onKeyEvent: (_, event) =>
                                 handleSettingsContentKeyEvent(
                               _navFocusNodes,
-                              _selectedIndex,
+                              effectiveIndex,
                               event,
                             ),
                             child: FocusScope(
                               node: _contentScopeNode,
                               child: SettingsContentPanel(
-                                selectedIndex: _selectedIndex,
+                                selectedIndex: effectiveIndex,
                               ),
                             ),
                           ),

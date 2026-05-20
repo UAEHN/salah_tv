@@ -6,6 +6,7 @@ class QiblaCompassPointer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = MobileColors.activePrimaryContainer(context);
     return Align(
       alignment: Alignment.topCenter,
       child: Container(
@@ -17,8 +18,8 @@ class QiblaCompassPointer extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              MobileColors.primaryContainer,
-              MobileColors.primaryContainer.withValues(alpha: 0.2),
+              accent,
+              accent.withValues(alpha: 0.2),
               Colors.transparent,
             ],
           ),
@@ -30,7 +31,7 @@ class QiblaCompassPointer extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: MobileColors.primaryContainer.withValues(alpha: 0.6),
+              color: accent.withValues(alpha: 0.6),
               blurRadius: 20,
               spreadRadius: 2,
             ),

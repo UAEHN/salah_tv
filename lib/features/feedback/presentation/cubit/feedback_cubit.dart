@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/feedback_entry.dart';
+import '../../domain/i_feedback_diagnostics_collector.dart';
 import '../../domain/usecases/submit_feedback_usecase.dart';
 import '../../../analytics/domain/i_analytics_service.dart';
 import '../../../rating/domain/i_rating_service.dart';
@@ -10,7 +11,8 @@ import 'feedback_state.dart';
 
 class FeedbackCubit extends Cubit<FeedbackState> {
   FeedbackCubit(
-    this._submitFeedback, {
+    this._submitFeedback,
+    this._collectDiagnostics, {
     IAnalyticsService? analytics,
     IRatingService? rating,
   })  : _analytics = analytics,
@@ -18,17 +20,42 @@ class FeedbackCubit extends Cubit<FeedbackState> {
         super(const FeedbackState());
 
   final SubmitFeedbackUseCase _submitFeedback;
+  final IFeedbackDiagnosticsCollector _collectDiagnostics;
   final IAnalyticsService? _analytics;
   final IRatingService? _rating;
 
-  Future<void> submit(String message) async {
+  Future<void> submit({
+    required String message,
+    String? contact,
+    Map<String, String> settingsSnapshot = const {},
+  }) async {
     if (message.trim().isEmpty) return;
-    emit(state.copyWith(isLoading: true, clearError: true));
+
+    // Contact (email/Telegram) is required so we can actually reply.
+    final trimmedContact = contact?.trim() ?? '';
+    if (trimmedContact.isEmpty) {
+      emit(state.copyWith(isContactMissing: true, clearError: true));
+      return;
+    }
+
+    emit(state.copyWith(
+      isLoading: true,
+      isContactMissing: false,
+      clearError: true,
+    ));
+
+    final device = await _collectDiagnostics.collect();
+    final diagnostics = {...settingsSnapshot, ...device};
+    final platform = device['deviceType'] == 'tv'
+        ? 'android-tv'
+        : (Platform.isAndroid ? 'android' : 'ios');
 
     final entry = FeedbackEntry(
       type: 'general',
       message: message.trim(),
-      platform: Platform.isAndroid ? 'android' : 'ios',
+      platform: platform,
+      contact: trimmedContact,
+      diagnostics: diagnostics,
       createdAt: DateTime.now(),
     );
 

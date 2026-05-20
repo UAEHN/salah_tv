@@ -38,12 +38,23 @@ class PrayerCycleState {
   bool isIqamaPlaying = false;
   Timer? iqamaFallbackTimer;
 
+  // ── Mosque-mode post-iqama prayer window ─────────────────────────────────
+  // Set when iqama ends in mosque mode; while [now] is before this timestamp
+  // the home screen shows the silence-phone takeover. Cleared by tick when
+  // expired.
+  DateTime? prayerInProgressEndsAt;
+
   // ── Quran background audio ───────────────────────────────────────────────
   /// Whether the user has Quran "on" (wants it to play).
   bool isQuranPlaying = false;
 
   /// Internally paused because adhan/dua/iqama is active. Will auto-resume.
   bool isQuranPausedForAdhan = false;
+
+  /// Manually paused by the user. Preserves [currentSurahNumber],
+  /// [playlistCursor], [playlistCyclesCompleted] and [surahPlayCount] so the
+  /// next toggle resumes from the same surah/position instead of restarting.
+  bool isQuranPausedByUser = false;
 
   /// Currently audible surah (1..114), null when no Quran is playing.
   /// Mirrored from [IPrayerAudioPort.currentQuranSurah]; updated on surah
@@ -63,6 +74,16 @@ class PrayerCycleState {
   /// How many times the selected surah has played (single-surah mode).
   int surahPlayCount = 0;
 
+  // ── Eid Takbeerat background audio ───────────────────────────────────────
+  /// User has Takbeerat "on". Mirrors [isQuranPlaying]'s intent flag.
+  bool isTakbeeratPlaying = false;
+
+  /// Auto-paused because adhan/dua/iqama is active. Auto-resumes after iqama.
+  bool isTakbeeratPausedForCycle = false;
+
+  /// Source URL of the currently-loaded track. Empty when nothing is loaded.
+  String takbeeratUrl = '';
+
   // ── Pre-alert dedup sets ─────────────────────────────────────────────────
   final Set<String> preAlertBellPlayed = {};
   final Set<String> preAnnouncementPlayed = {};
@@ -74,5 +95,10 @@ class PrayerCycleState {
   bool get isPrePrayerAlert {
     if (isCycleActive) return false;
     return countdown.inSeconds > 0 && countdown.inSeconds <= 60;
+  }
+
+  bool get isInPostIqamaPrayer {
+    final until = prayerInProgressEndsAt;
+    return until != null && now.isBefore(until);
   }
 }

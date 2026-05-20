@@ -1,29 +1,21 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/platform_config.dart';
-import '../../prayer/presentation/bloc/prayer_bloc.dart';
-import '../../prayer/presentation/bloc/prayer_state.dart';
 import '../data/in_app_update_service.dart';
+import '../domain/entities/update_status.dart';
 import '../domain/i_app_update_repository.dart';
 import '../domain/whats_new_changelog.dart';
+import 'calm_moment_waiter.dart';
+import 'remote_update_handler.dart';
 import 'widgets/tv_whats_new_dialog.dart';
 import 'widgets/whats_new_dialog.dart';
 
-/// Wraps [child] and — after the screen settles — does two things:
-///   1. Asks Google Play if an update is available (native UI, fire-and-forget).
-///   2. Shows "What's New" once per version if the user hasn't seen it yet.
-///
-/// **TV behaviour:** waits for a calm prayer moment (no active cycle,
-/// ≥5 min until next prayer) before showing [TvWhatsNewDialog] — mirrors
-/// the same guard used in [TvRatingTrigger].
-///
-/// **Mobile behaviour:** shows [WhatsNewDialog] after a 5-second delay.
+/// Runs Remote Config gating (forced/optional) → Play in-app update (only
+/// if RC failed) → "What's New" dialog. On TV the optional/whats-new
+/// dialogs wait for a calm prayer moment; on mobile they show immediately.
 class AppUpdateTrigger extends StatefulWidget {
   const AppUpdateTrigger({super.key, required this.child});
 
@@ -34,16 +26,14 @@ class AppUpdateTrigger extends StatefulWidget {
 }
 
 class _AppUpdateTriggerState extends State<AppUpdateTrigger> {
-  // Static: prevents double-show if widget is recreated in same session.
   static bool _sessionChecked = false;
 
-  StreamSubscription<PrayerState>? _prayerSub;
+  CalmMomentWaiter? _waiter;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // مدة الانتظار 15 ثانية (لكل من التطوير والإنتاج) كما طلبت للاختبار الواقعي
       Future.delayed(const Duration(seconds: 15), _check);
     });
   }
@@ -52,78 +42,88 @@ class _AppUpdateTriggerState extends State<AppUpdateTrigger> {
     if (!mounted || _sessionChecked) return;
     _sessionChecked = true;
 
-    // Play update check — runs in background, shows native UI if update exists.
-    GetIt.I<InAppUpdateService>().checkAndPrompt();
+    final handler = RemoteUpdateHandler();
+    final decision = await handler.evaluate();
+    if (!mounted) return;
+
+    if (decision?.status == UpdateStatus.forced) {
+      await handler.showForced(context, decision!);
+      return;
+    }
+
+    // Only fall back to Play's native update UI if Remote Config has no
+    // answer — otherwise our dialog and Play's prompt would stack.
+    if (decision == null) {
+      GetIt.I<InAppUpdateService>().checkAndPrompt();
+    }
+
+    if (decision?.status == UpdateStatus.optional) {
+      if (kIsTV) {
+        // TV: defer to a calm prayer moment so the dialog never interrupts
+        // an active adhan/iqama cycle on the always-on display.
+        _waiter = CalmMomentWaiter(
+          context: context,
+          isStillActive: () => mounted,
+          onCalm: () => handler.showOptional(context, decision!),
+        )..start();
+      } else {
+        // Mobile: show immediately — there's no always-on cycle to disturb.
+        handler.showOptional(context, decision!);
+      }
+      return;
+    }
 
     final changelog = kIsTV ? kTvChangelog : kCurrentChangelog;
     if (changelog.isEmpty) return;
 
     final repo = GetIt.I<IAppUpdateRepository>();
-    final isSeen = await repo.isCurrentVersionSeen();
-    
-    // في وضع التطوير، نتجاهل شرط الرؤية المسبقة لكي تظهر دائماً للاختبار
-    if (!kDebugMode && isSeen) return;
+    if (!await _shouldShowChangelog(repo)) return;
     if (!mounted) return;
 
-    // حماية إضافية: إذا كان هذا مستخدماً جديداً جداً (حمّل التطبيق للتو وانتهى من الأونبوردنج)،
-    // لا يجب أن تظهر له شاشة "ما الجديد" لأن كل التطبيق جديد بالنسبة له.
+    if (kIsTV) {
+      _waiter = CalmMomentWaiter(
+        context: context,
+        isStillActive: () => mounted,
+        onCalm: () => _showTvWhatsNew(repo),
+      )..start();
+    } else {
+      _showMobileWhatsNew(repo, changelog);
+    }
+  }
+
+  Future<bool> _shouldShowChangelog(IAppUpdateRepository repo) async {
+    final isSeen = await repo.isCurrentVersionSeen();
+    if (!kDebugMode && isSeen) return false;
+
+    // Skip "What's New" for installs younger than 12 h — every screen is
+    // already new to them. Mark the version seen so it never appears.
     final prefs = await SharedPreferences.getInstance();
     final firstLaunchMs = prefs.getInt('rating_first_launch_ms');
     if (firstLaunchMs != null) {
-      final firstLaunch = DateTime.fromMillisecondsSinceEpoch(firstLaunchMs);
-      // إذا كان عمر التثبيت أقل من 12 ساعة، نعتبره مستخدماً جديداً ونسجل الرؤية بصمت
-      if (DateTime.now().difference(firstLaunch).inHours < 12) {
+      final age = DateTime.now()
+          .difference(DateTime.fromMillisecondsSinceEpoch(firstLaunchMs));
+      if (age.inHours < 12) {
         await repo.markCurrentVersionSeen();
-        if (!kDebugMode) return; // نتجاهل هذا المنع أيضاً في التطوير للاختبار
+        if (!kDebugMode) return false;
       }
     }
-
-    if (kIsTV) {
-      _waitForCalmMomentThenShow(repo);
-    } else {
-      _showMobileDialog(repo, changelog);
-    }
+    return true;
   }
 
-  // ─── TV: wait for calm prayer moment ──────────────────────────────────────
-
-  void _waitForCalmMomentThenShow(IAppUpdateRepository repo) {
-    if (!mounted) return;
-    final bloc = context.read<PrayerBloc>();
-    _onPrayerState(bloc.state, repo);
-    _prayerSub = bloc.stream.listen((s) => _onPrayerState(s, repo));
-  }
-
-  void _onPrayerState(PrayerState state, IAppUpdateRepository repo) {
-    if (!mounted) return;
-    final isCalmMoment = !state.isCycleActive &&
-        state.todayPrayers != null &&
-        state.countdown.inMinutes >= 5;
-    if (!isCalmMoment) return;
-
-    _prayerSub?.cancel();
-    _prayerSub = null;
-    _showTvDialog(repo);
-  }
-
-  Future<void> _showTvDialog(IAppUpdateRepository repo) async {
+  Future<void> _showTvWhatsNew(IAppUpdateRepository repo) async {
     if (!mounted) return;
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => TvWhatsNewDialog(
+      builder: (ctx) => TvWhatsNewDialog(
         changelog: kTvChangelog,
-        onDismiss: () {
-          Navigator.of(context).pop();
-        },
+        onDismiss: () => Navigator.of(ctx).pop(),
       ),
     );
     repo.markCurrentVersionSeen();
   }
 
-  // ─── Mobile: show after delay ─────────────────────────────────────────────
-
-  Future<void> _showMobileDialog(
+  Future<void> _showMobileWhatsNew(
     IAppUpdateRepository repo,
     List<String> changelog,
   ) async {
@@ -131,11 +131,9 @@ class _AppUpdateTriggerState extends State<AppUpdateTrigger> {
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => WhatsNewDialog(
+      builder: (ctx) => WhatsNewDialog(
         changelog: changelog,
-        onDismiss: () {
-          Navigator.of(context).pop();
-        },
+        onDismiss: () => Navigator.of(ctx).pop(),
       ),
     );
     repo.markCurrentVersionSeen();
@@ -143,7 +141,7 @@ class _AppUpdateTriggerState extends State<AppUpdateTrigger> {
 
   @override
   void dispose() {
-    _prayerSub?.cancel();
+    _waiter?.dispose();
     super.dispose();
   }
 

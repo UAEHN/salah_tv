@@ -54,10 +54,231 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navAdhkar => 'الأذكار';
 
   @override
-  String get navPrayer => 'الصلاة';
+  String get navPrayer => 'مواقيت الصلاة';
 
   @override
   String get navTasbih => 'التسبيح';
+
+  @override
+  String get navToday => 'الصفحة الرئيسية';
+
+  @override
+  String get todayTitle => 'يومك';
+
+  @override
+  String get todayNextPrayerTitle => 'الصلاة القادمة';
+
+  @override
+  String get todayHijriDateTitle => 'التاريخ اليوم';
+
+  @override
+  String get todayDailyVerseTitle => 'آية اليوم';
+
+  @override
+  String get todayUpcomingOccasionTitle => 'مناسبة قريبة';
+
+  @override
+  String get todayOccasionToday => 'اليوم';
+
+  @override
+  String get todayOccasionTomorrow => 'غداً';
+
+  @override
+  String todayDaysRemaining(int days) {
+    return 'متبقي $days أيام';
+  }
+
+  @override
+  String get todayDayRemaining => 'متبقي يوم واحد';
+
+  @override
+  String get todayPrayerStartsIn => 'تبدأ بعد';
+
+  @override
+  String get todayMetaDot => ' · ';
+
+  @override
+  String get todayVerseSectionLabel => 'آية اليوم';
+
+  @override
+  String get todayDaysUnit => 'أيام';
+
+  @override
+  String get todayLiveBadge => 'الآن';
+
+  @override
+  String get todayPrayersStripTitle => 'صلوات اليوم';
+
+  @override
+  String get todayQiblaTileLabel => 'القبلة';
+
+  @override
+  String get todayQiblaKmUnit => 'كم';
+
+  @override
+  String get todayQuickActionTasbih => 'التسبيح';
+
+  @override
+  String get todayQuickActionAdhkar => 'الأذكار';
+
+  @override
+  String get todayQuickActionQibla => 'القبلة';
+
+  @override
+  String get todayQuickAccessTitle => 'وصول سريع';
+
+  @override
+  String get todayDhikrEyebrow => 'ذكر هذا الوقت';
+
+  @override
+  String get todayDhikrTitleMorning => 'أذكار الصباح';
+
+  @override
+  String get todayDhikrTitleEvening => 'أذكار المساء';
+
+  @override
+  String get todayDhikrTitleSleep => 'أذكار النوم';
+
+  @override
+  String get todayDhikrStart => 'ابدأ';
+
+  @override
+  String get greetingMorningTitle => 'صباح الخير';
+
+  @override
+  String get greetingMorningSubtitle => 'بدايةً مباركة بإذن الله';
+
+  @override
+  String get greetingNoonTitle => 'نهارك مبارك';
+
+  @override
+  String get greetingNoonSubtitle => 'أحسن الله إليك في عملك';
+
+  @override
+  String get greetingEveningTitle => 'مساء الخير';
+
+  @override
+  String get greetingEveningSubtitle => 'اختم يومك بالطاعة';
+
+  @override
+  String get greetingNightTitle => 'ليلة طيبة';
+
+  @override
+  String get greetingNightSubtitle => 'أكثر من الذكر قبل النوم';
+
+  @override
+  String get occasionHijriNewYear => 'رأس السنة الهجرية';
+
+  @override
+  String get occasionAshura => 'عاشوراء';
+
+  @override
+  String get occasionMawlid => 'المولد النبوي';
+
+  @override
+  String get occasionIsraMiraj => 'الإسراء والمعراج';
+
+  @override
+  String get occasionMidShaban => 'ليلة النصف من شعبان';
+
+  @override
+  String get occasionRamadanStart => 'بداية شهر رمضان';
+
+  @override
+  String get occasionLaylatQadr => 'ليلة القدر';
+
+  @override
+  String get occasionEidFitr => 'عيد الفطر';
+
+  @override
+  String get occasionArafah => 'يوم عرفة';
+
+  @override
+  String get occasionEidAdha => 'عيد الأضحى';
+
+  @override
+  String get surahBaqarah => 'البقرة';
+
+  @override
+  String get surahAlImran => 'آل عمران';
+
+  @override
+  String get surahAnam => 'الأنعام';
+
+  @override
+  String get surahAraf => 'الأعراف';
+
+  @override
+  String get surahTawbah => 'التوبة';
+
+  @override
+  String get surahHud => 'هود';
+
+  @override
+  String get surahRad => 'الرعد';
+
+  @override
+  String get surahIbrahim => 'إبراهيم';
+
+  @override
+  String get surahNahl => 'النحل';
+
+  @override
+  String get surahIsra => 'الإسراء';
+
+  @override
+  String get surahTaha => 'طه';
+
+  @override
+  String get surahAnbiya => 'الأنبياء';
+
+  @override
+  String get surahFurqan => 'الفرقان';
+
+  @override
+  String get surahQasas => 'القصص';
+
+  @override
+  String get surahAnkabut => 'العنكبوت';
+
+  @override
+  String get surahAhzab => 'الأحزاب';
+
+  @override
+  String get surahZumar => 'الزمر';
+
+  @override
+  String get surahGhafir => 'غافر';
+
+  @override
+  String get surahShura => 'الشورى';
+
+  @override
+  String get surahHujurat => 'الحجرات';
+
+  @override
+  String get surahDhariyat => 'الذاريات';
+
+  @override
+  String get surahRahman => 'الرحمن';
+
+  @override
+  String get surahTalaq => 'الطلاق';
+
+  @override
+  String get surahInsan => 'الإنسان';
+
+  @override
+  String get surahDuha => 'الضحى';
+
+  @override
+  String get surahSharh => 'الشرح';
+
+  @override
+  String get surahAsr => 'العصر';
+
+  @override
+  String get surahIkhlas => 'الإخلاص';
 
   @override
   String get adhkarNotAvailableOnTv => 'الأذكار غير متوفرة على أجهزة التلفاز';
@@ -131,6 +352,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get prayerDhuhr => 'الظهر';
 
   @override
+  String get prayerJumua => 'الجمعة';
+
+  @override
   String get prayerAsr => 'العصر';
 
   @override
@@ -202,23 +426,47 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notificationIqamaTitle => 'الإقامة';
 
   @override
+  String get notificationMorningAdhkarTitle => 'أذكار الصباح';
+
+  @override
+  String get notificationMorningAdhkarBody => 'لا تنسى أذكار الصباح';
+
+  @override
+  String get notificationEveningAdhkarTitle => 'أذكار المساء';
+
+  @override
+  String get notificationEveningAdhkarBody => 'لا تنسى أذكار المساء';
+
+  @override
+  String get settingsAdhkarNotificationsTitle => 'تنبيهات الأذكار';
+
+  @override
+  String get settingsMorningAdhkarToggle => 'أذكار الصباح';
+
+  @override
+  String get settingsEveningAdhkarToggle => 'أذكار المساء';
+
+  @override
+  String get settingsAdhkarOffsetTitle => 'وقت تنبيه الأذكار';
+
+  @override
   String notificationAdhanBody(Object prayerName) {
     return 'حان الآن موعد أذان $prayerName';
   }
 
   @override
   String notificationPreAdhanBody(Object prayerName, Object minutes) {
-    return 'باقي على أذان $prayerName $minutes دقيقة';
+    return 'باقي $minutes دقيقة على أذان $prayerName';
   }
 
   @override
   String notificationPreIqamaBody(Object prayerName, Object minutes) {
-    return 'إقامة $prayerName بعد $minutes دقيقة';
+    return 'باقي $minutes دقيقة على إقامة $prayerName';
   }
 
   @override
   String notificationIqamaBody(Object prayerName) {
-    return 'حان وقت إقامة $prayerName';
+    return 'إقامة صلاة $prayerName';
   }
 
   @override
@@ -439,7 +687,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsCategoryQuranSubtitle => 'بث القرآن في الخلفية';
 
   @override
-  String get settingsCategoryAdhan => 'الأذان';
+  String get settingsCategoryAdhan => 'الأذان والإقامة';
 
   @override
   String get settingsCategoryAdhanSubtitle => 'صوت الأذان والتشغيل التلقائي';
@@ -523,7 +771,101 @@ class AppLocalizationsAr extends AppLocalizations {
   String get themePurple => 'بنفسجي';
 
   @override
+  String get themeCoral => 'مرجاني';
+
+  @override
+  String get themeAzure => 'سماوي';
+
+  @override
+  String get themePickerTitle => 'ألوان التطبيق';
+
+  @override
+  String get themePickerSubtitle => 'اختر اللون الذي يلامس روحك';
+
+  @override
+  String get themePickerLoadError => 'تعذّر تحميل الألوان';
+
+  @override
+  String get fontHintKufi => 'خط كوفي معاصر';
+
+  @override
+  String get fontHintCairo => 'خط حديث متعدد الأوزان';
+
+  @override
+  String get fontHintBeiruti => 'خط أنيق للعناوين';
+
+  @override
+  String get fontHintRubik => 'خط لاتيني عصري';
+
+  @override
+  String get fontHintInter => 'خط لاتيني واضح للقراءة';
+
+  @override
+  String get fontPickerTitle => 'اختيار الخط';
+
+  @override
+  String get fontPickerSubtitle => 'خط يناسب قراءتك للقرآن والأذكار';
+
+  @override
+  String get fontPickerLoadError => 'تعذّر تحميل الخطوط';
+
+  @override
+  String get settingsThemePicker => 'ألوان التطبيق';
+
+  @override
+  String get settingsFontPicker => 'خط النصوص';
+
+  @override
   String get settingsAutoPlayAdhan => 'تشغيل الأذان تلقائياً:';
+
+  @override
+  String get settingsAutoPlayIqama => 'تشغيل الإقامة تلقائياً:';
+
+  @override
+  String get settingsSoundModeSound => 'بصوت';
+
+  @override
+  String get settingsSoundModeSilent => 'بدون صوت';
+
+  @override
+  String get settingsSoundModeOff => 'معطّل';
+
+  @override
+  String get settingsSoundModeSoundDesc => 'يعرض الشاشة ويشغّل الصوت';
+
+  @override
+  String get settingsSoundModeSilentDesc => 'يعرض الشاشة فقط بدون صوت';
+
+  @override
+  String get settingsSoundModeOffDesc =>
+      'لا شاشة ولا صوت — يستمر العدّاد للصلاة التالية';
+
+  @override
+  String get adhanLabel => 'الأذان';
+
+  @override
+  String get settingsCategoryMosque => 'وضع المسجد';
+
+  @override
+  String get settingsCategoryMosqueSubtitle => 'إعدادات خاصة لشاشات المساجد';
+
+  @override
+  String get settingsMosqueMode => 'تفعيل وضع المسجد:';
+
+  @override
+  String get settingsMosqueModeDesc =>
+      'شاشة كبيرة بدون صوت، مخصصة للعرض في المساجد.';
+
+  @override
+  String mosqueAdhanNowTitle(String prayerName) {
+    return 'حان الآن موعد أذان $prayerName';
+  }
+
+  @override
+  String get mosqueIqamaLabel => 'إقامة صلاة';
+
+  @override
+  String get mosqueSilencePhoneText => 'الرجاء إغلاق الهاتف';
 
   @override
   String get settingsChangeAdhan => 'تغيير الأذان';
@@ -805,6 +1147,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onboardingWelcome => 'مرحباً بك في غسق';
 
   @override
+  String get onboardingHeroTagline => 'رفيقك اليومي للصلاة والذِّكر';
+
+  @override
+  String get onboardingBegin => 'ابدأ';
+
+  @override
   String get onboardingChooseLanguage => 'اختر لغتك المفضلة';
 
   @override
@@ -886,6 +1234,50 @@ class AppLocalizationsAr extends AppLocalizations {
   String get feedbackEmptyError => 'يرجى كتابة ملاحظتك أولاً';
 
   @override
+  String get feedbackContactLabel => 'البريد أو معرّف تيليجرام';
+
+  @override
+  String get feedbackContactHint => 'مطلوب للرد عليك ومتابعة المشكلة';
+
+  @override
+  String get feedbackContactRequiredError =>
+      'يرجى إدخال البريد أو معرّف تيليجرام للتواصل معك';
+
+  @override
+  String get feedbackDirectContactTitle => 'أو تواصل معنا مباشرة';
+
+  @override
+  String get feedbackContactEmail => 'البريد الإلكتروني';
+
+  @override
+  String get feedbackContactTelegram => 'تيليجرام';
+
+  @override
+  String get feedbackEmailSubject => 'ملاحظة على تطبيق غسق';
+
+  @override
+  String get feedbackEmailBodyPrompt => 'اكتب رسالتك هنا...';
+
+  @override
+  String get feedbackTelegramCopiedToast =>
+      'تم نسخ معلومات التشخيص — الصقها في رسالتك على تيليجرام';
+
+  @override
+  String get feedbackTvQrTelegram => 'امسح للتواصل عبر تيليجرام';
+
+  @override
+  String get feedbackTvOrEmail => 'أو عبر البريد:';
+
+  @override
+  String get feedbackTvDirectTitle => 'اتصل بنا مباشرة من الهاتف';
+
+  @override
+  String get feedbackTvQrEmail => 'امسح للمراسلة عبر البريد';
+
+  @override
+  String get feedbackTvOrFromPhone => 'أو من الهاتف مباشرة:';
+
+  @override
   String get ratingDialogTitle => 'كيف كانت تجربتك معنا؟';
 
   @override
@@ -903,49 +1295,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ratingDialogLater => 'ذكرني لاحقاً';
-
-  @override
-  String get tourStepCountdownTitle => 'العد التنازلي';
-
-  @override
-  String get tourStepCountdownDesc => 'هنا يظهر الوقت المتبقي للصلاة القادمة';
-
-  @override
-  String get tourStepPrayerListTitle => 'أوقات الصلاة';
-
-  @override
-  String get tourStepPrayerListDesc => 'قائمة بجميع أوقات الصلاة اليومية';
-
-  @override
-  String get tourStepDateNavTitle => 'التاريخ';
-
-  @override
-  String get tourStepDateNavDesc => 'تصفح التواريخ الهجرية والميلادية';
-
-  @override
-  String get tourStepLocationTitle => 'الموقع';
-
-  @override
-  String get tourStepLocationDesc => 'اضغط لتغيير موقعك (الدولة والمدينة)';
-
-  @override
-  String get tourStepBottomNavTitle => 'شريط التنقل';
-
-  @override
-  String get tourStepBottomNavDesc =>
-      'تنقل بين الأقسام: الإعدادات، القبلة، الأذكار، والصلاة';
-
-  @override
-  String get tourSkip => 'تخطي';
-
-  @override
-  String get tourNext => 'التالي';
-
-  @override
-  String get tourFinish => 'تم';
-
-  @override
-  String get replayAppTour => 'إعادة جولة التطبيق';
 
   @override
   String get updateAvailableTitle => 'تحديث متاح';
@@ -988,6 +1337,13 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get settingsQuranContinuousResumeDesc =>
       'يبدأ من السورة التي توقفت عندها';
+
+  @override
+  String get settingsQuranContinuousFromStart => 'من البداية في كل مرة';
+
+  @override
+  String get settingsQuranContinuousFromStartDesc =>
+      'يبدأ من سورة الفاتحة عند كل تشغيل ثم بترتيب المصحف';
 
   @override
   String get settingsQuranContinuousRandom => 'عشوائي';
@@ -1060,4 +1416,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get surahPlaylistEditorClear => 'مسح الكل';
+
+  @override
+  String get takbeeratFitrGreeting => 'عيد الفطر المبارك';
+
+  @override
+  String get takbeeratAdhaGreeting => 'عيد الأضحى المبارك';
+
+  @override
+  String get takbeeratGenericGreeting => 'أيام مباركة';
+
+  @override
+  String get takbeeratCardSubtitle => 'تكبيرات العيد متاحة';
+
+  @override
+  String get takbeeratButtonLabel => 'تكبيرات';
 }

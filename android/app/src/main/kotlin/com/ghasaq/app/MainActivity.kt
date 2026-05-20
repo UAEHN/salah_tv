@@ -15,6 +15,7 @@ import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
 import androidx.core.view.WindowCompat
+import com.ghasaq.app.notifications.channel.NotificationMethodChannel
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -30,6 +31,20 @@ class MainActivity : FlutterActivity() {
         // letting the display sleep and destroying the focused window → ANR.
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         requestHighRefreshRate()
+        // Cold-start tap: stash payload so Flutter can pull it after splash.
+        intent?.let { stashTapPayload(it, isWarm = false) }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        // Warm tap: app already running, dispatch immediately to Flutter.
+        stashTapPayload(intent, isWarm = true)
+    }
+
+    private fun stashTapPayload(intent: Intent, isWarm: Boolean) {
+        val payload = intent.getStringExtra("ghasaq.notif.payload") ?: return
+        if (payload.isEmpty()) return
+        NotificationMethodChannel.routeTap(payload, isWarm)
     }
 
     // Re-apply immersive mode whenever the window regains focus.
@@ -67,6 +82,13 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        // Register the native notification engine channel before any other
+        // platform channel so that early-init Flutter code can call into it
+        // without races.
+        NotificationMethodChannel(
+            applicationContext,
+            flutterEngine.dartExecutor.binaryMessenger,
+        )
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             "ghasaq/platform",

@@ -3,38 +3,34 @@ import 'package:flutter/material.dart';
 import '../../../../../core/mobile_theme.dart';
 
 BoxDecoration buildMobilePrayerActiveDecoration(
+  BuildContext context,
   bool isDark,
   Color accent,
   Color deep,
 ) {
+  final activePrimary = MobileColors.activePrimary(context);
+  final activeContainer = MobileColors.activePrimaryContainer(context);
+  // Slightly darken the live primary on dark theme so the row stays readable
+  // without losing the user-selected hue.
+  final fill = isDark
+      ? Color.lerp(activePrimary, Colors.black, 0.20) ?? activePrimary
+      : activePrimary;
+
   return BoxDecoration(
-    gradient: LinearGradient(
-      begin: Alignment.centerRight,
-      end: Alignment.centerLeft,
-      colors: isDark
-          ? [
-              Color.alphaBlend(
-                accent.withValues(alpha: 0.15),
-                const Color(0xFF1A150C),
-              ),
-              const Color(0xFF261D0F),
-            ]
-          : [
-              Color.alphaBlend(accent.withValues(alpha: 0.8), deep),
-              Color.alphaBlend(accent.withValues(alpha: 0.6), deep),
-            ],
-    ),
+    color: fill,
     borderRadius: BorderRadius.circular(20),
     border: Border.all(
-      color: accent.withValues(alpha: isDark ? 0.3 : 0.5),
+      color: isDark
+          ? activeContainer.withValues(alpha: 0.35)
+          : activeContainer,
       width: 1.5,
     ),
     boxShadow: [
       BoxShadow(
-        color: accent.withValues(alpha: isDark ? 0.15 : 0.3),
+        color: activePrimary.withValues(alpha: isDark ? 0.25 : 0.35),
         offset: const Offset(0, 4),
         blurRadius: 16,
-        spreadRadius: 2,
+        spreadRadius: 1,
       ),
     ],
   );

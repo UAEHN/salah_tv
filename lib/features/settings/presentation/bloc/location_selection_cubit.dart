@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../features/prayer/data/composite_prayer_repository.dart';
@@ -38,23 +37,21 @@ class LocationSelectionState {
   }
 }
 
+/// Persists a location choice atomically:
+/// 1. download city data → 2. prime repo cache → 3. update settings.
+/// Settings are only written after the download succeeds, so the engine never
+/// sees a city without prayer-time data.
 class LocationSelectionCubit extends Cubit<LocationSelectionState> {
   LocationSelectionCubit(
     this._settingsProvider,
     IDownloadCityUseCase downloadCityUseCase,
-    this._compositeRepo, {
-    this.onCityReady,
-  }) : _downloadCityUseCase = downloadCityUseCase,
-       super(LocationSelectionState.idle);
+    this._compositeRepo,
+  )   : _downloadCityUseCase = downloadCityUseCase,
+        super(LocationSelectionState.idle);
 
   final SettingsProvider _settingsProvider;
   final IDownloadCityUseCase _downloadCityUseCase;
   final CompositePrayerRepository _compositeRepo;
-
-  /// Called after a DB-city download completes and the repo is in downloaded
-  /// mode with data ready. Wire this to dispatch [PrayerReloaded] from the
-  /// widget layer so the engine picks up the new city's prayer times.
-  final VoidCallback? onCityReady;
 
   CancellationToken? _cancelToken;
   LocationChoice? _lastDbChoice;
@@ -63,47 +60,28 @@ class LocationSelectionCubit extends Cubit<LocationSelectionState> {
     _cancelToken?.cancel();
     _cancelToken = null;
 
-    emit(state.copyWith(status: LocationSelectionStatus.saving));
-    try {
-      if (choice.isDb) {
-        await _settingsProvider.updateLocation(
-          choice.countryKey,
-          choice.cityName,
-        );
-        emit(state.copyWith(status: LocationSelectionStatus.saved));
-        await _downloadCity(choice);
-      } else {
-        await _settingsProvider.updateWorldLocation(
-          choice.countryKey,
-          choice.cityName,
-          choice.latitude!,
-          choice.longitude!,
-          choice.calculationMethod!,
-          timeZoneId: choice.timeZoneId,
-          utcOffsetHours: choice.utcOffsetHours,
-        );
-        emit(state.copyWith(
-          status: LocationSelectionStatus.saved,
-          downloadStatus: CityDownloadStatus.idle,
-        ));
-      }
-    } catch (_) {
-      emit(state.copyWith(status: LocationSelectionStatus.failed));
+    if (choice.isDb) {
+      await _saveDbCity(choice);
+    } else {
+      await _saveWorldCity(choice);
     }
   }
 
   Future<void> retry() async {
     final last = _lastDbChoice;
     if (last == null) return;
-    await _downloadCity(last);
+    await _saveDbCity(last);
   }
 
-  Future<void> _downloadCity(LocationChoice choice) async {
+  Future<void> _saveDbCity(LocationChoice choice) async {
     _lastDbChoice = choice;
     final token = CancellationToken();
     _cancelToken = token;
 
-    emit(state.copyWith(downloadStatus: CityDownloadStatus.downloading));
+    emit(state.copyWith(
+      status: LocationSelectionStatus.saving,
+      downloadStatus: CityDownloadStatus.downloading,
+    ));
 
     final result = await _downloadCityUseCase(
       countryKey: choice.countryKey,
@@ -116,28 +94,58 @@ class LocationSelectionCubit extends Cubit<LocationSelectionState> {
     await result.fold(
       (failure) async {
         if (failure is CancelledFailure) {
-          emit(state.copyWith(downloadStatus: CityDownloadStatus.idle));
+          emit(state.copyWith(
+            status: LocationSelectionStatus.idle,
+            downloadStatus: CityDownloadStatus.idle,
+          ));
         } else {
           emit(state.copyWith(
+            status: LocationSelectionStatus.failed,
             downloadStatus: CityDownloadStatus.failed,
             downloadError: 'تعذّر تحميل بيانات المدينة',
           ));
         }
       },
       (_) async {
-        // loadCity awaits cache rebuild — data is ready before mode switches.
+        // Prime the cache BEFORE persisting settings so the bridge-driven
+        // engine refresh reads the new city's data immediately.
         await _compositeRepo.downloadedRepo.loadCity(
           choice.countryKey,
           choice.cityName,
         );
         _compositeRepo.configureDatabaseMode();
-        // Notify engine to call loadToday() so it picks up the new city data
-        // immediately rather than waiting for the next null-retry tick.
-        onCityReady?.call();
+        await _settingsProvider.updateLocation(
+          choice.countryKey,
+          choice.cityName,
+        );
         if (!isClosed) {
-          emit(state.copyWith(downloadStatus: CityDownloadStatus.ready));
+          emit(state.copyWith(
+            status: LocationSelectionStatus.saved,
+            downloadStatus: CityDownloadStatus.ready,
+          ));
         }
       },
     );
+  }
+
+  Future<void> _saveWorldCity(LocationChoice choice) async {
+    emit(state.copyWith(status: LocationSelectionStatus.saving));
+    try {
+      await _settingsProvider.updateWorldLocation(
+        choice.countryKey,
+        choice.cityName,
+        choice.latitude!,
+        choice.longitude!,
+        choice.calculationMethod!,
+        timeZoneId: choice.timeZoneId,
+        utcOffsetHours: choice.utcOffsetHours,
+      );
+      emit(state.copyWith(
+        status: LocationSelectionStatus.saved,
+        downloadStatus: CityDownloadStatus.idle,
+      ));
+    } catch (_) {
+      emit(state.copyWith(status: LocationSelectionStatus.failed));
+    }
   }
 }

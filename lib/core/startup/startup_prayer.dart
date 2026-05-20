@@ -2,6 +2,8 @@ import 'dart:async';
 
 import '../../features/audio/data/audio_service.dart';
 import '../../features/audio/data/noop_prayer_audio_port.dart';
+import '../../features/audio/data/noop_takbeerat_audio_port.dart';
+import '../../features/audio/data/takbeerat_audio_service.dart';
 import '../../features/audio/domain/i_audio_repository.dart';
 import '../../features/prayer/data/adhan_calculation_source.dart';
 import '../../features/prayer/data/calculated_prayer_repository.dart';
@@ -13,6 +15,7 @@ import '../../features/prayer/data/prayer_cache_db_writer.dart';
 import '../../features/prayer/data/prayer_city_downloader.dart';
 import '../../features/prayer/domain/cancellation_token.dart';
 import '../../features/prayer/domain/i_prayer_audio_port.dart';
+import '../../features/prayer/domain/i_takbeerat_audio_port.dart';
 import '../../features/prayer/domain/i_prayer_times_repository.dart';
 import '../../features/prayer/domain/usecases/check_city_update_use_case.dart';
 import '../../features/prayer/domain/usecases/download_city_use_case.dart';
@@ -125,6 +128,15 @@ Future<void> registerPrayerServices(
   getIt.registerSingleton<IAudioRepository>(audioService);
   getIt.registerSingleton<IPrayerAudioPort>(
     platformConfig.isTV ? audioService : NoOpPrayerAudioPort(),
+  );
+
+  // Eid Takbeerat — standalone player on TV, silent shim on mobile.
+  // Owns its own AudioPlayer so it never collides with the adhan pipeline
+  // or the Quran stream.
+  getIt.registerSingleton<ITakbeeratAudioPort>(
+    platformConfig.isTV
+        ? TakbeeratAudioService()
+        : NoOpTakbeeratAudioPort(),
   );
 }
 

@@ -1,23 +1,20 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../analytics/domain/i_analytics_service.dart';
-import '../../prayer/data/composite_prayer_repository.dart';
-import '../../prayer/domain/usecases/i_download_city_use_case.dart';
 import '../../settings/domain/entities/detected_location.dart';
 import '../../settings/domain/entities/world_city.dart';
-import '../../settings/domain/i_settings_repository.dart';
-import '../../settings/domain/i_world_city_repository.dart';
 import '../../settings/presentation/settings_provider.dart';
-import '../../settings/presentation/widgets/mobile/mobile_location_search_utils.dart';
 import 'onboarding_completion_service.dart';
 import 'onboarding_country_loader.dart';
 import 'onboarding_filter_controller.dart';
+import 'onboarding_filter_mixin.dart';
 import 'onboarding_state.dart';
 import 'onboarding_state_mapper.dart';
 
 export 'onboarding_state.dart';
 
-class OnboardingCubit extends Cubit<OnboardingState> {
+class OnboardingCubit extends Cubit<OnboardingState>
+    with OnboardingFilterMixin {
   final SettingsProvider _settingsProvider;
   final OnboardingCountryLoader _countryLoader;
   final OnboardingCompletionService _completion;
@@ -30,36 +27,17 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     required OnboardingCompletionService completionService,
     required OnboardingFilterController filterController,
     IAnalyticsService? analytics,
-  }) : _settingsProvider = settingsProvider,
-       _countryLoader = countryLoader,
-       _completion = completionService,
-       _filterController = filterController,
-       _analytics = analytics,
-       super(const OnboardingState()) {
+  })  : _settingsProvider = settingsProvider,
+        _countryLoader = countryLoader,
+        _completion = completionService,
+        _filterController = filterController,
+        _analytics = analytics,
+        super(const OnboardingState()) {
     _initCountries();
   }
 
-  factory OnboardingCubit.fromDependencies({
-    required SettingsProvider settingsProvider,
-    required IWorldCityRepository worldRepo,
-    required ISettingsRepository settingsRepository,
-    required IDownloadCityUseCase downloadCityUseCase,
-    required CompositePrayerRepository compositeRepo,
-    IAnalyticsService? analytics,
-  }) {
-    return OnboardingCubit(
-      settingsProvider: settingsProvider,
-      countryLoader: OnboardingCountryLoader(worldRepo),
-      completionService: OnboardingCompletionService(
-        settingsProvider,
-        settingsRepository,
-        downloadCityUseCase,
-        compositeRepo,
-      ),
-      filterController: OnboardingFilterController(),
-      analytics: analytics,
-    );
-  }
+  @override
+  OnboardingFilterController get filterController => _filterController;
 
   Future<void> _initCountries() async {
     final result = await _countryLoader.load();
@@ -111,42 +89,6 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     );
   }
 
-  void filterCountries(String query) {
-    _filterController.runDebounced(() {
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          filteredCountries: filterUnifiedCountries(query, state.allCountries),
-        ),
-      );
-    });
-  }
-
-  void filterCities(String query) {
-    _filterController.runDebounced(() {
-      if (isClosed || state.selectedCountryKey == null) return;
-      if (state.isSelectedCountryDb) {
-        emit(
-          state.copyWith(
-            filteredDbCities: filterDbCities(state.selectedCountryKey!, query),
-          ),
-        );
-        return;
-      }
-      if (state.worldRepo != null) {
-        emit(
-          state.copyWith(
-            filteredWorldCities: filterWorldCities(
-              state.selectedCountryKey!,
-              query,
-              state.worldRepo!,
-            ),
-          ),
-        );
-      }
-    });
-  }
-
   void selectDbCity(String key) => emit(state.copyWith(selectedCityKey: key));
 
   void selectWorldCity(WorldCity city) =>
@@ -160,7 +102,6 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   }
 
   /// Selects a world city and immediately completes onboarding atomically.
-  /// Avoids calling two cubit methods from the UI layer (CLAUDE.md §3).
   Future<void> selectWorldCityAndComplete(WorldCity city) async {
     emit(state.copyWith(selectedWorldCity: city));
     await complete();
@@ -172,14 +113,26 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   }
 
   Future<void> complete() async {
-    emit(state.copyWith(isLoading: true));
-    await _completion.persistSelection(state);
+    emit(state.copyWith(isLoading: true, clearCompletionError: true));
+    final result = await _completion.persistSelection(state);
     if (isClosed) return;
-    _analytics?.logOnboardingCompleted(
-      state.selectedCountryKey ?? '',
-      state.selectedCityKey ?? state.selectedWorldCity?.name ?? '',
+    result.fold(
+      (_) => emit(state.copyWith(
+        isLoading: false,
+        completionError: 'تعذّر تحميل بيانات المدينة، تحقّق من الاتصال',
+      )),
+      (_) {
+        _analytics?.logOnboardingCompleted(
+          state.selectedCountryKey ?? '',
+          state.selectedCityKey ?? state.selectedWorldCity?.name ?? '',
+        );
+        emit(state.copyWith(isLoading: false, isComplete: true));
+      },
     );
-    emit(state.copyWith(isLoading: false, isComplete: true));
+  }
+
+  void clearCompletionError() {
+    emit(state.copyWith(clearCompletionError: true));
   }
 
   @override

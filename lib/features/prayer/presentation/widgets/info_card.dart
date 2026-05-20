@@ -13,8 +13,14 @@ import 'date_widget.dart';
 class InfoCard extends StatelessWidget {
   final AccentPalette palette;
   final Widget? quranButton;
+  final Widget? takbeeratButton;
 
-  const InfoCard({super.key, required this.palette, this.quranButton});
+  const InfoCard({
+    super.key,
+    required this.palette,
+    this.quranButton,
+    this.takbeeratButton,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -76,11 +82,17 @@ class InfoCard extends StatelessWidget {
             ),
           ],
 
-          // Quran button
-          if (quranButton != null) ...[
+          // Audio toggles stacked vertically — Quran pill on top with its
+          // surah strip, Takbeerat pill below. Vertical layout prevents the
+          // Quran's stop button (which appears when playing) from pushing
+          // the Takbeerat pill off-screen.
+          if (quranButton != null || takbeeratButton != null) ...[
             SizedBox(height: screenH * 0.012),
-            quranButton!,
-            CurrentSurahStrip(palette: palette),
+            ?quranButton,
+            if (quranButton != null) CurrentSurahStrip(palette: palette),
+            if (quranButton != null && takbeeratButton != null)
+              SizedBox(height: screenH * 0.008),
+            ?takbeeratButton,
           ],
         ],
       ),

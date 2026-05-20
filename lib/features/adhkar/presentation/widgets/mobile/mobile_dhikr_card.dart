@@ -56,13 +56,14 @@ class _TextBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = MobileColors.onSurface(context);
+    final font = Theme.of(context).textTheme.bodyMedium?.fontFamily ?? 'Cairo';
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           dhikr.text,
           style: TextStyle(
-            fontFamily: 'Cairo',
+            fontFamily: font,
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: color,

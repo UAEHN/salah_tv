@@ -32,8 +32,7 @@ class MobileHeroCountdown extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final isDark = MobileColors.isDark(context);
     final prayerKey = isIqamaCountdown ? iqamaPrayerKey : nextPrayerKey;
-    final colors =
-        mobilePrayerAccentPairs[prayerKey] ?? mobilePrayerAccentPairs['dhuhr']!;
+    final colors = mobilePrayerAccentPair(context, prayerKey);
     final accentBright = colors.$1;
     final accentDeep = colors.$2;
     final icon = mobilePrayerIcons[prayerKey] ?? Icons.access_time_rounded;

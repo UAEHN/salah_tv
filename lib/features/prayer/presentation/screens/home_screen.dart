@@ -6,11 +6,14 @@ import '../../../../core/localization/prayer_name_localizer.dart';
 import '../../../../core/platform_config.dart';
 import '../bloc/prayer_bloc.dart';
 import '../../../settings/presentation/settings_provider.dart';
+import '../../../takbeerat/presentation/cubit/takbeerat_visibility_cubit.dart';
 import '../widgets/home_main_view.dart';
 import '../../../audio/presentation/screens/adhan_screen.dart';
 import '../../../audio/presentation/screens/dua_screen.dart';
 import '../../../audio/presentation/screens/iqama_screen.dart';
-import '../../../../features/app_update/presentation/app_update_trigger.dart';
+import '../../../audio/presentation/screens/mosque_adhan_screen.dart';
+import '../../../audio/presentation/screens/mosque_iqama_screen.dart';
+import '../../../audio/presentation/screens/mosque_silence_phone_screen.dart';
 import '../../../../features/rating/presentation/tv_rating_trigger.dart';
 import 'home_key_handler.dart';
 import 'mobile_home_screen.dart';
@@ -25,18 +28,21 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late final FocusNode _focusNode;
   late final FocusNode _quranFocusNode;
+  late final FocusNode _takbeeratFocusNode;
 
   @override
   void initState() {
     super.initState();
     _focusNode = FocusNode();
     _quranFocusNode = FocusNode();
+    _takbeeratFocusNode = FocusNode();
   }
 
   @override
   void dispose() {
     _focusNode.dispose();
     _quranFocusNode.dispose();
+    _takbeeratFocusNode.dispose();
     super.dispose();
   }
 
@@ -72,10 +78,21 @@ class _HomeScreenState extends State<HomeScreen> {
     final iqamaPrayerKey = context.select(
       (PrayerBloc b) => b.state.iqamaPrayerKey,
     );
+    final isMosqueMode = settings.isMosqueMode;
+    // Mosque-mode silence-phone takeover: 10-minute window after iqama ends,
+    // covering the actual prayer. Engine sets/clears the flag, so this
+    // selector flips only twice per prayer (no per-tick rebuild).
+    final isSilencePhoneWindow = isMosqueMode &&
+        context.select((PrayerBloc b) => b.state.isInPostIqamaPrayer);
+    // Reciter URL from the hoisted takbeerat cubit — empty when the Eid
+    // card isn't visible or no reciter is configured remotely, which
+    // automatically disables the Arrow Up shortcut in [handleHomeKey].
+    final takbeeratReciterUrl = context.select<TakbeeratVisibilityCubit, String>(
+      (cubit) => cubit.state.defaultReciter?.url ?? '',
+    );
 
     return TvRatingTrigger(
-      child: AppUpdateTrigger(
-        child: PopScope(
+      child: PopScope(
         canPop: false,
         child: Scaffold(
         body: Focus(
@@ -90,22 +107,39 @@ class _HomeScreenState extends State<HomeScreen> {
             isIqamaPlaying: isIqamaPlaying,
             isIqamaCountdown: isIqamaCountdown,
             quranFocusNode: _quranFocusNode,
+            takbeeratFocusNode: _takbeeratFocusNode,
+            takbeeratReciterUrl: takbeeratReciterUrl,
           ),
           child: isAdhanPlaying
-              ? AdhanScreen(
-                  prayerName: localizedPrayerName(
-                    context,
-                    currentAdhanPrayerKey,
-                  ),
-                  palette: palette,
-                )
+              ? (isMosqueMode
+                  ? MosqueAdhanScreen(
+                      prayerName: localizedPrayerName(
+                        context,
+                        currentAdhanPrayerKey,
+                      ),
+                      palette: palette,
+                    )
+                  : AdhanScreen(
+                      prayerName: localizedPrayerName(
+                        context,
+                        currentAdhanPrayerKey,
+                      ),
+                      palette: palette,
+                    ))
               : isDuaPlaying
               ? DuaScreen(palette: palette)
               : isIqamaPlaying
-              ? IqamaScreen(
-                  prayerName: localizedPrayerName(context, iqamaPrayerKey),
-                  palette: palette,
-                )
+              ? (isMosqueMode
+                  ? MosqueIqamaScreen(
+                      prayerName: localizedPrayerName(context, iqamaPrayerKey),
+                      palette: palette,
+                    )
+                  : IqamaScreen(
+                      prayerName: localizedPrayerName(context, iqamaPrayerKey),
+                      palette: palette,
+                    ))
+              : isSilencePhoneWindow
+              ? MosqueSilencePhoneScreen(palette: palette)
               : HomeMainView(
                   palette: palette,
                   tc: tc,
@@ -114,11 +148,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   screenW: screenW,
                   screenH: screenH,
                   quranFocusNode: _quranFocusNode,
+                  takbeeratFocusNode: _takbeeratFocusNode,
+                  takbeeratReciterUrl: takbeeratReciterUrl,
                   mainFocusNode: _focusNode,
                 ),
         ),
       ),
-    ),
     ),
   );
   }

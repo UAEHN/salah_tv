@@ -18,7 +18,9 @@ String localizedPrayerNameFromLocalizations(AppLocalizations l, String key) {
     case 'sunrise':
       return l.prayerSunrise;
     case 'dhuhr':
-      return l.prayerDhuhr;
+      return DateTime.now().weekday == DateTime.friday
+          ? l.prayerJumua
+          : l.prayerDhuhr;
     case 'asr':
       return l.prayerAsr;
     case 'maghrib':

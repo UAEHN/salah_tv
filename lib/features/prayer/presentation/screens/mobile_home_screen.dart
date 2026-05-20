@@ -28,16 +28,30 @@ class MobileHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const MobileHomeBackground(),
-        MobileHomeContent(
-          city: city,
-          country: country,
-          is24HourFormat: is24HourFormat,
-          onLocationTap: () => _showLocationDialog(context),
-        ),
-      ],
+    final mq = MediaQuery.of(context);
+    final fontFamily = context.select<SettingsProvider, String>(
+      (p) => p.settings.fontFamily,
+    );
+    final isRubik = fontFamily == 'Rubik';
+    final scaledMq = isRubik
+        ? mq
+        : mq.copyWith(
+            textScaler: mq.textScaler
+                .clamp(minScaleFactor: 1.15, maxScaleFactor: 1.3),
+          );
+    return MediaQuery(
+      data: scaledMq,
+      child: Stack(
+        children: [
+          const MobileHomeBackground(),
+          MobileHomeContent(
+            city: city,
+            country: country,
+            is24HourFormat: is24HourFormat,
+            onLocationTap: () => _showLocationDialog(context),
+          ),
+        ],
+      ),
     );
   }
 
@@ -47,9 +61,8 @@ class MobileHomeScreen extends StatelessWidget {
       context.read<SettingsProvider>(),
       getIt<DownloadCityUseCase>(),
       getIt<CompositePrayerRepository>(),
-      onCityReady: () =>
-          context.read<PrayerBloc>().add(const PrayerReloaded()),
     );
+    final bloc = context.read<PrayerBloc>();
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
@@ -59,9 +72,13 @@ class MobileHomeScreen extends StatelessWidget {
         child: MobileLocationDialog(
           currentCountry: settings.selectedCountry,
           currentCity: settings.selectedCity,
-          onSave: (c, city) => locationCubit.save(
-            LocationChoice.database(countryKey: c, cityName: city),
-          ),
+          onSave: (c, city) async {
+            await locationCubit.save(
+              LocationChoice.database(countryKey: c, cityName: city),
+            );
+            bloc.add(const PrayerReloaded());
+            return true;
+          },
           onSaveWorld: (
             c,
             city,
@@ -70,18 +87,21 @@ class MobileHomeScreen extends StatelessWidget {
             method, {
             String? timeZoneId,
             double? utcOffsetHours,
-          }) => 
-              locationCubit.save(
-                LocationChoice.worldFromValues(
-                  countryKey: c,
-                  cityName: city,
-                  latitude: lat,
-                  longitude: lng,
-                  calculationMethod: method,
-                  timeZoneId: timeZoneId,
-                  utcOffsetHours: utcOffsetHours,
-                ),
+          }) async {
+            await locationCubit.save(
+              LocationChoice.worldFromValues(
+                countryKey: c,
+                cityName: city,
+                latitude: lat,
+                longitude: lng,
+                calculationMethod: method,
+                timeZoneId: timeZoneId,
+                utcOffsetHours: utcOffsetHours,
               ),
+            );
+            bloc.add(const PrayerReloaded());
+            return true;
+          },
         ),
       ),
     ).whenComplete(locationCubit.close);

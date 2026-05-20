@@ -24,4 +24,8 @@ abstract interface class IAnalyticsService {
   void logTasbihCompleted(String presetName, int target);
   void logFeedbackSubmitted(String feedbackType);
   void logOnboardingCompleted(String country, String city);
+
+  // ── Customization (mobile only) ─────────────────────────────────
+  void logThemeChanged(String themeKey);
+  void logFontChanged(String fontFamily);
 }

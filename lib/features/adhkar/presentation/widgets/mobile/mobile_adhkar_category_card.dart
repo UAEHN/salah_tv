@@ -45,8 +45,11 @@ class MobileAdhkarCategoryCard extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [MobileColors.primary, MobileColors.primaryContainer],
+                gradient: LinearGradient(
+                  colors: [
+                    MobileColors.activePrimary(context),
+                    MobileColors.activePrimaryContainer(context),
+                  ],
                 ),
                 borderRadius: BorderRadius.circular(16),
               ),
