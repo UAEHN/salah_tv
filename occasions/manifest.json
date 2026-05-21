@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "etag": "2026-05-21",
+  "etag": "2026-05-21-no-arafah",
   "occasions": [
     {
       "id": "hijri_new_year",
@@ -65,14 +65,6 @@
       "label_ar": "عيد الفطر",
       "label_en": "Eid al-Fitr",
       "icon": "celebration"
-    },
-    {
-      "id": "arafah",
-      "hijri_month": 12,
-      "hijri_day": 9,
-      "label_ar": "يوم عرفة",
-      "label_en": "Day of Arafah",
-      "icon": "mosque"
     },
     {
       "id": "eid_adha",
