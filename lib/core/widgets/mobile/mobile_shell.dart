@@ -15,6 +15,9 @@ import '../../../features/qibla/domain/i_qibla_repository.dart';
 import '../../../features/qibla/presentation/bloc/qibla_cubit.dart';
 import '../../../features/qibla/presentation/bloc/qibla_state.dart';
 import '../../../features/qibla/presentation/screens/mobile/mobile_qibla_screen.dart';
+import '../../../features/quran/presentation/bloc/mushaf_reader_cubit.dart';
+import '../../../features/quran/presentation/screens/mobile/mobile_mushaf_reader_screen.dart';
+import '../../../features/quran/presentation/screens/mobile/mobile_mushaf_screen.dart';
 import '../../../features/settings/presentation/screens/mobile_settings_screen.dart';
 import '../../../features/settings/presentation/settings_provider.dart';
 import '../../../features/today/domain/usecases/get_current_greeting.dart';
@@ -45,15 +48,25 @@ class MobileShell extends StatefulWidget {
         ?._openAdhkarSession(session);
   }
 
+  /// Pushes the Mushaf reader screen on the root navigator using the
+  /// shared cubit instance, resuming from the saved bookmark when one
+  /// exists. Lets the Today tab surface a «متابعة القراءة» shortcut.
+  static Future<void> openMushafReader(BuildContext context) async {
+    final state = context.findAncestorStateOfType<_MobileShellState>();
+    if (state == null) return;
+    await state._openMushafReader();
+  }
+
   @override
   State<MobileShell> createState() => _MobileShellState();
 }
 
 class _MobileShellState extends State<MobileShell> {
-  // Tab order: Settings(0), Qibla(1), Prayer(2 — center), Adhkar(3), Today(4 — default).
+  // Tab order: Settings(0), Qibla(1), Prayer(2 — center), Adhkar(3),
+  // Mushaf(4), Today(5 — default).
   // `_prayerIndex = 2` is intentionally not declared — no shell logic
   // currently branches on it; the IndexedStack child position is enough.
-  static const int _todayIndex = 4;
+  static const int _todayIndex = 5;
   static const int _adhkarIndex = 3;
   static const int _qiblaIndex = 1;
 
@@ -61,6 +74,7 @@ class _MobileShellState extends State<MobileShell> {
   late final AdhkarReaderCubit _adhkarCubit;
   late final QiblaCubit _qiblaCubit;
   late final TodayCubit _todayCubit;
+  late final MushafReaderCubit _mushafCubit;
   VoidCallback? _detachWarmAdhkar;
 
   @override
@@ -74,6 +88,7 @@ class _MobileShellState extends State<MobileShell> {
       getOccasion: GetIt.I<GetUpcomingOccasionUseCase>(),
       getVerse: GetIt.I<GetDailyVerseUseCase>(),
     )..load();
+    _mushafCubit = GetIt.I<MushafReaderCubit>();
     consumeColdStartAdhkarPayload(
       isMounted: () => mounted,
       onSession: _openAdhkarSession,
@@ -87,6 +102,18 @@ class _MobileShellState extends State<MobileShell> {
   void _openAdhkarSession(AdhkarSession session) {
     setState(() => _currentIndex = _adhkarIndex);
     _adhkarCubit.openSession(session);
+  }
+
+  Future<void> _openMushafReader() async {
+    final navigator = Navigator.of(context);
+    await _mushafCubit.openReader(resume: _mushafCubit.state.bookmark);
+    if (!mounted) return;
+    navigator.push(MaterialPageRoute(
+      builder: (_) => BlocProvider.value(
+        value: _mushafCubit,
+        child: const MobileMushafReaderScreen(),
+      ),
+    ));
   }
 
   void _onTabChanged(int index) {
@@ -123,6 +150,7 @@ class _MobileShellState extends State<MobileShell> {
     _adhkarCubit.close();
     _qiblaCubit.close();
     _todayCubit.close();
+    _mushafCubit.close();
     super.dispose();
   }
 
@@ -138,13 +166,17 @@ class _MobileShellState extends State<MobileShell> {
               extendBody: true,
               body: Stack(
                 children: [
-                  // Qibla cubit hoisted around the whole stack so the Today
-                  // screen's mini Qibla tile can read it without owning a
-                  // separate instance. The full Qibla tab triggers
-                  // `start()` lazily on its first visit; the Today tile is
-                  // a passive observer.
-                  BlocProvider.value(
-                    value: _qiblaCubit,
+                  // Qibla + Mushaf cubits hoisted around the whole stack so
+                  // the Today screen can read them (mini Qibla tile + the
+                  // «متابعة القراءة» shortcut) without owning separate
+                  // instances. The full Qibla tab triggers `start()` lazily
+                  // on its first visit; the Today tile is a passive
+                  // observer.
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider.value(value: _qiblaCubit),
+                      BlocProvider.value(value: _mushafCubit),
+                    ],
                     child: IndexedStack(
                       index: _currentIndex,
                       children: [
@@ -162,6 +194,7 @@ class _MobileShellState extends State<MobileShell> {
                           value: _adhkarCubit,
                           child: const MobileAdhkarScreen(),
                         ),
+                        const MobileMushafScreen(),
                         BlocProvider.value(
                           value: _todayCubit,
                           child: const MobileTodayScreen(),

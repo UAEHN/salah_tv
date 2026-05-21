@@ -206,6 +206,12 @@ abstract class AppLocalizations {
   /// **'الصفحة الرئيسية'**
   String get navToday;
 
+  /// No description provided for @navMushaf.
+  ///
+  /// In ar, this message translates to:
+  /// **'المصحف'**
+  String get navMushaf;
+
   /// No description provided for @todayTitle.
   ///
   /// In ar, this message translates to:
@@ -2821,6 +2827,222 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تكبيرات'**
   String get takbeeratButtonLabel;
+
+  /// No description provided for @mushafLandingTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'المصحف الشريف'**
+  String get mushafLandingTitle;
+
+  /// No description provided for @mushafContinueReading.
+  ///
+  /// In ar, this message translates to:
+  /// **'متابعة القراءة'**
+  String get mushafContinueReading;
+
+  /// No description provided for @mushafOpenFromStart.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتح المصحف من البداية'**
+  String get mushafOpenFromStart;
+
+  /// No description provided for @mushafSurahIndex.
+  ///
+  /// In ar, this message translates to:
+  /// **'فهرس السور'**
+  String get mushafSurahIndex;
+
+  /// No description provided for @mushafSearchHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث عن سورة...'**
+  String get mushafSearchHint;
+
+  /// No description provided for @mushafSearchEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد سورة بهذا الاسم'**
+  String get mushafSearchEmpty;
+
+  /// No description provided for @mushafLoadError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر تحميل المصحف'**
+  String get mushafLoadError;
+
+  /// No description provided for @mushafPageWord.
+  ///
+  /// In ar, this message translates to:
+  /// **'صفحة'**
+  String get mushafPageWord;
+
+  /// No description provided for @mushafJuzWord.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجزء'**
+  String get mushafJuzWord;
+
+  /// No description provided for @mushafAyahWord.
+  ///
+  /// In ar, this message translates to:
+  /// **'الآية'**
+  String get mushafAyahWord;
+
+  /// No description provided for @mushafSurahPrefix.
+  ///
+  /// In ar, this message translates to:
+  /// **'سورة'**
+  String get mushafSurahPrefix;
+
+  /// No description provided for @mushafAyahsCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} آية'**
+  String mushafAyahsCount(String count);
+
+  /// No description provided for @mushafJumpToPage.
+  ///
+  /// In ar, this message translates to:
+  /// **'الذهاب لصفحة'**
+  String get mushafJumpToPage;
+
+  /// No description provided for @mushafJumpDialogTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الذهاب إلى صفحة'**
+  String get mushafJumpDialogTitle;
+
+  /// No description provided for @mushafJumpDialogHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'١ - ٦٠٤'**
+  String get mushafJumpDialogHint;
+
+  /// No description provided for @mushafJumpDialogError.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرقم يجب أن يكون بين ١ و ٦٠٤'**
+  String get mushafJumpDialogError;
+
+  /// No description provided for @mushafJumpDialogGo.
+  ///
+  /// In ar, this message translates to:
+  /// **'اذهب'**
+  String get mushafJumpDialogGo;
+
+  /// No description provided for @mushafSaveHere.
+  ///
+  /// In ar, this message translates to:
+  /// **'احفظ هنا'**
+  String get mushafSaveHere;
+
+  /// No description provided for @mushafBookmarkSaved.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ موضعك'**
+  String get mushafBookmarkSaved;
+
+  /// No description provided for @mushafReadingSettings.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعدادات القراءة'**
+  String get mushafReadingSettings;
+
+  /// No description provided for @mushafThemeSection.
+  ///
+  /// In ar, this message translates to:
+  /// **'السمة'**
+  String get mushafThemeSection;
+
+  /// No description provided for @mushafThemePaper.
+  ///
+  /// In ar, this message translates to:
+  /// **'ورقي'**
+  String get mushafThemePaper;
+
+  /// No description provided for @mushafThemeSepia.
+  ///
+  /// In ar, this message translates to:
+  /// **'مصحف'**
+  String get mushafThemeSepia;
+
+  /// No description provided for @mushafThemeNight.
+  ///
+  /// In ar, this message translates to:
+  /// **'ليلي'**
+  String get mushafThemeNight;
+
+  /// No description provided for @mushafFontSize.
+  ///
+  /// In ar, this message translates to:
+  /// **'حجم الخط'**
+  String get mushafFontSize;
+
+  /// No description provided for @mushafContinuousPlayback.
+  ///
+  /// In ar, this message translates to:
+  /// **'تشغيل مستمر'**
+  String get mushafContinuousPlayback;
+
+  /// No description provided for @mushafContinuousDescription.
+  ///
+  /// In ar, this message translates to:
+  /// **'يُتلى التالي تلقائياً بعد كل آية'**
+  String get mushafContinuousDescription;
+
+  /// No description provided for @mushafReciterSection.
+  ///
+  /// In ar, this message translates to:
+  /// **'القارئ'**
+  String get mushafReciterSection;
+
+  /// No description provided for @mushafAudioError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر تشغيل الصوت — تحقّق من الإنترنت'**
+  String get mushafAudioError;
+
+  /// No description provided for @mushafPlayingPrefix.
+  ///
+  /// In ar, this message translates to:
+  /// **'يُتلى'**
+  String get mushafPlayingPrefix;
+
+  /// No description provided for @mushafLoadingPrefix.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحميل'**
+  String get mushafLoadingPrefix;
+
+  /// No description provided for @mushafPausedPrefix.
+  ///
+  /// In ar, this message translates to:
+  /// **'متوقّف مؤقّتاً'**
+  String get mushafPausedPrefix;
+
+  /// No description provided for @mushafPauseAudio.
+  ///
+  /// In ar, this message translates to:
+  /// **'إيقاف مؤقّت'**
+  String get mushafPauseAudio;
+
+  /// No description provided for @mushafResumeAudio.
+  ///
+  /// In ar, this message translates to:
+  /// **'استئناف'**
+  String get mushafResumeAudio;
+
+  /// No description provided for @mushafStopAudio.
+  ///
+  /// In ar, this message translates to:
+  /// **'إيقاف'**
+  String get mushafStopAudio;
+
+  /// No description provided for @mushafBack.
+  ///
+  /// In ar, this message translates to:
+  /// **'رجوع'**
+  String get mushafBack;
 }
 
 class _AppLocalizationsDelegate

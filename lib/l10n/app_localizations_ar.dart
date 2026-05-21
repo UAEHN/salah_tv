@@ -63,6 +63,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navToday => 'الصفحة الرئيسية';
 
   @override
+  String get navMushaf => 'المصحف';
+
+  @override
   String get todayTitle => 'يومك';
 
   @override
@@ -1431,4 +1434,114 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get takbeeratButtonLabel => 'تكبيرات';
+
+  @override
+  String get mushafLandingTitle => 'المصحف الشريف';
+
+  @override
+  String get mushafContinueReading => 'متابعة القراءة';
+
+  @override
+  String get mushafOpenFromStart => 'افتح المصحف من البداية';
+
+  @override
+  String get mushafSurahIndex => 'فهرس السور';
+
+  @override
+  String get mushafSearchHint => 'ابحث عن سورة...';
+
+  @override
+  String get mushafSearchEmpty => 'لا توجد سورة بهذا الاسم';
+
+  @override
+  String get mushafLoadError => 'تعذّر تحميل المصحف';
+
+  @override
+  String get mushafPageWord => 'صفحة';
+
+  @override
+  String get mushafJuzWord => 'الجزء';
+
+  @override
+  String get mushafAyahWord => 'الآية';
+
+  @override
+  String get mushafSurahPrefix => 'سورة';
+
+  @override
+  String mushafAyahsCount(String count) {
+    return '$count آية';
+  }
+
+  @override
+  String get mushafJumpToPage => 'الذهاب لصفحة';
+
+  @override
+  String get mushafJumpDialogTitle => 'الذهاب إلى صفحة';
+
+  @override
+  String get mushafJumpDialogHint => '١ - ٦٠٤';
+
+  @override
+  String get mushafJumpDialogError => 'الرقم يجب أن يكون بين ١ و ٦٠٤';
+
+  @override
+  String get mushafJumpDialogGo => 'اذهب';
+
+  @override
+  String get mushafSaveHere => 'احفظ هنا';
+
+  @override
+  String get mushafBookmarkSaved => 'تم حفظ موضعك';
+
+  @override
+  String get mushafReadingSettings => 'إعدادات القراءة';
+
+  @override
+  String get mushafThemeSection => 'السمة';
+
+  @override
+  String get mushafThemePaper => 'ورقي';
+
+  @override
+  String get mushafThemeSepia => 'مصحف';
+
+  @override
+  String get mushafThemeNight => 'ليلي';
+
+  @override
+  String get mushafFontSize => 'حجم الخط';
+
+  @override
+  String get mushafContinuousPlayback => 'تشغيل مستمر';
+
+  @override
+  String get mushafContinuousDescription => 'يُتلى التالي تلقائياً بعد كل آية';
+
+  @override
+  String get mushafReciterSection => 'القارئ';
+
+  @override
+  String get mushafAudioError => 'تعذّر تشغيل الصوت — تحقّق من الإنترنت';
+
+  @override
+  String get mushafPlayingPrefix => 'يُتلى';
+
+  @override
+  String get mushafLoadingPrefix => 'تحميل';
+
+  @override
+  String get mushafPausedPrefix => 'متوقّف مؤقّتاً';
+
+  @override
+  String get mushafPauseAudio => 'إيقاف مؤقّت';
+
+  @override
+  String get mushafResumeAudio => 'استئناف';
+
+  @override
+  String get mushafStopAudio => 'إيقاف';
+
+  @override
+  String get mushafBack => 'رجوع';
 }

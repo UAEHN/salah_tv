@@ -63,6 +63,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navToday => 'Home';
 
   @override
+  String get navMushaf => 'Mushaf';
+
+  @override
   String get todayTitle => 'Your day';
 
   @override
@@ -1438,4 +1441,114 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get takbeeratButtonLabel => 'Takbeerat';
+
+  @override
+  String get mushafLandingTitle => 'The Holy Mushaf';
+
+  @override
+  String get mushafContinueReading => 'Continue reading';
+
+  @override
+  String get mushafOpenFromStart => 'Open Mushaf from beginning';
+
+  @override
+  String get mushafSurahIndex => 'Surah index';
+
+  @override
+  String get mushafSearchHint => 'Search for a surah...';
+
+  @override
+  String get mushafSearchEmpty => 'No surah found with that name';
+
+  @override
+  String get mushafLoadError => 'Failed to load the Mushaf';
+
+  @override
+  String get mushafPageWord => 'Page';
+
+  @override
+  String get mushafJuzWord => 'Juz';
+
+  @override
+  String get mushafAyahWord => 'Ayah';
+
+  @override
+  String get mushafSurahPrefix => 'Surah';
+
+  @override
+  String mushafAyahsCount(String count) {
+    return '$count ayahs';
+  }
+
+  @override
+  String get mushafJumpToPage => 'Go to page';
+
+  @override
+  String get mushafJumpDialogTitle => 'Go to page';
+
+  @override
+  String get mushafJumpDialogHint => '1 - 604';
+
+  @override
+  String get mushafJumpDialogError => 'Number must be between 1 and 604';
+
+  @override
+  String get mushafJumpDialogGo => 'Go';
+
+  @override
+  String get mushafSaveHere => 'Save here';
+
+  @override
+  String get mushafBookmarkSaved => 'Your place was saved';
+
+  @override
+  String get mushafReadingSettings => 'Reading settings';
+
+  @override
+  String get mushafThemeSection => 'Theme';
+
+  @override
+  String get mushafThemePaper => 'Paper';
+
+  @override
+  String get mushafThemeSepia => 'Sepia';
+
+  @override
+  String get mushafThemeNight => 'Night';
+
+  @override
+  String get mushafFontSize => 'Font size';
+
+  @override
+  String get mushafContinuousPlayback => 'Continuous playback';
+
+  @override
+  String get mushafContinuousDescription => 'Auto-plays the next ayah';
+
+  @override
+  String get mushafReciterSection => 'Reciter';
+
+  @override
+  String get mushafAudioError => 'Couldn\'t play audio — check your connection';
+
+  @override
+  String get mushafPlayingPrefix => 'Playing';
+
+  @override
+  String get mushafLoadingPrefix => 'Loading';
+
+  @override
+  String get mushafPausedPrefix => 'Paused';
+
+  @override
+  String get mushafPauseAudio => 'Pause';
+
+  @override
+  String get mushafResumeAudio => 'Resume';
+
+  @override
+  String get mushafStopAudio => 'Stop';
+
+  @override
+  String get mushafBack => 'Back';
 }

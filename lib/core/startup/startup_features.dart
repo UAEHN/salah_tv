@@ -67,6 +67,7 @@ import '../../features/prayer/domain/i_prayer_times_repository.dart';
 import '../../injection.dart';
 import '../platform_config.dart';
 import 'startup_customization.dart';
+import 'startup_quran.dart';
 import 'startup_today.dart';
 
 Future<void> registerFeatureServices(PlatformConfig platformConfig) async {
@@ -85,6 +86,7 @@ Future<void> registerFeatureServices(PlatformConfig platformConfig) async {
     _registerHomeWidget();
     registerCustomization();
     registerToday();
+    registerQuranReader();
   }
 }
 

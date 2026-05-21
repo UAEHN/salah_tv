@@ -123,6 +123,7 @@ flutter:
     - assets/world_cities.json
     - assets/db_countries.json
     - assets/animations/
+    - assets/quran/
   fonts:
     - family: Cairo
       fonts:
@@ -153,3 +154,9 @@ flutter:
           weight: 600
         - asset: assets/fonts/Inter/Inter-Bold.ttf
           weight: 700
+    # Amiri Quran — Uthmanic Mushaf script used by the mobile Mushaf
+    # reader. Designed by Dr. Khaled Hosny, licensed under SIL OFL.
+    # Downloaded from Google Fonts (fonts.google.com/specimen/Amiri+Quran).
+    - family: AmiriQuran
+      fonts:
+        - asset: assets/fonts/AmiriQuran/AmiriQuran-Regular.ttf

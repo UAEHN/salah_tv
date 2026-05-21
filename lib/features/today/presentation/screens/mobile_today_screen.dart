@@ -5,6 +5,7 @@ import '../../../settings/presentation/settings_provider.dart';
 import '../bloc/today_cubit.dart';
 import '../bloc/today_state.dart';
 import '../logic/time_based_sky_gradient.dart';
+import '../widgets/bento/bento_mushaf_continue_tile.dart';
 import '../widgets/bento/bento_occasion_tile.dart';
 import '../widgets/bento/bento_prayer_tile.dart';
 import '../widgets/bento/bento_qibla_tile.dart';
@@ -152,15 +153,22 @@ class _TodayBody extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 10),
-            // Row 3 — quick access (3 navigational tiles).
+            // Row 3a — «متابعة القراءة» shortcut (only when a bookmark
+            // exists; the tile widget self-hides otherwise).
             TodayStaggeredEntry(
               delay: stagger * 3,
+              child: const BentoMushafContinueTile(),
+            ),
+            const SizedBox(height: 10),
+            // Row 3b — quick access (3 navigational tiles).
+            TodayStaggeredEntry(
+              delay: stagger * 4,
               child: const BentoQuickActionsRow(),
             ),
             const SizedBox(height: 10),
             // Row 4 — context-aware dhikr session for the current hour.
             TodayStaggeredEntry(
-              delay: stagger * 4,
+              delay: stagger * 5,
               child: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: BentoTimeDhikrTile(),

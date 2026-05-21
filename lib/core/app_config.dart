@@ -117,6 +117,20 @@ abstract class AppConfig {
 
   static String prayerManifestUrl() => '$_prayerDataBase/manifest.json';
 
+  /// Per-ayah recitation audio (everyayah.com). `reciterUrlSegment` is
+  /// the folder name on the CDN (e.g. `Husary_Muallim_128kbps`).
+  /// URL pattern: SSSAAA.mp3 with zero-padded surah and ayah.
+  /// Example: surah 1, ayah 1 → 001001.mp3.
+  static String ayahAudioUrl({
+    required int surah,
+    required int ayah,
+    required String reciterUrlSegment,
+  }) {
+    final s = surah.toString().padLeft(3, '0');
+    final a = ayah.toString().padLeft(3, '0');
+    return 'https://www.everyayah.com/data/$reciterUrlSegment/$s$a.mp3';
+  }
+
   static bool get hasTelegramConfig =>
       telegramBotToken.isNotEmpty && telegramChatId.isNotEmpty;
 

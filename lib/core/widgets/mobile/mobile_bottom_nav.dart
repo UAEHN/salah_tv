@@ -16,7 +16,7 @@ class MobileBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int>? onTabChanged;
 
-  const MobileBottomNav({super.key, this.currentIndex = 4, this.onTabChanged});
+  const MobileBottomNav({super.key, this.currentIndex = 5, this.onTabChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,8 @@ class MobileBottomNav extends StatelessWidget {
       (icon: Icons.explore_outlined,     label: l.navQibla,    index: 1, route: '/qibla'),
       (icon: Icons.mosque_rounded,       label: l.navPrayer,   index: 2, route: '/'),
       (icon: Icons.auto_stories_rounded, label: l.navAdhkar,   index: 3, route: '/adhkar'),
-      (icon: Icons.home_rounded,         label: l.navToday,    index: 4, route: '/'),
+      (icon: Icons.menu_book_rounded,    label: l.navMushaf,   index: 4, route: '/'),
+      (icon: Icons.home_rounded,         label: l.navToday,    index: 5, route: '/'),
     ];
 
     return Padding(
