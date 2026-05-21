@@ -50,12 +50,25 @@ class LocationDialogCallbacks {
       city.name,
       city.latitude,
       city.longitude,
-      city.calculationMethod,
+      _resolveMethod(city),
       timeZoneId: city.timeZoneId,
       utcOffsetHours: city.utcOffset,
     );
     if (!isMounted() || !ok) return;
     Navigator.of(contextGetter()).pop();
+  }
+
+  // Defense in depth: if the city carries the generic fallback method but
+  // its country has a specific default (e.g. FR → Mosquée de Paris), use
+  // the country default. Keeps behavior correct even for stale JSON rows.
+  String _resolveMethod(WorldCity city) {
+    if (city.calculationMethod != 'muslim_world_league') {
+      return city.calculationMethod;
+    }
+    final byCountry = defaultMethodForCountryIso(city.countryKey);
+    return byCountry == 'muslim_world_league'
+        ? city.calculationMethod
+        : byCountry;
   }
 
   Future<void> onLocationDetected(DetectedLocation location) async {

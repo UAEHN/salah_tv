@@ -124,6 +124,9 @@ flutter:
     - assets/db_countries.json
     - assets/animations/
     - assets/quran/
+    # Bundled fallback for the remote occasions catalog. Shipped with the
+    # APK so a first-launch user with no network still sees Hijri events.
+    - assets/occasions/occasions_default.json
   fonts:
     - family: Cairo
       fonts:

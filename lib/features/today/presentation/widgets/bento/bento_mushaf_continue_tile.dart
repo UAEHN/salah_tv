@@ -42,6 +42,9 @@ class _ContinueCard extends StatelessWidget {
     final surface = BentoSurface.of(context);
     final l = AppLocalizations.of(context);
     final surahName = surahNameForContext(context, bookmark.surahNumber);
+    // Ayah numbers stay Arabic-Indic regardless of locale — they're a
+    // direct reference to a verse, treated like the in-mushaf marker.
+    final ayahLabel = toArabicIndic(bookmark.ayahNumber);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => MobileShell.openMushafReader(context),
@@ -74,7 +77,7 @@ class _ContinueCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${l.mushafSurahPrefix} $surahName • ${l.mushafAyahWord} ${toArabicIndic(bookmark.ayahNumber)}',
+                    '${l.mushafSurahPrefix} $surahName • ${l.mushafAyahWord} $ayahLabel',
                     style: MobileTextStyles.bodyMd(context).copyWith(
                       color: surface.foregroundMuted,
                     ),
@@ -99,6 +102,7 @@ class _PageBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final surface = BentoSurface.of(context);
+    final pageLabel = digitsForLocale(context, page);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -111,7 +115,7 @@ class _PageBadge extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          toArabicIndic(page),
+          pageLabel,
           style: TextStyle(
             fontFamily: 'AmiriQuran',
             fontSize: 22,

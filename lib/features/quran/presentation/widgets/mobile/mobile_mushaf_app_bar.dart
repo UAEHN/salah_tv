@@ -21,6 +21,7 @@ class MobileMushafAppBar extends StatelessWidget implements PreferredSizeWidget 
   final VoidCallback onOpenSurahIndex;
   final VoidCallback onOpenPageJump;
   final VoidCallback onOpenSettings;
+  final VoidCallback onShowIntro;
   final VoidCallback onBack;
 
   const MobileMushafAppBar({
@@ -31,6 +32,7 @@ class MobileMushafAppBar extends StatelessWidget implements PreferredSizeWidget 
     required this.onOpenSurahIndex,
     required this.onOpenPageJump,
     required this.onOpenSettings,
+    required this.onShowIntro,
     required this.onBack,
   });
 
@@ -72,6 +74,11 @@ class MobileMushafAppBar extends StatelessWidget implements PreferredSizeWidget 
           tooltip: l.mushafReadingSettings,
           onPressed: onOpenSettings,
         ),
+        IconButton(
+          icon: const Icon(Icons.help_outline_rounded),
+          tooltip: l.mushafIntroHelp,
+          onPressed: onShowIntro,
+        ),
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(34),
@@ -95,7 +102,7 @@ class _PageLabelStrip extends StatelessWidget {
         : '';
     final label = p == null
         ? '...'
-        : '${l.mushafPageWord} ${toArabicIndic(p.pageNumber)}  •  ${l.mushafJuzWord} ${toArabicIndic(p.juz)}  •  $surahName';
+        : '${l.mushafPageWord} ${digitsForLocale(context, p.pageNumber)}  •  ${l.mushafJuzWord} ${digitsForLocale(context, p.juz)}  •  $surahName';
 
     return Container(
       width: double.infinity,

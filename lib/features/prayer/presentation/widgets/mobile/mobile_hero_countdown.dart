@@ -3,6 +3,7 @@ import 'package:ghasaq/l10n/app_localizations.dart';
 import '../../../../../core/localization/prayer_name_localizer.dart';
 import '../../../../../core/mobile_theme.dart';
 import '../../../../../core/time_formatters.dart';
+import '../../../../../core/widgets/mobile/boxed_countdown.dart';
 import 'mobile_hero_parts.dart';
 import 'mobile_prayer_visuals.dart';
 
@@ -46,13 +47,14 @@ class MobileHeroCountdown extends StatelessWidget {
         ? l.ongoingNow
         : l.countdownNextPrayer(nextPrayerName);
 
-    final displayText = isIqamaCountdown
-        ? formatCountdown(iqamaCountdown)
-        : isCycleActive
+    final countdownDuration =
+        isIqamaCountdown ? iqamaCountdown : countdown;
+    final displayText = isCycleActive && !isIqamaCountdown
         ? iqamaPrayerName
-        : formatCountdown(countdown);
+        : formatCountdown(countdownDuration);
 
     final isCountdownMode = !isCycleActive || isIqamaCountdown;
+    final foreground = isDark ? Colors.white : const Color(0xFF1A103D);
 
     return Container(
       width: double.infinity,
@@ -95,23 +97,28 @@ class MobileHeroCountdown extends StatelessWidget {
                   isDark: isDark,
                 ),
                 const SizedBox(height: 16),
-                // Countdown number
-                Text(
-                  displayText,
-                  style: MobileTextStyles.displayLg(context).copyWith(
-                    fontSize: isCountdownMode ? 50 : 34,
-                    fontFeatures: isCountdownMode
-                        ? const [FontFeature.tabularFigures()]
-                        : null,
-                    color: isDark ? Colors.white : const Color(0xFF1A103D),
-                    shadows: [
-                      BoxShadow(
-                        color: accentBright.withValues(alpha: 0.4),
-                        blurRadius: 28,
+                // Countdown — boxed segmented clock when counting down,
+                // plain title text during an active cycle (iqama prayer
+                // name shown instead of digits).
+                isCountdownMode
+                    ? BoxedCountdown(
+                        countdown: countdownDuration,
+                        foreground: foreground,
+                        fontSize: 36,
+                      )
+                    : Text(
+                        displayText,
+                        style: MobileTextStyles.displayLg(context).copyWith(
+                          fontSize: 34,
+                          color: foreground,
+                          shadows: [
+                            BoxShadow(
+                              color: accentBright.withValues(alpha: 0.4),
+                              blurRadius: 28,
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                ),
                 const SizedBox(height: 6),
                 // Subtitle pill
                 HeroSubtitlePill(

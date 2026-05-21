@@ -5,12 +5,11 @@ import 'package:provider/provider.dart';
 import '../../../../../core/app_config.dart';
 import '../../../../../core/platform_launcher.dart';
 
-import '../../../../../core/calculation_method_info.dart';
 import '../../../../../core/city_translations.dart';
 import '../../screens/mobile_notification_settings_screen.dart';
 import '../../screens/mobile_prayer_offsets_screen.dart';
 import '../../settings_provider.dart';
-import 'mobile_calculation_method_dialog.dart';
+import 'mobile_calculation_method_tile.dart';
 import 'mobile_location_dialog_launcher.dart';
 import 'mobile_madhab_dialog.dart';
 import 'mobile_settings_appearance_section.dart';
@@ -64,21 +63,11 @@ class MobileSettingsList extends StatelessWidget {
                 title: l.settingsCalculationSection,
                 icon: Icons.calculate_rounded,
               ),
-              MobileSettingsTile(
-                title: l.settingsCalculationMethodLabel,
-                subtitle: localizedCalculationMethod(
-                  context,
-                  s.calculationMethod,
-                ),
-                onTap: () => showModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.transparent,
-                  isScrollControlled: true,
-                  builder: (_) => MobileCalculationMethodDialog(
-                    currentMethod: s.calculationMethod,
-                    onSave: sp.updateCalculationMethod,
-                  ),
-                ),
+              MobileCalculationMethodTile(
+                selectedCountryKey: s.selectedCountry,
+                selectedMethod: s.calculationMethod,
+                isCalculatedLocation: s.isCalculatedLocation,
+                onMethodSaved: sp.updateCalculationMethod,
               ),
               const SizedBox(height: 10),
               MobileSettingsTile(

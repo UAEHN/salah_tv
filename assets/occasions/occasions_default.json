@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "etag": "bundled-v1",
+  "occasions": [
+    {
+      "id": "hijri_new_year",
+      "hijri_month": 1,
+      "hijri_day": 1,
+      "label_ar": "رأس السنة الهجرية",
+      "label_en": "Hijri New Year",
+      "icon": "calendar_month"
+    },
+    {
+      "id": "ashura",
+      "hijri_month": 1,
+      "hijri_day": 10,
+      "label_ar": "عاشوراء",
+      "label_en": "Day of Ashura",
+      "icon": "nightlight_round"
+    },
+    {
+      "id": "mawlid",
+      "hijri_month": 3,
+      "hijri_day": 12,
+      "label_ar": "المولد النبوي",
+      "label_en": "Mawlid",
+      "icon": "auto_awesome"
+    },
+    {
+      "id": "isra_miraj",
+      "hijri_month": 7,
+      "hijri_day": 27,
+      "label_ar": "الإسراء والمعراج",
+      "label_en": "Isra & Mi'raj",
+      "icon": "rocket_launch"
+    },
+    {
+      "id": "mid_shaban",
+      "hijri_month": 8,
+      "hijri_day": 15,
+      "label_ar": "ليلة النصف من شعبان",
+      "label_en": "Mid-Sha'ban",
+      "icon": "brightness_3"
+    },
+    {
+      "id": "ramadan_start",
+      "hijri_month": 9,
+      "hijri_day": 1,
+      "label_ar": "بداية رمضان",
+      "label_en": "Start of Ramadan",
+      "icon": "mosque"
+    },
+    {
+      "id": "laylat_qadr",
+      "hijri_month": 9,
+      "hijri_day": 27,
+      "label_ar": "ليلة القدر",
+      "label_en": "Laylat al-Qadr",
+      "icon": "auto_awesome"
+    },
+    {
+      "id": "eid_fitr",
+      "hijri_month": 10,
+      "hijri_day": 1,
+      "label_ar": "عيد الفطر",
+      "label_en": "Eid al-Fitr",
+      "icon": "celebration"
+    },
+    {
+      "id": "arafah",
+      "hijri_month": 12,
+      "hijri_day": 9,
+      "label_ar": "يوم عرفة",
+      "label_en": "Day of Arafah",
+      "icon": "mosque"
+    },
+    {
+      "id": "eid_adha",
+      "hijri_month": 12,
+      "hijri_day": 10,
+      "label_ar": "عيد الأضحى",
+      "label_en": "Eid al-Adha",
+      "icon": "celebration"
+    }
+  ]
+}

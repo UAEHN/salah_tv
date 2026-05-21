@@ -24,11 +24,15 @@ class MobileBottomNav extends StatelessWidget {
     final bottomInset = MediaQuery.of(context).padding.bottom;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    // Settings was removed from the bar — it's now reachable via a gear
+    // icon in the top-meta of the Today/Qibla/Prayer screens. Five items
+    // leaves enough horizontal room for Arabic labels without truncation.
+    // Order is chosen so Prayer (mosque icon) lands in the visual center
+    // — the most-used surface deserves the focal slot.
     final items = [
-      (icon: Icons.settings_rounded,     label: l.navSettings, index: 0, route: '/settings'),
       (icon: Icons.explore_outlined,     label: l.navQibla,    index: 1, route: '/qibla'),
-      (icon: Icons.mosque_rounded,       label: l.navPrayer,   index: 2, route: '/'),
       (icon: Icons.auto_stories_rounded, label: l.navAdhkar,   index: 3, route: '/adhkar'),
+      (icon: Icons.mosque_rounded,       label: l.navPrayer,   index: 2, route: '/'),
       (icon: Icons.menu_book_rounded,    label: l.navMushaf,   index: 4, route: '/'),
       (icon: Icons.home_rounded,         label: l.navToday,    index: 5, route: '/'),
     ];

@@ -19,6 +19,24 @@ CalculationParameters calculationParametersFor(String methodKey) {
     'tehran' => CalculationMethodParameters.tehran(),
     'turkiye' => CalculationMethodParameters.turkiye(),
     'umm_al_qura' => CalculationMethodParameters.ummAlQura(),
+    // Grande Mosquée de Paris convention (12°/12°) — used by most French
+    // mosques. adhan_dart has no built-in entry, so we start from MWL and
+    // override the angles (the fields are declared `late` on the package
+    // class so post-construction mutation is safe).
+    'france' => CalculationMethodParameters.muslimWorldLeague()
+      ..fajrAngle = 12.0
+      ..ishaAngle = 12.0,
+    // UOIF (Union des Organisations Islamiques de France) — 15°/15°,
+    // the second most common convention in French mosques.
+    'uoif' => CalculationMethodParameters.muslimWorldLeague()
+      ..fajrAngle = 15.0
+      ..ishaAngle = 15.0,
+    // Ja'fari (Leva Research Institute / Shia): Fajr 16°, Isha 14°,
+    // and Maghrib offset by 4° after sunset.
+    'jafari' => CalculationMethodParameters.muslimWorldLeague()
+      ..fajrAngle = 16.0
+      ..ishaAngle = 14.0
+      ..maghribAngle = 4.0,
     _ => CalculationMethodParameters.muslimWorldLeague(),
   };
 }

@@ -141,3 +141,14 @@ String resolveEnglishCountryName(String key) {
 String? dbCountryKeyForIso(String isoCode) {
   return _dbCountryKeyByIsoCode[isoCode.trim().toUpperCase()];
 }
+
+/// Returns the ISO-2 code for a DB country key (the reverse of
+/// [dbCountryKeyForIso]). Used by the settings UI to display each
+/// bundled-DB country's natural calculation method.
+String? isoForDbCountryKey(String dbKey) {
+  final normalized = dbKey.trim().toLowerCase();
+  for (final entry in _dbCountryKeyByIsoCode.entries) {
+    if (entry.value == normalized) return entry.key;
+  }
+  return null;
+}

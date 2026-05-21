@@ -8,6 +8,7 @@ import '../../../domain/entities/reading_theme.dart';
 import '../../bloc/mushaf_reader_cubit.dart';
 import '../../bloc/mushaf_reader_state.dart';
 import '../../widgets/mobile/mobile_mushaf_app_bar.dart';
+import '../../widgets/mobile/mobile_mushaf_intro_sheet.dart';
 import '../../widgets/mobile/mobile_mushaf_page_jump_dialog.dart';
 import '../../widgets/mobile/mobile_mushaf_playing_bar.dart';
 import '../../widgets/mobile/mobile_mushaf_reader_pages.dart';
@@ -32,7 +33,17 @@ class _MobileMushafReaderScreenState extends State<MobileMushafReaderScreen> {
     _cubit = context.read<MushafReaderCubit>();
     _controller = PageController(initialPage: _cubit.state.currentPage - 1);
     WakelockPlus.enable();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowIntro());
   }
+
+  Future<void> _maybeShowIntro() async {
+    if (!mounted) return;
+    if (_cubit.state.hasSeenIntro) return;
+    await MobileMushafIntroSheet.show(context);
+    await _cubit.markIntroSeen();
+  }
+
+  Future<void> _showIntroManually() => MobileMushafIntroSheet.show(context);
 
   @override
   void dispose() {
@@ -112,6 +123,7 @@ class _MobileMushafReaderScreenState extends State<MobileMushafReaderScreen> {
             onOpenPageJump: _openPageJump,
             onOpenSettings: () => MobileMushafSettingsSheet.show(context),
             onSaveBookmark: _saveWithToast,
+            onShowIntro: _showIntroManually,
           ),
           body: Column(
             children: [

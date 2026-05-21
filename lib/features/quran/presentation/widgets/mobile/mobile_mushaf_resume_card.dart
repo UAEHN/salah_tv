@@ -113,7 +113,7 @@ class _PageBadge extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          toArabicIndic(page),
+          digitsForLocale(context, page),
           style: TextStyle(
             fontFamily: 'AmiriQuran',
             fontSize: 22,

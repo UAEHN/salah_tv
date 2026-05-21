@@ -81,7 +81,7 @@ class _SurahTile extends StatelessWidget {
       leading: CircleAvatar(
         backgroundColor: primary.withValues(alpha: 0.15),
         child: Text(
-          toArabicIndic(surah.number),
+          digitsForLocale(context, surah.number),
           style: TextStyle(color: primary, fontWeight: FontWeight.w700),
         ),
       ),
@@ -92,7 +92,7 @@ class _SurahTile extends StatelessWidget {
       ),
       subtitle: Text(
         AppLocalizations.of(context)
-            .mushafAyahsCount(toArabicIndic(surah.ayahCount)),
+            .mushafAyahsCount(digitsForLocale(context, surah.ayahCount)),
         textAlign: TextAlign.right,
         style: MobileTextStyles.labelSm(context),
       ),

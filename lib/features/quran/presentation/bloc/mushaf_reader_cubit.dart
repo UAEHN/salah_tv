@@ -10,13 +10,15 @@ import '../../domain/i_quran_text_repository.dart';
 import '../../domain/usecases/get_bookmark_usecase.dart';
 import '../../domain/usecases/get_mushaf_page_usecase.dart';
 import '../../domain/usecases/play_ayah_usecase.dart';
+import '../../domain/usecases/quran_intro_usecases.dart';
 import '../../domain/usecases/save_bookmark_usecase.dart';
 import 'mushaf_audio_flow_mixin.dart';
+import 'mushaf_bookmark_mixin.dart';
 import 'mushaf_prefs_mixin.dart';
 import 'mushaf_reader_state.dart';
 
 class MushafReaderCubit extends Cubit<MushafReaderState>
-    with MushafAudioFlowMixin, MushafPrefsMixin {
+    with MushafAudioFlowMixin, MushafPrefsMixin, MushafBookmarkMixin {
   final IQuranTextRepository _textRepo;
   final GetMushafPageUseCase _getPage;
   final GetBookmarkUseCase _getBookmark;
@@ -25,6 +27,8 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
   final StopAyahAudioUseCase _stopAyah;
   final IAyahAudioPort _audioPort;
   final IMushafPreferencesRepository _prefsRepo;
+  final HasSeenMushafIntroUseCase _hasSeenIntro;
+  final MarkMushafIntroSeenUseCase _markIntroSeen;
   StreamSubscription<AyahPlaybackEvent>? _audioSub;
 
   MushafReaderCubit({
@@ -36,6 +40,8 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
     required StopAyahAudioUseCase stopAyah,
     required IAyahAudioPort audioPort,
     required IMushafPreferencesRepository prefsRepo,
+    required HasSeenMushafIntroUseCase hasSeenIntro,
+    required MarkMushafIntroSeenUseCase markIntroSeen,
   })  : _textRepo = textRepo,
         _getPage = getPage,
         _getBookmark = getBookmark,
@@ -44,6 +50,8 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
         _stopAyah = stopAyah,
         _audioPort = audioPort,
         _prefsRepo = prefsRepo,
+        _hasSeenIntro = hasSeenIntro,
+        _markIntroSeen = markIntroSeen,
         super(const MushafReaderState()) {
     _audioSub = _audioPort.events.listen(onAudioEvent);
   }
@@ -55,31 +63,40 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
   @override
   IMushafPreferencesRepository get prefsRepoForMixin => _prefsRepo;
   @override
+  SaveBookmarkUseCase get bookmarkSaveForMixin => _saveBookmark;
+  @override
   Future<void> navigateToPageFromAudio(int page) => goToPage(page);
 
   Future<void> init() async {
     if (state.loadStatus == MushafLoadStatus.ready) {
-      final b = await _getBookmark();
-      emit(state.copyWith(bookmark: b));
+      emit(state.copyWith(bookmark: await _getBookmark()));
       return;
     }
     emit(state.copyWith(loadStatus: MushafLoadStatus.loading));
     final prefs = await _prefsRepo.load();
+    final seenIntro = await _hasSeenIntro();
     final load = await _textRepo.ensureLoaded();
-    final ok = load.fold((f) {
-      emit(state.copyWith(
-        loadStatus: MushafLoadStatus.error,
-        loadError: f.message,
-      ));
-      return false;
-    }, (_) => true);
+    final ok = load.fold(
+      (f) {
+        emit(state.copyWith(
+            loadStatus: MushafLoadStatus.error, loadError: f.message));
+        return false;
+      },
+      (_) => true,
+    );
     if (!ok) return;
-    final bookmark = await _getBookmark();
     emit(state.copyWith(
       loadStatus: MushafLoadStatus.ready,
-      bookmark: bookmark,
+      bookmark: await _getBookmark(),
       prefs: prefs,
+      hasSeenIntro: seenIntro,
     ));
+  }
+
+  Future<void> markIntroSeen() async {
+    if (state.hasSeenIntro) return;
+    await _markIntroSeen();
+    emit(state.copyWith(hasSeenIntro: true));
   }
 
   Future<void> openReader({int? page, QuranBookmark? resume}) async {
@@ -91,56 +108,41 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
 
   Future<void> goToPage(int pageNumber) async {
     final clamped = pageNumber.clamp(1, MushafPage.totalPages);
-    final result = await _getPage(clamped);
-    result.fold(
+    (await _getPage(clamped)).fold(
       (f) => emit(state.copyWith(loadError: f.message)),
-      (page) => emit(state.copyWith(
-        currentPage: clamped,
-        currentPageData: page,
-      )),
+      (page) {
+        emit(state.copyWith(currentPage: clamped, currentPageData: page));
+        scheduleBookmarkAutoSave();
+      },
     );
   }
 
-  Future<void> goToSurah(int surahNumber) async {
-    final p = await _textRepo.pageOfSurah(surahNumber);
-    await p.fold(
-      (f) async => emit(state.copyWith(loadError: f.message)),
-      (page) => goToPage(page),
-    );
-  }
+  Future<void> goToSurah(int surahNumber) async =>
+      (await _textRepo.pageOfSurah(surahNumber)).fold(
+        (f) async => emit(state.copyWith(loadError: f.message)),
+        goToPage,
+      );
 
   Future<void> tapAyah(int surah, int ayah) async {
     if (state.isAyahPlaying(surah, ayah)) return _audioPort.pause();
     if (state.isAyahPaused(surah, ayah)) return _audioPort.resume();
     await _playAyah(
-      surahNumber: surah,
-      ayahNumber: ayah,
-      reciterUrlSegment: resolveReciter(state.prefs.reciterId).urlSegment,
-    );
+        surahNumber: surah,
+        ayahNumber: ayah,
+        reciterUrlSegment: resolveReciter(state.prefs.reciterId).urlSegment);
   }
 
   Future<void> stopAudio() => _stopAyah();
-  Future<void> saveBookmark() async {
-    final page = state.currentPageData;
-    if (page == null || page.ayahs.isEmpty) return;
-    final first = page.ayahs.first;
-    final bookmark = QuranBookmark(
-      page: page.pageNumber,
-      surahNumber: first.surahNumber,
-      ayahNumber: first.numberInSurah,
-      savedAt: DateTime.now(),
-    );
-    await _saveBookmark(bookmark);
-    emit(state.copyWith(bookmark: bookmark));
-  }
 
   Future<void> onLeaveReader() async {
+    cancelBookmarkAutoSave();
     await _stopAyah();
     await saveBookmark();
   }
 
   @override
   Future<void> close() async {
+    cancelBookmarkAutoSave();
     await _audioSub?.cancel();
     await _stopAyah();
     return super.close();

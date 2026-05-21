@@ -19,7 +19,8 @@ class BentoOccasionTile extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final accent = MobileColors.activePrimary(context);
     final surface = BentoSurface.of(context);
-    final label = resolveOccasionLabel(l, occasion.labelKey);
+    final locale = Localizations.localeOf(context).languageCode;
+    final label = resolveOccasionDisplayLabel(l, occasion, locale);
 
     return GestureDetector(
       onLongPress: () => showOccasionDetailsSheet(context, occasion),
@@ -27,17 +28,8 @@ class BentoOccasionTile extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(Icons.nightlight_round, size: 16, color: accent),
-          ),
-          const Spacer(),
           if (occasion.daysUntil == 0)
             Text(
               l.todayOccasionToday,
@@ -76,16 +68,21 @@ class BentoOccasionTile extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 10),
-          Text(
-            label,
-            style: MobileTextStyles.bodyMd(context).copyWith(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: surface.foreground,
-              letterSpacing: -0.2,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(
+              label,
+              style: MobileTextStyles.bodyMd(context).copyWith(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: surface.foreground,
+                letterSpacing: -0.2,
+              ),
+              maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

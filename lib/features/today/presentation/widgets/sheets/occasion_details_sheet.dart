@@ -28,7 +28,8 @@ class _OccasionSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final accent = MobileColors.activePrimary(context);
-    final label = resolveOccasionLabel(l, occasion.labelKey);
+    final locale = Localizations.localeOf(context).languageCode;
+    final label = resolveOccasionDisplayLabel(l, occasion, locale);
     final countdown = resolveDaysCountdown(l, occasion.daysUntil);
 
     return Container(

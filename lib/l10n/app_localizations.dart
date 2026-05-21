@@ -209,7 +209,7 @@ abstract class AppLocalizations {
   /// No description provided for @navMushaf.
   ///
   /// In ar, this message translates to:
-  /// **'المصحف'**
+  /// **'القرآن'**
   String get navMushaf;
 
   /// No description provided for @todayTitle.
@@ -2258,6 +2258,30 @@ abstract class AppLocalizations {
   /// **'لجنة رؤية الهلال'**
   String get calcMethodMoonsightingCommittee;
 
+  /// No description provided for @calcMethodFrance.
+  ///
+  /// In ar, this message translates to:
+  /// **'فرنسا (مسجد باريس الكبير)'**
+  String get calcMethodFrance;
+
+  /// No description provided for @calcMethodUoif.
+  ///
+  /// In ar, this message translates to:
+  /// **'فرنسا (UOIF 15°)'**
+  String get calcMethodUoif;
+
+  /// No description provided for @calcMethodJafari.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجعفري (16°/14°)'**
+  String get calcMethodJafari;
+
+  /// No description provided for @calculationMethodOfficialScheduleNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا البلد يستخدم الجدول الرسمي — هذا الخيار للعرض فقط ولا يؤثر على المواقيت'**
+  String get calculationMethodOfficialScheduleNote;
+
   /// No description provided for @splashVerseStart.
   ///
   /// In ar, this message translates to:
@@ -2831,7 +2855,7 @@ abstract class AppLocalizations {
   /// No description provided for @mushafLandingTitle.
   ///
   /// In ar, this message translates to:
-  /// **'المصحف الشريف'**
+  /// **'القرآن الكريم'**
   String get mushafLandingTitle;
 
   /// No description provided for @mushafContinueReading.
@@ -2843,7 +2867,7 @@ abstract class AppLocalizations {
   /// No description provided for @mushafOpenFromStart.
   ///
   /// In ar, this message translates to:
-  /// **'افتح المصحف من البداية'**
+  /// **'افتح القرآن من البداية'**
   String get mushafOpenFromStart;
 
   /// No description provided for @mushafSurahIndex.
@@ -3043,6 +3067,90 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'رجوع'**
   String get mushafBack;
+
+  /// No description provided for @mushafIntroTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'مرحباً بك في المصحف'**
+  String get mushafIntroTitle;
+
+  /// No description provided for @mushafIntroSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعرّف على كيفية الاستخدام في لمحة سريعة'**
+  String get mushafIntroSubtitle;
+
+  /// No description provided for @mushafIntroSwipeTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تنقّل بين الصفحات'**
+  String get mushafIntroSwipeTitle;
+
+  /// No description provided for @mushafIntroSwipeBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسحب يميناً أو يساراً للانتقال بين صفحات المصحف'**
+  String get mushafIntroSwipeBody;
+
+  /// No description provided for @mushafIntroTapAyahTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'اضغط على آية للاستماع'**
+  String get mushafIntroTapAyahTitle;
+
+  /// No description provided for @mushafIntroTapAyahBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'اضغط أي آية لتلاوتها، واضغطها مرة أخرى للإيقاف أو الاستئناف'**
+  String get mushafIntroTapAyahBody;
+
+  /// No description provided for @mushafIntroNavigateTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'فهرس السور والقفز السريع'**
+  String get mushafIntroNavigateTitle;
+
+  /// No description provided for @mushafIntroNavigateBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدم زر الفهرس للوصول للسور، وزر القفز للانتقال إلى رقم صفحة محدد'**
+  String get mushafIntroNavigateBody;
+
+  /// No description provided for @mushafIntroBookmarkTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ موضعك تلقائياً'**
+  String get mushafIntroBookmarkTitle;
+
+  /// No description provided for @mushafIntroBookmarkBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'نحفظ موضعك تلقائياً عند الخروج، ويمكنك حفظه يدوياً من زر العلامة في الأعلى'**
+  String get mushafIntroBookmarkBody;
+
+  /// No description provided for @mushafIntroSettingsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'خصّص قراءتك'**
+  String get mushafIntroSettingsTitle;
+
+  /// No description provided for @mushafIntroSettingsBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'غيّر السمة، حجم الخط، والقارئ من زر الإعدادات'**
+  String get mushafIntroSettingsBody;
+
+  /// No description provided for @mushafIntroCta.
+  ///
+  /// In ar, this message translates to:
+  /// **'فهمت، لنبدأ'**
+  String get mushafIntroCta;
+
+  /// No description provided for @mushafIntroHelp.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعريف بالميزات'**
+  String get mushafIntroHelp;
 }
 
 class _AppLocalizationsDelegate

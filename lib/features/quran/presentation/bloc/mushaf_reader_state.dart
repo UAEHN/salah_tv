@@ -28,6 +28,10 @@ class MushafReaderState {
   /// playback). Loaded from SharedPreferences on init.
   final MushafPreferences prefs;
 
+  /// Whether the user has dismissed the welcome/feature-tour sheet at
+  /// least once. Drives the one-time auto-show on first entry.
+  final bool hasSeenIntro;
+
   const MushafReaderState({
     this.loadStatus = MushafLoadStatus.idle,
     this.loadError,
@@ -38,6 +42,7 @@ class MushafReaderState {
     this.playingAyah,
     this.bookmark,
     this.prefs = const MushafPreferences(),
+    this.hasSeenIntro = true,
   });
 
   bool get isAudioActive =>
@@ -69,6 +74,7 @@ class MushafReaderState {
     int? playingAyah,
     QuranBookmark? bookmark,
     MushafPreferences? prefs,
+    bool? hasSeenIntro,
     bool clearPlaying = false,
   }) {
     return MushafReaderState(
@@ -81,6 +87,7 @@ class MushafReaderState {
       playingAyah: clearPlaying ? null : (playingAyah ?? this.playingAyah),
       bookmark: bookmark ?? this.bookmark,
       prefs: prefs ?? this.prefs,
+      hasSeenIntro: hasSeenIntro ?? this.hasSeenIntro,
     );
   }
 }

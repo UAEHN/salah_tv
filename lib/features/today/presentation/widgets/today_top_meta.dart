@@ -5,6 +5,7 @@ import 'package:hijri/hijri_calendar.dart';
 import '../../../../core/city_translations.dart';
 import '../../../../core/localization/date_localizer.dart';
 import '../../../../core/mobile_theme.dart';
+import '../../../../core/widgets/mobile/mobile_shell.dart';
 import '../../domain/entities/greeting.dart';
 import '../logic/today_l10n_resolver.dart';
 import 'bento/bento_tile.dart';
@@ -71,6 +72,9 @@ class TodayTopMeta extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              // Settings entry — moved out of the bottom nav (which used to
+              // carry 6 items and was getting cramped for Arabic labels).
+              _SettingsButton(color: surface.foreground),
             ],
           ),
           const SizedBox(height: 4),
@@ -142,6 +146,27 @@ class TodayTopMeta extends StatelessWidget {
       case GreetingPeriod.evening:
         return Icons.nightlight_round;
     }
+  }
+}
+
+class _SettingsButton extends StatelessWidget {
+  final Color color;
+  const _SettingsButton({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkResponse(
+      onTap: () => MobileShell.switchTab(context, 0),
+      radius: 22,
+      child: Padding(
+        padding: const EdgeInsets.all(6),
+        child: Icon(
+          Icons.settings_rounded,
+          size: 22,
+          color: color.withValues(alpha: 0.78),
+        ),
+      ),
+    );
   }
 }
 

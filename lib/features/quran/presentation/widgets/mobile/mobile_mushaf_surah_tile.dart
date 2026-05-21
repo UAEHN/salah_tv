@@ -99,7 +99,7 @@ class _NumberMedallion extends StatelessWidget {
             ),
           ),
           Text(
-            toArabicIndic(number),
+            digitsForLocale(context, number),
             style: TextStyle(
               color: primary,
               fontWeight: FontWeight.w800,

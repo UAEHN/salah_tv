@@ -28,6 +28,9 @@ class MobileCalculationMethodDialog extends StatelessWidget {
     'tehran',
     'turkiye',
     'north_america',
+    'france',
+    'uoif',
+    'jafari',
     'moonsighting_committee',
   ];
 

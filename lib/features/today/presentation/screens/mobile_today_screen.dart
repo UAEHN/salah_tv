@@ -8,7 +8,6 @@ import '../logic/time_based_sky_gradient.dart';
 import '../widgets/bento/bento_mushaf_continue_tile.dart';
 import '../widgets/bento/bento_occasion_tile.dart';
 import '../widgets/bento/bento_prayer_tile.dart';
-import '../widgets/bento/bento_qibla_tile.dart';
 import '../widgets/bento/bento_quick_actions_row.dart';
 import '../widgets/bento/bento_tile.dart';
 import '../widgets/bento/bento_time_dhikr_tile.dart';
@@ -119,26 +118,31 @@ class _TodayBody extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            // Row 1 — prayer hero + occasion (qibla mini if no occasion).
+            // Row 1 — prayer hero. When an occasion is upcoming, share the
+            // row with its tile (flex 7 / 4). Otherwise the prayer tile
+            // takes the full width with a fixed height — `BentoPrayerTile`'s
+            // internal Column uses Spacer(), which needs bounded vertical
+            // space; the old layout got it from IntrinsicHeight + occasion
+            // sibling, so we replace that anchor with a SizedBox here.
             TodayStaggeredEntry(
               delay: stagger * 1,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Expanded(flex: 7, child: BentoPrayerTile()),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        flex: 4,
-                        child: occasion != null
-                            ? BentoOccasionTile(occasion: occasion)
-                            : const BentoQiblaTile(),
-                      ),
-                    ],
-                  ),
-                ),
+                child: occasion != null
+                    ? IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Expanded(flex: 7, child: BentoPrayerTile()),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              flex: 4,
+                              child: BentoOccasionTile(occasion: occasion),
+                            ),
+                          ],
+                        ),
+                      )
+                    : const BentoPrayerTile(isExpanded: true),
               ),
             ),
             // Row 2 — verse of the day, full width.

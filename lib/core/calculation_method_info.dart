@@ -40,6 +40,12 @@ String localizedCalculationMethodFromLocalizations(
       return l.calcMethodNorthAmerica;
     case 'moonsighting_committee':
       return l.calcMethodMoonsightingCommittee;
+    case 'france':
+      return l.calcMethodFrance;
+    case 'uoif':
+      return l.calcMethodUoif;
+    case 'jafari':
+      return l.calcMethodJafari;
     default:
       return methodKey;
   }
@@ -59,6 +65,10 @@ String defaultMethodForCountryIso(String? isoCode) {
     'PK' || 'BD' || 'IN' || 'AF' => 'karachi',
     'SG' || 'MY' || 'ID' || 'BN' => 'singapore',
     'US' || 'CA' || 'MX' => 'north_america',
+    // Grande Mosquée de Paris (12°/12°) is the dominant convention in
+    // France and the surrounding French-mosque countries (Belgium,
+    // Luxembourg, Switzerland).
+    'FR' || 'BE' || 'LU' || 'CH' => 'france',
     _ => 'muslim_world_league',
   };
 }

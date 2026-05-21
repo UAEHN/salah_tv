@@ -63,7 +63,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navToday => 'الصفحة الرئيسية';
 
   @override
-  String get navMushaf => 'المصحف';
+  String get navMushaf => 'القرآن';
 
   @override
   String get todayTitle => 'يومك';
@@ -1131,6 +1131,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get calcMethodMoonsightingCommittee => 'لجنة رؤية الهلال';
 
   @override
+  String get calcMethodFrance => 'فرنسا (مسجد باريس الكبير)';
+
+  @override
+  String get calcMethodUoif => 'فرنسا (UOIF 15°)';
+
+  @override
+  String get calcMethodJafari => 'الجعفري (16°/14°)';
+
+  @override
+  String get calculationMethodOfficialScheduleNote =>
+      'هذا البلد يستخدم الجدول الرسمي — هذا الخيار للعرض فقط ولا يؤثر على المواقيت';
+
+  @override
   String get splashVerseStart =>
       'أَقِمِ ٱلصَّلَوٰةَ لِدُلُوكِ ٱلشَّمْسِ إِلَىٰ ';
 
@@ -1436,13 +1449,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get takbeeratButtonLabel => 'تكبيرات';
 
   @override
-  String get mushafLandingTitle => 'المصحف الشريف';
+  String get mushafLandingTitle => 'القرآن الكريم';
 
   @override
   String get mushafContinueReading => 'متابعة القراءة';
 
   @override
-  String get mushafOpenFromStart => 'افتح المصحف من البداية';
+  String get mushafOpenFromStart => 'افتح القرآن من البداية';
 
   @override
   String get mushafSurahIndex => 'فهرس السور';
@@ -1544,4 +1557,51 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get mushafBack => 'رجوع';
+
+  @override
+  String get mushafIntroTitle => 'مرحباً بك في المصحف';
+
+  @override
+  String get mushafIntroSubtitle => 'تعرّف على كيفية الاستخدام في لمحة سريعة';
+
+  @override
+  String get mushafIntroSwipeTitle => 'تنقّل بين الصفحات';
+
+  @override
+  String get mushafIntroSwipeBody =>
+      'اسحب يميناً أو يساراً للانتقال بين صفحات المصحف';
+
+  @override
+  String get mushafIntroTapAyahTitle => 'اضغط على آية للاستماع';
+
+  @override
+  String get mushafIntroTapAyahBody =>
+      'اضغط أي آية لتلاوتها، واضغطها مرة أخرى للإيقاف أو الاستئناف';
+
+  @override
+  String get mushafIntroNavigateTitle => 'فهرس السور والقفز السريع';
+
+  @override
+  String get mushafIntroNavigateBody =>
+      'استخدم زر الفهرس للوصول للسور، وزر القفز للانتقال إلى رقم صفحة محدد';
+
+  @override
+  String get mushafIntroBookmarkTitle => 'حفظ موضعك تلقائياً';
+
+  @override
+  String get mushafIntroBookmarkBody =>
+      'نحفظ موضعك تلقائياً عند الخروج، ويمكنك حفظه يدوياً من زر العلامة في الأعلى';
+
+  @override
+  String get mushafIntroSettingsTitle => 'خصّص قراءتك';
+
+  @override
+  String get mushafIntroSettingsBody =>
+      'غيّر السمة، حجم الخط، والقارئ من زر الإعدادات';
+
+  @override
+  String get mushafIntroCta => 'فهمت، لنبدأ';
+
+  @override
+  String get mushafIntroHelp => 'تعريف بالميزات';
 }

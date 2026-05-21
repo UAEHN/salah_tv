@@ -63,7 +63,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navToday => 'Home';
 
   @override
-  String get navMushaf => 'Mushaf';
+  String get navMushaf => 'Quran';
 
   @override
   String get todayTitle => 'Your day';
@@ -1134,6 +1134,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calcMethodMoonsightingCommittee => 'Moonsighting Committee';
 
   @override
+  String get calcMethodFrance => 'France (Grande Mosquée de Paris)';
+
+  @override
+  String get calcMethodUoif => 'France (UOIF 15°)';
+
+  @override
+  String get calcMethodJafari => 'Ja\'fari (16°/14°)';
+
+  @override
+  String get calculationMethodOfficialScheduleNote =>
+      'This country uses the official schedule — this setting is informational and does not affect prayer times';
+
+  @override
   String get splashVerseStart =>
       'أَقِمِ ٱلصَّلَوٰةَ لِدُلُوكِ ٱلشَّمْسِ إِلَىٰ ';
 
@@ -1443,13 +1456,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get takbeeratButtonLabel => 'Takbeerat';
 
   @override
-  String get mushafLandingTitle => 'The Holy Mushaf';
+  String get mushafLandingTitle => 'The Holy Quran';
 
   @override
   String get mushafContinueReading => 'Continue reading';
 
   @override
-  String get mushafOpenFromStart => 'Open Mushaf from beginning';
+  String get mushafOpenFromStart => 'Open Quran from beginning';
 
   @override
   String get mushafSurahIndex => 'Surah index';
@@ -1551,4 +1564,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mushafBack => 'Back';
+
+  @override
+  String get mushafIntroTitle => 'Welcome to the Mushaf';
+
+  @override
+  String get mushafIntroSubtitle => 'A quick look at what you can do here';
+
+  @override
+  String get mushafIntroSwipeTitle => 'Swipe to turn pages';
+
+  @override
+  String get mushafIntroSwipeBody =>
+      'Swipe left or right to move between pages of the Mushaf';
+
+  @override
+  String get mushafIntroTapAyahTitle => 'Tap an ayah to listen';
+
+  @override
+  String get mushafIntroTapAyahBody =>
+      'Tap any ayah to play its recitation, tap again to pause or resume';
+
+  @override
+  String get mushafIntroNavigateTitle => 'Surah index and page jump';
+
+  @override
+  String get mushafIntroNavigateBody =>
+      'Use the list button to jump to a surah, or the page button to jump to a specific page number';
+
+  @override
+  String get mushafIntroBookmarkTitle => 'Your place is saved automatically';
+
+  @override
+  String get mushafIntroBookmarkBody =>
+      'We save your place when you leave the reader. You can also save it manually with the bookmark button';
+
+  @override
+  String get mushafIntroSettingsTitle => 'Customize your reading';
+
+  @override
+  String get mushafIntroSettingsBody =>
+      'Change theme, font size, and reciter from the settings button';
+
+  @override
+  String get mushafIntroCta => 'Got it, let\'s start';
+
+  @override
+  String get mushafIntroHelp => 'Feature tour';
 }

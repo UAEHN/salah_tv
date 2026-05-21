@@ -112,10 +112,22 @@ abstract class AppConfig {
   static const _prayerDataBase =
       'https://uaehn.github.io/salah_tv/prayer_data';
 
+  /// Base URL for dynamic content (occasions manifest, future banners…).
+  /// Same GitHub-Pages bucket as prayer data but a different folder so the
+  /// publish pipelines stay independent.
+  static const _dynamicContentBase = 'https://uaehn.github.io/salah_tv';
+
   static String prayerCityUrl(String country, String slug) =>
       '$_prayerDataBase/$country/$slug.json';
 
   static String prayerManifestUrl() => '$_prayerDataBase/manifest.json';
+
+  /// Remote catalog of Hijri occasions (id, hijri date, localized labels,
+  /// optional icon/banner/CTA, version targeting). Replaces the bundled
+  /// catalog as the source of truth so new occasions can be added without
+  /// shipping an APK. App falls back to cache → bundled asset on failure.
+  static String occasionsManifestUrl() =>
+      '$_dynamicContentBase/occasions/manifest.json';
 
   /// Per-ayah recitation audio (everyayah.com). `reciterUrlSegment` is
   /// the folder name on the CDN (e.g. `Husary_Muallim_128kbps`).

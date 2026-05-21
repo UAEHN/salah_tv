@@ -1,6 +1,7 @@
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../domain/entities/greeting.dart';
+import '../../domain/entities/upcoming_occasion.dart';
 
 String resolveGreetingTitle(AppLocalizations l, Greeting g) {
   switch (g.period) {
@@ -45,6 +46,28 @@ String resolveOccasionLabel(AppLocalizations l, String labelKey) {
     default:
       return labelKey;
   }
+}
+
+/// Picks the display label for [o], preferring remote-driven `labelAr/En`
+/// (locale-matched) over the bundled `labelKey`. Falls back across languages
+/// when one is empty so a single-language remote entry still works.
+String resolveOccasionDisplayLabel(
+  AppLocalizations l,
+  UpcomingOccasion o,
+  String localeCode,
+) {
+  final ar = o.labelAr;
+  final en = o.labelEn;
+  if ((ar != null && ar.isNotEmpty) || (en != null && en.isNotEmpty)) {
+    if (localeCode == 'en') {
+      if (en != null && en.isNotEmpty) return en;
+      if (ar != null && ar.isNotEmpty) return ar;
+    } else {
+      if (ar != null && ar.isNotEmpty) return ar;
+      if (en != null && en.isNotEmpty) return en;
+    }
+  }
+  return resolveOccasionLabel(l, o.labelKey);
 }
 
 String resolveDaysCountdown(AppLocalizations l, int daysUntil) {

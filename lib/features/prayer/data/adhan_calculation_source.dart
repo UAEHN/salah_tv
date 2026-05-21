@@ -11,6 +11,13 @@ import 'calculation_method_map.dart';
 /// [timeZoneId] or [utcOffsetHours] is provided, otherwise device local
 /// timezone.
 class AdhanCalculationSource {
+  /// Above this absolute latitude the sun no longer dips deep enough below
+  /// the horizon in summer for a standard 12–18° twilight angle to produce
+  /// a real Fajr/Isha time. We apply [HighLatitudeRule.middleOfTheNight]
+  /// as a safe, conservative fallback (matches what most European mosques
+  /// publish). 48.5° just covers Paris (48.85°N) and northward.
+  static const double _kHighLatitudeThreshold = 48.5;
+
   /// Calculates prayer times for [date] at ([lat], [lng]) using [methodKey]
   /// and [madhabKey] ('shafi' or 'hanafi' — affects Asr time only).
   ///
@@ -29,6 +36,9 @@ class AdhanCalculationSource {
     final coordinates = Coordinates(lat, lng);
     final params = calculationParametersFor(methodKey);
     if (madhabKey == 'hanafi') params.madhab = Madhab.hanafi;
+    if (lat.abs() > _kHighLatitudeThreshold) {
+      params.highLatitudeRule = HighLatitudeRule.middleOfTheNight;
+    }
 
     final prayerTimes = PrayerTimes(
       date: date,

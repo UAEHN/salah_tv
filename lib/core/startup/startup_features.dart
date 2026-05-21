@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 
 import '../../features/announcements/data/announcement_repository.dart';
@@ -67,6 +69,7 @@ import '../../features/prayer/domain/i_prayer_times_repository.dart';
 import '../../injection.dart';
 import '../platform_config.dart';
 import 'startup_customization.dart';
+import 'startup_dynamic_content.dart';
 import 'startup_quran.dart';
 import 'startup_today.dart';
 
@@ -87,6 +90,9 @@ Future<void> registerFeatureServices(PlatformConfig platformConfig) async {
     registerCustomization();
     registerToday();
     registerQuranReader();
+    // Fire-and-forget refresh of the remote occasions manifest. Repo falls
+    // back to cache → bundled asset, so this never blocks boot or fails.
+    unawaited(primeDynamicContent());
   }
 }
 
