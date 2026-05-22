@@ -2,20 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../onboarding/presentation/widgets/onboarding_background.dart';
 import 'notification_onboarding_cubit.dart';
 import 'notification_onboarding_state.dart';
-import 'widgets/mock_adhan_notification_preview.dart';
+import 'widgets/notification_onboarding_background.dart';
 import 'widgets/onboarding_action_bar.dart';
 import 'widgets/onboarding_header.dart';
-import 'widgets/onboarding_progress_chip.dart';
 import 'widgets/permission_cards_list.dart';
 
-/// Mobile-only "first run" notification setup. Visually consistent with the
-/// main `OnboardingScreen` (dark gradient + animated stars), shows a mock
-/// notification preview as a value hook, gates "متابعة" on the mandatory
-/// permission, and lets the user fire a real test notification before
-/// leaving the screen.
+/// Mobile-only "first run" notification setup. Calm dark layout with a
+/// single warm radial glow — no animated stars, no mock notification.
+/// Gates "متابعة" on the mandatory permission and lets the user fire a
+/// real test notification before leaving the screen.
 class NotificationOnboardingScreen extends StatefulWidget {
   final VoidCallback onComplete;
   const NotificationOnboardingScreen({super.key, required this.onComplete});
@@ -26,26 +23,19 @@ class NotificationOnboardingScreen extends StatefulWidget {
 }
 
 class _NotificationOnboardingScreenState
-    extends State<NotificationOnboardingScreen>
-    with WidgetsBindingObserver, TickerProviderStateMixin {
-  late final AnimationController _bgController;
+    extends State<NotificationOnboardingScreen> with WidgetsBindingObserver {
   int _lastGrantedCount = 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _bgController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 8),
-    )..repeat();
     context.read<NotificationOnboardingCubit>().start();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _bgController.dispose();
     super.dispose();
   }
 
@@ -59,11 +49,11 @@ class _NotificationOnboardingScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF050A18),
+      backgroundColor: const Color(0xFF04060D),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          OnboardingBackground(starsAnimation: _bgController),
+          const NotificationOnboardingBackground(),
           SafeArea(
             child: BlocConsumer<NotificationOnboardingCubit,
                 NotificationOnboardingState>(
@@ -104,23 +94,17 @@ class _Body extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<NotificationOnboardingCubit>();
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           OnboardingHeader(
-            trailing: OnboardingProgressChip(
-              granted: state.coreGrantedCount,
-              total: state.coreTotalCount,
-            ),
+            granted: state.coreGrantedCount,
+            total: state.coreTotalCount,
           ),
-          const SizedBox(height: 16),
-          MockAdhanNotificationPreview(
-            isAcknowledged: state.health.postNotifications,
-          ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 28),
           Expanded(child: PermissionCardsList(state: state, cubit: cubit)),
-          const SizedBox(height: 4),
+          const SizedBox(height: 12),
           OnboardingActionBar(
             canContinue: state.canContinue,
             canTest: state.health.postNotifications,
@@ -128,7 +112,7 @@ class _Body extends StatelessWidget {
             onTest: () => _onTest(context, cubit),
             onContinue: onDone,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
         ],
       ),
     );

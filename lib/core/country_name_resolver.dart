@@ -119,6 +119,7 @@ const Map<String, String> _dbCountryKeyByIsoCode = {
   'JO': 'jordan',
   'KW': 'kuwait',
   'LB': 'lebanon',
+  'LY': 'libya',
   'MA': 'morocco',
   'MY': 'malaysia',
   'OM': 'oman',

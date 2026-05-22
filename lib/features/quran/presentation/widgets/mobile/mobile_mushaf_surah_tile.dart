@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
+
 import '../../../../../core/mobile_theme.dart';
 import '../../../../../core/surahs_data.dart';
+import '../../../domain/entities/surah.dart';
 import 'mushaf_arabic_digits.dart';
+import 'surah_name_glyph.dart';
 
-/// One row in the surah index.
-///
-/// Layout (visual order, RTL locale):
-///   [ diamond № ]  surah name  ............................  ‹
-/// The diamond medallion is the FIRST child of the Row so RTL renders it
-/// at the leading (right) edge. The surah name is right-aligned via
-/// `TextAlign.start` so it sits flush against the medallion instead of
-/// drifting toward the chevron in the middle of the row.
+/// One row in the surah index, Mushaf-style.
+/// Layout (RTL): [№]  ·  Makki/Madani · verses · page  ·  [ﮒ ornate name]
+/// The ornate trailing glyph is the only surah name shown — the Latin
+/// transliteration is dropped to keep the row clean and Mushaf-styled.
 class MobileMushafSurahTile extends StatelessWidget {
   final int number;
   final VoidCallback onTap;
@@ -23,38 +23,22 @@ class MobileMushafSurahTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-    final isDark = MobileColors.isDark(context);
-    final localeCode = Localizations.localeOf(context).languageCode;
-    final name = surahNameForContext(context, number);
+    final surah = surahByNumber(number);
+    if (surah == null) return const SizedBox.shrink();
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
           child: Row(
             children: [
-              _NumberMedallion(number: number, primary: primary, isDark: isDark),
+              _NumberBadge(number: number),
+              const SizedBox(width: 14),
+              Expanded(child: _MetaColumn(surah: surah)),
               const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  name,
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontFamily: localeCode == 'ar' ? 'AmiriQuran' : null,
-                    fontSize: localeCode == 'ar' ? 24 : 18,
-                    fontWeight: FontWeight.w600,
-                    height: 1.2,
-                    color: MobileColors.onSurface(context),
-                  ),
-                ),
-              ),
-              Icon(
-                Icons.chevron_left_rounded,
-                color: MobileColors.onSurfaceFaint(context),
-              ),
+              _CalligraphicName(number: number),
             ],
           ),
         ),
@@ -63,50 +47,82 @@ class MobileMushafSurahTile extends StatelessWidget {
   }
 }
 
-class _NumberMedallion extends StatelessWidget {
-  final int number;
-  final Color primary;
-  final bool isDark;
-  const _NumberMedallion({
-    required this.number,
-    required this.primary,
-    required this.isDark,
-  });
+class _MetaColumn extends StatelessWidget {
+  final Surah surah;
+  const _MetaColumn({required this.surah});
 
   @override
   Widget build(BuildContext context) {
-    // Rotated square (diamond) with the surah number inside — a nod to
-    // the ornate surah-number medallions used in printed Mushafs.
+    final l = AppLocalizations.of(context);
+    final revelation = surah.revelation == RevelationType.makki
+        ? l.surahRevelationMakki
+        : l.surahRevelationMadani;
+    final n = digitsForLocale(context, surah.ayahCount);
+    final p = digitsForLocale(context, surah.firstPage);
+    final subtitle =
+        '$revelation  ·  ${l.surahAyahCountLabel} $n  ·  ${l.mushafPageWord} $p';
+    return Text(
+      subtitle,
+      style: TextStyle(
+        fontSize: 13,
+        height: 1.3,
+        color: MobileColors.onSurfaceMuted(context),
+      ),
+      // 2 lines + no ellipsis so long subtitles (e.g. صفحة ٦٠٠) wrap
+      // instead of being truncated with "..."
+      maxLines: 2,
+      softWrap: true,
+    );
+  }
+}
+
+class _NumberBadge extends StatelessWidget {
+  final int number;
+  const _NumberBadge({required this.number});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = MobileColors.isDark(context);
+    return Container(
+      width: 42,
+      height: 42,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.08)
+            : Colors.black.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        digitsForLocale(context, number),
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+          color: MobileColors.onSurface(context),
+        ),
+      ),
+    );
+  }
+}
+
+class _CalligraphicName extends StatelessWidget {
+  final int number;
+  const _CalligraphicName({required this.number});
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
-      width: 44,
-      height: 44,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Transform.rotate(
-            angle: 0.785398, // 45° in radians
-            child: Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: primary.withValues(alpha: isDark ? 0.18 : 0.12),
-                border: Border.all(
-                  color: primary.withValues(alpha: 0.55),
-                  width: 1.2,
-                ),
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-          ),
-          Text(
-            digitsForLocale(context, number),
-            style: TextStyle(
-              color: primary,
-              fontWeight: FontWeight.w800,
-              fontSize: 13,
-            ),
-          ),
-        ],
+      width: 100,
+      child: Text(
+        surahNameLigatureToken(number),
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontFamily: 'SurahNames',
+          fontSize: 38,
+          height: 1.0,
+          color: MobileColors.onSurface(context),
+          fontFeatures: const [FontFeature.enable('liga')],
+        ),
       ),
     );
   }

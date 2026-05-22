@@ -51,34 +51,51 @@ class MobileLocationDialogBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showCities = selectedCountryKey != null;
-
-    return Container(
-        height: MediaQuery.of(context).size.height * 0.75,
+    final mq = MediaQuery.of(context);
+    final kb = mq.viewInsets.bottom;
+    // Lift the sheet above the keyboard by adding bottom padding equal to
+    // the keyboard inset, and resize it to fill the area above the
+    // keyboard so the list keeps room to scroll instead of vanishing
+    // under it.
+    final restingHeight = mq.size.height * 0.78;
+    final keyboardOpenHeight =
+        (mq.size.height - kb - mq.padding.top - 16).clamp(320.0, double.infinity);
+    final sheetHeight = kb > 0 ? keyboardOpenHeight : restingHeight;
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOutCubic,
+      padding: EdgeInsets.only(bottom: kb),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        height: sheetHeight,
         decoration: BoxDecoration(
           color: MobileColors.cardColor(context),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-          border: Border.all(color: MobileColors.border(context)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          border: Border(
+            top: BorderSide(color: MobileColors.border(context), width: 1),
+          ),
         ),
         child: Column(
           children: [
-            MobileLocationDialogHeader(
-              showCities: showCities,
-              title: title,
-              onBack: onShowCountries,
-              onClose: () => Navigator.pop(context),
-            ),
-            if (!showCities)
-              MobileDetectLocationButton(onDetected: onLocationDetected),
-            MobileLocationSearchField(
-              controller: searchController,
-              hintText: locationSearchHint(context, showCities),
-              onChanged: onQueryChanged,
-              onClear: onClear,
-              showClearIcon: true,
-            ),
+          MobileLocationDialogHeader(
+            showCities: showCities,
+            title: title,
+            onBack: onShowCountries,
+            onClose: () => Navigator.pop(context),
+          ),
+          MobileLocationSearchField(
+            controller: searchController,
+            hintText: locationSearchHint(context, showCities),
+            onChanged: onQueryChanged,
+            onClear: onClear,
+            showClearIcon: true,
+          ),
+          if (!showCities)
+            MobileDetectLocationButton(onDetected: onLocationDetected),
             Expanded(
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 280),
                 switchInCurve: Curves.easeOutCubic,
                 switchOutCurve: Curves.easeInCubic,
                 child: _buildList(),
@@ -86,6 +103,7 @@ class MobileLocationDialogBody extends StatelessWidget {
             ),
           ],
         ),
+      ),
     );
   }
 

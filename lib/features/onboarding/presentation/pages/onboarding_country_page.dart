@@ -3,12 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../features/settings/domain/entities/detected_location.dart';
-import '../../../../features/settings/presentation/widgets/mobile/mobile_detect_location_button.dart';
-import '../../../../features/settings/presentation/widgets/mobile/mobile_location_search_field.dart';
 import '../../../../features/settings/presentation/widgets/mobile/mobile_location_search_utils.dart';
 import '../onboarding_cubit.dart';
 import '../widgets/onboarding_animation_utils.dart';
+import '../widgets/onboarding_detect_button.dart';
 import '../widgets/onboarding_page_header.dart';
+import '../widgets/onboarding_search_field.dart';
 import '../widgets/onboarding_selectable_tile.dart';
 import '../widgets/onboarding_staggered_list.dart';
 
@@ -59,11 +59,8 @@ class _OnboardingCountryPageState extends State<OnboardingCountryPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        OnboardingPageHeader(
-          title: l.onboardingSelectCountry,
-          entranceAnimation: widget.entranceAnimation,
-        ),
-        const SizedBox(height: 8),
+        OnboardingPageHeader(title: l.onboardingSelectCountry),
+        const SizedBox(height: 12),
         FadeTransition(
           opacity: btnAnim,
           child: SlideTransition(
@@ -72,7 +69,7 @@ class _OnboardingCountryPageState extends State<OnboardingCountryPage> {
               start: 0.1,
               end: 0.55,
             ),
-            child: MobileDetectLocationButton(
+            child: OnboardingDetectButton(
               onDetected: (DetectedLocation loc) =>
                   context.read<OnboardingCubit>().onLocationDetected(loc),
             ),
@@ -80,7 +77,7 @@ class _OnboardingCountryPageState extends State<OnboardingCountryPage> {
         ),
         FadeTransition(
           opacity: searchAnim,
-          child: MobileLocationSearchField(
+          child: OnboardingSearchField(
             controller: _searchController,
             hintText: l.settingsSearchCountry,
             onChanged: (q) {
@@ -88,13 +85,14 @@ class _OnboardingCountryPageState extends State<OnboardingCountryPage> {
               context.read<OnboardingCubit>().filterCountries(q);
             },
             onClear: _onClear,
-            showClearIcon: true,
           ),
         ),
         Expanded(
-          child: state.filteredCountries.isEmpty
-              ? _buildCountriesWithStagger(state.allCountries)
-              : _buildCountriesWithStagger(state.filteredCountries),
+          child: _buildCountriesWithStagger(
+            state.filteredCountries.isEmpty
+                ? state.allCountries
+                : state.filteredCountries,
+          ),
         ),
       ],
     );

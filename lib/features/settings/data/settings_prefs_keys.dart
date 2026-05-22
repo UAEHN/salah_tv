@@ -15,6 +15,7 @@ class PrefsKeys {
   static const iqamaMode = '${_p}iqama_mode';
   static const mosqueMode = '${_p}mosque_mode';
   static const dark = '${_p}dark_mode';
+  static const themeMode = '${_p}theme_mode';
   static const iqama = '${_p}iqama';
   static const adhanOff = '${_p}adhan_offsets';
   static const hadithText = '${_p}hadith_text';

@@ -35,9 +35,9 @@ class MobileLocationWorldCitiesList extends StatelessWidget {
 
     return ListView.builder(
       key: const ValueKey('world_cities'),
-      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
       physics: const BouncingScrollPhysics(),
-      itemExtent: 68,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       itemCount: cities.length,
       itemBuilder: (context, index) {
         final city = cities[index];

@@ -111,6 +111,18 @@ class _MobileMushafReaderScreenState extends State<MobileMushafReaderScreen> {
         }
         _syncControllerToState(state);
       },
+      // Only rebuild the scaffold when something it actually paints
+      // changes. Without this filter every bookmark autosave / cubit
+      // microtask rebuilds the whole subtree — including the PageView,
+      // which interrupts the swipe gesture and causes the stutter the
+      // user reported.
+      buildWhen: (p, n) =>
+          p.readingTheme != n.readingTheme ||
+          p.currentPageData != n.currentPageData ||
+          p.audioStatus != n.audioStatus ||
+          p.playingSurah != n.playingSurah ||
+          p.playingAyah != n.playingAyah ||
+          p.fontSize != n.fontSize,
       builder: (_, state) {
         final palette = ReadingPalette.of(state.readingTheme);
         return Scaffold(
@@ -128,12 +140,13 @@ class _MobileMushafReaderScreenState extends State<MobileMushafReaderScreen> {
           body: Column(
             children: [
               Expanded(
-                child: MobileMushafReaderPages(
-                  state: state,
-                  palette: palette,
-                  controller: _controller,
-                  onPageChanged: _onPageChanged,
-                  onAyahTap: _onAyahTap,
+                child: RepaintBoundary(
+                  child: MobileMushafReaderPages(
+                    palette: palette,
+                    controller: _controller,
+                    onPageChanged: _onPageChanged,
+                    onAyahTap: _onAyahTap,
+                  ),
                 ),
               ),
               MobileMushafPlayingBar(

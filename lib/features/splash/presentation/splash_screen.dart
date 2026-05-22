@@ -1,11 +1,8 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import '../../../core/brand_colors.dart';
+
 import '../../../core/platform_config.dart';
 import '../../../injection.dart';
 import '../../settings/domain/i_settings_repository.dart';
-import 'splash_star_field.dart';
-import 'splash_particles.dart';
 import 'splash_brand_content.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -17,52 +14,38 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  late final AnimationController _starsController;
   late final AnimationController _brandController;
-  late final AnimationController _shimmerController;
   late final AnimationController _fadeOutController;
-
-  static const _bgTop = Color(0xFF050A18);
-  static const _bgBottom = Color(0xFF0F1B33);
 
   @override
   void initState() {
     super.initState();
-    _starsController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 8),
-    )..repeat();
-    // Brand duration is set after the async splash-seen check below.
     _brandController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1300),
     );
-    _shimmerController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2200),
-    )..repeat();
     _fadeOutController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 350),
+      duration: const Duration(milliseconds: 320),
     );
     _bootstrap();
   }
 
-  /// On first launch ever: full 1500ms brand animation. On every launch
-  /// after that: short 500ms — the user has already seen the brand reveal.
+  /// First launch ever: full 1300ms reveal. Every launch after: short
+  /// 480ms — the user has already seen the brand.
   Future<void> _bootstrap() async {
     final repo = getIt<ISettingsRepository>();
     final hasSeen = await repo.hasSeenSplash();
     if (!mounted) return;
-    _brandController.duration = Duration(milliseconds: hasSeen ? 500 : 1500);
+    _brandController.duration = Duration(milliseconds: hasSeen ? 480 : 1300);
     _fadeOutController.duration =
-        Duration(milliseconds: hasSeen ? 200 : 350);
+        Duration(milliseconds: hasSeen ? 200 : 320);
     if (!hasSeen) await repo.markSplashSeen();
     if (!mounted) return;
     _brandController.forward().whenComplete(_fadeAndNavigate);
   }
 
-  void _fadeAndNavigate() async {
+  Future<void> _fadeAndNavigate() async {
     if (!mounted) return;
     String route = '/';
     final isFirst = await getIt<ISettingsRepository>().isFirstLaunch();
@@ -75,18 +58,16 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _starsController.dispose();
     _brandController.dispose();
-    _shimmerController.dispose();
     _fadeOutController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenH = MediaQuery.of(context).size.height;
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: _bgTop,
+      backgroundColor: const Color(0xFF04060D),
       body: FadeTransition(
         opacity: Tween(begin: 1.0, end: 0.0).animate(
           CurvedAnimation(parent: _fadeOutController, curve: Curves.easeIn),
@@ -94,72 +75,40 @@ class _SplashScreenState extends State<SplashScreen>
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Deep night gradient
             const DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [_bgTop, _bgBottom],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF0F1729),
+                    Color(0xFF080C1A),
+                    Color(0xFF04060D),
+                  ],
+                  stops: [0.0, 0.55, 1.0],
                 ),
               ),
             ),
-            // Subtle golden glow — distant moonlight
             Positioned(
-              top: -screenH * 0.08,
-              right: screenH * 0.2,
-              child: Container(
-                width: screenH * 0.55,
-                height: screenH * 0.55,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [Color(0x12D4A843), Colors.transparent],
-                  ),
-                ),
-              ),
-            ),
-            // Twinkling stars + shooting stars
-            SplashStarField(animation: _starsController),
-            // Golden particles drifting up
-            SplashParticles(animation: _starsController),
-            // Pulsing glow behind title
-            AnimatedBuilder(
-              animation: _shimmerController,
-              builder: (_, _) {
-                final pulse = (sin(_shimmerController.value * pi * 2) + 1) / 2;
-                return Center(
-                  child: Container(
-                    width: screenH * 0.55,
-                    height: screenH * 0.35,
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        colors: [
-                          brandGold.withValues(alpha: 0.04 + pulse * 0.03),
-                          Colors.transparent,
-                        ],
-                      ),
+              top: size.height * 0.22,
+              left: 0,
+              right: 0,
+              child: IgnorePointer(
+                child: Container(
+                  width: size.width,
+                  height: size.width * 0.9,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [Color(0x33E6B450), Colors.transparent],
+                      stops: [0.0, 0.7],
                     ),
                   ),
-                );
-              },
-            ),
-            // Cinematic vignette
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  colors: [Colors.transparent, Color(0x66000000)],
-                  radius: 1.2,
-                  stops: [0.4, 1.0],
                 ),
               ),
             ),
-            // Brand content
             Center(
-              child: SplashBrandContent(
-                brandAnimation: _brandController,
-                shimmerAnimation: _shimmerController,
-              ),
+              child: SplashBrandContent(brandAnimation: _brandController),
             ),
           ],
         ),

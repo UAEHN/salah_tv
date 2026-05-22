@@ -13,6 +13,7 @@ extension AppSettingsMapper on AppSettings {
     'iqamaMode': iqamaMode.name,
     'isMosqueMode': isMosqueMode,
     'isDarkMode': isDarkMode,
+    'themeMode': themeMode,
     'iqamaDelays': jsonEncode(iqamaDelays),
     'adhanOffsets': jsonEncode(adhanOffsets),
     'hadithText': hadithText,
@@ -68,6 +69,9 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     iqamaMode: decodePrayerSoundMode(map['iqamaMode'], legacyBool: map['playIqama']),
     isMosqueMode: map['isMosqueMode'] as bool? ?? false,
     isDarkMode: map['isDarkMode'] as bool? ?? false,
+    themeMode: const ['system', 'light', 'dark'].contains(map['themeMode'])
+        ? map['themeMode'] as String
+        : 'system',
     iqamaDelays: decodeIntMap(map['iqamaDelays'], const {
       'fajr': 20,
       'dhuhr': 10,

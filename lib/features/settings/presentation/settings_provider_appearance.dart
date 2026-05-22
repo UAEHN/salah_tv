@@ -45,6 +45,19 @@ extension SettingsProviderAppearance on SettingsProvider {
   Future<void> updateDarkMode(bool value) =>
       _update(_settings.copyWith(isDarkMode: value));
 
+  /// Updates the brightness mode. Accepts `'system' | 'light' | 'dark'`.
+  /// When set to `'light'` or `'dark'`, [isDarkMode] is kept in sync so
+  /// non-context-aware consumers stay correct.
+  Future<void> updateThemeMode(String mode) {
+    if (mode == 'light') {
+      return _update(_settings.copyWith(themeMode: 'light', isDarkMode: false));
+    }
+    if (mode == 'dark') {
+      return _update(_settings.copyWith(themeMode: 'dark', isDarkMode: true));
+    }
+    return _update(_settings.copyWith(themeMode: 'system'));
+  }
+
   Future<void> updateFontFamily(String fontFamily) =>
       _update(_settings.copyWith(fontFamily: fontFamily));
 

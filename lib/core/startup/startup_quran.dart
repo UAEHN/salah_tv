@@ -2,12 +2,14 @@ import 'package:dio/dio.dart';
 
 import '../../features/quran/data/ayah_audio_service.dart';
 import '../../features/quran/data/file_ayah_audio_cache.dart';
+import '../../features/quran/data/mushaf_glyph_page_repository.dart';
 import '../../features/quran/data/mushaf_preferences_repository.dart';
 import '../../features/quran/data/quran_bookmark_repository.dart';
 import '../../features/quran/data/quran_intro_flag_repository.dart';
 import '../../features/quran/data/quran_text_repository.dart';
 import '../../features/quran/domain/i_ayah_audio_cache.dart';
 import '../../features/quran/domain/i_ayah_audio_port.dart';
+import '../../features/quran/domain/i_mushaf_glyph_page_repository.dart';
 import '../../features/quran/domain/i_mushaf_preferences_repository.dart';
 import '../../features/quran/domain/i_quran_bookmark_repository.dart';
 import '../../features/quran/domain/i_quran_intro_flag_repository.dart';
@@ -41,6 +43,9 @@ void registerQuranReader() {
   );
   getIt.registerLazySingleton<IQuranIntroFlagRepository>(
     () => QuranIntroFlagRepository(),
+  );
+  getIt.registerLazySingleton<IMushafGlyphPageRepository>(
+    () => MushafGlyphPageRepository(),
   );
 
   getIt.registerFactory<HasSeenMushafIntroUseCase>(
@@ -76,6 +81,7 @@ void registerQuranReader() {
       stopAyah: getIt<StopAyahAudioUseCase>(),
       audioPort: getIt<IAyahAudioPort>(),
       prefsRepo: getIt<IMushafPreferencesRepository>(),
+      glyphRepo: getIt<IMushafGlyphPageRepository>(),
       hasSeenIntro: getIt<HasSeenMushafIntroUseCase>(),
       markIntroSeen: getIt<MarkMushafIntroSeenUseCase>(),
     ),

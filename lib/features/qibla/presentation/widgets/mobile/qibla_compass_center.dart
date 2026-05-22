@@ -1,33 +1,52 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/mobile_theme.dart';
+
+/// Center readout of the compass — the live angle between the device and
+/// the Qibla. When aligned, the number tilts to the active accent.
 class QiblaCompassCenter extends StatelessWidget {
   final double angle;
+  final bool isAligned;
 
   const QiblaCompassCenter({
     super.key,
     required this.angle,
+    this.isAligned = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final accent = MobileColors.activePrimary(context);
+    final onSurface = MobileColors.onSurface(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          '${angle.toInt()}°',
-          style: const TextStyle(
+        AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 260),
+          style: TextStyle(
             fontFamily: 'Rubik',
-            fontSize: 48,
+            fontSize: 52,
             fontWeight: FontWeight.w800,
-            color: Colors.white,
+            color: isAligned ? accent : onSurface,
             height: 1.0,
+            letterSpacing: -1,
+          ),
+          child: Text(
+            '${angle.toInt()}°',
+            textDirection: TextDirection.ltr,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
+        Container(
+          width: 22,
+          height: 1.2,
+          color: onSurface.withValues(alpha: 0.20),
+        ),
+        const SizedBox(height: 6),
         Icon(
           Icons.mosque_rounded,
-          color: Colors.white.withValues(alpha: 0.3),
-          size: 20,
+          color: onSurface.withValues(alpha: isAligned ? 0.60 : 0.32),
+          size: 16,
         ),
       ],
     );

@@ -12,6 +12,12 @@ class BoxedCountdown extends StatelessWidget {
   final Color foreground;
   final double fontSize;
 
+  /// Tint used for the digit box background and border. Defaults to
+  /// [foreground] when omitted — pass a separate value when you want the
+  /// digits one colour (e.g. black) and the surrounding boxes another
+  /// (e.g. the active theme accent).
+  final Color? boxTint;
+
   /// Drop the hours segment automatically when the duration is below
   /// one hour. Mirrors the existing `formatCountdown` behavior used in
   /// the rest of the prayer feature.
@@ -22,6 +28,7 @@ class BoxedCountdown extends StatelessWidget {
     required this.countdown,
     required this.foreground,
     required this.fontSize,
+    this.boxTint,
     this.dropHoursWhenZero = true,
   });
 
@@ -37,12 +44,14 @@ class BoxedCountdown extends StatelessWidget {
         ? '-${h.toString().padLeft(2, '0')}'
         : h.toString().padLeft(2, '0');
     final fontFamily = Theme.of(context).textTheme.bodyMedium?.fontFamily;
+    final box = boxTint ?? foreground;
 
     final children = <Widget>[
       if (showHours) ...[
         _DigitBox(
           text: hLabel,
-          color: foreground,
+          textColor: foreground,
+          boxColor: box,
           fontSize: fontSize,
           fontFamily: fontFamily,
         ),
@@ -50,14 +59,16 @@ class BoxedCountdown extends StatelessWidget {
       ],
       _DigitBox(
         text: m,
-        color: foreground,
+        textColor: foreground,
+        boxColor: box,
         fontSize: fontSize,
         fontFamily: fontFamily,
       ),
       _ColonSeparator(color: foreground, fontSize: fontSize),
       _DigitBox(
         text: s,
-        color: foreground,
+        textColor: foreground,
+        boxColor: box,
         fontSize: fontSize,
         fontFamily: fontFamily,
       ),
@@ -78,13 +89,15 @@ class BoxedCountdown extends StatelessWidget {
 
 class _DigitBox extends StatelessWidget {
   final String text;
-  final Color color;
+  final Color textColor;
+  final Color boxColor;
   final double fontSize;
   final String? fontFamily;
 
   const _DigitBox({
     required this.text,
-    required this.color,
+    required this.textColor,
+    required this.boxColor,
     required this.fontSize,
     required this.fontFamily,
   });
@@ -97,10 +110,10 @@ class _DigitBox extends StatelessWidget {
         vertical: fontSize * 0.12,
       ),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.14),
+        color: boxColor.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(fontSize * 0.22),
         border: Border.all(
-          color: color.withValues(alpha: 0.22),
+          color: boxColor.withValues(alpha: 0.22),
           width: 1,
         ),
       ),
@@ -110,7 +123,7 @@ class _DigitBox extends StatelessWidget {
           fontFamily: fontFamily,
           fontSize: fontSize,
           fontWeight: FontWeight.w900,
-          color: color,
+          color: textColor,
           letterSpacing: 0.6,
           height: 1.0,
           fontFeatures: const [FontFeature.tabularFigures()],

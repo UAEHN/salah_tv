@@ -511,6 +511,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsLightMode => 'Light Mode';
 
   @override
+  String get settingsSystemMode => 'Follow system';
+
+  @override
   String get settingsDarkModeLabel => 'Night mode';
 
   @override
@@ -1145,6 +1148,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get calculationMethodOfficialScheduleNote =>
       'This country uses the official schedule — this setting is informational and does not affect prayer times';
+
+  @override
+  String get surahRevelationMakki => 'Makki';
+
+  @override
+  String get surahRevelationMadani => 'Madani';
+
+  @override
+  String get surahAyahCountLabel => 'verses';
 
   @override
   String get splashVerseStart =>

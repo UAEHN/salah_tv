@@ -3,24 +3,26 @@ import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/mobile_theme.dart';
 
-/// Shown when compass accuracy is low due to magnetic interference.
-/// Instructs the user to move the phone in a figure-8 to calibrate.
+const _warn = Color(0xFFD9534F);
+
+/// Shown when compass accuracy is low. Instructs the user to move the
+/// phone in a figure-8 to recalibrate the magnetometer.
 class QiblaCalibrationGuide extends StatelessWidget {
   const QiblaCalibrationGuide({super.key});
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-
+    final isDark = MobileColors.isDark(context);
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFFF5722).withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFFFF5722).withValues(alpha: 0.35),
-        ),
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.04)
+            : _warn.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _warn.withValues(alpha: 0.40), width: 1),
       ),
       child: Row(
         textDirection: TextDirection.rtl,
@@ -33,19 +35,20 @@ class QiblaCalibrationGuide extends StatelessWidget {
               children: [
                 Text(
                   l.qiblaCalibrationTitle,
-                  style: MobileTextStyles.labelSm(context).copyWith(
-                    color: const Color(0xFFFF5722),
+                  style: const TextStyle(
+                    color: _warn,
+                    fontSize: 12.5,
                     fontWeight: FontWeight.w700,
-                    fontSize: 12,
                   ),
                   textDirection: TextDirection.rtl,
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   l.qiblaCalibrationBody,
-                  style: MobileTextStyles.labelSm(context).copyWith(
+                  style: TextStyle(
                     color: MobileColors.onSurfaceMuted(context),
-                    fontSize: 11,
+                    fontSize: 11.5,
+                    height: 1.5,
                   ),
                   textDirection: TextDirection.rtl,
                 ),
@@ -68,7 +71,6 @@ class _Figure8Icon extends StatefulWidget {
 class _Figure8IconState extends State<_Figure8Icon>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
-  late final Animation<double> _rotation;
 
   @override
   void initState() {
@@ -77,7 +79,6 @@ class _Figure8IconState extends State<_Figure8Icon>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat();
-    _rotation = Tween<double>(begin: 0, end: 1).animate(_ctrl);
   }
 
   @override
@@ -89,11 +90,11 @@ class _Figure8IconState extends State<_Figure8Icon>
   @override
   Widget build(BuildContext context) {
     return RotationTransition(
-      turns: _rotation,
+      turns: _ctrl,
       child: const Icon(
         Icons.screen_rotation_rounded,
-        color: Color(0xFFFF5722),
-        size: 28,
+        color: _warn,
+        size: 26,
       ),
     );
   }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/brand_colors.dart';
+const _accent = Color(0xFFE6B450);
 
+/// Primary CTA at the bottom of the language step.
 class OnboardingNextButton extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
@@ -23,13 +24,14 @@ class OnboardingNextButton extends StatelessWidget {
     return FadeTransition(
       opacity: fadeAnim,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-        child: _GoldenButton(label: label, onTap: onTap, isLoading: false),
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+        child: _PrimaryButton(label: label, onTap: onTap, isLoading: false),
       ),
     );
   }
 }
 
+/// Primary CTA shown on the city step once a city has been selected.
 class OnboardingFinishButton extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
@@ -47,17 +49,23 @@ class OnboardingFinishButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      switchInCurve: Curves.easeOutBack,
-      transitionBuilder: (child, anim) => ScaleTransition(
-        scale: Tween(begin: 0.85, end: 1.0).animate(anim),
-        child: FadeTransition(opacity: anim, child: child),
+      duration: const Duration(milliseconds: 280),
+      switchInCurve: Curves.easeOutCubic,
+      transitionBuilder: (child, anim) => FadeTransition(
+        opacity: anim,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.20),
+            end: Offset.zero,
+          ).animate(anim),
+          child: child,
+        ),
       ),
       child: isVisible
           ? Padding(
               key: const ValueKey('finish_btn'),
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-              child: _GoldenButton(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+              child: _PrimaryButton(
                 label: label,
                 onTap: isLoading ? null : onTap,
                 isLoading: isLoading,
@@ -68,12 +76,12 @@ class OnboardingFinishButton extends StatelessWidget {
   }
 }
 
-class _GoldenButton extends StatelessWidget {
+class _PrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
   final bool isLoading;
 
-  const _GoldenButton({
+  const _PrimaryButton({
     required this.label,
     required this.onTap,
     required this.isLoading,
@@ -82,59 +90,49 @@ class _GoldenButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final enabled = onTap != null && !isLoading;
-    return AnimatedOpacity(
-      opacity: enabled ? 1.0 : 0.5,
-      duration: const Duration(milliseconds: 200),
-      child: SizedBox(
-        width: double.infinity,
-        height: 56,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: const LinearGradient(
-              colors: [brandGold, brandGoldDark],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: enabled
-                ? [
-                    BoxShadow(
-                      color: brandGold.withValues(alpha: 0.35),
-                      blurRadius: 16,
-                      offset: const Offset(0, 6),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-            child: InkWell(
-              onTap: enabled ? onTap : null,
-              borderRadius: BorderRadius.circular(20),
-              child: Center(
-                child: isLoading
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          color: Colors.white,
-                        ),
-                      )
-                    : Text(
-                        label,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-              ),
-            ),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: enabled
+            ? [
+                BoxShadow(
+                  color: _accent.withValues(alpha: 0.32),
+                  blurRadius: 22,
+                  offset: const Offset(0, 8),
+                ),
+              ]
+            : const [],
+      ),
+      child: FilledButton(
+        onPressed: enabled ? onTap : null,
+        style: FilledButton.styleFrom(
+          backgroundColor: _accent,
+          foregroundColor: const Color(0xFF1A1208),
+          disabledBackgroundColor: Colors.white.withValues(alpha: 0.06),
+          disabledForegroundColor: Colors.white.withValues(alpha: 0.35),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
         ),
+        child: isLoading
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: Color(0xFF1A1208),
+                ),
+              )
+            : Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.3,
+                ),
+              ),
       ),
     );
   }

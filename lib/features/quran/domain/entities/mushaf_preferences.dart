@@ -28,8 +28,11 @@ class MushafPreferences {
   });
 
   /// Allowed font-size steps shown in the settings sheet slider.
-  static const double minFont = 18;
-  static const double maxFont = 38;
+  /// 26 is the floor — at that size the printed Mushaf layout fits
+  /// the viewport exactly. Any value above switches the reader into
+  /// the flowing-text zoom mode.
+  static const double minFont = 26;
+  static const double maxFont = 50;
 
   MushafPreferences copyWith({
     ReadingTheme? readingTheme,

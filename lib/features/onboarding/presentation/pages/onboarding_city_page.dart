@@ -3,14 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../core/city_translations.dart';
-import '../../../../features/settings/domain/entities/world_city.dart';
-import '../../../../features/settings/presentation/widgets/mobile/mobile_location_search_field.dart';
 import '../onboarding_cubit.dart';
 import '../widgets/onboarding_animation_utils.dart';
+import '../widgets/onboarding_city_lists.dart';
 import '../widgets/onboarding_next_button.dart';
 import '../widgets/onboarding_page_header.dart';
-import '../widgets/onboarding_selectable_tile.dart';
-import '../widgets/onboarding_staggered_list.dart';
+import '../widgets/onboarding_search_field.dart';
 
 class OnboardingCityPage extends StatefulWidget {
   final Animation<double> entranceAnimation;
@@ -64,16 +62,15 @@ class _OnboardingCityPageState extends State<OnboardingCityPage> {
         OnboardingPageHeader(
           title: countryName,
           subtitle: l.onboardingSelectCity,
-          entranceAnimation: widget.entranceAnimation,
           onBack: () {
             _searchController.clear();
             cubit.goBackToCountry();
           },
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 10),
         FadeTransition(
           opacity: searchAnim,
-          child: MobileLocationSearchField(
+          child: OnboardingSearchField(
             controller: _searchController,
             hintText: l.settingsSearchCity,
             onChanged: (q) {
@@ -81,19 +78,18 @@ class _OnboardingCityPageState extends State<OnboardingCityPage> {
               cubit.filterCities(q);
             },
             onClear: _onClear,
-            showClearIcon: true,
           ),
         ),
         Expanded(
           child: state.isSelectedCountryDb
-              ? _DbCityList(
+              ? OnboardingDbCityList(
                   cities: state.filteredDbCities,
                   selectedCityKey: state.selectedCityKey,
                   entranceAnimation: widget.entranceAnimation,
                   locale: l.localeName,
                   onSelect: cubit.selectDbCity,
                 )
-              : _WorldCityList(
+              : OnboardingWorldCityList(
                   cities: state.filteredWorldCities,
                   selectedCity: state.selectedWorldCity,
                   entranceAnimation: widget.entranceAnimation,
@@ -108,79 +104,6 @@ class _OnboardingCityPageState extends State<OnboardingCityPage> {
           isVisible: hasSelection,
         ),
       ],
-    );
-  }
-}
-
-class _DbCityList extends StatelessWidget {
-  final List<String> cities;
-  final String? selectedCityKey;
-  final Animation<double> entranceAnimation;
-  final String locale;
-  final ValueChanged<String> onSelect;
-
-  const _DbCityList({
-    required this.cities,
-    required this.selectedCityKey,
-    required this.entranceAnimation,
-    required this.locale,
-    required this.onSelect,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return OnboardingStaggeredList(
-      entranceAnimation: entranceAnimation,
-      itemCount: cities.length,
-      itemBuilder: (_, i) {
-        final key = cities[i];
-        final label = cityLabel(key, locale: locale);
-        final isSelected = key == selectedCityKey;
-        return OnboardingSelectableTile(
-          title: label,
-          isSelected: isSelected,
-          onTap: () => onSelect(key),
-        );
-      },
-    );
-  }
-}
-
-class _WorldCityList extends StatelessWidget {
-  final List<WorldCity> cities;
-  final WorldCity? selectedCity;
-  final Animation<double> entranceAnimation;
-  final String locale;
-  final ValueChanged<WorldCity> onSelect;
-
-  const _WorldCityList({
-    required this.cities,
-    required this.selectedCity,
-    required this.entranceAnimation,
-    required this.locale,
-    required this.onSelect,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return OnboardingStaggeredList(
-      entranceAnimation: entranceAnimation,
-      itemCount: cities.length,
-      itemBuilder: (_, i) {
-        final city = cities[i];
-        final isSelected =
-            selectedCity?.name == city.name &&
-            selectedCity?.countryKey == city.countryKey;
-        return OnboardingSelectableTile(
-          title: cityLabel(
-            city.name,
-            locale: locale,
-            countryKey: city.countryKey,
-          ),
-          isSelected: isSelected,
-          onTap: () => onSelect(city),
-        );
-      },
     );
   }
 }

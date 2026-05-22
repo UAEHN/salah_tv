@@ -9,7 +9,8 @@ import 'qibla_calibration_guide.dart';
 import 'qibla_compass.dart';
 import 'qibla_stats_row.dart';
 
-/// Active Qibla view shown when GPS + sensors are working.
+/// Active Qibla view shown when GPS + sensors are working. Cleaner stack:
+/// title, inline accuracy hint, compass, optional calibration guide, stats.
 class MobileQiblaActiveView extends StatelessWidget {
   final QiblaData data;
 
@@ -19,30 +20,24 @@ class MobileQiblaActiveView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final isAligned = data.isAligned;
+    final accent = MobileColors.activePrimary(context);
 
     return Column(
       children: [
+        const SizedBox(height: 14),
         Text(
           isAligned ? l.qiblaAlignedStatus : l.qiblaFindStatus,
-          style: MobileTextStyles.titleMd(context).copyWith(
-            color: isAligned
-                ? MobileColors.primaryContainer
-                : MobileColors.onSurface(context),
+          textDirection: TextDirection.rtl,
+          style: TextStyle(
+            color: isAligned ? accent : MobileColors.onSurface(context),
             fontSize: 24,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.2,
           ),
         ),
-        const SizedBox(height: 6),
-        Text(
-          isAligned ? l.qiblaAlignedSub : l.qiblaFindSub,
-          style: MobileTextStyles.labelSm(context).copyWith(
-            color: MobileColors.onSurfaceMuted(context),
-            letterSpacing: 4.0,
-            fontSize: 10,
-          ),
-        ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         QiblaAccuracyBadge(accuracy: data.accuracy),
-        const SizedBox(height: 24),
+        const SizedBox(height: 28),
         Expanded(
           child: Center(
             child: QiblaCompass(
@@ -52,19 +47,19 @@ class MobileQiblaActiveView extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 18),
         if (data.accuracy == QiblaAccuracy.low) ...[
           const QiblaCalibrationGuide(),
           const SizedBox(height: 12),
         ],
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: QiblaStatsRow(
             distance: data.distanceKm.toStringAsFixed(0),
             deviation: data.deviation.abs().toStringAsFixed(1),
           ),
         ),
-        const SizedBox(height: 120),
+        const SizedBox(height: 110),
       ],
     );
   }

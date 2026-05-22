@@ -1,16 +1,18 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/mobile_theme.dart';
 import 'mobile_select_option_tile.dart';
 
+/// Brightness picker: light / dark / system. Stored as a `themeMode` string
+/// in `AppSettings` so the app can honor the device theme automatically.
 class MobileThemeDialog extends StatelessWidget {
-  final bool isDarkMode;
-  final ValueChanged<bool> onSave;
+  final String currentMode; // 'system' | 'light' | 'dark'
+  final ValueChanged<String> onSave;
 
   const MobileThemeDialog({
     super.key,
-    required this.isDarkMode,
+    required this.currentMode,
     required this.onSave,
   });
 
@@ -49,20 +51,29 @@ class MobileThemeDialog extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             MobileSelectOptionTile(
-              title: l.settingsDarkMode,
-              icon: Icons.dark_mode_rounded,
-              isSelected: isDarkMode,
+              title: l.settingsSystemMode,
+              icon: Icons.brightness_auto_rounded,
+              isSelected: currentMode == 'system',
               onTap: () {
-                onSave(true);
+                onSave('system');
                 Navigator.pop(context);
               },
             ),
             MobileSelectOptionTile(
               title: l.settingsLightMode,
               icon: Icons.light_mode_rounded,
-              isSelected: !isDarkMode,
+              isSelected: currentMode == 'light',
               onTap: () {
-                onSave(false);
+                onSave('light');
+                Navigator.pop(context);
+              },
+            ),
+            MobileSelectOptionTile(
+              title: l.settingsDarkMode,
+              icon: Icons.dark_mode_rounded,
+              isSelected: currentMode == 'dark',
+              onTap: () {
+                onSave('dark');
                 Navigator.pop(context);
               },
             ),

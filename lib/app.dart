@@ -63,7 +63,16 @@ class GhasaqApp extends StatelessWidget {
     final palette = isTV
         ? getThemePalette(appSettings.themeColorKey)
         : getMobileThemePalette(appSettings.themeColorKey);
-    final isDark = appSettings.isDarkMode;
+    // Resolve effective brightness: 'system' follows the device, otherwise
+    // the user's explicit pref drives it. Drives ThemeData.brightness so
+    // every `Theme.of(context).brightness` reader stays correct.
+    final platformDark =
+        MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    final isDark = switch (appSettings.themeMode) {
+      'system' => platformDark,
+      'dark' => true,
+      _ => appSettings.isDarkMode,
+    };
     final tc = ThemeColors.of(isDark);
     final effectiveFontFamily = appSettings.fontFamily;
 

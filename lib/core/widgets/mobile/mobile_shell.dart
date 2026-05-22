@@ -13,7 +13,6 @@ import '../../../features/rating/presentation/rating_trigger.dart';
 import '../../../features/prayer/presentation/screens/mobile_home_screen.dart';
 import '../../../features/qibla/domain/i_qibla_repository.dart';
 import '../../../features/qibla/presentation/bloc/qibla_cubit.dart';
-import '../../../features/qibla/presentation/bloc/qibla_state.dart';
 import '../../../features/qibla/presentation/screens/mobile/mobile_qibla_screen.dart';
 import '../../../features/quran/presentation/bloc/mushaf_reader_cubit.dart';
 import '../../../features/quran/presentation/screens/mobile/mobile_mushaf_reader_screen.dart';
@@ -61,7 +60,8 @@ class MobileShell extends StatefulWidget {
   State<MobileShell> createState() => _MobileShellState();
 }
 
-class _MobileShellState extends State<MobileShell> {
+class _MobileShellState extends State<MobileShell>
+    with WidgetsBindingObserver {
   // Tab order: Settings(0), Qibla(1), Prayer(2 — center), Adhkar(3),
   // Mushaf(4), Today(5 — default).
   // `_prayerIndex = 2` is intentionally not declared — no shell logic
@@ -80,6 +80,7 @@ class _MobileShellState extends State<MobileShell> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _adhkarCubit = AdhkarReaderCubit(GetIt.I<IAdhkarTextRepository>())
         ..loadCategories();
     _qiblaCubit = QiblaCubit(GetIt.I<IQiblaRepository>());
@@ -118,9 +119,13 @@ class _MobileShellState extends State<MobileShell> {
 
   void _onTabChanged(int index) {
     if (_currentIndex == index) return;
-    // Lazy-start Qibla sensors on first visit
-    if (index == _qiblaIndex && _qiblaCubit.state is QiblaInitial) {
+    // Qibla sensors are expensive (haptic + 20Hz emission) — only run them
+    // while the Qibla tab is actually visible. First visit starts; later
+    // visits resume the paused stream.
+    if (index == _qiblaIndex) {
       _qiblaCubit.start();
+    } else if (_currentIndex == _qiblaIndex) {
+      _qiblaCubit.pause();
     }
     // Re-evaluate the greeting whenever the user lands on Today, in case
     // they crossed a period boundary while the tab was off-screen.
@@ -128,6 +133,20 @@ class _MobileShellState extends State<MobileShell> {
       _todayCubit.refreshGreeting();
     }
     setState(() => _currentIndex = index);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Pause Qibla sensors when the app goes to background regardless of
+    // which tab was visible — saves battery + prevents the haptic from
+    // firing while the user is in another app.
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      _qiblaCubit.pause();
+    } else if (state == AppLifecycleState.resumed &&
+        _currentIndex == _qiblaIndex) {
+      _qiblaCubit.resume();
+    }
   }
 
   void _handleBack(bool didPop, _) {
@@ -146,6 +165,7 @@ class _MobileShellState extends State<MobileShell> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _detachWarmAdhkar?.call();
     _adhkarCubit.close();
     _qiblaCubit.close();

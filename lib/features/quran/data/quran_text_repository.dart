@@ -71,6 +71,9 @@ class QuranTextRepository implements IQuranTextRepository {
   }
 
   @override
+  MushafPage? cachedPage(int pageNumber) => _pages?[pageNumber];
+
+  @override
   Future<Either<Failure, MushafPage>> getPage(int pageNumber) async {
     final loaded = await ensureLoaded();
     return loaded.fold(Left.new, (_) {

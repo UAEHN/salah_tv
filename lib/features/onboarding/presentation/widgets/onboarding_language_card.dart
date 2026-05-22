@@ -1,8 +1,10 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import '../../../../core/brand_colors.dart';
 
+const _accent = Color(0xFFE6B450);
+
+/// Single language pick row in the welcome step. Matches the country/city
+/// tile aesthetic — same rounded card, same accent treatment — so the
+/// onboarding feels like one coherent flow.
 class OnboardingLanguageCard extends StatelessWidget {
   final String locale;
   final String label;
@@ -26,12 +28,9 @@ class OnboardingLanguageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final slideAnim =
-        Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(
-          CurvedAnimation(
-            parent: entranceAnimation,
-            curve: Curves.easeOutCubic,
-          ),
-        );
+        Tween<Offset>(begin: const Offset(0, 0.10), end: Offset.zero).animate(
+      CurvedAnimation(parent: entranceAnimation, curve: Curves.easeOutCubic),
+    );
     final fadeAnim = CurvedAnimation(
       parent: entranceAnimation,
       curve: Curves.easeOut,
@@ -41,99 +40,69 @@ class OnboardingLanguageCard extends StatelessWidget {
       opacity: fadeAnim,
       child: SlideTransition(
         position: slideAnim,
-        child: GestureDetector(
-          onTap: onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeInOut,
-            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            height: 88,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: isSelected
-                  ? brandGold.withValues(alpha: 0.12)
-                  : Colors.white.withValues(alpha: 0.05),
-              border: Border.all(
-                color: isSelected
-                    ? brandGold
-                    : Colors.white.withValues(alpha: 0.12),
-                width: 1.5,
-              ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: brandGold.withValues(alpha: 0.25),
-                        blurRadius: 18,
-                        spreadRadius: 1,
-                      ),
-                    ]
-                  : null,
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Row(
-                    children: [
-                      Icon(
-                        icon,
-                        color: isSelected
-                            ? brandGold
-                            : Colors.white.withValues(alpha: 0.5),
-                        size: 28,
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              nativeLabel,
-                              style: TextStyle(
-                                color: isSelected
-                                    ? brandGold
-                                    : Colors.white.withValues(alpha: 0.9),
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            Text(
-                              label,
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.5),
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 220),
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isSelected ? brandGold : Colors.transparent,
-                          border: Border.all(
-                            color: isSelected
-                                ? brandGold
-                                : Colors.white.withValues(alpha: 0.3),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: isSelected
-                            ? const Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 13,
-                              )
-                            : null,
-                      ),
-                    ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: onTap,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 240),
+                curve: Curves.easeOut,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 16,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? _accent.withValues(alpha: 0.10)
+                      : Colors.white.withValues(alpha: 0.04),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isSelected
+                        ? _accent.withValues(alpha: 0.55)
+                        : Colors.white.withValues(alpha: 0.08),
+                    width: 1,
                   ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      icon,
+                      color: isSelected
+                          ? _accent
+                          : Colors.white.withValues(alpha: 0.75),
+                      size: 22,
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            nativeLabel,
+                            style: TextStyle(
+                              color: isSelected ? _accent : Colors.white,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            label,
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.45),
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isSelected)
+                      const Icon(Icons.check_rounded, color: _accent, size: 20),
+                  ],
                 ),
               ),
             ),

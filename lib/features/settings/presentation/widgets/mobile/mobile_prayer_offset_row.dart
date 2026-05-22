@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/mobile_theme.dart';
+import 'package:flutter/services.dart';
 
-/// A single row showing a label and a +/- stepper for a numeric value.
+import '../../../../../core/mobile_theme.dart';
+import 'mobile_prayer_offset_stepper_button.dart';
+
 class MobilePrayerOffsetRow extends StatelessWidget {
   final String label;
   final int value;
@@ -20,8 +22,24 @@ class MobilePrayerOffsetRow extends StatelessWidget {
     required this.onChanged,
   });
 
+  void _step(int delta) {
+    final next = (value + delta).clamp(min, max);
+    if (next != value) {
+      HapticFeedback.selectionClick();
+      onChanged(next);
+    }
+  }
+
+  void _reset() {
+    HapticFeedback.mediumImpact();
+    onChanged(0);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final primary = MobileColors.activePrimary(context);
+    final canReset = value != 0 && min <= 0 && max >= 0;
+
     return Row(
       textDirection: TextDirection.rtl,
       children: [
@@ -30,73 +48,76 @@ class MobilePrayerOffsetRow extends StatelessWidget {
             label,
             style: MobileTextStyles.bodyMd(context).copyWith(
               color: MobileColors.onSurface(context),
-              fontSize: 14,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
             ),
             textDirection: TextDirection.rtl,
           ),
         ),
-        _StepperButton(
+        MobilePrayerOffsetStepperButton(
           icon: Icons.add_rounded,
           enabled: value < max,
-          onTap: () => onChanged(value + 1),
+          onStep: () => _step(1),
+          color: primary,
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: SizedBox(
-            width: 52,
-            child: Text(
-              '$value $unit',
-              style: MobileTextStyles.titleMd(context).copyWith(
-                color: value != 0
-                    ? MobileColors.primary
-                    : MobileColors.onSurface(context),
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
+        const SizedBox(width: 6),
+        _ValueBadge(
+          value: value,
+          unit: unit,
+          color: value != 0 ? primary : MobileColors.onSurface(context),
+          canReset: canReset,
+          onReset: _reset,
         ),
-        _StepperButton(
+        const SizedBox(width: 6),
+        MobilePrayerOffsetStepperButton(
           icon: Icons.remove_rounded,
           enabled: value > min,
-          onTap: () => onChanged(value - 1),
+          onStep: () => _step(-1),
+          color: primary,
         ),
       ],
     );
   }
 }
 
-class _StepperButton extends StatelessWidget {
-  final IconData icon;
-  final bool enabled;
-  final VoidCallback onTap;
+class _ValueBadge extends StatelessWidget {
+  final int value;
+  final String unit;
+  final Color color;
+  final bool canReset;
+  final VoidCallback onReset;
 
-  const _StepperButton({
-    required this.icon,
-    required this.enabled,
-    required this.onTap,
+  const _ValueBadge({
+    required this.value,
+    required this.unit,
+    required this.color,
+    required this.canReset,
+    required this.onReset,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: enabled ? onTap : null,
-      child: Container(
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          color: enabled
-              ? MobileColors.primary.withValues(alpha: 0.12)
-              : MobileColors.border(context).withValues(alpha: 0.5),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          icon,
-          size: 18,
-          color: enabled
-              ? MobileColors.primary
-              : MobileColors.onSurfaceMuted(context),
+    final display = value > 0 ? '+$value' : '$value';
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: canReset ? onReset : null,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          constraints: const BoxConstraints(minWidth: 64),
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+          alignment: Alignment.center,
+          child: Text(
+            '$display $unit',
+            style: MobileTextStyles.titleMd(context).copyWith(
+              color: color,
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+            textAlign: TextAlign.center,
+            textDirection: TextDirection.ltr,
+          ),
         ),
       ),
     );

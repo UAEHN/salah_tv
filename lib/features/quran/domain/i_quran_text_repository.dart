@@ -17,6 +17,14 @@ abstract class IQuranTextRepository {
   /// or malformed. Out-of-range pages return [CacheFailure].
   Future<Either<Failure, MushafPage>> getPage(int pageNumber);
 
+  /// Synchronous access to a page after [ensureLoaded] has resolved.
+  /// Returns `null` when the dataset is not in memory yet or the page is
+  /// out of range. Used by the reader's PageView item builder so already
+  /// loaded pages render on the first frame — without this the `async`
+  /// hop through [getPage] forces a one-frame loading spinner between
+  /// every swipe, which feels like a stutter.
+  MushafPage? cachedPage(int pageNumber);
+
   /// Returns the first Mushaf page on which [surahNumber] appears, or a
   /// failure if the dataset hasn't been loaded.
   Future<Either<Failure, int>> pageOfSurah(int surahNumber);

@@ -1,38 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:ghasaq/l10n/app_localizations.dart';
-import '../../../../core/brand_colors.dart';
 
+const _accent = Color(0xFFE6B450);
+
+/// Minimal three-step indicator for the onboarding flow.
+/// Just a thin track with numbered nodes that fill in as the user
+/// progresses. No animation noise, no text labels — the page title already
+/// tells the user where they are.
 class OnboardingProgressBar extends StatelessWidget {
   final int currentStep; // 0, 1, 2
-  final Animation<double> shimmerAnimation;
 
-  const OnboardingProgressBar({
-    super.key,
-    required this.currentStep,
-    required this.shimmerAnimation,
-  });
+  const OnboardingProgressBar({super.key, required this.currentStep});
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final labels = [
-      l.onboardingStepLanguage,
-      l.onboardingStepLocation,
-      l.onboardingStepCity,
-    ];
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 28),
       child: Row(
         children: [
           for (int i = 0; i < 3; i++) ...[
-            _StepDot(
-              index: i,
-              currentStep: currentStep,
-              label: labels[i],
-              shimmerAnimation: shimmerAnimation,
-            ),
+            _StepNode(index: i, currentStep: currentStep),
             if (i < 2)
-              Expanded(child: _StepConnector(isCompleted: currentStep > i)),
+              Expanded(child: _Connector(isFilled: currentStep > i)),
           ],
         ],
       ),
@@ -40,112 +28,73 @@ class OnboardingProgressBar extends StatelessWidget {
   }
 }
 
-class _StepDot extends StatelessWidget {
+class _StepNode extends StatelessWidget {
   final int index;
   final int currentStep;
-  final String label;
-  final Animation<double> shimmerAnimation;
-
-  const _StepDot({
-    required this.index,
-    required this.currentStep,
-    required this.label,
-    required this.shimmerAnimation,
-  });
+  const _StepNode({required this.index, required this.currentStep});
 
   @override
   Widget build(BuildContext context) {
     final isActive = index == currentStep;
     final isDone = index < currentStep;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AnimatedBuilder(
-          animation: shimmerAnimation,
-          builder: (_, _) {
-            final pulse = isActive
-                ? 0.6 +
-                      (shimmerAnimation.value < 0.5
-                          ? shimmerAnimation.value * 0.8
-                          : (1 - shimmerAnimation.value) * 0.8)
-                : 1.0;
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 350),
-              curve: Curves.easeInOut,
-              width: isActive ? 36 : 28,
-              height: isActive ? 36 : 28,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: (isActive || isDone)
-                    ? brandGold.withValues(alpha: pulse)
-                    : Colors.transparent,
-                border: Border.all(
-                  color: (isActive || isDone)
-                      ? brandGold
-                      : brandGold.withValues(alpha: 0.3),
-                  width: 1.5,
-                ),
-                boxShadow: isActive
-                    ? [
-                        BoxShadow(
-                          color: brandGold.withValues(alpha: 0.4),
-                          blurRadius: 12,
-                          spreadRadius: 2,
-                        ),
-                      ]
-                    : null,
-              ),
-              child: Center(
-                child: isDone
-                    ? const Icon(Icons.check, color: Colors.white, size: 14)
-                    : Text(
-                        '${index + 1}',
-                        style: TextStyle(
-                          color: (isActive || isDone)
-                              ? Colors.white
-                              : brandGold.withValues(alpha: 0.6),
-                          fontSize: isActive ? 14 : 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-              ),
-            );
-          },
+    final isOn = isActive || isDone;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOut,
+      width: 26,
+      height: 26,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isOn ? _accent : Colors.white.withValues(alpha: 0.04),
+        border: Border.all(
+          color: isOn ? _accent : Colors.white.withValues(alpha: 0.20),
+          width: 1,
         ),
-        const SizedBox(height: 6),
-        AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 250),
-          style: TextStyle(
-            color: isActive ? brandGold : brandGold.withValues(alpha: 0.4),
-            fontSize: 10,
-            fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-          ),
-          child: Text(label),
-        ),
-      ],
+      ),
+      child: isDone
+          ? const Icon(Icons.check_rounded, color: Color(0xFF1A1208), size: 14)
+          : Text(
+              '${index + 1}',
+              textDirection: TextDirection.ltr,
+              style: TextStyle(
+                color: isActive
+                    ? const Color(0xFF1A1208)
+                    : Colors.white.withValues(alpha: 0.55),
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
     );
   }
 }
 
-class _StepConnector extends StatelessWidget {
-  final bool isCompleted;
-  const _StepConnector({required this.isCompleted});
+class _Connector extends StatelessWidget {
+  final bool isFilled;
+  const _Connector({required this.isFilled});
 
   @override
   Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: isCompleted ? 1.0 : 0.0),
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOutCubic,
-      builder: (_, value, _) => Stack(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      child: Stack(
         children: [
-          Container(height: 1.5, color: brandGold.withValues(alpha: 0.15)),
-          FractionallySizedBox(
-            widthFactor: value,
+          Container(
+            height: 2,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(99),
+            ),
+          ),
+          AnimatedFractionallySizedBox(
+            duration: const Duration(milliseconds: 320),
+            curve: Curves.easeOutCubic,
+            widthFactor: isFilled ? 1.0 : 0.0,
             child: Container(
-              height: 1.5,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(colors: [brandGold, brandGoldDark]),
+              height: 2,
+              decoration: BoxDecoration(
+                color: _accent,
+                borderRadius: BorderRadius.circular(99),
               ),
             ),
           ),

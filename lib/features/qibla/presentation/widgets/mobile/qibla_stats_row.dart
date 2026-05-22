@@ -1,8 +1,10 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/mobile_theme.dart';
 
+/// Two side-by-side stat cards under the compass. Monochrome with a single
+/// theme accent — no more competing orange/peach numbers.
 class QiblaStatsRow extends StatelessWidget {
   final String distance;
   final String deviation;
@@ -20,50 +22,78 @@ class QiblaStatsRow extends StatelessWidget {
       textDirection: TextDirection.rtl,
       children: [
         Expanded(
-          child: _buildStatCard(
-            context: context,
+          child: _StatCard(
+            icon: Icons.straighten_rounded,
             title: l.qiblaDistanceToKaaba,
             value: distance,
             unit: l.unitKm,
-            unitColor: MobileColors.primaryContainer,
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
         Expanded(
-          child: _buildStatCard(
-            context: context,
+          child: _StatCard(
+            icon: Icons.explore_rounded,
             title: l.qiblaDeviation,
             value: deviation,
             unit: l.unitDegree,
-            unitColor: MobileColors.secondary,
           ),
         ),
       ],
     );
   }
+}
 
-  Widget _buildStatCard({
-    required BuildContext context,
-    required String title,
-    required String value,
-    required String unit,
-    required Color unitColor,
-  }) {
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String value;
+  final String unit;
+
+  const _StatCard({
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.unit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = MobileColors.isDark(context);
+    final accent = MobileColors.activePrimary(context);
+    final onSurface = MobileColors.onSurface(context);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-      decoration: MobileDecorations.pillCard(context).copyWith(
-        borderRadius: BorderRadius.circular(32),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.04)
+            : Colors.white.withValues(alpha: 0.65),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: MobileColors.border(context), width: 1),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text(
-            title,
-            style: MobileTextStyles.labelSm(
-              context,
-            ).copyWith(color: MobileColors.onSurfaceMuted(context)),
+          Row(
+            textDirection: TextDirection.rtl,
+            children: [
+              Icon(icon, color: accent.withValues(alpha: 0.9), size: 16),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: MobileColors.onSurfaceMuted(context),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textDirection: TextDirection.rtl,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Row(
             mainAxisSize: MainAxisSize.min,
             textDirection: TextDirection.rtl,
@@ -75,18 +105,21 @@ class QiblaStatsRow extends StatelessWidget {
                   fontFamily: 'Rubik',
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
-                  color: MobileColors.onSurface(context),
+                  color: onSurface,
                   height: 1.0,
                 ),
+                textDirection: TextDirection.ltr,
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 5),
               Padding(
-                padding: const EdgeInsets.only(bottom: 2.0),
+                padding: const EdgeInsets.only(bottom: 2),
                 child: Text(
                   unit,
-                  style: MobileTextStyles.labelSm(
-                    context,
-                  ).copyWith(color: unitColor, fontWeight: FontWeight.w800),
+                  style: TextStyle(
+                    color: MobileColors.onSurfaceMuted(context),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],

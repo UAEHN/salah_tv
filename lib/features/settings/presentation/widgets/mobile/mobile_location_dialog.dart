@@ -109,6 +109,9 @@ class _MobileLocationDialogState extends State<MobileLocationDialog> {
 
   void _selectCountry(String key) {
     _resetSearch();
+    // Drop keyboard so the city list isn't covered when the user lands on
+    // the next screen. They can re-focus the field to search cities.
+    FocusManager.instance.primaryFocus?.unfocus();
     final isDb = isDbCountry(key);
     setState(() {
       _selectedCountryKey = key;

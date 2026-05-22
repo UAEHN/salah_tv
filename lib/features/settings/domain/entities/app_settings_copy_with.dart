@@ -15,6 +15,7 @@ extension AppSettingsCopyWith on AppSettings {
     PrayerSoundMode? iqamaMode,
     bool? isMosqueMode,
     bool? isDarkMode,
+    String? themeMode,
     Map<String, int>? iqamaDelays,
     Map<String, int>? adhanOffsets,
     String? hadithText,
@@ -68,6 +69,7 @@ extension AppSettingsCopyWith on AppSettings {
       iqamaMode: iqamaMode ?? this.iqamaMode,
       isMosqueMode: isMosqueMode ?? this.isMosqueMode,
       isDarkMode: isDarkMode ?? this.isDarkMode,
+      themeMode: themeMode ?? this.themeMode,
       iqamaDelays: Map.unmodifiable(iqamaDelays ?? this.iqamaDelays),
       adhanOffsets: Map.unmodifiable(adhanOffsets ?? this.adhanOffsets),
       prayerNotificationEnabled: Map.unmodifiable(

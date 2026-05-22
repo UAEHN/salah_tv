@@ -9,6 +9,11 @@ class AppSettings {
   final PrayerSoundMode iqamaMode;
   final bool isMosqueMode;
   final bool isDarkMode;
+
+  /// Display brightness mode: `'system'` (follow device theme), `'light'`,
+  /// or `'dark'`. When set to `'system'`, [isDarkMode] is ignored and the
+  /// active brightness is taken from the platform — see [GhasaqApp].
+  final String themeMode;
   final Map<String, int> iqamaDelays;
   final Map<String, int> adhanOffsets;
   final String hadithText;
@@ -92,6 +97,7 @@ class AppSettings {
     this.iqamaMode = PrayerSoundMode.sound,
     this.isMosqueMode = false,
     this.isDarkMode = false,
+    this.themeMode = 'system',
     this.fontFamily = 'Rubik',
     this.locale = 'ar',
     this.selectedCountry = 'uae',

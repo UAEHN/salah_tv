@@ -146,6 +146,37 @@ class QiblaRepository implements IQiblaRepository {
   }
 
   @override
+  void pauseSensors() {
+    // Cancel the active sensor subscriptions but keep cached bearing /
+    // distance / smoothed heading so resume is instant. The broadcast
+    // controller stays open — re-attaching listeners later just keeps
+    // working without restarting the stream.
+    _accSub?.cancel();
+    _magSub?.cancel();
+    _accSub = null;
+    _magSub = null;
+  }
+
+  @override
+  void resumeSensors() {
+    if (!_isStarted) return; // watchQibla() hasn't been called yet
+    if (_accSub != null || _magSub != null) return; // already running
+    if (_qiblaBearing == null) {
+      // Lost cached GPS bearing — re-bootstrap end-to-end.
+      _start();
+      return;
+    }
+    _accSub = accelerometerEventStream().listen((e) {
+      _lastAcc = e;
+      _tryEmit();
+    });
+    _magSub = magnetometerEventStream().listen((e) {
+      _lastMag = e;
+      _tryEmit();
+    });
+  }
+
+  @override
   Future<void> dispose() async {
     _isStarted = false;
     _lastAcc = null;

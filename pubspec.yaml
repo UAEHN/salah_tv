@@ -124,6 +124,11 @@ flutter:
     - assets/db_countries.json
     - assets/animations/
     - assets/quran/
+    # Per-page Mushaf font system (v1) from quran.com — one TTF per page
+    # (p1.ttf … p604.ttf) + one JSON line layout per page. Loaded
+    # dynamically by MushafGlyphRepository / FontLoader at runtime.
+    - assets/quran/pages_v1/
+    - assets/fonts/QuranPagesV1/
     # Bundled fallback for the remote occasions catalog. Shipped with the
     # APK so a first-launch user with no network still sees Hijri events.
     - assets/occasions/occasions_default.json
@@ -163,3 +168,19 @@ flutter:
     - family: AmiriQuran
       fonts:
         - asset: assets/fonts/AmiriQuran/AmiriQuran-Regular.ttf
+    # KFGQPC Uthmanic Script HAFS — the original 2011 release from the
+    # King Fahd Complex IT department (via the raflyfahrezi GitHub
+    # mirror). Contains the full Mushaf glyph + mark set (alef wasla,
+    # small-high zero, small-waw/yeh, pause marks…) and shapes them
+    # more reliably on Flutter than the v18 build.
+    - family: UthmanicHafs
+      fonts:
+        - asset: assets/fonts/UthmanicHafs/UthmanicHafs.otf
+    # Quran.com surah-name font (`sura_names` v1). Uses OpenType ligatures:
+    # the 3-digit zero-padded chapter id ("001", "002", …, "114") collapses
+    # into a single calligraphic medallion glyph for that surah. The
+    # literal "surah" string renders the decorative word سورة ().
+    # Licensed via quran.com-frontend-next (MIT) — see project README.
+    - family: SurahNames
+      fonts:
+        - asset: assets/fonts/SurahNames/SurahNames.ttf

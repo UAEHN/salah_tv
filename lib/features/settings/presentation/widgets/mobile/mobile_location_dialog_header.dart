@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/mobile_theme.dart';
 
+/// Bottom-sheet header: thin drag handle, optional back arrow, centered
+/// title, and a soft close button. Theme-aware.
 class MobileLocationDialogHeader extends StatelessWidget {
   final bool showCities;
   final String title;
@@ -18,39 +20,79 @@ class MobileLocationDialogHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleColor = MobileColors.onSurface(context);
-
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              if (showCities)
-                IconButton(
-                  onPressed: onBack,
-                  icon: Icon(Icons.arrow_back_ios, color: titleColor, size: 20),
-                ),
-              Text(
-                title,
-                style: TextStyle(
-                  color: titleColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Tajawal',
-                ),
-              ),
-            ],
-          ),
-          IconButton(
-            onPressed: onClose,
-            icon: Icon(
-              Icons.close,
-              color: MobileColors.onSurfaceMuted(context),
+    final onSurface = MobileColors.onSurface(context);
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 10, bottom: 14),
+          child: Container(
+            width: 44,
+            height: 4,
+            decoration: BoxDecoration(
+              color: MobileColors.onSurfaceMuted(context)
+                  .withValues(alpha: 0.25),
+              borderRadius: BorderRadius.circular(99),
             ),
           ),
-        ],
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          child: Row(
+            children: [
+              _CircleButton(
+                icon: Icons.close_rounded,
+                onTap: onClose,
+              ),
+              Expanded(
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: onSurface,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ),
+              showCities
+                  ? _CircleButton(
+                      icon: Icons.arrow_forward_rounded,
+                      onTap: onBack,
+                    )
+                  : const SizedBox(width: 40),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CircleButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _CircleButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: MobileColors.isDark(context)
+          ? Colors.white.withValues(alpha: 0.05)
+          : Colors.black.withValues(alpha: 0.04),
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: Icon(
+            icon,
+            color: MobileColors.onSurface(context).withValues(alpha: 0.85),
+            size: 20,
+          ),
+        ),
       ),
     );
   }

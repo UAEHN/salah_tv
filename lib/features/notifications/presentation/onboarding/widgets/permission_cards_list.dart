@@ -4,9 +4,8 @@ import '../notification_onboarding_cubit.dart';
 import '../notification_onboarding_state.dart';
 import 'onboarding_permission_card.dart';
 
-/// Vertical stack of all permission cards shown in the onboarding. Pulled
-/// out of the screen file so each layer stays under the 150-line cap
-/// (CLAUDE.md §4) and the screen reads as a high-level composition.
+/// Numbered list of permission cards. Order matters — index drives the
+/// circled step number shown on each tile.
 class PermissionCardsList extends StatelessWidget {
   final NotificationOnboardingState state;
   final NotificationOnboardingCubit cubit;
@@ -20,44 +19,49 @@ class PermissionCardsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final h = state.health;
-    return ListView(
+    final tiles = <OnboardingPermissionCard>[
+      OnboardingPermissionCard(
+        step: 1,
+        icon: Icons.notifications_none_rounded,
+        title: 'إذن الإشعارات',
+        description: 'لإظهار إشعارات الأذان والإقامة والأذكار.',
+        isGranted: h.postNotifications,
+        isRequired: true,
+        onTap: cubit.grantNotifications,
+      ),
+      OnboardingPermissionCard(
+        step: 2,
+        icon: Icons.access_time_rounded,
+        title: 'الإنذارات الدقيقة',
+        description: 'ليصل الأذان في وقته بالضبط دون تأخير.',
+        isGranted: h.exactAlarm,
+        onTap: cubit.grantExactAlarm,
+      ),
+      OnboardingPermissionCard(
+        step: 3,
+        icon: Icons.battery_full_rounded,
+        title: 'إعفاء من تحسين البطارية',
+        description: 'لمنع النظام من إيقاف الإشعارات.',
+        isGranted: h.batteryUnrestricted,
+        onTap: cubit.grantBattery,
+      ),
+      if (state.isOemStepRelevant)
+        OnboardingPermissionCard(
+          step: 4,
+          icon: Icons.shield_outlined,
+          title: 'حماية ضد قتل التطبيق',
+          description: 'فعّل غسق في قائمة التطبيقات النشطة.',
+          isGranted: false,
+          onTap: cubit.openOemAutostart,
+        ),
+    ];
+
+    return ListView.separated(
       padding: EdgeInsets.zero,
-      children: [
-        OnboardingPermissionCard(
-          icon: Icons.notifications_outlined,
-          iconColor: const Color(0xFF7AB0FF),
-          title: 'إذن الإشعارات',
-          description: 'لإظهار إشعارات الأذان والإقامة والأذكار على شاشتك.',
-          isGranted: h.postNotifications,
-          isRequired: true,
-          onTap: cubit.grantNotifications,
-        ),
-        OnboardingPermissionCard(
-          icon: Icons.access_alarm_rounded,
-          iconColor: const Color(0xFFFFB266),
-          title: 'الإنذارات الدقيقة',
-          description: 'ليصل الأذان في وقته بالضبط دون تأخير من النظام.',
-          isGranted: h.exactAlarm,
-          onTap: cubit.grantExactAlarm,
-        ),
-        OnboardingPermissionCard(
-          icon: Icons.battery_charging_full_rounded,
-          iconColor: const Color(0xFF6EE7B7),
-          title: 'إعفاء من تحسين البطارية',
-          description: 'لمنع النظام من إيقاف الإشعارات لتوفير البطارية.',
-          isGranted: h.batteryUnrestricted,
-          onTap: cubit.grantBattery,
-        ),
-        if (state.isOemStepRelevant)
-          OnboardingPermissionCard(
-            icon: Icons.shield_rounded,
-            iconColor: const Color(0xFFFF8A65),
-            title: 'حماية ضد قتل التطبيق',
-            description: 'هاتفك يُغلق التطبيقات تلقائيًا — فعّل غسق في القائمة.',
-            isGranted: false,
-            onTap: cubit.openOemAutostart,
-          ),
-      ],
+      physics: const BouncingScrollPhysics(),
+      itemCount: tiles.length,
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
+      itemBuilder: (_, i) => tiles[i],
     );
   }
 }

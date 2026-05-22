@@ -31,25 +31,27 @@ class MobileSettingsList extends StatelessWidget {
         const MobileSettingsHeader(),
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 120),
+            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 120),
             physics: const BouncingScrollPhysics(),
             children: [
               MobileSettingsSectionTitle(
                 title: l.settingsLocationSection,
-                icon: Icons.location_on,
+                icon: Icons.location_on_rounded,
               ),
               MobileSettingsTile(
+                icon: Icons.public_rounded,
                 title: l.settingsCountryAndCity,
                 subtitle:
                     '${cityLabel(s.selectedCity, locale: l.localeName, countryKey: s.selectedCountry)}${l.localeComma} ${countryLabel(s.selectedCountry, locale: l.localeName)}',
                 onTap: () => showMobileLocationDialog(context),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 22),
               MobileSettingsSectionTitle(
                 title: l.settingsNotificationsSection,
-                icon: Icons.notifications_active,
+                icon: Icons.notifications_active_rounded,
               ),
               MobileSettingsTile(
+                icon: Icons.notifications_outlined,
                 title: l.settingsNotificationSettings,
                 onTap: () => Navigator.push(
                   context,
@@ -58,7 +60,7 @@ class MobileSettingsList extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 22),
               MobileSettingsSectionTitle(
                 title: l.settingsCalculationSection,
                 icon: Icons.calculate_rounded,
@@ -71,6 +73,7 @@ class MobileSettingsList extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               MobileSettingsTile(
+                icon: Icons.menu_book_outlined,
                 title: l.settingsMadhabLabel,
                 subtitle: s.madhab == 'hanafi'
                     ? l.madhabHanafi
@@ -87,6 +90,7 @@ class MobileSettingsList extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               MobileSettingsTile(
+                icon: Icons.tune_rounded,
                 title: l.settingsAdjustPrayerTimes,
                 onTap: () => Navigator.push(
                   context,
@@ -95,23 +99,25 @@ class MobileSettingsList extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 22),
               MobileSettingsAppearanceSection(settingsProvider: sp),
-              const SizedBox(height: 24),
+              const SizedBox(height: 22),
               MobileSettingsSectionTitle(
                 title: l.feedbackSection,
                 icon: Icons.mark_chat_read_rounded,
               ),
               MobileSettingsTile(
+                icon: Icons.chat_bubble_outline_rounded,
                 title: l.feedbackSettingsTile,
                 onTap: () => Navigator.pushNamed(context, '/feedback'),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 22),
               MobileSettingsSectionTitle(
                 title: l.settingsOther,
-                icon: Icons.more_horiz,
+                icon: Icons.more_horiz_rounded,
               ),
               MobileSettingsTile(
+                icon: Icons.shield_outlined,
                 title: l.settingsPrivacyPolicy,
                 onTap: () => PlatformLauncher.openUrl(AppConfig.privacyPolicyUrl),
               ),

@@ -27,9 +27,10 @@ class MobileSettingsAppearanceSection extends StatelessWidget {
       children: [
         MobileSettingsSectionTitle(
           title: l.settingsTimeFormat,
-          icon: Icons.schedule,
+          icon: Icons.schedule_rounded,
         ),
         MobileSettingsTile(
+          icon: Icons.access_time_rounded,
           title: l.settings24HourFormat,
           subtitle: settings.use24HourFormat
               ? l.settings24HourEnabled
@@ -44,28 +45,28 @@ class MobileSettingsAppearanceSection extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 22),
         MobileSettingsSectionTitle(
           title: l.settingsAppearance,
-          icon: Icons.palette,
+          icon: Icons.palette_rounded,
         ),
         MobileSettingsTile(
+          icon: Icons.brightness_6_rounded,
           title: l.settingsCustomizeAppearance,
-          subtitle: settings.isDarkMode
-              ? l.settingsDarkMode
-              : l.settingsLightMode,
+          subtitle: _themeModeLabel(l, settings.themeMode),
           onTap: () => showModalBottomSheet(
             context: context,
             backgroundColor: Colors.transparent,
             isScrollControlled: true,
             builder: (_) => MobileThemeDialog(
-              isDarkMode: settings.isDarkMode,
-              onSave: settingsProvider.updateDarkMode,
+              currentMode: settings.themeMode,
+              onSave: settingsProvider.updateThemeMode,
             ),
           ),
         ),
         const SizedBox(height: 10),
         MobileSettingsTile(
+          icon: Icons.color_lens_outlined,
           title: l.settingsThemePicker,
           subtitle: resolveThemeLabel(
             l,
@@ -75,6 +76,7 @@ class MobileSettingsAppearanceSection extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         MobileSettingsTile(
+          icon: Icons.text_fields_rounded,
           title: l.settingsFontPicker,
           subtitle: resolveFontLabel(
             l,
@@ -84,6 +86,7 @@ class MobileSettingsAppearanceSection extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         MobileSettingsTile(
+          icon: Icons.translate_rounded,
           title: l.settingsLanguage,
           subtitle: settings.locale == 'ar'
               ? l.languageArabic
@@ -102,4 +105,9 @@ class MobileSettingsAppearanceSection extends StatelessWidget {
     );
   }
 
+  String _themeModeLabel(AppLocalizations l, String mode) => switch (mode) {
+        'system' => l.settingsSystemMode,
+        'dark' => l.settingsDarkMode,
+        _ => l.settingsLightMode,
+      };
 }

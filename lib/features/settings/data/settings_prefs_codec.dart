@@ -19,6 +19,7 @@ AppSettings loadAppSettings(SharedPreferences prefs) =>
       'playAdhan': prefs.getBool(PrefsKeys.adhan),
       'playIqama': prefs.getBool(PrefsKeys.iqama2),
       'isDarkMode': prefs.getBool(PrefsKeys.dark),
+      'themeMode': prefs.getString(PrefsKeys.themeMode),
       'iqamaDelays': prefs.getString(PrefsKeys.iqama),
       'adhanOffsets': prefs.getString(PrefsKeys.adhanOff),
       'hadithText': prefs.getString(PrefsKeys.hadithText),
@@ -79,6 +80,7 @@ Future<void> saveAppSettings(SharedPreferences prefs, AppSettings s) async {
   await prefs.remove(PrefsKeys.adhan);
   await prefs.remove(PrefsKeys.iqama2);
   await prefs.setBool(PrefsKeys.dark, s.isDarkMode);
+  await prefs.setString(PrefsKeys.themeMode, s.themeMode);
   await prefs.setString(PrefsKeys.iqama, jsonEncode(s.iqamaDelays));
   await prefs.setString(PrefsKeys.adhanOff, jsonEncode(s.adhanOffsets));
   await prefs.setString(PrefsKeys.hadithText, s.hadithText);

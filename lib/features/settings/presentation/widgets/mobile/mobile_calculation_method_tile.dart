@@ -36,6 +36,7 @@ class MobileCalculationMethodTile extends StatelessWidget {
     final l = AppLocalizations.of(context);
     if (isCalculatedLocation) {
       return MobileSettingsTile(
+        icon: Icons.functions_rounded,
         title: l.settingsCalculationMethodLabel,
         subtitle: localizedCalculationMethod(context, selectedMethod),
         onTap: () => _openPicker(context),
@@ -46,20 +47,36 @@ class MobileCalculationMethodTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         MobileSettingsTile(
+          icon: Icons.functions_rounded,
           title: l.settingsCalculationMethodLabel,
           subtitle: localizedCalculationMethod(context, displayedMethod),
           onTap: () {}, // intentionally inert — see note below
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(8, 6, 8, 0),
-          child: Text(
-            l.calculationMethodOfficialScheduleNote,
-            style: TextStyle(
-              fontSize: 12,
-              height: 1.4,
-              color: MobileColors.onSurfaceMuted(context),
-              fontStyle: FontStyle.italic,
-            ),
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            textDirection: TextDirection.rtl,
+            children: [
+              Icon(
+                Icons.info_outline_rounded,
+                size: 14,
+                color: MobileColors.onSurfaceMuted(context),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  l.calculationMethodOfficialScheduleNote,
+                  style: TextStyle(
+                    fontSize: 12,
+                    height: 1.5,
+                    color: MobileColors.onSurfaceMuted(context),
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textDirection: TextDirection.rtl,
+                ),
+              ),
+            ],
           ),
         ),
       ],

@@ -54,7 +54,10 @@ class MobileHeroCountdown extends StatelessWidget {
         : formatCountdown(countdownDuration);
 
     final isCountdownMode = !isCycleActive || isIqamaCountdown;
-    final foreground = isDark ? Colors.white : const Color(0xFF1A103D);
+    // Digits stay black/white for max contrast; the surrounding boxes
+    // pick up the active accent so the countdown harmonises with the
+    // rest of the hero card without compromising legibility.
+    final foreground = isDark ? Colors.white : Colors.black;
 
     return Container(
       width: double.infinity,
@@ -104,6 +107,7 @@ class MobileHeroCountdown extends StatelessWidget {
                     ? BoxedCountdown(
                         countdown: countdownDuration,
                         foreground: foreground,
+                        boxTint: accentDeep,
                         fontSize: 36,
                       )
                     : Text(

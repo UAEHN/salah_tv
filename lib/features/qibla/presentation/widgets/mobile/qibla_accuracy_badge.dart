@@ -4,7 +4,8 @@ import 'package:ghasaq/l10n/app_localizations.dart';
 import '../../../../../core/mobile_theme.dart';
 import '../../../domain/entities/qibla_accuracy.dart';
 
-/// Pill badge showing compass accuracy level with a colored dot indicator.
+/// Inline accuracy hint shown under the page title — a small colored dot
+/// followed by a single word.
 class QiblaAccuracyBadge extends StatelessWidget {
   final QiblaAccuracy accuracy;
 
@@ -20,48 +21,42 @@ class QiblaAccuracyBadge extends StatelessWidget {
       QiblaAccuracy.low => l.qiblaAccuracyLow,
     };
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: MobileColors.cardColor(context).withValues(alpha: 0.85),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color,
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.6),
-                  blurRadius: 6,
-                  spreadRadius: 1,
-                ),
-              ],
-            ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 7,
+          height: 7,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color,
+            boxShadow: [
+              BoxShadow(
+                color: color.withValues(alpha: 0.65),
+                blurRadius: 6,
+                spreadRadius: 1,
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: MobileTextStyles.labelSm(context).copyWith(
-              color: color,
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-            ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(
+            color: MobileColors.onSurface(context).withValues(alpha: 0.75),
+            fontSize: 12.5,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.3,
           ),
-        ],
-      ),
+          textDirection: TextDirection.rtl,
+        ),
+      ],
     );
   }
 
   Color _colorFor(QiblaAccuracy acc) => switch (acc) {
-        QiblaAccuracy.high => const Color(0xFF4CAF50),
-        QiblaAccuracy.medium => const Color(0xFFFFC107),
-        QiblaAccuracy.low => const Color(0xFFFF5722),
+        QiblaAccuracy.high => const Color(0xFF22A06B),
+        QiblaAccuracy.medium => const Color(0xFFCB8A2A),
+        QiblaAccuracy.low => const Color(0xFFD9534F),
       };
 }

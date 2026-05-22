@@ -1052,6 +1052,12 @@ abstract class AppLocalizations {
   /// **'الوضع الفاتح'**
   String get settingsLightMode;
 
+  /// No description provided for @settingsSystemMode.
+  ///
+  /// In ar, this message translates to:
+  /// **'تبعاً للنظام'**
+  String get settingsSystemMode;
+
   /// No description provided for @settingsDarkModeLabel.
   ///
   /// In ar, this message translates to:
@@ -2281,6 +2287,24 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'هذا البلد يستخدم الجدول الرسمي — هذا الخيار للعرض فقط ولا يؤثر على المواقيت'**
   String get calculationMethodOfficialScheduleNote;
+
+  /// No description provided for @surahRevelationMakki.
+  ///
+  /// In ar, this message translates to:
+  /// **'مكية'**
+  String get surahRevelationMakki;
+
+  /// No description provided for @surahRevelationMadani.
+  ///
+  /// In ar, this message translates to:
+  /// **'مدنية'**
+  String get surahRevelationMadani;
+
+  /// No description provided for @surahAyahCountLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'آياتها'**
+  String get surahAyahCountLabel;
 
   /// No description provided for @splashVerseStart.
   ///

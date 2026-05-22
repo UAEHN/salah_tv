@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
@@ -21,27 +21,43 @@ class MobileQiblaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isDark = MobileColors.isDark(context);
+    final accent = MobileColors.activePrimary(context);
+    final gradientColors = isDark
+        ? const [Color(0xFF0F1729), Color(0xFF080C1A), Color(0xFF04060D)]
+        : MobileColors.qiblaGradient(context);
+
     return Stack(
+      fit: StackFit.expand,
       children: [
-        Container(
+        DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: MobileColors.qiblaGradient(context),
-              stops: const [0.0, 0.4, 1.0],
+              colors: gradientColors,
+              stops: const [0.0, 0.55, 1.0],
             ),
           ),
         ),
         Positioned(
-          top: MediaQuery.of(context).size.height * 0.25,
-          left: -100,
-          child: Container(
-            width: 300,
-            height: 300,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: MobileColors.primaryContainer.withValues(alpha: 0.1),
+          top: -size.height * 0.08,
+          left: -size.width * 0.25,
+          child: IgnorePointer(
+            child: Container(
+              width: size.width * 1.1,
+              height: size.width * 1.1,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    accent.withValues(alpha: isDark ? 0.20 : 0.14),
+                    Colors.transparent,
+                  ],
+                  stops: const [0.0, 0.7],
+                ),
+              ),
             ),
           ),
         ),

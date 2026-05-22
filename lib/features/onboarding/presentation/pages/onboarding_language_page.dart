@@ -10,13 +10,8 @@ import '../widgets/onboarding_page_header.dart';
 
 class OnboardingLanguagePage extends StatelessWidget {
   final Animation<double> entranceAnimation;
-  final Animation<double> shimmerAnimation;
 
-  const OnboardingLanguagePage({
-    super.key,
-    required this.entranceAnimation,
-    required this.shimmerAnimation,
-  });
+  const OnboardingLanguagePage({super.key, required this.entranceAnimation});
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +25,8 @@ class OnboardingLanguagePage extends StatelessWidget {
         OnboardingPageHeader(
           title: l.onboardingWelcome,
           subtitle: l.onboardingChooseLanguage,
-          entranceAnimation: entranceAnimation,
-          shimmerAnimation: shimmerAnimation,
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 18),
         _LanguageCardWithDelay(
           delay: 0.0,
           locale: 'ar',

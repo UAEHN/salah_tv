@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Title + "مطلوب" badge + description block used inside
+/// Title + "مطلوب" label + description block used inside
 /// [OnboardingPermissionCard]. Extracted so the parent stays under the
 /// 150-line cap (CLAUDE.md §4).
 class PermissionCardTexts extends StatelessWidget {
@@ -34,8 +34,15 @@ class PermissionCardTexts extends StatelessWidget {
               ),
             ),
             if (isRequired) ...[
-              const SizedBox(width: 6),
-              const _RequiredBadge(),
+              const SizedBox(width: 8),
+              Text(
+                'مطلوب',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white.withValues(alpha: 0.55),
+                ),
+              ),
             ],
           ],
         ),
@@ -43,35 +50,12 @@ class PermissionCardTexts extends StatelessWidget {
         Text(
           description,
           style: TextStyle(
-            fontSize: 12,
-            color: Colors.white.withValues(alpha: 0.68),
+            fontSize: 12.5,
+            color: Colors.white.withValues(alpha: 0.6),
             height: 1.45,
           ),
         ),
       ],
-    );
-  }
-}
-
-class _RequiredBadge extends StatelessWidget {
-  const _RequiredBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: Colors.redAccent.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: const Text(
-        'مطلوب',
-        style: TextStyle(
-          color: Colors.redAccent,
-          fontSize: 10,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
     );
   }
 }

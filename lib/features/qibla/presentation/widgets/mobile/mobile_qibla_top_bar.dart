@@ -5,6 +5,7 @@ import '../../../../../core/city_translations.dart';
 import '../../../../../core/mobile_theme.dart';
 import '../../../../../core/widgets/mobile/mobile_shell.dart';
 
+/// Top bar for the qibla screen — theme-aware menu button + location chip.
 class MobileQiblaTopBar extends StatelessWidget {
   final String city;
   final String country;
@@ -26,52 +27,96 @@ class MobileQiblaTopBar extends StatelessWidget {
     );
     final localizedCountry = countryLabel(country, locale: l.localeName);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: MobileColors.cardColor(context).withValues(alpha: 0.5),
-              shape: BoxShape.circle,
-              border: Border.all(color: MobileColors.border(context)),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.menu_rounded),
-              color: MobileColors.onSurface(context),
-              iconSize: 20,
-              onPressed: () => MobileShell.switchTab(context, 0),
+          _RoundButton(
+            icon: Icons.menu_rounded,
+            onTap: () => MobileShell.switchTab(context, 0),
+          ),
+          _LocationChip(
+            text: '$localizedCity${l.localeComma} $localizedCountry',
+            isEn: isEn,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RoundButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _RoundButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = MobileColors.isDark(context);
+    return Material(
+      color: isDark
+          ? Colors.white.withValues(alpha: 0.05)
+          : Colors.white.withValues(alpha: 0.65),
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: Container(
+          width: 40,
+          height: 40,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: MobileColors.border(context),
+              width: 1,
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
+          child: Icon(
+            icon,
+            color: MobileColors.onSurface(context).withValues(alpha: 0.85),
+            size: 18,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LocationChip extends StatelessWidget {
+  final String text;
+  final bool isEn;
+  const _LocationChip({required this.text, required this.isEn});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = MobileColors.isDark(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.white.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(99),
+        border: Border.all(color: MobileColors.border(context), width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            text,
+            style: TextStyle(
+              color: MobileColors.onSurface(context),
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
             ),
-            decoration: BoxDecoration(
-              color: MobileColors.cardColor(context).withValues(alpha: 0.92),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: MobileColors.border(context)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '$localizedCity${l.localeComma} $localizedCountry',
-                  style: MobileTextStyles.labelSm(context).copyWith(
-                    color: MobileColors.onSurface(context),
-                    fontSize: 12,
-                  ),
-                  textDirection: isEn ? TextDirection.ltr : TextDirection.rtl,
-                ),
-                const SizedBox(width: 8),
-                const Icon(
-                  Icons.location_on,
-                  color: MobileColors.primaryContainer,
-                  size: 16,
-                ),
-              ],
-            ),
+            textDirection: isEn ? TextDirection.ltr : TextDirection.rtl,
+          ),
+          const SizedBox(width: 6),
+          Icon(
+            Icons.location_on_rounded,
+            color: MobileColors.activePrimary(context),
+            size: 14,
           ),
         ],
       ),

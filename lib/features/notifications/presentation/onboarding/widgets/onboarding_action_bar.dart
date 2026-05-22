@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
-/// Bottom button stack for the notification onboarding screen. Shows a
-/// secondary "اختبر إشعارًا" trigger (visible once the basic notifications
-/// permission is granted) and a primary "متابعة" button — the latter is
-/// disabled until the mandatory permission is in place, with a friendly
-/// hint replacing the spacing instead of a raw error.
+/// Bottom action area. A subtle text-link "اختبار" sits above the primary
+/// "متابعة" pill — when blocked, the pill stays dim and a single muted
+/// helper line replaces any red banner.
 class OnboardingActionBar extends StatelessWidget {
   final bool canContinue;
   final bool canTest;
@@ -21,62 +19,99 @@ class OnboardingActionBar extends StatelessWidget {
     required this.onContinue,
   });
 
+  static const _accent = Color(0xFFE6B450);
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (canTest) _TestButton(isTesting: isTesting, onTap: onTest),
-        if (canTest) const SizedBox(height: 10),
-        if (!canContinue) _BlockedHint(),
-        FilledButton(
-          onPressed: canContinue ? onContinue : null,
-          style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFFE6B450),
-            foregroundColor: Colors.black,
-            disabledBackgroundColor: Colors.white.withValues(alpha: 0.12),
-            disabledForegroundColor: Colors.white.withValues(alpha: 0.45),
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: const Text(
-            'متابعة',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-          ),
-        ),
+        if (canTest) _TestLink(isTesting: isTesting, onTap: onTest),
+        if (!canContinue) const _BlockedHint(),
+        const SizedBox(height: 6),
+        _PrimaryButton(enabled: canContinue, onTap: onContinue),
       ],
     );
   }
 }
 
-class _TestButton extends StatelessWidget {
-  final bool isTesting;
+class _PrimaryButton extends StatelessWidget {
+  final bool enabled;
   final VoidCallback onTap;
-  const _TestButton({required this.isTesting, required this.onTap});
+  const _PrimaryButton({required this.enabled, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: isTesting ? null : onTap,
-      icon: isTesting
-          ? const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : const Icon(Icons.send_rounded, size: 18),
-      label: Text(
-        isTesting ? 'جاري الإرسال...' : 'اختبر إشعارًا تجريبيًا (15 ثانية)',
-        style: const TextStyle(fontWeight: FontWeight.w700),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 240),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: enabled
+            ? [
+                BoxShadow(
+                  color: OnboardingActionBar._accent.withValues(alpha: 0.35),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ]
+            : const [],
       ),
-      style: OutlinedButton.styleFrom(
-        foregroundColor: Colors.white,
-        side: BorderSide(color: Colors.white.withValues(alpha: 0.32)),
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+      child: FilledButton(
+        onPressed: enabled ? onTap : null,
+        style: FilledButton.styleFrom(
+          backgroundColor: OnboardingActionBar._accent,
+          foregroundColor: const Color(0xFF1A1208),
+          disabledBackgroundColor: Colors.white.withValues(alpha: 0.06),
+          disabledForegroundColor: Colors.white.withValues(alpha: 0.35),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: const Text(
+          'متابعة',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.3,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TestLink extends StatelessWidget {
+  final bool isTesting;
+  final VoidCallback onTap;
+  const _TestLink({required this.isTesting, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: TextButton.icon(
+        onPressed: isTesting ? null : onTap,
+        icon: isTesting
+            ? const SizedBox(
+                width: 13,
+                height: 13,
+                child: CircularProgressIndicator(strokeWidth: 1.6),
+              )
+            : Icon(
+                Icons.send_outlined,
+                size: 14,
+                color: Colors.white.withValues(alpha: 0.65),
+              ),
+        label: Text(
+          isTesting ? 'جاري الإرسال...' : 'إرسال إشعار تجريبي',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 12.5,
+            color: Colors.white.withValues(alpha: 0.65),
+          ),
+        ),
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         ),
       ),
     );
@@ -84,35 +119,19 @@ class _TestButton extends StatelessWidget {
 }
 
 class _BlockedHint extends StatelessWidget {
+  const _BlockedHint();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.redAccent.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: Colors.redAccent.withValues(alpha: 0.40),
-          width: 1,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Text(
+        'فعّل الخطوة الأولى أولاً.',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colors.white.withValues(alpha: 0.45),
+          fontSize: 12,
         ),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.info_outline_rounded,
-              color: Colors.redAccent, size: 18),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'فعّل إذن الإشعارات أولًا لتتمكن من المتابعة.',
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.85),
-                fontSize: 12.5,
-                height: 1.4,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

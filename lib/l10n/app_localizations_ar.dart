@@ -509,6 +509,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsLightMode => 'الوضع الفاتح';
 
   @override
+  String get settingsSystemMode => 'تبعاً للنظام';
+
+  @override
   String get settingsDarkModeLabel => 'الوضع الليلي';
 
   @override
@@ -1142,6 +1145,15 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get calculationMethodOfficialScheduleNote =>
       'هذا البلد يستخدم الجدول الرسمي — هذا الخيار للعرض فقط ولا يؤثر على المواقيت';
+
+  @override
+  String get surahRevelationMakki => 'مكية';
+
+  @override
+  String get surahRevelationMadani => 'مدنية';
+
+  @override
+  String get surahAyahCountLabel => 'آياتها';
 
   @override
   String get splashVerseStart =>
