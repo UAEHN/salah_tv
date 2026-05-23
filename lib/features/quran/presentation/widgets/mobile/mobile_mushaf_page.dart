@@ -5,6 +5,7 @@ import 'package:quran/quran.dart' as quran;
 import '../../../domain/entities/reading_theme.dart';
 import '../../bloc/mushaf_reader_cubit.dart';
 import '../../bloc/mushaf_reader_state.dart';
+import 'mobile_mushaf_font_gate.dart';
 import 'mobile_mushaf_glyph_page_view.dart';
 import 'mobile_mushaf_page_header.dart';
 
@@ -80,7 +81,9 @@ class _MobileMushafPageState extends State<MobileMushafPage>
             ),
           ),
           Expanded(
-            child: BlocBuilder<MushafReaderCubit, MushafReaderState>(
+            child: MobileMushafFontGate(
+              pageNumber: widget.pageNumber,
+              child: BlocBuilder<MushafReaderCubit, MushafReaderState>(
               buildWhen: (p, n) {
                 // Rebuild on font-size slider change (every visible /
                 // KeepAlive'd page must re-scale).
@@ -114,6 +117,7 @@ class _MobileMushafPageState extends State<MobileMushafPage>
                   onAyahTap: widget.onAyahTap,
                 );
               },
+              ),
             ),
           ),
         ],

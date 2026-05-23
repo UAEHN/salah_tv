@@ -174,11 +174,21 @@ class _MobileMushafScreenState extends State<MobileMushafScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<MushafReaderCubit>().init();
-    // Probe the asset bundle on first landing-screen mount so the
-    // download banner can surface here too, not only on the gate.
+    // Heavy work intentionally deferred to MobileShell:
+    //   • Bookmark is already loaded by [MushafReaderCubit.loadBookmarkOnly]
+    //     at shell mount, so the resume card renders without the 1.6MB JSON.
+    //   • The QCF font bundle is probed 800ms after the first frame so the
+    //     604 file.exists + FontLoader work never blocks app startup.
+    //   • The full [MushafReaderCubit.init] runs lazily inside [_openReader]
+    //     / [_openReaderAtSurah] when the user actually opens a page.
+    // The surah list below uses the [kSurahs] constant — no JSON needed.
     final assets = getIt<QuranAssetsCubit>();
-    if (assets.state.status == QuranAssetsStatus.unknown) assets.probe();
+    if (assets.state.status == QuranAssetsStatus.unknown) {
+      // Belt-and-braces: if the user lands on this tab before the shell's
+      // delayed probe has fired, kick it off now so the download banner
+      // surfaces immediately.
+      assets.probe();
+    }
   }
 
   @override

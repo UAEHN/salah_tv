@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/app_colors.dart';
+import '../../../settings/presentation/settings_provider.dart';
 import '../bloc/hero_card_logic.dart';
 import 'adhkar_hero_container.dart';
 import 'iqama_content.dart';
@@ -23,18 +25,18 @@ class HeroCardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isIqama = model.mode == HeroCardMode.iqama;
-    // Light mode: pre-composite the palette tints onto [bgSurface] so the
-    // card stays opaque against the warm parchment background. Dark mode
-    // keeps the original translucent look since the dark gradient already
-    // blends well behind the card.
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final base = isDark ? Colors.transparent : ThemeColors.of(false).bgSurface;
-    final tintTop = isDark
-        ? palette.primary.withValues(alpha: 0.08)
-        : Color.alphaBlend(palette.primary.withValues(alpha: 0.08), base);
-    final tintBottom = isDark
-        ? palette.secondary.withValues(alpha: 0.03)
-        : Color.alphaBlend(palette.secondary.withValues(alpha: 0.03), base);
+    // Single solid color matching [InfoCard] — no gradient, no per-stop
+    // alpha. Cheap Android TV GPUs misrender LinearGradients between two
+    // semi-transparent colors; using one flat color avoids that path
+    // entirely and keeps the hero card and clock card visually consistent.
+    // Source of brightness MUST match InfoCard / PrayerCardContent (both
+    // read `settings.isDarkMode` directly) so all three cards always pick
+    // the same `tc.bgSurface` shade — otherwise they can diverge when
+    // `themeMode == 'system'`.
+    final isDark = context.select<SettingsProvider, bool>(
+      (p) => p.settings.isDarkMode,
+    );
+    final tc = ThemeColors.of(isDark);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 400),
@@ -43,11 +45,7 @@ class HeroCardView extends StatelessWidget {
         vertical: screenH * 0.02,
       ),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [tintTop, tintBottom],
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-        ),
+        color: tc.bgSurface.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: palette.primary.withValues(alpha: isIqama ? 0.7 : 0.4),

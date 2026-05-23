@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../firebase_options.dart';
 import '../app_config.dart';
@@ -18,10 +19,8 @@ Future<void> _primeRemoteConfig() async {
     await rc.setConfigSettings(
       RemoteConfigSettings(
         fetchTimeout: AppConfig.rcFetchTimeout,
-        // TEMP TESTING: force fresh fetch every launch in release too. Revert
-        // to `kDebugMode ? Duration.zero : AppConfig.rcMinFetchInterval` before
-        // publishing — Firebase rate-limits aggressive fetches in production.
-        minimumFetchInterval: Duration.zero,
+        minimumFetchInterval:
+            kDebugMode ? Duration.zero : AppConfig.rcMinFetchInterval,
       ),
     );
     await rc.setDefaults(<String, Object>{

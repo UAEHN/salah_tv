@@ -67,6 +67,18 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
   @override
   Future<void> navigateToPageFromAudio(int p) => goToPage(p);
 
+  /// Cheap bookmark-only load: reads SharedPreferences without touching the
+  /// 1.6MB Quran JSON. Called by the mobile shell at startup so the Today
+  /// screen's «متابعة القراءة» tile renders without paying the full init
+  /// cost. The heavy [init] runs lazily when the user actually opens the
+  /// reader.
+  Future<void> loadBookmarkOnly() async {
+    if (state.bookmark != null) return;
+    final bookmark = await _getBookmark();
+    if (isClosed) return;
+    emit(state.copyWith(bookmark: bookmark));
+  }
+
   Future<void> init() async {
     if (state.loadStatus == MushafLoadStatus.ready) {
       return emit(state.copyWith(bookmark: await _getBookmark()));

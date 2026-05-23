@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -97,6 +99,14 @@ class _MobileShellState extends State<MobileShell>
       getVerse: GetIt.I<GetDailyVerseUseCase>(),
     )..load();
     _mushafCubit = GetIt.I<MushafReaderCubit>();
+    // Cheap bookmark-only load so the Today screen's «متابعة القراءة» tile
+    // renders without paying the 1.6MB Quran-JSON cost at startup. The full
+    // [MushafReaderCubit.init] runs lazily when the reader is opened.
+    unawaited(_mushafCubit.loadBookmarkOnly());
+    // The QCF font bundle is probed lazily by [MobileQuranAssetsGate] when
+    // the reader opens, and individual page fonts register themselves
+    // through [MobileMushafFontGate] right before each page paints — see
+    // [QuranAssetsRepository] for why the eager startup probe was removed.
     consumeColdStartNotificationPayload(
       isMounted: () => mounted,
       onAdhkar: _openAdhkarSession,

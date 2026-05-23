@@ -8,6 +8,11 @@ import 'quran_assets_state.dart';
 /// Drives the QCF v2 font bundle's lifecycle: probes the disk on
 /// startup, kicks off the on-demand download, and exposes a delete
 /// action for the settings sheet.
+///
+/// Font *registration* is no longer the cubit's job — see
+/// [IQuranAssetsRepository.ensureFontForPage]. The reader page widget
+/// pulls its own font on first paint and prefetches neighbors, so the
+/// cubit only tracks gross lifecycle states (downloaded vs not).
 class QuranAssetsCubit extends Cubit<QuranAssetsState> {
   final IQuranAssetsRepository _repo;
   StreamSubscription<int>? _downloadSub;
@@ -15,28 +20,22 @@ class QuranAssetsCubit extends Cubit<QuranAssetsState> {
   QuranAssetsCubit(this._repo)
       : super(QuranAssetsState.initial(_repo.totalPages));
 
-  /// Reads the disk and, when the bundle is already complete,
-  /// registers every page font with the Flutter engine so the reader
-  /// can render synchronously. Call once at app startup AND when the
-  /// gate widget mounts.
+  /// Cheap disk probe. With the rewritten repository this is a single
+  /// `Directory.list()` (≈ 5–20 ms) — no font registration, no
+  /// per-page `File.exists()` storm. Safe to call from any `initState`.
   Future<void> probe() async {
     final count = await _repo.downloadedCount();
-    if (count >= _repo.totalPages) {
-      await _repo.registerAllFonts();
-      emit(state.copyWith(
-        status: QuranAssetsStatus.ready,
-        downloadedCount: count,
-      ));
-    } else {
-      emit(state.copyWith(
-        status: QuranAssetsStatus.notDownloaded,
-        downloadedCount: count,
-      ));
-    }
+    emit(state.copyWith(
+      status: count >= _repo.totalPages
+          ? QuranAssetsStatus.ready
+          : QuranAssetsStatus.notDownloaded,
+      downloadedCount: count,
+    ));
   }
 
-  /// Starts (or resumes) the bundle download. On completion the fonts
-  /// are registered and `status` flips to [QuranAssetsStatus.ready].
+  /// Starts (or resumes) the bundle download. On completion the
+  /// status flips to [QuranAssetsStatus.ready]; individual page fonts
+  /// are registered lazily from the reader as the user swipes.
   Future<void> startDownload() async {
     if (state.status == QuranAssetsStatus.downloading) return;
     emit(state.copyWith(status: QuranAssetsStatus.downloading, error: null));
@@ -47,10 +46,7 @@ class QuranAssetsCubit extends Cubit<QuranAssetsState> {
         status: QuranAssetsStatus.notDownloaded,
         error: e.toString(),
       )),
-      onDone: () async {
-        await _repo.registerAllFonts();
-        emit(state.copyWith(status: QuranAssetsStatus.ready));
-      },
+      onDone: () => emit(state.copyWith(status: QuranAssetsStatus.ready)),
     );
   }
 
@@ -80,6 +76,16 @@ class QuranAssetsCubit extends Cubit<QuranAssetsState> {
       downloadedCount: 0,
     ));
   }
+
+  /// Forwards to the repository so the reader page widget can request
+  /// its font right before painting. Idempotent and coalesced — see
+  /// [IQuranAssetsRepository.ensureFontForPage].
+  Future<bool> ensureFontForPage(int pageNumber) =>
+      _repo.ensureFontForPage(pageNumber);
+
+  /// Sync probe used by the reader to skip a `FutureBuilder` rebuild
+  /// when the page's font is already live.
+  bool isFontRegistered(int pageNumber) => _repo.isFontRegistered(pageNumber);
 
   @override
   Future<void> close() async {

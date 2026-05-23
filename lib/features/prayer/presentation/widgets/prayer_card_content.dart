@@ -49,17 +49,18 @@ class PrayerCardContent extends StatelessWidget {
             ? palette.glow.withValues(alpha: 0.4) // Stronger green glow
             : Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.04);
 
-    final fillColor = isNext ? null : tc.bgSurface;
-    final fillGradient = isNext
-        ? LinearGradient(
-            colors: [
-              palette.primary.withValues(alpha: 0.15),
-              palette.secondary.withValues(alpha: 0.06),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+    // Single solid color for both states — no gradient, no per-stop alpha.
+    // Active card is a pre-computed tinted shade of the palette over the
+    // surface base, giving a clearly visible distinction from the non-active
+    // cards while staying renderable on cheap Android TV GPUs (which choke
+    // on gradients between two semi-transparent colors).
+    final fillColor = isNext
+        ? Color.alphaBlend(
+            palette.primary.withValues(alpha: 0.30),
+            tc.bgSurface,
           )
-        : null;
+        : tc.bgSurface;
+    const Gradient? fillGradient = null;
 
     return CustomPaint(
       painter: IslamicArchPainter(
