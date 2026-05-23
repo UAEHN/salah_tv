@@ -5,7 +5,6 @@ import '../../domain/entities/available_ayah_reciters.dart';
 import '../../domain/entities/mushaf_page.dart';
 import '../../domain/entities/quran_bookmark.dart';
 import '../../domain/i_ayah_audio_port.dart';
-import '../../domain/i_mushaf_glyph_page_repository.dart';
 import '../../domain/i_mushaf_preferences_repository.dart';
 import '../../domain/i_quran_text_repository.dart';
 import '../../domain/usecases/get_bookmark_usecase.dart';
@@ -15,13 +14,11 @@ import '../../domain/usecases/quran_intro_usecases.dart';
 import '../../domain/usecases/save_bookmark_usecase.dart';
 import 'mushaf_audio_flow_mixin.dart';
 import 'mushaf_bookmark_mixin.dart';
-import 'mushaf_glyph_load_mixin.dart';
 import 'mushaf_prefs_mixin.dart';
 import 'mushaf_reader_state.dart';
 
 class MushafReaderCubit extends Cubit<MushafReaderState>
-    with MushafAudioFlowMixin, MushafPrefsMixin, MushafBookmarkMixin,
-         MushafGlyphLoadMixin {
+    with MushafAudioFlowMixin, MushafPrefsMixin, MushafBookmarkMixin {
   final IQuranTextRepository _textRepo;
   final GetMushafPageUseCase _getPage;
   final GetBookmarkUseCase _getBookmark;
@@ -30,7 +27,6 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
   final StopAyahAudioUseCase _stopAyah;
   final IAyahAudioPort _audioPort;
   final IMushafPreferencesRepository _prefsRepo;
-  final IMushafGlyphPageRepository _glyphRepo;
   final HasSeenMushafIntroUseCase _hasSeenIntro;
   final MarkMushafIntroSeenUseCase _markIntroSeen;
   StreamSubscription<AyahPlaybackEvent>? _audioSub;
@@ -44,7 +40,6 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
     required StopAyahAudioUseCase stopAyah,
     required IAyahAudioPort audioPort,
     required IMushafPreferencesRepository prefsRepo,
-    required IMushafGlyphPageRepository glyphRepo,
     required HasSeenMushafIntroUseCase hasSeenIntro,
     required MarkMushafIntroSeenUseCase markIntroSeen,
   })  : _textRepo = textRepo,
@@ -55,7 +50,6 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
         _stopAyah = stopAyah,
         _audioPort = audioPort,
         _prefsRepo = prefsRepo,
-        _glyphRepo = glyphRepo,
         _hasSeenIntro = hasSeenIntro,
         _markIntroSeen = markIntroSeen,
         super(const MushafReaderState()) {
@@ -70,8 +64,6 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
   IMushafPreferencesRepository get prefsRepoForMixin => _prefsRepo;
   @override
   SaveBookmarkUseCase get bookmarkSaveForMixin => _saveBookmark;
-  @override
-  IMushafGlyphPageRepository get glyphRepoForMixin => _glyphRepo;
   @override
   Future<void> navigateToPageFromAudio(int p) => goToPage(p);
 
@@ -114,10 +106,6 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
       (page) {
         emit(state.copyWith(currentPage: clamped, currentPageData: page));
         scheduleBookmarkAutoSave();
-        // Warm the glyph repo cache for the current page + its two
-        // neighbours so the next swipe paints on the first frame
-        // (sync-cache hit in MobileMushafGlyphPageContainer).
-        loadGlyphPage(clamped);
       },
     );
   }

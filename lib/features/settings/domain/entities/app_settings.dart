@@ -85,6 +85,16 @@ class AppSettings {
   /// Minutes-from-midnight for evening. 1020 = 17:00 PM (default).
   final int eveningAdhkarMinuteOfDay;
 
+  // ── Al-Kahf Friday reminder (mobile only) ───────────────────────────────
+  /// Weekly Friday notification reminding to read Surah Al-Kahf. Defaults
+  /// to enabled — the hadith «من قرأ سورة الكهف يوم الجمعة أضاء له من النور
+  /// ما بين الجمعتين» is broadly endorsed, so most users benefit from the
+  /// nudge. The toggle lives in mobile notification settings.
+  final bool isAlKahfReminderEnabled;
+  /// Minutes-from-midnight when the Al-Kahf reminder fires every Friday.
+  /// 390 = 06:30 AM (default — shortly after Fajr in most timezones).
+  final int alKahfReminderMinuteOfDay;
+
   /// True once the user has been walked through the notification onboarding
   /// (permissions + battery exemption + OEM autostart guidance). Used by
   /// the gate in `app.dart` to decide whether to show the flow at startup.
@@ -163,6 +173,8 @@ class AppSettings {
     this.isEveningAdhkarNotificationEnabled = false,
     this.morningAdhkarMinuteOfDay = 420,
     this.eveningAdhkarMinuteOfDay = 1020,
+    this.isAlKahfReminderEnabled = true,
+    this.alKahfReminderMinuteOfDay = 390,
     this.isNotificationOnboardingDone = false,
     this.hadithText =
         '"Whoever fasts Ramadan then follows it with six days of Shawwal, it is as if he fasted the whole year."',

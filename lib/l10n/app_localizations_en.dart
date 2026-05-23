@@ -443,6 +443,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationEveningAdhkarBody => 'Don\'t miss the evening adhkar';
 
   @override
+  String get notificationAlKahfTitle => 'Blessed Friday 🌸';
+
+  @override
+  String get notificationAlKahfBody =>
+      'Don\'t forget Surah Al-Kahf — light for you between the two Fridays';
+
+  @override
+  String get settingsAlKahfReminderTitle => 'Surah Al-Kahf reminder';
+
+  @override
+  String get settingsAlKahfReminderSubtitle =>
+      'Weekly Friday notification to read Surah Al-Kahf';
+
+  @override
+  String get settingsAlKahfReminderOffsetTitle => 'Reminder time';
+
+  @override
   String get settingsAdhkarNotificationsTitle => 'Adhkar reminders';
 
   @override
@@ -1157,6 +1174,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get surahAyahCountLabel => 'verses';
+
+  @override
+  String get surahOrderLabel => 'order';
+
+  @override
+  String get quranAssetsDownloadTitle => 'Download the Mushaf';
+
+  @override
+  String get quranAssetsDownloadSize => 'Size: ~105 MB';
+
+  @override
+  String get quranAssetsBackgroundHint =>
+      'You can leave this page — the download continues in the background';
+
+  @override
+  String get quranAssetsDownloadButton => 'Download';
+
+  @override
+  String get quranAssetsDownloadingTitle => 'Downloading…';
+
+  @override
+  String quranAssetsDownloadProgress(Object done, Object total) {
+    return '$done / $total';
+  }
+
+  @override
+  String get quranAssetsCancel => 'Cancel';
+
+  @override
+  String get quranAssetsDeleteTitle => 'Delete the Mushaf';
+
+  @override
+  String get quranAssetsDeleteConfirm =>
+      'Delete the downloaded Mushaf fonts? You can re-download them later.';
+
+  @override
+  String get quranAssetsDelete => 'Delete';
+
+  @override
+  String get quranAssetsDeleted => 'Mushaf deleted';
+
+  @override
+  String get quranAssetsRetry => 'Retry';
+
+  @override
+  String get quranAssetsReady => 'Mushaf ready';
 
   @override
   String get splashVerseStart =>

@@ -47,6 +47,8 @@ extension AppSettingsMapper on AppSettings {
     'isEveningAdhkarNotificationEnabled': isEveningAdhkarNotificationEnabled,
     'morningAdhkarMinuteOfDay': morningAdhkarMinuteOfDay,
     'eveningAdhkarMinuteOfDay': eveningAdhkarMinuteOfDay,
+    'isAlKahfReminderEnabled': isAlKahfReminderEnabled,
+    'alKahfReminderMinuteOfDay': alKahfReminderMinuteOfDay,
     'isNotificationOnboardingDone': isNotificationOnboardingDone,
     'customAdhans': jsonEncode(customAdhans.map((c) => c.toJson()).toList()),
     'quranPlaybackMode': quranPlaybackMode.name,
@@ -149,6 +151,10 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
         (map['morningAdhkarMinuteOfDay'] as num?)?.toInt() ?? 420,
     eveningAdhkarMinuteOfDay:
         (map['eveningAdhkarMinuteOfDay'] as num?)?.toInt() ?? 1020,
+    isAlKahfReminderEnabled:
+        map['isAlKahfReminderEnabled'] as bool? ?? true,
+    alKahfReminderMinuteOfDay:
+        (map['alKahfReminderMinuteOfDay'] as num?)?.toInt() ?? 390,
     isNotificationOnboardingDone:
         map['isNotificationOnboardingDone'] as bool? ?? false,
     customAdhans: customAdhans,

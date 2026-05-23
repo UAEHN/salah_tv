@@ -5,12 +5,17 @@
 // 3. ضع ميزات التلفاز في [kTvChangelog].
 // ════════════════════════════════════════════════
 
-const String kCurrentVersion = '1.0.7';
+const String kCurrentVersion = '1.0.8';
 
 /// ما الجديد — نسخة الهاتف.
-/// قائمة فارغة في هذا الإصدار لإخفاء ديالوج "ما الجديد".
-const List<String> kCurrentChangelog = <String>[];
+const List<String> kCurrentChangelog = <String>[
+  'إضافة القرآن الكريم',
+  'تحسينات في واجهة التطبيق',
+  'تخصيص التطبيق وتغيير الخط والثيم',
+];
 
 /// ما الجديد — نسخة التلفاز (مختلفة عن الهاتف).
-/// قائمة فارغة في هذا الإصدار لإخفاء ديالوج "ما الجديد".
-const List<String> kTvChangelog = <String>[];
+const List<String> kTvChangelog = <String>[
+  'إضافة التكبيرات',
+  'إصلاح الأخطاء',
+];

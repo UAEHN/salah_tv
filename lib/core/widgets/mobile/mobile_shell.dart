@@ -7,7 +7,7 @@ import '../../../features/adhkar/domain/i_adhkar_text_repository.dart';
 import '../../../features/adhkar/presentation/bloc/adhkar_reader_cubit.dart';
 import '../../../features/adhkar/presentation/bloc/adhkar_reader_state.dart';
 import '../../../features/adhkar/presentation/screens/mobile/mobile_adhkar_screen.dart';
-import 'mobile_shell_adhkar_tap.dart';
+import 'mobile_shell_notification_taps.dart';
 import '../../../features/app_update/presentation/app_update_trigger.dart';
 import '../../../features/rating/presentation/rating_trigger.dart';
 import '../../../features/prayer/presentation/screens/mobile_home_screen.dart';
@@ -50,10 +50,17 @@ class MobileShell extends StatefulWidget {
   /// Pushes the Mushaf reader screen on the root navigator using the
   /// shared cubit instance, resuming from the saved bookmark when one
   /// exists. Lets the Today tab surface a «متابعة القراءة» shortcut.
-  static Future<void> openMushafReader(BuildContext context) async {
+  ///
+  /// When [targetSurah] is provided (1..114) the reader opens at that
+  /// surah instead of the saved bookmark — used by the Friday Al-Kahf
+  /// notification tap which deep-links to surah 18.
+  static Future<void> openMushafReader(
+    BuildContext context, {
+    int? targetSurah,
+  }) async {
     final state = context.findAncestorStateOfType<_MobileShellState>();
     if (state == null) return;
-    await state._openMushafReader();
+    await state._openMushafReader(targetSurah: targetSurah);
   }
 
   @override
@@ -90,13 +97,15 @@ class _MobileShellState extends State<MobileShell>
       getVerse: GetIt.I<GetDailyVerseUseCase>(),
     )..load();
     _mushafCubit = GetIt.I<MushafReaderCubit>();
-    consumeColdStartAdhkarPayload(
+    consumeColdStartNotificationPayload(
       isMounted: () => mounted,
-      onSession: _openAdhkarSession,
+      onAdhkar: _openAdhkarSession,
+      onAlKahf: _openAlKahfReader,
     );
-    _detachWarmAdhkar = registerWarmAdhkarPayloadListener(
+    _detachWarmAdhkar = registerWarmNotificationPayloadListener(
       isMounted: () => mounted,
-      onSession: _openAdhkarSession,
+      onAdhkar: _openAdhkarSession,
+      onAlKahf: _openAlKahfReader,
     );
   }
 
@@ -105,9 +114,18 @@ class _MobileShellState extends State<MobileShell>
     _adhkarCubit.openSession(session);
   }
 
-  Future<void> _openMushafReader() async {
+  void _openAlKahfReader() {
+    _openMushafReader(targetSurah: 18);
+  }
+
+  Future<void> _openMushafReader({int? targetSurah}) async {
     final navigator = Navigator.of(context);
-    await _mushafCubit.openReader(resume: _mushafCubit.state.bookmark);
+    if (targetSurah != null) {
+      await _mushafCubit.openReader();
+      await _mushafCubit.goToSurah(targetSurah);
+    } else {
+      await _mushafCubit.openReader(resume: _mushafCubit.state.bookmark);
+    }
     if (!mounted) return;
     navigator.push(MaterialPageRoute(
       builder: (_) => BlocProvider.value(

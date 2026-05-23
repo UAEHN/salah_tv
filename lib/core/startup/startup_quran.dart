@@ -2,15 +2,15 @@ import 'package:dio/dio.dart';
 
 import '../../features/quran/data/ayah_audio_service.dart';
 import '../../features/quran/data/file_ayah_audio_cache.dart';
-import '../../features/quran/data/mushaf_glyph_page_repository.dart';
 import '../../features/quran/data/mushaf_preferences_repository.dart';
+import '../../features/quran/data/quran_assets_repository.dart';
 import '../../features/quran/data/quran_bookmark_repository.dart';
 import '../../features/quran/data/quran_intro_flag_repository.dart';
 import '../../features/quran/data/quran_text_repository.dart';
 import '../../features/quran/domain/i_ayah_audio_cache.dart';
 import '../../features/quran/domain/i_ayah_audio_port.dart';
-import '../../features/quran/domain/i_mushaf_glyph_page_repository.dart';
 import '../../features/quran/domain/i_mushaf_preferences_repository.dart';
+import '../../features/quran/domain/i_quran_assets_repository.dart';
 import '../../features/quran/domain/i_quran_bookmark_repository.dart';
 import '../../features/quran/domain/i_quran_intro_flag_repository.dart';
 import '../../features/quran/domain/i_quran_text_repository.dart';
@@ -20,6 +20,7 @@ import '../../features/quran/domain/usecases/play_ayah_usecase.dart';
 import '../../features/quran/domain/usecases/quran_intro_usecases.dart';
 import '../../features/quran/domain/usecases/save_bookmark_usecase.dart';
 import '../../features/quran/presentation/bloc/mushaf_reader_cubit.dart';
+import '../../features/quran/presentation/bloc/quran_assets_cubit.dart';
 import '../../injection.dart';
 
 /// Registers the mobile Mushaf reader stack.
@@ -44,8 +45,13 @@ void registerQuranReader() {
   getIt.registerLazySingleton<IQuranIntroFlagRepository>(
     () => QuranIntroFlagRepository(),
   );
-  getIt.registerLazySingleton<IMushafGlyphPageRepository>(
-    () => MushafGlyphPageRepository(),
+  getIt.registerLazySingleton<IQuranAssetsRepository>(
+    () => QuranAssetsRepository(getIt<Dio>()),
+  );
+  // QuranAssetsCubit is a lazy singleton so the gate widget and the
+  // settings sheet (delete button) share the same instance and state.
+  getIt.registerLazySingleton<QuranAssetsCubit>(
+    () => QuranAssetsCubit(getIt<IQuranAssetsRepository>()),
   );
 
   getIt.registerFactory<HasSeenMushafIntroUseCase>(
@@ -81,7 +87,6 @@ void registerQuranReader() {
       stopAyah: getIt<StopAyahAudioUseCase>(),
       audioPort: getIt<IAyahAudioPort>(),
       prefsRepo: getIt<IMushafPreferencesRepository>(),
-      glyphRepo: getIt<IMushafGlyphPageRepository>(),
       hasSeenIntro: getIt<HasSeenMushafIntroUseCase>(),
       markIntroSeen: getIt<MarkMushafIntroSeenUseCase>(),
     ),

@@ -111,17 +111,39 @@ class _CalligraphicName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final fg = MobileColors.onSurface(context);
+    if (isArabic) {
+      return SizedBox(
+        width: 100,
+        child: Text(
+          surahNameLigatureToken(number),
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'SurahNames',
+            fontSize: 38,
+            height: 1.0,
+            color: fg,
+            fontFeatures: const [FontFeature.enable('liga')],
+          ),
+        ),
+      );
+    }
+    final surah = surahByNumber(number);
+    final name = surah?.nameEn ?? '';
     return SizedBox(
       width: 100,
       child: Text(
-        surahNameLigatureToken(number),
+        name,
         textAlign: TextAlign.center,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
-          fontFamily: 'SurahNames',
-          fontSize: 38,
-          height: 1.0,
-          color: MobileColors.onSurface(context),
-          fontFeatures: const [FontFeature.enable('liga')],
+          fontFamily: 'Cairo',
+          fontWeight: FontWeight.w700,
+          fontSize: 16,
+          height: 1.15,
+          color: fg,
         ),
       ),
     );

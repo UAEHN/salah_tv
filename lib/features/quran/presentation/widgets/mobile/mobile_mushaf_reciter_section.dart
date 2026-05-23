@@ -67,7 +67,8 @@ class _ReciterRow extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                reciter.nameAr,
+                reciter.localizedName(
+                    Localizations.localeOf(context).languageCode),
                 style: MobileTextStyles.headlineMd(context).copyWith(
                   fontSize: 15,
                   fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,

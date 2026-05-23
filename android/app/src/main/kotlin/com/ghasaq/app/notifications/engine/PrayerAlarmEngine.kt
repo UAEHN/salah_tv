@@ -78,6 +78,32 @@ class PrayerAlarmEngine(private val context: Context) {
         return TEST_ID
     }
 
+    /**
+     * Debug-only helper for the Al-Kahf reminder button. Fires the same
+     * "Blessed Friday" notification 5 seconds from now without disturbing
+     * the regular Friday schedule (separate test id).
+     */
+    fun runAlKahfTest(): Int {
+        val triggerAt = System.currentTimeMillis() + AL_KAHF_TEST_DELAY_MS
+        val test = ScheduledNotification(
+            id = AL_KAHF_TEST_ID,
+            type = com.ghasaq.app.notifications.models.NotificationType.AL_KAHF,
+            triggerAtMillis = triggerAt,
+            title = "جمعة مباركة 🌸",
+            body = "لا تنسَ سورة الكهف — نور لك بين الجمعتين",
+            channelId = com.ghasaq.app.notifications.builder.NotificationChannelIds
+                .AL_KAHF,
+            payload = "al_kahf",
+            soundUri = null,
+            prayerKey = null,
+            dayIndex = 0,
+        )
+        val merged = store.readAll().filter { it.id != AL_KAHF_TEST_ID } + test
+        store.writeAll(merged)
+        scheduler.schedule(test)
+        return AL_KAHF_TEST_ID
+    }
+
     fun readScheduleLog(): JSONArray {
         val arr = JSONArray()
         ScheduleLog(context).readAll().forEach { arr.put(it.toJson()) }
@@ -116,6 +142,8 @@ class PrayerAlarmEngine(private val context: Context) {
     companion object {
         private const val TEST_ID = 999_999
         private const val TEST_DELAY_MS = 15_000L
+        private const val AL_KAHF_TEST_ID = 999_998
+        private const val AL_KAHF_TEST_DELAY_MS = 5_000L
         private const val MAX_HORIZON_MS = 30L * 24 * 60 * 60 * 1000
     }
 }

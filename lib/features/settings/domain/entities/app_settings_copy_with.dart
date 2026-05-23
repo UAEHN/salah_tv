@@ -52,6 +52,8 @@ extension AppSettingsCopyWith on AppSettings {
     bool? isEveningAdhkarNotificationEnabled,
     int? morningAdhkarMinuteOfDay,
     int? eveningAdhkarMinuteOfDay,
+    bool? isAlKahfReminderEnabled,
+    int? alKahfReminderMinuteOfDay,
     bool? isNotificationOnboardingDone,
     QuranPlaybackMode? quranPlaybackMode,
     int? selectedSurahNumber,
@@ -125,6 +127,10 @@ extension AppSettingsCopyWith on AppSettings {
           morningAdhkarMinuteOfDay ?? this.morningAdhkarMinuteOfDay,
       eveningAdhkarMinuteOfDay:
           eveningAdhkarMinuteOfDay ?? this.eveningAdhkarMinuteOfDay,
+      isAlKahfReminderEnabled:
+          isAlKahfReminderEnabled ?? this.isAlKahfReminderEnabled,
+      alKahfReminderMinuteOfDay:
+          alKahfReminderMinuteOfDay ?? this.alKahfReminderMinuteOfDay,
       isNotificationOnboardingDone:
           isNotificationOnboardingDone ?? this.isNotificationOnboardingDone,
       quranPlaybackMode: quranPlaybackMode ?? this.quranPlaybackMode,
@@ -176,6 +182,8 @@ extension AppSettingsCopyWith on AppSettings {
           other.isEveningAdhkarNotificationEnabled &&
       morningAdhkarMinuteOfDay == other.morningAdhkarMinuteOfDay &&
       eveningAdhkarMinuteOfDay == other.eveningAdhkarMinuteOfDay &&
+      isAlKahfReminderEnabled == other.isAlKahfReminderEnabled &&
+      alKahfReminderMinuteOfDay == other.alKahfReminderMinuteOfDay &&
       isNotificationOnboardingDone == other.isNotificationOnboardingDone &&
       quranPlaybackMode == other.quranPlaybackMode &&
       selectedSurahNumber == other.selectedSurahNumber &&

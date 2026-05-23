@@ -93,4 +93,10 @@ extension SettingsProviderAppearance on SettingsProvider {
 
   Future<void> updateEveningAdhkarMinuteOfDay(int minuteOfDay) =>
       _update(_settings.copyWith(eveningAdhkarMinuteOfDay: minuteOfDay));
+
+  Future<void> updateAlKahfReminder(bool value) =>
+      _update(_settings.copyWith(isAlKahfReminderEnabled: value));
+
+  Future<void> updateAlKahfReminderMinuteOfDay(int minuteOfDay) =>
+      _update(_settings.copyWith(alKahfReminderMinuteOfDay: minuteOfDay));
 }

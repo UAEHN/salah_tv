@@ -24,6 +24,7 @@ class NotificationPayloadFactory {
   ) {
     _addPrayerNotifications(out, day, dayIndex, s, l, adhan);
     _addAdhkarNotifications(out, day, dayIndex, s, l);
+    _addAlKahfReminder(out, day, dayIndex, s, l);
   }
 
   void _addPrayerNotifications(
@@ -139,4 +140,29 @@ class NotificationPayloadFactory {
     }
   }
 
+  /// Weekly Friday reminder to read Surah Al-Kahf. Only emits on Fridays
+  /// within the 7-day horizon — the wider re-sync that runs daily guarantees
+  /// next Friday lands in the window before the previous one expires.
+  void _addAlKahfReminder(
+    List<Map<String, Object?>> out,
+    DailyPrayerTimes day,
+    int dayIndex,
+    AppSettings s,
+    AppLocalizations l,
+  ) {
+    if (!s.isAlKahfReminderEnabled) return;
+    if (day.date.weekday != DateTime.friday) return;
+    final base = DateTime(day.date.year, day.date.month, day.date.day);
+    out.add(buildNotificationPayloadDto(
+      id: NotificationIdPolicy.forAdhkar(
+          type: 'al_kahf', dayIndex: dayIndex),
+      type: 'al_kahf',
+      time: base.add(Duration(minutes: s.alKahfReminderMinuteOfDay)),
+      title: l.notificationAlKahfTitle,
+      body: l.notificationAlKahfBody,
+      channelId: NotificationChannelResolver.alKahf,
+      payload: 'al_kahf',
+      dayIndex: dayIndex,
+    ));
+  }
 }

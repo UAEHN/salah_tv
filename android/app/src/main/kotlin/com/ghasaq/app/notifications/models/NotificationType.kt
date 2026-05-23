@@ -13,7 +13,8 @@ enum class NotificationType(val key: String, val idBase: Int) {
     IQAMA("iqama", 3_000),
     PRE_IQAMA("pre_iqama", 4_000),
     ADHKAR_MORNING("adhkar_morning", 5_000),
-    ADHKAR_EVENING("adhkar_evening", 6_000);
+    ADHKAR_EVENING("adhkar_evening", 6_000),
+    AL_KAHF("al_kahf", 7_000);
 
     companion object {
         fun fromKey(key: String): NotificationType? =

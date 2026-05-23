@@ -64,6 +64,7 @@ class NotificationMethodChannel(
                     result.success(null)
                 }
                 "runTest" -> result.success(engine.runTest())
+                "runAlKahfTest" -> result.success(engine.runAlKahfTest())
                 "consumePendingTapPayload" -> {
                     val p = pendingPayload
                     pendingPayload = null

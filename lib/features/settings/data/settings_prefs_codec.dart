@@ -57,6 +57,10 @@ AppSettings loadAppSettings(SharedPreferences prefs) =>
           prefs.getInt(PrefsKeys.morningAdhkarMinuteOfDay),
       'eveningAdhkarMinuteOfDay':
           prefs.getInt(PrefsKeys.eveningAdhkarMinuteOfDay),
+      'isAlKahfReminderEnabled':
+          prefs.getBool(PrefsKeys.alKahfReminder),
+      'alKahfReminderMinuteOfDay':
+          prefs.getInt(PrefsKeys.alKahfReminderMinuteOfDay),
       'isNotificationOnboardingDone':
           prefs.getBool(PrefsKeys.notifOnboardingDone),
       'customAdhans': prefs.getString(PrefsKeys.customAdhans),
@@ -140,6 +144,14 @@ Future<void> saveAppSettings(SharedPreferences prefs, AppSettings s) async {
   await prefs.setInt(
     PrefsKeys.eveningAdhkarMinuteOfDay,
     s.eveningAdhkarMinuteOfDay,
+  );
+  await prefs.setBool(
+    PrefsKeys.alKahfReminder,
+    s.isAlKahfReminderEnabled,
+  );
+  await prefs.setInt(
+    PrefsKeys.alKahfReminderMinuteOfDay,
+    s.alKahfReminderMinuteOfDay,
   );
   await prefs.setBool(
     PrefsKeys.notifOnboardingDone,

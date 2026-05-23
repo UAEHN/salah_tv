@@ -36,6 +36,8 @@ mixin SettingsMixin
     final oldEveningAdhkar = settings.isEveningAdhkarNotificationEnabled;
     final oldMorningMinute = settings.morningAdhkarMinuteOfDay;
     final oldEveningMinute = settings.eveningAdhkarMinuteOfDay;
+    final oldAlKahfEnabled = settings.isAlKahfReminderEnabled;
+    final oldAlKahfMinute = settings.alKahfReminderMinuteOfDay;
     final mosqueJustEnabled =
         newSettings.isMosqueMode && !settings.isMosqueMode;
     settings = newSettings;
@@ -83,7 +85,9 @@ mixin SettingsMixin
               oldMorningAdhkar ||
           newSettings.isEveningAdhkarNotificationEnabled != oldEveningAdhkar ||
           newSettings.morningAdhkarMinuteOfDay != oldMorningMinute ||
-          newSettings.eveningAdhkarMinuteOfDay != oldEveningMinute;
+          newSettings.eveningAdhkarMinuteOfDay != oldEveningMinute ||
+          newSettings.isAlKahfReminderEnabled != oldAlKahfEnabled ||
+          newSettings.alKahfReminderMinuteOfDay != oldAlKahfMinute;
       if (adhkarChanged) {
         unawaited(notifications?.scheduleAdhkar(settings));
       }

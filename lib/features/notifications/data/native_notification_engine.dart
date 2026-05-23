@@ -70,6 +70,11 @@ class NativeNotificationEngine implements IPrayerNotificationPort {
   /// Diagnostic — fires a test notification 15 seconds from now.
   Future<int?> runTest() async => _invoke<int>('runTest');
 
+  /// Debug-only — fires the Friday Al-Kahf reminder 5 seconds from now so
+  /// the user can verify the channel, sound, and tap-route end-to-end
+  /// without waiting until Friday. Surfaced behind a `kDebugMode` button.
+  Future<int?> runAlKahfTest() async => _invoke<int>('runAlKahfTest');
+
   /// Diagnostic — returns a JSON snapshot of permission state + recent
   /// schedule log. Consumed by the notification health screen.
   Future<String?> getHealth() async => _invoke<String>('getHealth');

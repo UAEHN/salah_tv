@@ -28,11 +28,20 @@ class NotificationDispatcher(private val context: Context) {
             .setAutoCancel(true)
             .setOnlyAlertOnce(false)
             .setContentIntent(buildTapIntent(n))
+        // Prayer/iqama/adhkar pass an empty body by design (whole message in
+        // the title). Al-Kahf carries a real body — render it + expand on
+        // long-press via BigTextStyle so the full hadith reference fits.
+        if (n.body.isNotEmpty()) {
+            builder
+                .setContentText(n.body)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(n.body))
+        }
         when (n.type) {
             NotificationType.ADHAN -> applyAdhan(builder)
             NotificationType.PRE_ADHAN, NotificationType.PRE_IQAMA -> applyReminder(builder)
             NotificationType.IQAMA -> applyIqama(builder)
             NotificationType.ADHKAR_MORNING, NotificationType.ADHKAR_EVENING -> applyAdhkar(builder)
+            NotificationType.AL_KAHF -> applyAdhkar(builder)
         }
         mgr.notify(n.id, builder.build())
     }

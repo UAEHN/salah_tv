@@ -441,6 +441,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notificationEveningAdhkarBody => 'لا تنسى أذكار المساء';
 
   @override
+  String get notificationAlKahfTitle => 'جمعة مباركة 🌸';
+
+  @override
+  String get notificationAlKahfBody =>
+      'لا تنسَ سورة الكهف — نور لك بين الجمعتين';
+
+  @override
+  String get settingsAlKahfReminderTitle => 'تذكير سورة الكهف';
+
+  @override
+  String get settingsAlKahfReminderSubtitle =>
+      'إشعار أسبوعي يوم الجمعة بقراءة سورة الكهف';
+
+  @override
+  String get settingsAlKahfReminderOffsetTitle => 'وقت التذكير';
+
+  @override
   String get settingsAdhkarNotificationsTitle => 'تنبيهات الأذكار';
 
   @override
@@ -1154,6 +1171,52 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get surahAyahCountLabel => 'آياتها';
+
+  @override
+  String get surahOrderLabel => 'ترتيبها';
+
+  @override
+  String get quranAssetsDownloadTitle => 'تنزيل المصحف';
+
+  @override
+  String get quranAssetsDownloadSize => 'الحجم: ~105 ميجابايت';
+
+  @override
+  String get quranAssetsBackgroundHint =>
+      'يمكنك إغلاق هذه الصفحة — التنزيل يكمل في الخلفية';
+
+  @override
+  String get quranAssetsDownloadButton => 'تنزيل';
+
+  @override
+  String get quranAssetsDownloadingTitle => 'جارٍ التنزيل…';
+
+  @override
+  String quranAssetsDownloadProgress(Object done, Object total) {
+    return '$done / $total';
+  }
+
+  @override
+  String get quranAssetsCancel => 'إلغاء';
+
+  @override
+  String get quranAssetsDeleteTitle => 'حذف المصحف';
+
+  @override
+  String get quranAssetsDeleteConfirm =>
+      'هل تريد حذف خطوط المصحف من جهازك؟ يمكنك تنزيلها مرة أخرى لاحقاً.';
+
+  @override
+  String get quranAssetsDelete => 'حذف';
+
+  @override
+  String get quranAssetsDeleted => 'تم حذف المصحف';
+
+  @override
+  String get quranAssetsRetry => 'إعادة المحاولة';
+
+  @override
+  String get quranAssetsReady => 'المصحف جاهز';
 
   @override
   String get splashVerseStart =>

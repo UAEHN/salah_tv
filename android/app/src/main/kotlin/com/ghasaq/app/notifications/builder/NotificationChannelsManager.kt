@@ -25,6 +25,7 @@ class NotificationChannelsManager(private val context: Context) {
         ensureSilent(NotificationChannelIds.IQAMA, "Iqama alert")
         ensureSilent(NotificationChannelIds.PRE_IQAMA, "Pre-iqama reminder")
         ensureSilent(NotificationChannelIds.ADHKAR, "Adhkar reminder")
+        ensureSilent(NotificationChannelIds.AL_KAHF, "Friday Surah Al-Kahf reminder")
     }
 
     private fun ensureBuiltInAdhans() {

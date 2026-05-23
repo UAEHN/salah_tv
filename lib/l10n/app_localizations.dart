@@ -932,6 +932,36 @@ abstract class AppLocalizations {
   /// **'لا تنسى أذكار المساء'**
   String get notificationEveningAdhkarBody;
 
+  /// No description provided for @notificationAlKahfTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'جمعة مباركة 🌸'**
+  String get notificationAlKahfTitle;
+
+  /// No description provided for @notificationAlKahfBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا تنسَ سورة الكهف — نور لك بين الجمعتين'**
+  String get notificationAlKahfBody;
+
+  /// No description provided for @settingsAlKahfReminderTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تذكير سورة الكهف'**
+  String get settingsAlKahfReminderTitle;
+
+  /// No description provided for @settingsAlKahfReminderSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إشعار أسبوعي يوم الجمعة بقراءة سورة الكهف'**
+  String get settingsAlKahfReminderSubtitle;
+
+  /// No description provided for @settingsAlKahfReminderOffsetTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'وقت التذكير'**
+  String get settingsAlKahfReminderOffsetTitle;
+
   /// No description provided for @settingsAdhkarNotificationsTitle.
   ///
   /// In ar, this message translates to:
@@ -2305,6 +2335,90 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'آياتها'**
   String get surahAyahCountLabel;
+
+  /// No description provided for @surahOrderLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'ترتيبها'**
+  String get surahOrderLabel;
+
+  /// No description provided for @quranAssetsDownloadTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تنزيل المصحف'**
+  String get quranAssetsDownloadTitle;
+
+  /// No description provided for @quranAssetsDownloadSize.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحجم: ~105 ميجابايت'**
+  String get quranAssetsDownloadSize;
+
+  /// No description provided for @quranAssetsBackgroundHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'يمكنك إغلاق هذه الصفحة — التنزيل يكمل في الخلفية'**
+  String get quranAssetsBackgroundHint;
+
+  /// No description provided for @quranAssetsDownloadButton.
+  ///
+  /// In ar, this message translates to:
+  /// **'تنزيل'**
+  String get quranAssetsDownloadButton;
+
+  /// No description provided for @quranAssetsDownloadingTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'جارٍ التنزيل…'**
+  String get quranAssetsDownloadingTitle;
+
+  /// No description provided for @quranAssetsDownloadProgress.
+  ///
+  /// In ar, this message translates to:
+  /// **'{done} / {total}'**
+  String quranAssetsDownloadProgress(Object done, Object total);
+
+  /// No description provided for @quranAssetsCancel.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء'**
+  String get quranAssetsCancel;
+
+  /// No description provided for @quranAssetsDeleteTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف المصحف'**
+  String get quranAssetsDeleteTitle;
+
+  /// No description provided for @quranAssetsDeleteConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل تريد حذف خطوط المصحف من جهازك؟ يمكنك تنزيلها مرة أخرى لاحقاً.'**
+  String get quranAssetsDeleteConfirm;
+
+  /// No description provided for @quranAssetsDelete.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف'**
+  String get quranAssetsDelete;
+
+  /// No description provided for @quranAssetsDeleted.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حذف المصحف'**
+  String get quranAssetsDeleted;
+
+  /// No description provided for @quranAssetsRetry.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة المحاولة'**
+  String get quranAssetsRetry;
+
+  /// No description provided for @quranAssetsReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'المصحف جاهز'**
+  String get quranAssetsReady;
 
   /// No description provided for @splashVerseStart.
   ///

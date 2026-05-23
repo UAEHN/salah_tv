@@ -13,6 +13,7 @@ class NotificationIdPolicy {
     'pre_iqama': 4000,
     'adhkar_morning': 5000,
     'adhkar_evening': 6000,
+    'al_kahf': 7000,
   };
 
   static const _prayerSlot = {

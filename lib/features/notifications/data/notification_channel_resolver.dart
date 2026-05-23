@@ -13,6 +13,7 @@ class NotificationChannelResolver {
   static const iqama = 'prayer_iqama_v1';
   static const preIqama = 'prayer_pre_iqama_v1';
   static const adhkar = 'adhkar_reminder_v1';
+  static const alKahf = 'al_kahf_reminder_v1';
 
   /// Returns the channel id for the adhan + an optional content URI for
   /// the custom-channel registration the engine performs at sync time.

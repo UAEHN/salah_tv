@@ -49,6 +49,8 @@ class PrefsKeys {
   static const eveningAdhkarNotif = '${_p}evening_adhkar_notif';
   static const morningAdhkarMinuteOfDay = '${_p}morning_adhkar_minute';
   static const eveningAdhkarMinuteOfDay = '${_p}evening_adhkar_minute';
+  static const alKahfReminder = '${_p}al_kahf_reminder';
+  static const alKahfReminderMinuteOfDay = '${_p}al_kahf_reminder_minute';
   static const notifOnboardingDone = '${_p}notif_onboarding_done';
   static const customAdhans = '${_p}custom_adhans';
   static const playbackMode = '${_p}quran_playback_mode';

@@ -16,6 +16,7 @@ object NotificationChannelIds {
     const val IQAMA = "prayer_iqama_v1"
     const val PRE_IQAMA = "prayer_pre_iqama_v1"
     const val ADHKAR = "adhkar_reminder_v1"
+    const val AL_KAHF = "al_kahf_reminder_v1"
 
     /** Built-in adhan asset → raw resource name (matches pubspec asset list). */
     val builtInAdhans: List<Pair<String, String>> = listOf(

@@ -1,6 +1,6 @@
 name: ghasaq
 description: "غسق — مواقيت الصلاة لأجهزة Android TV"
-version: 1.0.7+15
+version: 1.0.8+16
 publish_to: none
 
 environment:
@@ -85,6 +85,10 @@ dependencies:
   # Home screen widget (Android) — bridge to AppWidgetProvider
   home_widget: ^0.7.0
 
+  # Quran data + per-page QCF v2 BSML codepoint helpers (getPageData,
+  # getVerseQCF). The matching font files live in assets/fonts/QCF2BSML/.
+  quran: ^1.4.1
+
 
 dev_dependencies:
   flutter_test:
@@ -124,11 +128,15 @@ flutter:
     - assets/db_countries.json
     - assets/animations/
     - assets/quran/
-    # Per-page Mushaf font system (v1) from quran.com — one TTF per page
-    # (p1.ttf … p604.ttf) + one JSON line layout per page. Loaded
-    # dynamically by MushafGlyphRepository / FontLoader at runtime.
-    - assets/quran/pages_v1/
-    - assets/fonts/QuranPagesV1/
+    # QCF v2 BSML per-page fonts are NOT bundled — they are downloaded
+    # on demand by QuranDownloadManager and registered via FontLoader
+    # from the app's documents directory. This keeps the APK ~105 MB
+    # lighter; users who never open the Mushaf reader never pay for it.
+    # Mushaf reader decorative assets (surah-frame banner + basmala
+    # calligraphy image) sourced from the m4hmoud-atef/quran-app reference
+    # implementation. Rendered as widget overlays on surah-start slots.
+    - assets/images/surah_frame_888.png
+    - assets/images/basmala.png
     # Bundled fallback for the remote occasions catalog. Shipped with the
     # APK so a first-launch user with no network still sees Hijri events.
     - assets/occasions/occasions_default.json
@@ -184,3 +192,9 @@ flutter:
     - family: SurahNames
       fonts:
         - asset: assets/fonts/SurahNames/SurahNames.ttf
+    # arsura.ttf — calligraphic Arabic font used by m4hmoud-atef/quran-app
+    # to render the surah number inside the decorative surah-frame banner.
+    # Digits 1–114 shape into ornamental Arabic-Indic numerals.
+    - family: Arsura
+      fonts:
+        - asset: assets/fonts/Arsura/arsura.ttf
