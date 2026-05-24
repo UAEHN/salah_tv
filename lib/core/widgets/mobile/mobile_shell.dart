@@ -17,8 +17,10 @@ import '../../../features/qibla/domain/i_qibla_repository.dart';
 import '../../../features/qibla/presentation/bloc/qibla_cubit.dart';
 import '../../../features/qibla/presentation/screens/mobile/mobile_qibla_screen.dart';
 import '../../../features/quran/presentation/bloc/mushaf_reader_cubit.dart';
+import '../../../features/quran/presentation/bloc/page_image_download_cubit.dart';
 import '../../../features/quran/presentation/screens/mobile/mobile_mushaf_reader_screen.dart';
 import '../../../features/quran/presentation/screens/mobile/mobile_mushaf_screen.dart';
+import '../../../features/quran/presentation/widgets/mobile/mobile_quran_offline_choice_sheet.dart';
 import '../../../features/settings/presentation/screens/mobile_settings_screen.dart';
 import '../../../features/settings/presentation/settings_provider.dart';
 import '../../../features/today/domain/usecases/get_current_greeting.dart';
@@ -78,8 +80,10 @@ class _MobileShellState extends State<MobileShell>
   static const int _todayIndex = 5;
   static const int _adhkarIndex = 3;
   static const int _qiblaIndex = 1;
+  static const int _mushafIndex = 4;
 
   int _currentIndex = _todayIndex;
+  bool _offlineSheetShownThisSession = false;
   late final AdhkarReaderCubit _adhkarCubit;
   late final QiblaCubit _qiblaCubit;
   late final TodayCubit _todayCubit;
@@ -103,10 +107,6 @@ class _MobileShellState extends State<MobileShell>
     // renders without paying the 1.6MB Quran-JSON cost at startup. The full
     // [MushafReaderCubit.init] runs lazily when the reader is opened.
     unawaited(_mushafCubit.loadBookmarkOnly());
-    // The QCF font bundle is probed lazily by [MobileQuranAssetsGate] when
-    // the reader opens, and individual page fonts register themselves
-    // through [MobileMushafFontGate] right before each page paints — see
-    // [QuranAssetsRepository] for why the eager startup probe was removed.
     consumeColdStartNotificationPayload(
       isMounted: () => mounted,
       onAdhkar: _openAdhkarSession,
@@ -160,7 +160,39 @@ class _MobileShellState extends State<MobileShell>
     if (index == _todayIndex) {
       _todayCubit.refreshGreeting();
     }
+    // First Mushaf-tab visit triggers the offline-mode prompt (only if
+    // the user hasn't answered it on a previous run). The probe is
+    // async — we await it on a post-frame callback so the tab change
+    // animation doesn't fight the modal sheet.
+    if (index == _mushafIndex) {
+      _maybePromptOfflineChoice();
+    }
     setState(() => _currentIndex = index);
+  }
+
+  Future<void> _maybePromptOfflineChoice() async {
+    if (_offlineSheetShownThisSession) return;
+    _offlineSheetShownThisSession = true;
+    final cubit = GetIt.I<PageImageDownloadCubit>();
+    await cubit.probe();
+    if (!mounted) return;
+    if (cubit.state.hasChosenOfflineMode) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      // Provide the singleton cubit via context so the sheet can
+      // dispatch chooseDownload / chooseStayOnline.
+      showModalBottomSheet<void>(
+        context: context,
+        isDismissible: false,
+        enableDrag: false,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => BlocProvider<PageImageDownloadCubit>.value(
+          value: cubit,
+          child: const MobileQuranOfflineChoiceSheet(),
+        ),
+      );
+    });
   }
 
   @override

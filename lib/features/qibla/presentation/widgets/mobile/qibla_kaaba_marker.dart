@@ -33,10 +33,12 @@ class QiblaKaabaMarker extends StatelessWidget {
               ),
             ],
           ),
-          child: const Icon(
-            Icons.mosque_rounded,
-            size: 20,
-            color: Color(0xFF1A1208),
+          padding: const EdgeInsets.all(5),
+          child: Image.asset(
+            'assets/kaaba.png',
+            width: 20,
+            height: 20,
+            fit: BoxFit.contain,
           ),
         ),
       ),

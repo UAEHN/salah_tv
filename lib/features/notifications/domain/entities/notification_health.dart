@@ -19,7 +19,7 @@ class NotificationHealth {
   });
 
   bool get allGreen =>
-      postNotifications && exactAlarm && batteryUnrestricted && !oem.needsAttention;
+      postNotifications && exactAlarm && batteryUnrestricted;
 
   static const empty = NotificationHealth(
     postNotifications: false,

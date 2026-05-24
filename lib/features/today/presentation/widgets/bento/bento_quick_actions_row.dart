@@ -3,6 +3,7 @@ import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/mobile_theme.dart';
 import '../../../../../core/widgets/mobile/mobile_shell.dart';
+import '../../../../tasbih/presentation/widgets/tasbih_icon.dart';
 import 'bento_tile.dart';
 
 /// Section with three navigational tiles. Headed by an editorial eyebrow
@@ -51,19 +52,30 @@ class BentoQuickActionsRow extends StatelessWidget {
           Row(
             children: [
               _ActionTile(
-                icon: Icons.fingerprint_rounded,
+                icon: TasbihIcon(
+                  size: 22,
+                  color: MobileColors.activePrimary(context),
+                ),
                 label: l.todayQuickActionTasbih,
                 onTap: () => Navigator.of(context).pushNamed('/tasbih'),
               ),
               const SizedBox(width: 10),
               _ActionTile(
-                icon: Icons.auto_stories_rounded,
+                icon: Icon(
+                  Icons.auto_stories_rounded,
+                  size: 20,
+                  color: MobileColors.activePrimary(context),
+                ),
                 label: l.todayQuickActionAdhkar,
                 onTap: () => MobileShell.switchTab(context, 3),
               ),
               const SizedBox(width: 10),
               _ActionTile(
-                icon: Icons.explore_outlined,
+                icon: Icon(
+                  Icons.explore_outlined,
+                  size: 20,
+                  color: MobileColors.activePrimary(context),
+                ),
                 label: l.todayQuickActionQibla,
                 onTap: () => MobileShell.switchTab(context, 1),
               ),
@@ -76,7 +88,7 @@ class BentoQuickActionsRow extends StatelessWidget {
 }
 
 class _ActionTile extends StatefulWidget {
-  final IconData icon;
+  final Widget icon;
   final String label;
   final VoidCallback onTap;
 
@@ -137,11 +149,12 @@ class _ActionTileState extends State<_ActionTile> {
                   Container(
                     width: 42,
                     height: 42,
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: accent.withValues(alpha: 0.16),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(widget.icon, size: 20, color: accent),
+                    child: widget.icon,
                   ),
                   const SizedBox(height: 10),
                   Text(

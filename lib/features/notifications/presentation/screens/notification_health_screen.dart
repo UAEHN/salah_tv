@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/notification_health_cubit.dart';
 import '../cubit/notification_health_state.dart';
 import '../widgets/health_permissions_section.dart';
-import '../widgets/oem_guidance_card.dart';
 import '../widgets/schedule_log_list.dart';
 
 /// Diagnostic screen for the native notification engine. Aggregates the
@@ -48,11 +47,6 @@ class _NotificationHealthScreenState extends State<NotificationHealthScreen> {
               padding: const EdgeInsets.all(12),
               children: [
                 HealthPermissionsSection(state: state),
-                OemGuidanceCard(
-                  oem: state.health.oem,
-                  onOpen: () =>
-                      context.read<NotificationHealthCubit>().openOemAutostart(),
-                ),
                 const SizedBox(height: 12),
                 _TestButton(isPending: state.isTestPending),
                 const SizedBox(height: 12),

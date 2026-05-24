@@ -1,26 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
+import 'package:quran/quran.dart' as quran;
 
 import '../../../../../core/mobile_theme.dart';
+import '../../../../../core/quran_juz_data.dart';
+import '../../../../../core/quran_quick_links.dart';
 import '../../../../../core/surahs_data.dart';
-import '../../../../../injection.dart';
-import '../../../domain/entities/quran_bookmark.dart';
-import '../../../domain/entities/surah.dart';
 import '../../bloc/mushaf_reader_cubit.dart';
 import '../../bloc/mushaf_reader_state.dart';
-import '../../bloc/quran_assets_cubit.dart';
-import '../../bloc/quran_assets_state.dart';
+import '../../bloc/page_image_download_cubit.dart';
+import '../../../domain/entities/quran_bookmark.dart';
+import '../../../domain/entities/surah.dart';
 import '../../widgets/mobile/mobile_mushaf_background.dart';
 import '../../widgets/mobile/mobile_mushaf_error_view.dart';
-import '../../widgets/mobile/mobile_mushaf_index_divider.dart';
+import '../../widgets/mobile/mobile_mushaf_index_toggle.dart';
+import '../../widgets/mobile/mobile_mushaf_juz_tile.dart';
 import '../../widgets/mobile/mobile_mushaf_landing_header.dart';
 import '../../widgets/mobile/mobile_mushaf_open_button.dart';
+import '../../widgets/mobile/mobile_mushaf_quick_links_row.dart';
 import '../../widgets/mobile/mobile_mushaf_resume_card.dart';
 import '../../widgets/mobile/mobile_mushaf_surah_search_bar.dart';
 import '../../widgets/mobile/mobile_mushaf_surah_tile.dart';
+import '../../widgets/mobile/mobile_quran_download_banner.dart';
 import 'mobile_mushaf_reader_screen.dart';
 
+/// Quran-tab landing page. Pages stream as Madinah PNGs from
+/// files.quran.app, so the reader opens instantly — no font gate.
+/// The landing surface offers four entry points:
+///   * **Resume card** — last bookmark.
+///   * **Open Mushaf** — start at page 1.
+///   * **Quick links** — Ayah al-Kursi, الكهف, يس, الرحمن, الواقعة,
+///     الملك. Single-ayah targets briefly flash a highlight on the
+///     destination ayah via [MushafReaderCubit.flashAyah].
+///   * **Index toggle** — flip between the surah list and the juz
+///     list (1..30 with opening phrase + first page).
 class MobileMushafScreen extends StatefulWidget {
   const MobileMushafScreen({super.key});
 
@@ -28,168 +43,10 @@ class MobileMushafScreen extends StatefulWidget {
   State<MobileMushafScreen> createState() => _MobileMushafScreenState();
 }
 
-/// Slim status strip pinned above the surah list. While downloading
-/// it shows progress; once the bundle is on disk it shows a small
-/// "Mushaf ready" row with a delete action so the user can free the
-/// ~105 MB without having to enter the reader.
-class _DownloadBanner extends StatelessWidget {
-  const _DownloadBanner();
-
-  Future<void> _confirmAndDelete(BuildContext context) async {
-    final l = AppLocalizations.of(context);
-    final cubit = context.read<QuranAssetsCubit>();
-    final messenger = ScaffoldMessenger.of(context);
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l.quranAssetsDeleteTitle),
-        content: Text(l.quranAssetsDeleteConfirm),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text(l.quranAssetsCancel)),
-          FilledButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text(l.quranAssetsDelete)),
-        ],
-      ),
-    );
-    if (ok != true) return;
-    await cubit.deleteBundle();
-    messenger.showSnackBar(SnackBar(content: Text(l.quranAssetsDeleted)));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    return BlocBuilder<QuranAssetsCubit, QuranAssetsState>(
-      buildWhen: (p, n) =>
-          p.status != n.status || p.downloadedCount != n.downloadedCount,
-      builder: (context, state) {
-        if (state.status == QuranAssetsStatus.ready) {
-          return _ReadyRow(
-            label: l.quranAssetsReady,
-            deleteLabel: l.quranAssetsDeleteTitle,
-            onDelete: () => _confirmAndDelete(context),
-          );
-        }
-        if (state.status != QuranAssetsStatus.downloading) {
-          return const SizedBox.shrink();
-        }
-        return Container(
-          margin: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.10),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-                color: Theme.of(context)
-                    .colorScheme
-                    .primary
-                    .withValues(alpha: 0.3)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.cloud_download_rounded, size: 18),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(l.quranAssetsDownloadingTitle,
-                        style: MobileTextStyles.bodyMd(context)
-                            .copyWith(fontWeight: FontWeight.w600)),
-                  ),
-                  Text(
-                    l.quranAssetsDownloadProgress(
-                        state.downloadedCount, state.totalCount),
-                    style: MobileTextStyles.bodyMd(context)
-                        .copyWith(fontSize: 12),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                    value: state.progress, minHeight: 4),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _ReadyRow extends StatelessWidget {
-  final String label;
-  final String deleteLabel;
-  final VoidCallback onDelete;
-  const _ReadyRow({
-    required this.label,
-    required this.deleteLabel,
-    required this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final faint = MobileColors.onSurfaceFaint(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 6, 20, 0),
-      child: Row(
-        children: [
-          Icon(Icons.check_circle_rounded,
-              size: 16, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(label,
-                style: MobileTextStyles.bodyMd(context)
-                    .copyWith(fontSize: 13, color: faint)),
-          ),
-          TextButton.icon(
-            onPressed: onDelete,
-            icon: Icon(Icons.delete_outline_rounded,
-                size: 18, color: Theme.of(context).colorScheme.error),
-            label: Text(deleteLabel,
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                    fontSize: 13)),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              minimumSize: const Size(0, 32),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _MobileMushafScreenState extends State<MobileMushafScreen> {
   final _searchController = TextEditingController();
   String _query = '';
-
-  @override
-  void initState() {
-    super.initState();
-    // Heavy work intentionally deferred to MobileShell:
-    //   • Bookmark is already loaded by [MushafReaderCubit.loadBookmarkOnly]
-    //     at shell mount, so the resume card renders without the 1.6MB JSON.
-    //   • The QCF font bundle is probed 800ms after the first frame so the
-    //     604 file.exists + FontLoader work never blocks app startup.
-    //   • The full [MushafReaderCubit.init] runs lazily inside [_openReader]
-    //     / [_openReaderAtSurah] when the user actually opens a page.
-    // The surah list below uses the [kSurahs] constant — no JSON needed.
-    final assets = getIt<QuranAssetsCubit>();
-    if (assets.state.status == QuranAssetsStatus.unknown) {
-      // Belt-and-braces: if the user lands on this tab before the shell's
-      // delayed probe has fired, kick it off now so the download banner
-      // surfaces immediately.
-      assets.probe();
-    }
-  }
+  MushafIndexMode _indexMode = MushafIndexMode.surahs;
 
   @override
   void dispose() {
@@ -202,8 +59,7 @@ class _MobileMushafScreenState extends State<MobileMushafScreen> {
     final q = _query.toLowerCase();
     return kSurahs
         .where((s) =>
-            s.nameAr.contains(_query) ||
-            s.nameEn.toLowerCase().contains(q))
+            s.nameAr.contains(_query) || s.nameEn.toLowerCase().contains(q))
         .toList();
   }
 
@@ -225,8 +81,35 @@ class _MobileMushafScreenState extends State<MobileMushafScreen> {
     navigator.push(_readerRoute(cubit));
   }
 
-  MaterialPageRoute _readerRoute(MushafReaderCubit cubit) =>
-      MaterialPageRoute(
+  Future<void> _openReaderAtQuickLink(QuranQuickLink link) async {
+    final cubit = context.read<MushafReaderCubit>();
+    final navigator = Navigator.of(context);
+    // For ayah-specific links use `quran.getPageNumber` to land
+    // directly on the ayah's page (e.g. Ayat al-Kursi → page 42).
+    // For whole-surah links fall back to the surah's first page.
+    final targetPage = link.ayah != null
+        ? quran.getPageNumber(link.surah, link.ayah!)
+        : null;
+    if (targetPage != null) {
+      await cubit.openReader(page: targetPage);
+    } else {
+      await cubit.openReader(page: 1);
+      if (!mounted) return;
+      await cubit.goToSurah(link.surah);
+    }
+    if (!mounted) return;
+    navigator.push(_readerRoute(cubit));
+    if (!link.isWholeSurah) {
+      // Trigger the flash AFTER push so the highlight is visible
+      // while the reader screen is on top — the 2-second cubit
+      // timer then clears it.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        cubit.flashAyah(link.surah, link.ayah!);
+      });
+    }
+  }
+
+  MaterialPageRoute _readerRoute(MushafReaderCubit cubit) => MaterialPageRoute(
         builder: (_) => BlocProvider.value(
           value: cubit,
           child: const MobileMushafReaderScreen(),
@@ -235,8 +118,8 @@ class _MobileMushafScreenState extends State<MobileMushafScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: getIt<QuranAssetsCubit>(),
+    return BlocProvider<PageImageDownloadCubit>.value(
+      value: GetIt.I<PageImageDownloadCubit>(),
       child: Stack(
         children: [
           const MobileMushafBackground(),
@@ -244,10 +127,9 @@ class _MobileMushafScreenState extends State<MobileMushafScreen> {
             bottom: false,
             child: Column(
               children: [
-                const _DownloadBanner(),
+                const MobileQuranDownloadBanner(),
                 Expanded(
-                  child:
-                      BlocBuilder<MushafReaderCubit, MushafReaderState>(
+                  child: BlocBuilder<MushafReaderCubit, MushafReaderState>(
                     builder: (_, state) {
                       if (state.loadStatus == MushafLoadStatus.error) {
                         return MobileMushafErrorView(
@@ -270,7 +152,6 @@ class _MobileMushafScreenState extends State<MobileMushafScreen> {
   }
 
   Widget _buildList(MushafReaderState state) {
-    final filtered = _filteredSurahs;
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 130),
       children: [
@@ -287,32 +168,60 @@ class _MobileMushafScreenState extends State<MobileMushafScreen> {
           padding: const EdgeInsets.only(top: 4, bottom: 18),
           child: MobileMushafOpenButton(onTap: () => _openReader(page: 1)),
         ),
-        const MobileMushafIndexDivider(),
         Padding(
-          key: const ValueKey('mushaf_search_bar'),
           padding: const EdgeInsets.only(bottom: 12),
-          child: MobileMushafSurahSearchBar(
-            controller: _searchController,
-            onChanged: (q) => setState(() => _query = q),
+          child: MobileMushafIndexToggle(
+            mode: _indexMode,
+            onChanged: (m) => setState(() => _indexMode = m),
           ),
         ),
-        for (final s in filtered)
-          MobileMushafSurahTile(
-            key: ValueKey('mushaf_surah_${s.number}'),
-            number: s.number,
-            onTap: () => _openReaderAtSurah(s.number),
-          ),
-        if (filtered.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 32),
-            child: Text(
-              AppLocalizations.of(context).mushafSearchEmpty,
-              textAlign: TextAlign.center,
-              style: MobileTextStyles.bodyMd(context),
-            ),
-          ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: MobileMushafQuickLinksRow(onTap: _openReaderAtQuickLink),
+        ),
+        if (_indexMode == MushafIndexMode.surahs) ..._buildSurahsList(),
+        if (_indexMode == MushafIndexMode.juz) ..._buildJuzList(),
       ],
     );
   }
-}
 
+  List<Widget> _buildSurahsList() {
+    final filtered = _filteredSurahs;
+    return [
+      Padding(
+        key: const ValueKey('mushaf_search_bar'),
+        padding: const EdgeInsets.only(bottom: 12),
+        child: MobileMushafSurahSearchBar(
+          controller: _searchController,
+          onChanged: (q) => setState(() => _query = q),
+        ),
+      ),
+      for (final s in filtered)
+        MobileMushafSurahTile(
+          key: ValueKey('mushaf_surah_${s.number}'),
+          number: s.number,
+          onTap: () => _openReaderAtSurah(s.number),
+        ),
+      if (filtered.isEmpty)
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 32),
+          child: Text(
+            AppLocalizations.of(context).mushafSearchEmpty,
+            textAlign: TextAlign.center,
+            style: MobileTextStyles.bodyMd(context),
+          ),
+        ),
+    ];
+  }
+
+  List<Widget> _buildJuzList() {
+    return [
+      for (final j in kJuzList)
+        MobileMushafJuzTile(
+          key: ValueKey('mushaf_juz_${j.number}'),
+          juz: j,
+          onTap: () => _openReader(page: j.firstPage),
+        ),
+    ];
+  }
+}

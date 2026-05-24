@@ -20,6 +20,13 @@ class MushafReaderState {
   final int? playingSurah;
   final int? playingAyah;
 
+  /// Transient overlay set by quick-link navigation (e.g. tapping
+  /// "آية الكرسي" from the Quran tab). The image page's highlight
+  /// renderer prefers this over the playing-ayah highlight while
+  /// it's non-null; a cubit timer clears it after ~2 seconds.
+  final int? flashSurah;
+  final int? flashAyah;
+
   /// Single bookmark slot — updated by both the manual save button and
   /// the automatic save on leaving the reader. The newer save wins.
   final QuranBookmark? bookmark;
@@ -40,6 +47,8 @@ class MushafReaderState {
     this.audioStatus = MushafAudioStatus.idle,
     this.playingSurah,
     this.playingAyah,
+    this.flashSurah,
+    this.flashAyah,
     this.bookmark,
     this.prefs = const MushafPreferences(),
     this.hasSeenIntro = true,
@@ -72,10 +81,13 @@ class MushafReaderState {
     MushafAudioStatus? audioStatus,
     int? playingSurah,
     int? playingAyah,
+    int? flashSurah,
+    int? flashAyah,
     QuranBookmark? bookmark,
     MushafPreferences? prefs,
     bool? hasSeenIntro,
     bool clearPlaying = false,
+    bool clearFlash = false,
   }) {
     return MushafReaderState(
       loadStatus: loadStatus ?? this.loadStatus,
@@ -85,6 +97,8 @@ class MushafReaderState {
       audioStatus: audioStatus ?? this.audioStatus,
       playingSurah: clearPlaying ? null : (playingSurah ?? this.playingSurah),
       playingAyah: clearPlaying ? null : (playingAyah ?? this.playingAyah),
+      flashSurah: clearFlash ? null : (flashSurah ?? this.flashSurah),
+      flashAyah: clearFlash ? null : (flashAyah ?? this.flashAyah),
       bookmark: bookmark ?? this.bookmark,
       prefs: prefs ?? this.prefs,
       hasSeenIntro: hasSeenIntro ?? this.hasSeenIntro,

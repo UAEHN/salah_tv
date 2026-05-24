@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/mobile_theme.dart';
 import '../../bloc/mushaf_reader_cubit.dart';
 import '../../bloc/mushaf_reader_state.dart';
-import '../../bloc/quran_assets_cubit.dart';
-import '../../bloc/quran_assets_state.dart';
+import '../../bloc/page_image_download_cubit.dart';
 import 'mobile_mushaf_continuous_section.dart';
-import 'mobile_mushaf_font_section.dart';
 import 'mobile_mushaf_reciter_section.dart';
+import 'mobile_mushaf_storage_section.dart';
 import 'mobile_mushaf_theme_section.dart';
 
 /// Bottom sheet that exposes all reader preferences.
 /// Each section lives in its own file (CLAUDE.md §4 SRP + 150-line cap).
+///
+/// The "Delete font bundle" row was removed during the QCF → image
+/// engine pivot — pages now stream as PNGs from android.quran.com, so
+/// there is no on-disk font bundle for the user to manage.
 class MobileMushafSettingsSheet extends StatelessWidget {
   const MobileMushafSettingsSheet({super.key});
 
   static Future<void> show(BuildContext context) {
     final readerCubit = context.read<MushafReaderCubit>();
-    final assetsCubit = context.read<QuranAssetsCubit>();
+    final downloadCubit = GetIt.I<PageImageDownloadCubit>();
     return showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
@@ -27,7 +31,7 @@ class MobileMushafSettingsSheet extends StatelessWidget {
       builder: (_) => MultiBlocProvider(
         providers: [
           BlocProvider.value(value: readerCubit),
-          BlocProvider.value(value: assetsCubit),
+          BlocProvider.value(value: downloadCubit),
         ],
         child: const MobileMushafSettingsSheet(),
       ),
@@ -63,75 +67,18 @@ class MobileMushafSettingsSheet extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
                 MobileMushafThemeSection(theme: state.readingTheme),
-                const SizedBox(height: 20),
-                MobileMushafFontSection(size: state.fontSize),
-                const SizedBox(height: 12),
+                const SizedBox(height: 18),
                 MobileMushafContinuousSection(enabled: state.continuousPlayback),
                 const SizedBox(height: 18),
                 MobileMushafReciterSection(reciterId: state.prefs.reciterId),
                 const SizedBox(height: 18),
-                const _DeleteBundleButton(),
+                const MobileMushafStorageSection(),
               ],
             ),
           ),
         );
       },
     );
-  }
-}
-
-/// Removes the downloaded QCF v2 font bundle (~105 MB on disk). The
-/// reader stays usable in-session — Flutter has no font-unregister API
-/// — but the gate UI shows the download prompt again on next launch.
-class _DeleteBundleButton extends StatelessWidget {
-  const _DeleteBundleButton();
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    return BlocBuilder<QuranAssetsCubit, QuranAssetsState>(
-      buildWhen: (p, n) => p.status != n.status,
-      builder: (context, state) {
-        final ready = state.status == QuranAssetsStatus.ready;
-        return OutlinedButton.icon(
-          icon: Icon(Icons.delete_outline_rounded,
-              color: theme.colorScheme.error),
-          label: Text(l.quranAssetsDeleteTitle,
-              style: TextStyle(color: theme.colorScheme.error)),
-          style: OutlinedButton.styleFrom(
-            side: BorderSide(
-                color: theme.colorScheme.error.withValues(alpha: 0.5)),
-            padding: const EdgeInsets.symmetric(vertical: 12),
-          ),
-          onPressed: ready ? () => _confirmAndDelete(context) : null,
-        );
-      },
-    );
-  }
-
-  Future<void> _confirmAndDelete(BuildContext context) async {
-    final l = AppLocalizations.of(context);
-    final cubit = context.read<QuranAssetsCubit>();
-    final scaffold = ScaffoldMessenger.of(context);
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l.quranAssetsDeleteTitle),
-        content: Text(l.quranAssetsDeleteConfirm),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text(l.quranAssetsCancel)),
-          FilledButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text(l.quranAssetsDelete)),
-        ],
-      ),
-    );
-    if (confirm != true) return;
-    await cubit.deleteBundle();
-    scaffold.showSnackBar(SnackBar(content: Text(l.quranAssetsDeleted)));
   }
 }
 

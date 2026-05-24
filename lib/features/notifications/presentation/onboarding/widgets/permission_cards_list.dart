@@ -45,15 +45,11 @@ class PermissionCardsList extends StatelessWidget {
         isGranted: h.batteryUnrestricted,
         onTap: cubit.grantBattery,
       ),
-      if (state.isOemStepRelevant)
-        OnboardingPermissionCard(
-          step: 4,
-          icon: Icons.shield_outlined,
-          title: 'حماية ضد قتل التطبيق',
-          description: 'فعّل غسق في قائمة التطبيقات النشطة.',
-          isGranted: false,
-          onTap: cubit.openOemAutostart,
-        ),
+      // OEM autostart card (was step 4 on Xiaomi/MIUI) intentionally
+      // omitted from the onboarding flow — Xiaomi's deep-link is
+      // unreliable in practice and the dead-end frustrated users.
+      // The toggle still surfaces inside Settings → Notification
+      // Health for power users who know to look for it.
     ];
 
     return ListView.separated(

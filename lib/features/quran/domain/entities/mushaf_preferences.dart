@@ -22,17 +22,31 @@ class MushafPreferences {
 
   const MushafPreferences({
     this.readingTheme = ReadingTheme.paper,
-    this.fontSize = 26,
+    // 30 (zoom 1.083) eats the phone-aspect letterbox so the page
+    // fills the screen — a noticeable improvement over 26 (zoom
+    // 1.0) which leaves ~17% empty space top + bottom.
+    this.fontSize = 30,
     this.continuousPlayback = false,
     this.reciterId = 'husary_muallim',
   });
 
-  /// Allowed font-size steps shown in the settings sheet slider.
-  /// 26 is the floor — at that size the printed Mushaf layout fits
-  /// the viewport exactly. Any value above switches the reader into
-  /// the flowing-text zoom mode.
+  /// Allowed slider steps shown in the settings sheet. The reader
+  /// renders page images now (not flowing text), so [fontSize] is
+  /// repurposed as the zoom-factor driver — see [zoomFactor]. The
+  /// field name is kept for backwards-compatible SharedPreferences
+  /// storage (existing installs already have `fontSize` saved).
   static const double minFont = 26;
   static const double maxFont = 50;
+
+  /// Visual zoom applied to the Madinah page PNG on top of
+  /// `BoxFit.contain`. Linear mapping: slider at min → 1.0× (raw
+  /// printed-Mushaf fit), slider at max → 1.5× (significant zoom,
+  /// edges clipped to viewport). At ~30 the page eats most of the
+  /// phone-aspect letterbox without cropping calligraphy.
+  double get zoomFactor {
+    final clamped = fontSize.clamp(minFont, maxFont);
+    return 1.0 + (clamped - minFont) / (maxFont - minFont) * 0.5;
+  }
 
   MushafPreferences copyWith({
     ReadingTheme? readingTheme,

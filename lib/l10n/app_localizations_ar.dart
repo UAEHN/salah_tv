@@ -1598,7 +1598,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mushafThemeNight => 'ليلي';
 
   @override
-  String get mushafFontSize => 'حجم الخط';
+  String get mushafFontSize => 'حجم العرض';
 
   @override
   String get mushafContinuousPlayback => 'تشغيل مستمر';

@@ -3137,7 +3137,7 @@ abstract class AppLocalizations {
   /// No description provided for @mushafFontSize.
   ///
   /// In ar, this message translates to:
-  /// **'حجم الخط'**
+  /// **'حجم العرض'**
   String get mushafFontSize;
 
   /// No description provided for @mushafContinuousPlayback.

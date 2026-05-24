@@ -1605,7 +1605,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mushafThemeNight => 'Night';
 
   @override
-  String get mushafFontSize => 'Font size';
+  String get mushafFontSize => 'Page zoom';
 
   @override
   String get mushafContinuousPlayback => 'Continuous playback';

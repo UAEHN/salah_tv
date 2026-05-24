@@ -1,23 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quran/quran.dart' as quran;
 
 import '../../../domain/entities/reading_theme.dart';
-import '../../bloc/mushaf_reader_cubit.dart';
-import '../../bloc/mushaf_reader_state.dart';
-import 'mobile_mushaf_font_gate.dart';
-import 'mobile_mushaf_glyph_page_view.dart';
+import 'mobile_mushaf_image_page.dart';
 import 'mobile_mushaf_page_header.dart';
 
-/// One full page in the reader. Carries its own header so a swipe
-/// never rebuilds a global AppBar, plus a [MobileMushafGlyphPageView]
-/// for the body. `AutomaticKeepAliveClientMixin` retains the built
-/// widget tree across swipes.
+/// One full page in the reader. Header on top + image-based Mushaf
+/// page body. `AutomaticKeepAliveClientMixin` retains the built
+/// widget tree across swipes so cached images don't re-decode.
 ///
-/// Audio-highlight: an inner `BlocBuilder` wraps only the glyph view.
-/// `buildWhen` fires **only** when the playing verse moves into or out
-/// of this page — visited-but-not-current pages never rebuild, and
-/// even on the current page the header stays untouched.
+/// Audio-highlight overlays will land here in Phase 2 (tap-to-play
+/// via ayahinfo SQLite — see project_quran_engine_pivot memory).
 class MobileMushafPage extends StatefulWidget {
   final int pageNumber;
   final ReadingPalette palette;
@@ -51,11 +43,6 @@ class _MobileMushafPageState extends State<MobileMushafPage>
   @override
   bool get wantKeepAlive => true;
 
-  bool _versePinsHere(int? surah, int? ayah) {
-    if (surah == null || ayah == null) return false;
-    return quran.getPageNumber(surah, ayah) == widget.pageNumber;
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -63,9 +50,6 @@ class _MobileMushafPageState extends State<MobileMushafPage>
       color: widget.palette.pageBg,
       child: Column(
         children: [
-          // Notch / status-bar guard: pushes the header's icon row down
-          // so the back / surah-index / settings buttons are reachable
-          // and visible on phones with a top cutout.
           SafeArea(
             top: true,
             bottom: false,
@@ -81,43 +65,10 @@ class _MobileMushafPageState extends State<MobileMushafPage>
             ),
           ),
           Expanded(
-            child: MobileMushafFontGate(
+            child: MobileMushafImagePage(
               pageNumber: widget.pageNumber,
-              child: BlocBuilder<MushafReaderCubit, MushafReaderState>(
-              buildWhen: (p, n) {
-                // Rebuild on font-size slider change (every visible /
-                // KeepAlive'd page must re-scale).
-                if (p.fontSize != n.fontSize) return true;
-                // Otherwise only rebuild when the playing verse moved
-                // into or out of this page — visited pages don't pay
-                // the cost when audio progresses elsewhere.
-                final wasHere =
-                    _versePinsHere(p.playingSurah, p.playingAyah);
-                final nowHere =
-                    _versePinsHere(n.playingSurah, n.playingAyah);
-                return wasHere != nowHere ||
-                    (nowHere &&
-                        (p.playingSurah != n.playingSurah ||
-                            p.playingAyah != n.playingAyah));
-              },
-              builder: (_, state) {
-                final pvk = _versePinsHere(
-                            state.playingSurah, state.playingAyah)
-                        ? '${state.playingSurah}:${state.playingAyah}'
-                        : null;
-                // `MushafPreferences.fontSize` defaults to 26 — that is
-                // 1.0 × printed-Mushaf size. Slider values above scale
-                // up, below scale down.
-                final fontScale = state.fontSize / 26.0;
-                return MobileMushafGlyphPageView(
-                  pageNumber: widget.pageNumber,
-                  palette: widget.palette,
-                  playingVerseKey: pvk,
-                  fontScale: fontScale,
-                  onAyahTap: widget.onAyahTap,
-                );
-              },
-              ),
+              palette: widget.palette,
+              onAyahTap: widget.onAyahTap,
             ),
           ),
         ],

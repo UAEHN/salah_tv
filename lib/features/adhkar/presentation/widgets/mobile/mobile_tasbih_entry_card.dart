@@ -2,6 +2,7 @@
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/mobile_theme.dart';
+import '../../../../tasbih/presentation/widgets/tasbih_icon.dart';
 
 /// Entry card shown at the top of the adhkar screen.
 /// Navigates to /tasbih without coupling to tasbih internals.
@@ -34,7 +35,8 @@ class MobileTasbihEntryCard extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: color.withValues(alpha: 0.15),
               ),
-              child: Icon(Icons.grain_rounded, color: color, size: 24),
+              alignment: Alignment.center,
+              child: TasbihIcon(size: 26, color: color),
             ),
             const SizedBox(width: 14),
             Expanded(

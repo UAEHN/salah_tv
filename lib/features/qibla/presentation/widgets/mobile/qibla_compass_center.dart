@@ -43,10 +43,14 @@ class QiblaCompassCenter extends StatelessWidget {
           color: onSurface.withValues(alpha: 0.20),
         ),
         const SizedBox(height: 6),
-        Icon(
-          Icons.mosque_rounded,
-          color: onSurface.withValues(alpha: isAligned ? 0.60 : 0.32),
-          size: 16,
+        Opacity(
+          opacity: isAligned ? 0.95 : 0.75,
+          child: Image.asset(
+            'assets/kaaba.png',
+            width: 18,
+            height: 18,
+            fit: BoxFit.contain,
+          ),
         ),
       ],
     );

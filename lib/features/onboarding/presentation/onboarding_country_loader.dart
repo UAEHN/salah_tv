@@ -18,7 +18,7 @@ class OnboardingCountryLoader {
 
   Future<OnboardingCountryLoadResult> load() async {
     await _worldRepo.initialize();
-    final countries = buildUnifiedCountries(null);
+    final countries = buildUnifiedCountries(_worldRepo);
     return OnboardingCountryLoadResult(
       worldRepo: _worldRepo,
       countries: countries,

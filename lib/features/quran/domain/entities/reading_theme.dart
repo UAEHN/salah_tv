@@ -17,6 +17,10 @@ class ReadingPalette {
   final Color highlight;
   final Color appBarFg;
 
+  /// `true` for the night palette — the reader uses this to invert
+  /// the cream-paper page image so it shows white-on-dark instead.
+  final bool isDark;
+
   const ReadingPalette({
     required this.screenBg,
     required this.pageBg,
@@ -25,6 +29,7 @@ class ReadingPalette {
     required this.marker,
     required this.highlight,
     required this.appBarFg,
+    this.isDark = false,
   });
 
   static const ReadingPalette paper = ReadingPalette(
@@ -55,6 +60,7 @@ class ReadingPalette {
     marker: Color(0xFFD4A843),
     highlight: Color(0x55D4A843),
     appBarFg: Color(0xFFE6DAB8),
+    isDark: true,
   );
 
   static ReadingPalette of(ReadingTheme t) => switch (t) {

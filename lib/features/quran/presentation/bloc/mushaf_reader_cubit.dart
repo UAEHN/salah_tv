@@ -30,6 +30,7 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
   final HasSeenMushafIntroUseCase _hasSeenIntro;
   final MarkMushafIntroSeenUseCase _markIntroSeen;
   StreamSubscription<AyahPlaybackEvent>? _audioSub;
+  Timer? _flashTimer;
 
   MushafReaderCubit({
     required IQuranTextRepository textRepo,
@@ -126,6 +127,19 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
         (f) async => emit(state.copyWith(loadError: f.message)),
         goToPage,
       );
+
+  /// Briefly highlights [surah]:[ayah] on the current page — used by
+  /// quick-link navigation (e.g. "آية الكرسي"). The overlay clears
+  /// automatically after 2 seconds, then the image page falls back
+  /// to whatever the audio cycle is doing.
+  void flashAyah(int surah, int ayah) {
+    _flashTimer?.cancel();
+    emit(state.copyWith(flashSurah: surah, flashAyah: ayah));
+    _flashTimer = Timer(const Duration(seconds: 2), () {
+      if (isClosed) return;
+      emit(state.copyWith(clearFlash: true));
+    });
+  }
   Future<void> tapAyah(int surah, int ayah) async {
     if (state.isAyahPlaying(surah, ayah)) return _audioPort.pause();
     if (state.isAyahPaused(surah, ayah)) return _audioPort.resume();
@@ -144,6 +158,7 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
   @override
   Future<void> close() async {
     cancelBookmarkAutoSave();
+    _flashTimer?.cancel();
     await _audioSub?.cancel();
     await _stopAyah();
     return super.close();

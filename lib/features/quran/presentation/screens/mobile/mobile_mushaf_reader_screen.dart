@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-import '../../../../../injection.dart';
 import '../../../domain/entities/reading_theme.dart';
+import '../../../domain/i_ayah_bounds_repository.dart';
 import '../../bloc/mushaf_reader_cubit.dart';
 import '../../bloc/mushaf_reader_state.dart';
-import '../../bloc/quran_assets_cubit.dart';
 import '../../widgets/mobile/mobile_mushaf_intro_sheet.dart';
 import '../../widgets/mobile/mobile_mushaf_page.dart';
 import '../../widgets/mobile/mobile_mushaf_page_jump_dialog.dart';
 import '../../widgets/mobile/mobile_mushaf_playing_bar.dart';
 import '../../widgets/mobile/mobile_mushaf_settings_sheet.dart';
 import '../../widgets/mobile/mobile_mushaf_surah_index_sheet.dart';
-import '../../widgets/mobile/mobile_quran_assets_gate.dart';
 
 /// Full Mushaf reader. The Scaffold has no AppBar and no BlocConsumer
 /// at the body level. State subscriptions are pushed to:
@@ -25,32 +24,18 @@ import '../../widgets/mobile/mobile_quran_assets_gate.dart';
 ///     swipe thanks to the [_swipeOriginated] flag;
 ///   • a narrow `BlocBuilder` around the playing-bar overlay only.
 ///
-/// The PageView itself is built once per theme change and never on
-/// audio / bookmark / page-change events.
-/// Public entry: wraps the actual reader in [MobileQuranAssetsGate] +
-/// a `BlocProvider` for the shared [QuranAssetsCubit]. Until the QCF
-/// v2 font bundle is downloaded the gate replaces the reader UI; once
-/// ready it lets the reader through unchanged.
-class MobileMushafReaderScreen extends StatelessWidget {
+/// Pages are rendered as PNG images from android.quran.com (see
+/// `project_quran_engine_pivot` memory). No font gate, no QCF
+/// bundle — `CachedNetworkImage` inside each page handles loading.
+class MobileMushafReaderScreen extends StatefulWidget {
   const MobileMushafReaderScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: getIt<QuranAssetsCubit>(),
-      child: const MobileQuranAssetsGate(child: _MushafReaderInner()),
-    );
-  }
+  State<MobileMushafReaderScreen> createState() =>
+      _MobileMushafReaderScreenState();
 }
 
-class _MushafReaderInner extends StatefulWidget {
-  const _MushafReaderInner();
-
-  @override
-  State<_MushafReaderInner> createState() => _MobileMushafReaderScreenState();
-}
-
-class _MobileMushafReaderScreenState extends State<_MushafReaderInner> {
+class _MobileMushafReaderScreenState extends State<MobileMushafReaderScreen> {
   late final PageController _controller;
   late final MushafReaderCubit _cubit;
   bool _swipeOriginated = false;
@@ -61,11 +46,12 @@ class _MobileMushafReaderScreenState extends State<_MushafReaderInner> {
     _cubit = context.read<MushafReaderCubit>();
     _controller = PageController(initialPage: _cubit.state.currentPage - 1);
     WakelockPlus.enable();
+    // Fire-and-forget: kick the 2.2 MB ayahinfo SQLite download so
+    // tap-to-play is ready by the time the user picks a verse.
+    // Repository is idempotent; calling on every reader open is fine.
+    GetIt.I<IAyahBoundsRepository>().ensureReady();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      precacheImage(
-          const AssetImage('assets/images/surah_frame_888.png'), context);
-      precacheImage(const AssetImage('assets/images/basmala.png'), context);
       _maybeShowIntro();
     });
   }

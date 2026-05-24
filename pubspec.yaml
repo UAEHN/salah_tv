@@ -85,9 +85,26 @@ dependencies:
   # Home screen widget (Android) — bridge to AppWidgetProvider
   home_widget: ^0.7.0
 
-  # Quran data + per-page QCF v2 BSML codepoint helpers (getPageData,
-  # getVerseQCF). The matching font files live in assets/fonts/QCF2BSML/.
+  # Quran metadata helpers (getPageData, getJuzNumber, getPageNumber).
+  # Rendering uses page images from android.quran.com — see
+  # quran_page_image_urls.dart.
   quran: ^1.4.1
+
+  # Persistent disk cache for the Mushaf page images pulled from
+  # https://files.quran.app/hafs/madani/width_X/page{NNN}.png. Each PNG
+  # is ~30-60 KB at 1024px wide; the full Mushaf cache is ~25 MB.
+  cached_network_image: ^3.4.1
+
+  # Zip extraction for the ayahinfo SQLite bundle (per-glyph bounding
+  # boxes used by tap-to-play). The 2.2 MB zip ships as a single .db
+  # inside.
+  archive: ^4.0.9
+
+  # SVG rendering — currently powers the tinted Tasbih icon used in
+  # the Today bento + the Adhkar entry card. The SVG ships as a
+  # single asset and we apply a ColorFilter at runtime so it picks up
+  # the active theme's accent colour.
+  flutter_svg: ^2.0.10+1
 
 
 dev_dependencies:
@@ -128,18 +145,13 @@ flutter:
     - assets/db_countries.json
     - assets/animations/
     - assets/quran/
-    # QCF v2 BSML per-page fonts are NOT bundled — they are downloaded
-    # on demand by QuranDownloadManager and registered via FontLoader
-    # from the app's documents directory. This keeps the APK ~105 MB
-    # lighter; users who never open the Mushaf reader never pay for it.
-    # Mushaf reader decorative assets (surah-frame banner + basmala
-    # calligraphy image) sourced from the m4hmoud-atef/quran-app reference
-    # implementation. Rendered as widget overlays on surah-start slots.
-    - assets/images/surah_frame_888.png
-    - assets/images/basmala.png
     # Bundled fallback for the remote occasions catalog. Shipped with the
     # APK so a first-launch user with no network still sees Hijri events.
     - assets/occasions/occasions_default.json
+    # Tinted Tasbih icon used by Today bento + Adhkar entry card.
+    - assets/tasbih.svg
+    # Kaaba image used by the Qibla compass marker + center label.
+    - assets/kaaba.png
   fonts:
     - family: Cairo
       fonts:
@@ -170,20 +182,12 @@ flutter:
           weight: 600
         - asset: assets/fonts/Inter/Inter-Bold.ttf
           weight: 700
-    # Amiri Quran — Uthmanic Mushaf script used by the mobile Mushaf
-    # reader. Designed by Dr. Khaled Hosny, licensed under SIL OFL.
-    # Downloaded from Google Fonts (fonts.google.com/specimen/Amiri+Quran).
+    # Amiri Quran — Uthmanic Mushaf script for short Quran-text
+    # previews (resume card, Today bento, theme picker). Reader pages
+    # themselves are Madinah PNGs from files.quran.app, not this font.
     - family: AmiriQuran
       fonts:
         - asset: assets/fonts/AmiriQuran/AmiriQuran-Regular.ttf
-    # KFGQPC Uthmanic Script HAFS — the original 2011 release from the
-    # King Fahd Complex IT department (via the raflyfahrezi GitHub
-    # mirror). Contains the full Mushaf glyph + mark set (alef wasla,
-    # small-high zero, small-waw/yeh, pause marks…) and shapes them
-    # more reliably on Flutter than the v18 build.
-    - family: UthmanicHafs
-      fonts:
-        - asset: assets/fonts/UthmanicHafs/UthmanicHafs.otf
     # Quran.com surah-name font (`sura_names` v1). Uses OpenType ligatures:
     # the 3-digit zero-padded chapter id ("001", "002", …, "114") collapses
     # into a single calligraphic medallion glyph for that surah. The
@@ -192,9 +196,3 @@ flutter:
     - family: SurahNames
       fonts:
         - asset: assets/fonts/SurahNames/SurahNames.ttf
-    # arsura.ttf — calligraphic Arabic font used by m4hmoud-atef/quran-app
-    # to render the surah number inside the decorative surah-frame banner.
-    # Digits 1–114 shape into ornamental Arabic-Indic numerals.
-    - family: Arsura
-      fonts:
-        - asset: assets/fonts/Arsura/arsura.ttf
