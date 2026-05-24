@@ -1,12 +1,16 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/city_translations.dart';
 import '../../../../../injection.dart';
-import '../../../domain/entities/world_city.dart';
 import '../../../domain/i_world_city_repository.dart';
+import '../../../domain/usecases/resolve_calculation_method_for_iso_usecase.dart';
+import '../../../domain/usecases/resolve_timezone_for_coords_usecase.dart';
+import '../../logic/location_dialog_filter_controller.dart';
+import '../../logic/merged_city_results.dart';
+import '../../logic/remote_city_search_controller.dart';
 import 'mobile_location_dialog_body.dart';
 import 'mobile_location_dialog_callbacks.dart';
 import 'mobile_location_search_utils.dart';
@@ -30,146 +34,113 @@ class MobileLocationDialog extends StatefulWidget {
 }
 
 class _MobileLocationDialogState extends State<MobileLocationDialog> {
-  String? _selectedCountryKey;
-  bool _isSelectedCountryDb = true;
   late final TextEditingController _searchController;
   Timer? _debounce;
   late final LocationDialogCallbacks _callbacks;
-
-  IWorldCityRepository? _worldRepo;
-  List<UnifiedCountry> _allCountries = [];
-  late List<UnifiedCountry> _filteredCountries;
-  List<String> _filteredDbCities = [];
-  List<WorldCity> _filteredWorldCities = [];
+  late final RemoteCitySearchController _remoteController;
+  final LocationDialogFilterController _filter =
+      LocationDialogFilterController();
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
-    _allCountries = buildUnifiedCountries(null);
-    _filteredCountries = _allCountries;
+    _filter
+      ..initWithDbOnly()
+      ..onChanged = _rebuild;
     _callbacks = LocationDialogCallbacks(
-      getSelectedCountryKey: () => _selectedCountryKey,
+      getSelectedCountryKey: () => _filter.selectedCountryKey,
       onSave: widget.onSave,
       onSaveWorld: widget.onSaveWorld,
       contextGetter: () => context,
       isMounted: () => mounted,
+      resolveMethod: getIt<ResolveCalculationMethodForIsoUseCase>(),
+      resolveTimezone: getIt<ResolveTimezoneForCoordsUseCase>(),
     );
-    _loadWorldCities();
+    _remoteController = RemoteCitySearchController(getIt())
+      ..onChanged = _rebuild;
+    _filter.loadWorld(getIt<IWorldCityRepository>(), _searchController.text);
   }
 
-  Future<void> _loadWorldCities() async {
-    final repo = getIt<IWorldCityRepository>();
-    await repo.initialize();
-    if (!mounted) return;
-    setState(() {
-      _worldRepo = repo;
-      _allCountries = buildUnifiedCountries(repo);
-      _filteredCountries = filterUnifiedCountries(
-        _searchController.text,
-        _allCountries,
-      );
-    });
+  void _rebuild() {
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
     _debounce?.cancel();
+    _remoteController.dispose();
     _searchController.dispose();
     super.dispose();
   }
 
   void _onQueryChanged(String query) {
     _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () {
+    _debounce = Timer(const Duration(milliseconds: 500), () {
       if (!mounted) return;
-      setState(() => _filter(query));
+      _filter.applyQuery(query);
+      if (_filter.selectedCountryKey == null) _remoteController.search(query);
     });
   }
 
   void _onClear() {
-    _resetSearch();
-    setState(() => _filter(''));
-  }
-
-  void _resetSearch() {
     _debounce?.cancel();
     _searchController.clear();
+    _filter.applyQuery('');
+    _remoteController.search('');
   }
 
   void _showCountries() {
-    _resetSearch();
-    setState(() {
-      _selectedCountryKey = null;
-      _filteredDbCities = [];
-      _filteredWorldCities = [];
-      _filteredCountries = filterUnifiedCountries('', _allCountries);
-    });
+    _debounce?.cancel();
+    _searchController.clear();
+    _remoteController.search('');
+    _filter.resetToCountries();
   }
 
   void _selectCountry(String key) {
-    _resetSearch();
-    // Drop keyboard so the city list isn't covered when the user lands on
-    // the next screen. They can re-focus the field to search cities.
+    _debounce?.cancel();
+    _searchController.clear();
     FocusManager.instance.primaryFocus?.unfocus();
-    final isDb = isDbCountry(key);
-    setState(() {
-      _selectedCountryKey = key;
-      _isSelectedCountryDb = isDb;
-      if (isDb) {
-        _filteredDbCities = filterDbCities(key, '');
-      } else if (_worldRepo != null) {
-        _filteredWorldCities = filterWorldCities(key, '', _worldRepo!);
-      }
-    });
+    _filter.selectCountry(key);
   }
 
-  void _filter(String query) {
-    if (_selectedCountryKey == null) {
-      _filteredCountries = filterUnifiedCountries(query, _allCountries);
-    } else if (_isSelectedCountryDb) {
-      _filteredDbCities = filterDbCities(_selectedCountryKey!, query);
-    } else if (_worldRepo != null) {
-      _filteredWorldCities = filterWorldCities(
-        _selectedCountryKey!,
-        query,
-        _worldRepo!,
-      );
-    }
+  String _resolveTitle(AppLocalizations l) {
+    final k = _filter.selectedCountryKey;
+    if (k == null) return l.settingsSelectCountry;
+    final isEn = l.localeName == 'en';
+    final matched = _filter.allCountries.cast<UnifiedCountry?>().firstWhere(
+      (c) => c!.key == k,
+      orElse: () => null,
+    );
+    return (isEn ? matched?.englishName : matched?.arabicName) ??
+        countryLabel(k, locale: l.localeName);
   }
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final k = _selectedCountryKey;
-    final isEn = l.localeName == 'en';
-    final matched = k != null
-        ? _allCountries.cast<UnifiedCountry?>().firstWhere(
-            (c) => c!.key == k,
-            orElse: () => null,
-          )
-        : null;
-    final title = k != null
-        ? ((isEn ? matched?.englishName : matched?.arabicName) ??
-            countryLabel(k, locale: l.localeName))
-        : l.settingsSelectCountry;
-
+    final mixedRows = mergeLocalAndRemote(
+      _filter.filteredAllWorldCities,
+      _remoteController.results,
+    );
     return MobileLocationDialogBody(
-      selectedCountryKey: k,
-      isSelectedCountryDb: _isSelectedCountryDb,
+      selectedCountryKey: _filter.selectedCountryKey,
+      isSelectedCountryDb: _filter.isSelectedCountryDb,
       currentCountry: widget.currentCountry,
       currentCity: widget.currentCity,
-      title: title,
+      title: _resolveTitle(AppLocalizations.of(context)),
       searchController: _searchController,
-      filteredCountries: _filteredCountries,
-      filteredDbCities: _filteredDbCities,
-      filteredWorldCities: _filteredWorldCities,
+      filteredCountries: _filter.filteredCountries,
+      filteredDbCities: _filter.filteredDbCities,
+      filteredWorldCities: _filter.filteredWorldCities,
+      mixedCityRows: mixedRows,
+      remoteLoading: _remoteController.loading,
       onQueryChanged: _onQueryChanged,
       onClear: _onClear,
       onShowCountries: _showCountries,
       onSelectCountry: _selectCountry,
       onSelectDbCity: _callbacks.selectDbCity,
       onSelectWorldCity: _callbacks.selectWorldCity,
+      onSelectRemoteCity: _callbacks.selectRemoteCity,
       onLocationDetected: _callbacks.onLocationDetected,
     );
   }

@@ -143,6 +143,31 @@ abstract class AppConfig {
     return 'https://www.everyayah.com/data/$reciterUrlSegment/$s$a.mp3';
   }
 
+  // ─── Nominatim (OpenStreetMap) — worldwide city search ────────────────────
+  /// Nominatim's public instance requires a meaningful User-Agent that
+  /// identifies the app, version, and a contact channel. See:
+  /// https://operations.osmfoundation.org/policies/nominatim/
+  static const String nominatimUserAgent =
+      'SalahTV/$kCurrentAppVersion '
+      '($privacyPolicyUrl; $supportEmail)';
+
+  /// Builds a Nominatim `search` URL. Keeps `limit` modest — UI shows at
+  /// most ~8 remote rows after the merge/dedupe step.
+  static String nominatimSearchUrl({
+    required String query,
+    int limit = 8,
+  }) {
+    final uri = Uri.https('nominatim.openstreetmap.org', '/search', {
+      'q': query,
+      'format': 'jsonv2',
+      'addressdetails': '1',
+      'namedetails': '1',
+      'accept-language': 'ar,en',
+      'limit': '$limit',
+    });
+    return uri.toString();
+  }
+
   static bool get hasTelegramConfig =>
       telegramBotToken.isNotEmpty && telegramChatId.isNotEmpty;
 

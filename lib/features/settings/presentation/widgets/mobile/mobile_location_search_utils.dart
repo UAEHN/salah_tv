@@ -42,6 +42,30 @@ List<WorldCity> filterWorldCities(
   }).toList();
 }
 
+/// Country-agnostic city search across the bundled catalogue. Used by
+/// the top-level mixed results list so the user can find a known local
+/// city by name without first picking its country.
+List<WorldCity> filterAllWorldCities(
+  String query,
+  IWorldCityRepository worldRepo, {
+  int limit = 20,
+}) {
+  if (normalizeLocationSearchQuery(query).isEmpty) return const [];
+  final hits = worldRepo
+      .searchCities(query)
+      .where(
+        (c) => matchesLocationQuery(query, [
+          c.name,
+          c.arabicName,
+          c.countryKey,
+          c.countryArabic,
+        ]),
+      )
+      .take(limit)
+      .toList();
+  return hits;
+}
+
 String locationSearchHint(BuildContext context, bool showCities) {
   final l = AppLocalizations.of(context);
   return showCities ? l.settingsSearchCity : l.settingsSearchCountry;

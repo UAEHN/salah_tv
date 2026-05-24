@@ -49,6 +49,11 @@ dependencies:
   geolocator: ^13.0.0
   geocoding: ^3.0.0
 
+  # Offline lat/lng → IANA timezone (e.g. "Europe/Berlin") lookup. Used
+  # after picking a city from the worldwide Nominatim search so prayer
+  # times use the right zone without an extra network round-trip.
+  lat_lng_to_timezone: ^0.2.0
+
   # Notification scheduling is now handled by the native Kotlin engine in
   # android/app/src/main/kotlin/com/ghasaq/app/notifications/ — no Flutter
   # plugin is required for the mobile notification path. The timezone package

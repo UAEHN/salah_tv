@@ -46,9 +46,19 @@ import '../../features/takbeerat/presentation/cubit/takbeerat_visibility_cubit.d
 import '../../features/quran/data/quran_api_service.dart';
 import '../../features/quran/domain/i_quran_api_repository.dart';
 import '../../features/settings/data/adhan_preview_service.dart';
+import '../../features/settings/data/datasources/nominatim_remote_datasource.dart';
 import '../../features/settings/data/gps_location_detector.dart';
+import '../../features/settings/data/latlong_timezone_resolver.dart';
+import '../../features/settings/data/nominatim_throttler.dart';
+import '../../features/settings/data/remote_city_lru_cache.dart';
+import '../../features/settings/data/remote_city_search_repository_impl.dart';
 import '../../features/settings/data/world_city_json_repository.dart';
 import '../../features/settings/domain/i_adhan_preview_port.dart';
+import '../../features/settings/domain/i_remote_city_search_repository.dart';
+import '../../features/settings/domain/i_timezone_resolver.dart';
+import '../../features/settings/domain/usecases/resolve_calculation_method_for_iso_usecase.dart';
+import '../../features/settings/domain/usecases/resolve_timezone_for_coords_usecase.dart';
+import '../../features/settings/domain/usecases/search_remote_cities_usecase.dart';
 import '../../features/settings/domain/i_custom_adhan_repository.dart';
 import '../../features/settings/domain/usecases/delete_custom_adhan_usecase.dart';
 import '../../features/settings/domain/usecases/import_custom_adhan_usecase.dart';
@@ -201,6 +211,32 @@ void _registerQuranAndQibla() {
 void _registerSharedLocationCatalog() {
   getIt.registerLazySingleton<IWorldCityRepository>(
     () => WorldCityJsonRepository(),
+  );
+  // Worldwide city search via Nominatim (OpenStreetMap). Used by the
+  // mobile location dialog to find cities that aren't in the bundled
+  // 399-city catalogue. Throttled to ≤ 1 req/sec per Nominatim policy.
+  getIt.registerLazySingleton<NominatimThrottler>(() => NominatimThrottler());
+  getIt.registerLazySingleton<RemoteCityLruCache>(() => RemoteCityLruCache());
+  getIt.registerLazySingleton<NominatimRemoteDataSource>(
+    () => NominatimRemoteDataSource(getIt<Dio>(), getIt<NominatimThrottler>()),
+  );
+  getIt.registerLazySingleton<IRemoteCitySearchRepository>(
+    () => RemoteCitySearchRepositoryImpl(
+      getIt<NominatimRemoteDataSource>(),
+      getIt<RemoteCityLruCache>(),
+    ),
+  );
+  getIt.registerLazySingleton<ITimezoneResolver>(
+    () => const LatLongTimezoneResolver(),
+  );
+  getIt.registerFactory<SearchRemoteCitiesUseCase>(
+    () => SearchRemoteCitiesUseCase(getIt<IRemoteCitySearchRepository>()),
+  );
+  getIt.registerFactory<ResolveCalculationMethodForIsoUseCase>(
+    () => const ResolveCalculationMethodForIsoUseCase(),
+  );
+  getIt.registerFactory<ResolveTimezoneForCoordsUseCase>(
+    () => ResolveTimezoneForCoordsUseCase(getIt<ITimezoneResolver>()),
   );
 }
 
