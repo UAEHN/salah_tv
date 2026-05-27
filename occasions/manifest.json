@@ -1,14 +1,6 @@
 {
   "schema_version": 1,
   "etag": "2026-05-21-eid-adha-v2",
-  "occasions": [
-    {
-      "id": "eid_adha",
-      "hijri_month": 12,
-      "hijri_day": 10,
-      "label_ar": "عيد الأضحى",
-      "label_en": "Eid al-Adha",
-      "icon": "celebration"
-    }
-  ]
+  "occasions": []
+  
 }
