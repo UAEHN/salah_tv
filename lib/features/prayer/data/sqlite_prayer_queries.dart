@@ -40,10 +40,7 @@ class SqlitePrayerQueries {
 
   /// Returns all cities for [countryKey] as a map of name → city_id.
   /// Called once per country switch; result is held in the repository.
-  Future<Map<String, int>> fetchCityIds(
-    Database db,
-    String countryKey,
-  ) async {
+  Future<Map<String, int>> fetchCityIds(Database db, String countryKey) async {
     final rows = await db.rawQuery(
       '''
       SELECT c.id, c.name
@@ -67,13 +64,38 @@ class SqlitePrayerQueries {
     int cityId,
     String dateKey,
   ) async {
-    final rows = await db.query(
+    final dateInt = _dateKeyToInt(dateKey);
+    var rows = await db.query(
       'prayer_times',
       where: 'city_id = ? AND date = ?',
-      whereArgs: [cityId, _dateKeyToInt(dateKey)],
+      whereArgs: [cityId, dateInt],
       limit: 1,
     );
-    if (rows.isEmpty) return null;
+    if (rows.isEmpty) {
+      // Year-agnostic fallback: prayer times for a given month/day repeat
+      // within ~1 minute year-to-year, so when the requested year has no
+      // stored data (e.g. the published table is 2026 and the device is in
+      // 2027+), reuse the stored year's same month/day instead of returning
+      // null and stalling the cycle. _rowToModel rebuilds the times on the
+      // *requested* date so they land on the correct calendar day.
+      final mmdd = dateInt % 10000; // MMDD part (e.g. 20270101 → 101)
+      rows = await db.query(
+        'prayer_times',
+        where: 'city_id = ? AND date % 10000 = ?',
+        whereArgs: [cityId, mmdd],
+        limit: 1,
+      );
+      if (rows.isEmpty && mmdd == 229) {
+        // 29 Feb requested but the stored year is not a leap year → use 28 Feb.
+        rows = await db.query(
+          'prayer_times',
+          where: 'city_id = ? AND date % 10000 = ?',
+          whereArgs: [cityId, 228],
+          limit: 1,
+        );
+      }
+      if (rows.isEmpty) return null;
+    }
     return _rowToModel(rows.first, dateKey);
   }
 
@@ -96,18 +118,25 @@ class SqlitePrayerQueries {
     return int.parse(p[2]) * 10000 + int.parse(p[1]) * 100 + int.parse(p[0]);
   }
 
-  /// Converts YYYYMMDD integer → DateTime.
-  /// e.g. 20260311 → DateTime(2026, 3, 11)
-  DateTime _intToDate(int v) =>
-      DateTime(v ~/ 10000, (v % 10000) ~/ 100, v % 100);
+  /// Converts "dd/MM/yyyy" cache key → DateTime.
+  /// Used so the model is built on the *requested* date (supports the
+  /// year-agnostic fallback in [fetchByKey], where the stored row is from a
+  /// different year than the one being looked up).
+  DateTime _dateKeyToDate(String key) {
+    final p = key.split('/');
+    return DateTime(int.parse(p[2]), int.parse(p[1]), int.parse(p[0]));
+  }
 
   // ── Row mapping ───────────────────────────────────────────────────────────
 
   /// Maps a raw DB row (integer columns) to [DailyPrayerTimes].
   /// [dateKey] is the "dd/MM/yyyy" string used as a lookup key by the engine.
   DailyPrayerTimes _rowToModel(Map<String, Object?> row, String dateKey) {
-    // Reconstruct date from the stored integer (more reliable than dateKey parse).
-    final date = _intToDate(row['date'] as int);
+    // Build on the *requested* date (from dateKey), not the stored row's year.
+    // For an exact match these are identical; for the year-agnostic fallback
+    // in [fetchByKey] this places the stored times on the looked-up calendar
+    // day so the cycle keeps working past the data year.
+    final date = _dateKeyToDate(dateKey);
     return DailyPrayerTimes(
       date: date,
       fajr: _minutesToTime(date, row['fajr'] as int),
@@ -121,11 +150,6 @@ class SqlitePrayerQueries {
 
   /// Converts minutes-since-midnight integer back to a full [DateTime].
   /// e.g. date=2026-03-11, minutes=312 → DateTime(2026, 3, 11, 5, 12)
-  DateTime _minutesToTime(DateTime date, int minutes) => DateTime(
-        date.year,
-        date.month,
-        date.day,
-        minutes ~/ 60,
-        minutes % 60,
-      );
+  DateTime _minutesToTime(DateTime date, int minutes) =>
+      DateTime(date.year, date.month, date.day, minutes ~/ 60, minutes % 60);
 }
