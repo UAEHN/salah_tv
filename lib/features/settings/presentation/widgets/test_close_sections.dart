@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
@@ -17,7 +17,11 @@ class CloseAppSection extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.power_settings_new_rounded, color: Colors.white, size: 20),
+          const Icon(
+            Icons.power_settings_new_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
           const SizedBox(width: 8),
           Text(
             l.settingsCloseApp,

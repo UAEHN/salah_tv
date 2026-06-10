@@ -33,11 +33,11 @@ class OccasionsRemoteDataSource {
   final Dio _dio;
 
   static Dio _buildDio() => Dio(
-        BaseOptions(
-          connectTimeout: const Duration(seconds: 8),
-          receiveTimeout: const Duration(seconds: 8),
-        ),
-      );
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 8),
+      receiveTimeout: const Duration(seconds: 8),
+    ),
+  );
 
   Future<RemoteOccasionsPayload> fetch() async {
     try {

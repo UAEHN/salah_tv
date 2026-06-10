@@ -6,58 +6,51 @@ import '../../../../core/city_translations.dart';
 class PrayerPanelHeader extends StatelessWidget {
   final AccentPalette palette;
   final String selectedCity;
+  final String selectedCountry;
+  // kept for API compatibility — rendering no longer branches on this flag
   final bool isMultiCity;
 
   const PrayerPanelHeader({
     super.key,
     required this.palette,
     required this.selectedCity,
+    required this.selectedCountry,
     required this.isMultiCity,
   });
 
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context).localeName;
+    final label = cityLabel(
+      selectedCity,
+      locale: locale,
+      countryKey: selectedCountry,
+    );
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-      decoration: BoxDecoration(
-        gradient: palette.gradient,
-      ),
-      child: Column(
+      padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 16),
+      decoration: BoxDecoration(gradient: palette.gradient),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // City badge — shown only for multi-city CSV
-          if (isMultiCity) ...[
-            const SizedBox(height: 6),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.18),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.3),
-                    width: 1,),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.location_on_rounded,
-                      color: Colors.white.withValues(alpha: 0.9),
-                      size: 13),
-                  const SizedBox(width: 4),
-                  Text(
-                    cityLabel(selectedCity, locale: locale),
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white.withValues(alpha: 0.95),
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                ],
+          Icon(
+            Icons.location_on_rounded,
+            color: Colors.white.withValues(alpha: 0.88),
+            size: 14,
+          ),
+          const SizedBox(width: 5),
+          Flexible(
+            child: Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                letterSpacing: 0.4,
               ),
             ),
-          ],
+          ),
         ],
       ),
     );

@@ -67,10 +67,7 @@ class _RoundButton extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(
-              color: MobileColors.border(context),
-              width: 1,
-            ),
+            border: Border.all(color: MobileColors.border(context), width: 1),
           ),
           child: Icon(
             icon,

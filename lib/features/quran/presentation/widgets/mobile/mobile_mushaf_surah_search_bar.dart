@@ -21,9 +21,9 @@ class MobileMushafSurahSearchBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: MobileColors.cardColor(context).withValues(
-          alpha: isDark ? 0.55 : 0.85,
-        ),
+        color: MobileColors.cardColor(
+          context,
+        ).withValues(alpha: isDark ? 0.55 : 0.85),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: MobileColors.border(context)),
       ),
@@ -41,9 +41,9 @@ class MobileMushafSurahSearchBar extends StatelessWidget {
               onChanged: onChanged,
               textAlign: TextAlign.right,
               textInputAction: TextInputAction.search,
-              style: MobileTextStyles.bodyMd(context).copyWith(
-                color: MobileColors.onSurface(context),
-              ),
+              style: MobileTextStyles.bodyMd(
+                context,
+              ).copyWith(color: MobileColors.onSurface(context)),
               decoration: InputDecoration(
                 border: InputBorder.none,
                 isCollapsed: true,

@@ -1,16 +1,35 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../features/analytics/data/firebase_analytics_service.dart';
+import '../../features/analytics/domain/i_analytics_service.dart';
 import '../../firebase_options.dart';
 import '../app_config.dart';
+import '../../injection.dart';
 
 /// Initializes Firebase for both TV and mobile platforms, and primes
 /// Remote Config so version-gating values are available before
 /// [CheckForUpdateUseCase] is called.
 Future<void> initializeFirebase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Crashlytics is silenced in debug builds so local development crashes
+  // don't pollute the production crash list.
+  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+    !kDebugMode,
+  );
   await _primeRemoteConfig();
+}
+
+/// Builds [FirebaseAnalyticsService] and registers it as [IAnalyticsService].
+/// Must run after [initializeFirebase] (Analytics depends on Firebase Core)
+/// and before [registerPrayerServices] so the prayer cycle engine and
+/// data-layer services can take it via constructor injection.
+Future<void> initializeAnalytics({required bool isTV}) async {
+  final service = FirebaseAnalyticsService();
+  await service.initialize(isTV: isTV);
+  getIt.registerSingleton<IAnalyticsService>(service);
 }
 
 Future<void> _primeRemoteConfig() async {
@@ -19,8 +38,9 @@ Future<void> _primeRemoteConfig() async {
     await rc.setConfigSettings(
       RemoteConfigSettings(
         fetchTimeout: AppConfig.rcFetchTimeout,
-        minimumFetchInterval:
-            kDebugMode ? Duration.zero : AppConfig.rcMinFetchInterval,
+        minimumFetchInterval: kDebugMode
+            ? Duration.zero
+            : AppConfig.rcMinFetchInterval,
       ),
     );
     await rc.setDefaults(<String, Object>{

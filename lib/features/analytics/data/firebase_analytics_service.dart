@@ -1,119 +1,71 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
-
 import '../domain/i_analytics_service.dart';
+import 'firebase_analytics_base.dart';
+import 'firebase_analytics_cycle_diagnostics_mixin.dart';
+import 'firebase_analytics_data_events_mixin.dart';
+import 'firebase_analytics_prayer_health_mixin.dart';
 
-class FirebaseAnalyticsService implements IAnalyticsService {
-  late final FirebaseAnalytics _analytics;
-  late final FirebaseAnalyticsObserver _observer;
-
-  @override
-  Future<void> initialize({required bool isTV}) async {
-    _analytics = FirebaseAnalytics.instance;
-    _observer = FirebaseAnalyticsObserver(analytics: _analytics);
-    await _analytics.setUserProperty(
-      name: 'platform_type',
-      value: isTV ? 'tv' : 'mobile',
-    );
-  }
-
-  @override
-  dynamic get navigatorObserver => _observer;
-
+class FirebaseAnalyticsService extends FirebaseAnalyticsBase
+    with PrayerHealthEventsMixin, DataEventsMixin, CycleDiagnosticsMixin
+    implements IAnalyticsService {
   // ── Screen ──────────────────────────────────────────────────────
 
   @override
-  void logScreenView(String screenName) {
-    _analytics.logScreenView(
-      screenName: screenName,
-      screenClass: screenName,
-    );
-  }
+  void logScreenView(String screenName) =>
+      analytics.logScreenView(screenName: screenName, screenClass: screenName);
 
-  // ── Prayer cycle ────────────────────────────────────────────────
+  // ── Prayer cycle (existing) ─────────────────────────────────────
 
   @override
-  void logAdhanStarted(String prayerKey) {
-    _analytics.logEvent(
-      name: 'adhan_started',
-      parameters: {'prayer_key': prayerKey},
-    );
-  }
+  void logAdhanStarted(String prayerKey) =>
+      logEventInternal('adhan_started', {'prayer_key': prayerKey});
 
   @override
-  void logIqamaStarted(String prayerKey) {
-    _analytics.logEvent(
-      name: 'iqama_started',
-      parameters: {'prayer_key': prayerKey},
-    );
-  }
+  void logIqamaStarted(String prayerKey) =>
+      logEventInternal('iqama_started', {'prayer_key': prayerKey});
 
   @override
-  void logQuranStreamToggled({required bool isPlaying}) {
-    _analytics.logEvent(
-      name: 'quran_stream_toggled',
-      parameters: {'is_playing': isPlaying.toString()},
-    );
-  }
+  void logQuranStreamToggled({required bool isPlaying}) => logEventInternal(
+    'quran_stream_toggled',
+    {'is_playing': isPlaying.toString()},
+  );
 
   // ── Settings ────────────────────────────────────────────────────
 
   @override
-  void logSettingsChanged(String settingKey, String value) {
-    _analytics.logEvent(
-      name: 'settings_changed',
-      parameters: {'setting_key': settingKey, 'value': value},
-    );
-  }
+  void logSettingsChanged(String settingKey, String value) => logEventInternal(
+    'settings_changed',
+    {'setting_key': settingKey, 'value': value},
+  );
 
   @override
-  void logCityChanged(String country, String city) {
-    _analytics.logEvent(
-      name: 'city_changed',
-      parameters: {'country': country, 'city': city},
-    );
-  }
+  void logCityChanged(String country, String city) =>
+      logEventInternal('city_changed', {'country': country, 'city': city});
 
   // ── Feature usage ───────────────────────────────────────────────
 
   @override
-  void logTasbihCompleted(String presetName, int target) {
-    _analytics.logEvent(
-      name: 'tasbih_completed',
-      parameters: {'preset_name': presetName, 'target': target},
-    );
-  }
+  void logTasbihCompleted(String presetName, int target) => logEventInternal(
+    'tasbih_completed',
+    {'preset_name': presetName, 'target': target},
+  );
 
   @override
-  void logFeedbackSubmitted(String feedbackType) {
-    _analytics.logEvent(
-      name: 'feedback_submitted',
-      parameters: {'type': feedbackType},
-    );
-  }
+  void logFeedbackSubmitted(String feedbackType) =>
+      logEventInternal('feedback_submitted', {'type': feedbackType});
 
   @override
-  void logOnboardingCompleted(String country, String city) {
-    _analytics.logEvent(
-      name: 'onboarding_completed',
-      parameters: {'country': country, 'city': city},
-    );
-  }
+  void logOnboardingCompleted(String country, String city) => logEventInternal(
+    'onboarding_completed',
+    {'country': country, 'city': city},
+  );
 
   // ── Customization ───────────────────────────────────────────────
 
   @override
-  void logThemeChanged(String themeKey) {
-    _analytics.logEvent(
-      name: 'theme_changed',
-      parameters: {'theme_key': themeKey},
-    );
-  }
+  void logThemeChanged(String themeKey) =>
+      logEventInternal('theme_changed', {'theme_key': themeKey});
 
   @override
-  void logFontChanged(String fontFamily) {
-    _analytics.logEvent(
-      name: 'font_changed',
-      parameters: {'font_family': fontFamily},
-    );
-  }
+  void logFontChanged(String fontFamily) =>
+      logEventInternal('font_changed', {'font_family': fontFamily});
 }

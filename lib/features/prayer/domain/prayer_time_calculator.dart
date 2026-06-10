@@ -13,6 +13,22 @@ DateTime adjustedPrayerTime(PrayerEntry p, Map<String, int> adhanOffsets) {
   return p.time.add(Duration(minutes: offsetMin));
 }
 
+/// How many seconds *after* a prayer's adjusted time the live trigger may
+/// still fire. The 1 Hz tick can stall for several seconds on slow TV boxes
+/// (GC, video decode, brief system overlays), so a window of only 1–2s could
+/// be skipped over entirely — the adhan would then never fire for that prayer.
+/// This catch-up window lets a late tick still play the adhan. Kept below the
+/// 60s overdue threshold so a genuinely missed prayer still surfaces as
+/// `prayer_overdue_no_trigger` instead of firing a clearly-stale adhan.
+const int kAdhanCatchUpSeconds = 30;
+
+/// True when [diffSeconds] (now − adjusted prayer time) is inside the live
+/// adhan fire window: at or after the prayer time, and no later than
+/// [kAdhanCatchUpSeconds]. Pure so the trigger boundary is unit-testable
+/// without spinning up the engine.
+bool isWithinAdhanFireWindow(int diffSeconds) =>
+    diffSeconds >= 0 && diffSeconds <= kAdhanCatchUpSeconds;
+
 /// Finds the next upcoming prayer and its countdown from [now].
 /// Returns `(next: null, countdown: zero)` when all prayers have passed.
 ({PrayerEntry? next, Duration countdown}) findNextPrayer(

@@ -31,9 +31,7 @@ class IqamaContent extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          l.iqamaAfterPrayer(
-            localizedPrayerName(context, iqamaPrayerKey),
-          ),
+          l.iqamaAfterPrayer(localizedPrayerName(context, iqamaPrayerKey)),
           style: TextStyle(
             fontSize: screenH * 0.048,
             fontWeight: FontWeight.w500,

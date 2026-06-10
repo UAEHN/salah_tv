@@ -1,3 +1,4 @@
+import '../../settings/domain/entities/detected_location.dart';
 import '../../settings/domain/entities/world_city.dart';
 import '../../settings/domain/i_world_city_repository.dart';
 import '../../settings/presentation/widgets/mobile/mobile_location_search_utils.dart';
@@ -18,6 +19,11 @@ class OnboardingState {
   final List<WorldCity> filteredWorldCities;
   final IWorldCityRepository? worldRepo;
 
+  /// Set when GPS auto-detect resolves a location — the unified location page
+  /// shows a confirmation card ("Are you in Dubai?") instead of committing
+  /// immediately. Manual search picks bypass this and commit directly.
+  final DetectedLocation? pendingConfirmation;
+
   const OnboardingState({
     this.step = 0,
     this.locale = 'ar',
@@ -33,6 +39,7 @@ class OnboardingState {
     this.filteredDbCities = const [],
     this.filteredWorldCities = const [],
     this.worldRepo,
+    this.pendingConfirmation,
   });
 
   /// True when the user has selected any city (DB or world).
@@ -55,6 +62,8 @@ class OnboardingState {
     List<String>? filteredDbCities,
     List<WorldCity>? filteredWorldCities,
     IWorldCityRepository? worldRepo,
+    DetectedLocation? pendingConfirmation,
+    bool clearPendingConfirmation = false,
   }) => OnboardingState(
     step: step ?? this.step,
     locale: locale ?? this.locale,
@@ -76,5 +85,8 @@ class OnboardingState {
     filteredDbCities: filteredDbCities ?? this.filteredDbCities,
     filteredWorldCities: filteredWorldCities ?? this.filteredWorldCities,
     worldRepo: worldRepo ?? this.worldRepo,
+    pendingConfirmation: clearPendingConfirmation
+        ? null
+        : (pendingConfirmation ?? this.pendingConfirmation),
   );
 }

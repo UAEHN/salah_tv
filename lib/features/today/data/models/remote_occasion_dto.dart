@@ -70,17 +70,17 @@ class RemoteOccasionDto {
   }
 
   UpcomingOccasion toEntity() => UpcomingOccasion(
-        id: id,
-        labelKey: 'occasion_$id', // unresolved fallback if no remote label
-        hijriMonth: hijriMonth,
-        hijriDay: hijriDay,
-        daysUntil: 0,
-        labelAr: labelAr,
-        labelEn: labelEn,
-        iconName: iconName,
-        bannerUrl: bannerUrl,
-        ctaUrl: ctaUrl,
-      );
+    id: id,
+    labelKey: 'occasion_$id', // unresolved fallback if no remote label
+    hijriMonth: hijriMonth,
+    hijriDay: hijriDay,
+    daysUntil: 0,
+    labelAr: labelAr,
+    labelEn: labelEn,
+    iconName: iconName,
+    bannerUrl: bannerUrl,
+    ctaUrl: ctaUrl,
+  );
 
   static int? _asInt(Object? v) {
     if (v is int) return v;

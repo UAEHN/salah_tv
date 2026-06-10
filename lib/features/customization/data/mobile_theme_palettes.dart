@@ -9,29 +9,33 @@ import '../../../core/app_colors.dart';
 /// [getMobileThemePalette] / [kAllMobilePalettes] which merge both sets.
 const Map<String, AccentPalette> kMobileExtraPalettes = {
   'desert_dawn': AccentPalette(
-    primary:   Color(0xFFE8804B),
+    primary: Color(0xFFE8804B),
     secondary: Color(0xFF6B5B95),
-    glow:      Color(0x40E8804B),
+    glow: Color(0x40E8804B),
   ),
   'paradise_sea': AccentPalette(
-    primary:   Color(0xFF20A39E),
+    primary: Color(0xFF20A39E),
     secondary: Color(0xFF4FC3C0),
-    glow:      Color(0x4020A39E),
+    glow: Color(0x4020A39E),
   ),
 };
 
 /// Set of legacy theme keys that exist in [kThemePalettes] (TV-shared).
 /// Used by the catalog to mark them with `isLegacy: true`.
 const Set<String> kLegacyThemeKeys = {
-  'green', 'teal', 'gold', 'blue', 'purple',
+  'green',
+  'teal',
+  'gold',
+  'blue',
+  'purple',
 };
 
 /// Combined palette map — TV-shared + mobile-exclusive themes.
 /// **Use only from mobile-only code paths.**
 Map<String, AccentPalette> get kAllMobilePalettes => {
-      ...kThemePalettes,
-      ...kMobileExtraPalettes,
-    };
+  ...kThemePalettes,
+  ...kMobileExtraPalettes,
+};
 
 /// Mobile-aware palette resolver. Falls back to `green` if [key] is unknown.
 /// Used in `app.dart` when `isTV == false`.

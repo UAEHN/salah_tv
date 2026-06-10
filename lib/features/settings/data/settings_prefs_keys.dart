@@ -32,6 +32,7 @@ class PrefsKeys {
   static const lng = '${_p}selected_lng';
   static const calcMethod = '${_p}calc_method';
   static const madhab = '${_p}madhab';
+  static const highLatRule = '${_p}high_lat_rule';
   static const isCalc = '${_p}is_calculated_location';
   static const tzId = '${_p}timezone_id';
   static const utcOff = '${_p}utc_offset';
@@ -39,6 +40,9 @@ class PrefsKeys {
   static const adhanSound = '${_p}adhan_sound';
   static const analog = '${_p}analog_clock';
   static const adhkar = '${_p}adhkar_enabled';
+  static const afterPrayerAdhkar = '${_p}after_prayer_adhkar_enabled';
+  static const ticker = '${_p}ticker_enabled';
+  static const screensaver = '${_p}screensaver_enabled';
   static const prayerNotif = '${_p}prayer_notif_enabled';
   static const preAdhanMap = '${_p}pre_adhan_reminder_map';
   static const preAdhanMin = '${_p}pre_adhan_reminder_min';

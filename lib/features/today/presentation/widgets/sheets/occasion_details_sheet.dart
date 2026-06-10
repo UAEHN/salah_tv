@@ -66,10 +66,9 @@ class _OccasionSheet extends StatelessWidget {
             const SizedBox(height: 18),
             Text(
               label,
-              style: MobileTextStyles.titleMd(context).copyWith(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-              ),
+              style: MobileTextStyles.titleMd(
+                context,
+              ).copyWith(fontSize: 22, fontWeight: FontWeight.w800),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
@@ -81,10 +80,9 @@ class _OccasionSheet extends StatelessWidget {
               ),
               child: Text(
                 countdown,
-                style: MobileTextStyles.labelSm(context).copyWith(
-                  color: accent,
-                  fontWeight: FontWeight.w800,
-                ),
+                style: MobileTextStyles.labelSm(
+                  context,
+                ).copyWith(color: accent, fontWeight: FontWeight.w800),
               ),
             ),
             const SizedBox(height: 18),

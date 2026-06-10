@@ -32,14 +32,16 @@ class MobileQuranDownloadBanner extends StatelessWidget {
           margin: const EdgeInsets.fromLTRB(20, 8, 20, 0),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: (isError ? theme.colorScheme.error : theme.colorScheme.primary)
-                .withValues(alpha: 0.10),
+            color:
+                (isError ? theme.colorScheme.error : theme.colorScheme.primary)
+                    .withValues(alpha: 0.10),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: (isError
-                      ? theme.colorScheme.error
-                      : theme.colorScheme.primary)
-                  .withValues(alpha: 0.3),
+              color:
+                  (isError
+                          ? theme.colorScheme.error
+                          : theme.colorScheme.primary)
+                      .withValues(alpha: 0.3),
             ),
           ),
           child: Column(
@@ -59,15 +61,17 @@ class MobileQuranDownloadBanner extends StatelessWidget {
                       isError
                           ? 'فشل التحميل — اضغط لإعادة المحاولة'
                           : 'جاري تحميل المصحف',
-                      style: MobileTextStyles.bodyMd(context)
-                          .copyWith(fontWeight: FontWeight.w600),
+                      style: MobileTextStyles.bodyMd(
+                        context,
+                      ).copyWith(fontWeight: FontWeight.w600),
                     ),
                   ),
                   if (!isError)
                     Text(
                       '${state.downloadedCount} / ${state.totalCount}',
-                      style: MobileTextStyles.bodyMd(context)
-                          .copyWith(fontSize: 12),
+                      style: MobileTextStyles.bodyMd(
+                        context,
+                      ).copyWith(fontSize: 12),
                     ),
                 ],
               ),
@@ -87,8 +91,9 @@ class MobileQuranDownloadBanner extends StatelessWidget {
                   child: TextButton.icon(
                     icon: const Icon(Icons.refresh_rounded, size: 18),
                     label: const Text('إعادة المحاولة'),
-                    onPressed: () =>
-                        context.read<PageImageDownloadCubit>().startBulkDownload(),
+                    onPressed: () => context
+                        .read<PageImageDownloadCubit>()
+                        .startBulkDownload(),
                   ),
                 ),
               ],

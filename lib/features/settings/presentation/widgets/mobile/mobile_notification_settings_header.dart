@@ -27,20 +27,17 @@ class MobileNotificationSettingsHeader extends StatelessWidget {
               children: [
                 Text(
                   l.settingsNotificationSettings,
-                  style: MobileTextStyles.titleMd(context).copyWith(
-                    color: onSurface,
-                    fontSize: 22,
-                    height: 1.1,
-                  ),
+                  style: MobileTextStyles.titleMd(
+                    context,
+                  ).copyWith(color: onSurface, fontSize: 22, height: 1.1),
                   textDirection: TextDirection.rtl,
                 ),
                 const SizedBox(height: 2),
                 Text(
                   'الأذكار والأذان والتذكير الأسبوعي',
-                  style: MobileTextStyles.bodyMd(context).copyWith(
-                    color: muted,
-                    fontSize: 12.5,
-                  ),
+                  style: MobileTextStyles.bodyMd(
+                    context,
+                  ).copyWith(color: muted, fontSize: 12.5),
                   textDirection: TextDirection.rtl,
                 ),
               ],
@@ -81,11 +78,7 @@ class _HeaderBellBadge extends StatelessWidget {
         border: Border.all(color: accent.withValues(alpha: 0.32)),
       ),
       alignment: Alignment.center,
-      child: Icon(
-        Icons.notifications_active_rounded,
-        color: accent,
-        size: 20,
-      ),
+      child: Icon(Icons.notifications_active_rounded, color: accent, size: 20),
     );
   }
 }

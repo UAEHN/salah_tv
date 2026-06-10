@@ -20,7 +20,8 @@ class QuranTextRepository implements IQuranTextRepository {
 
   Map<int, MushafPage>? _pages;
   Map<int, int>? _firstPageOfSurah;
-  Map<int, int>? _nextAyahIndex; // key: surah*1000 + ayah → position in _allAyahs
+  Map<int, int>?
+  _nextAyahIndex; // key: surah*1000 + ayah → position in _allAyahs
   List<Ayah>? _allAyahs;
   Future<Either<Failure, Success>>? _inFlight;
 

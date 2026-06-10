@@ -12,16 +12,15 @@ Map<String, Object?> buildNotificationPayloadDto({
   String? prayerKey,
   String? payload,
   String? soundUri,
-}) =>
-    {
-      'id': id,
-      'type': type,
-      'triggerAtMillis': time.millisecondsSinceEpoch,
-      'title': title,
-      'body': body,
-      'channelId': channelId,
-      'payload': payload,
-      'soundUri': soundUri,
-      'prayerKey': prayerKey,
-      'dayIndex': dayIndex,
-    };
+}) => {
+  'id': id,
+  'type': type,
+  'triggerAtMillis': time.millisecondsSinceEpoch,
+  'title': title,
+  'body': body,
+  'channelId': channelId,
+  'payload': payload,
+  'soundUri': soundUri,
+  'prayerKey': prayerKey,
+  'dayIndex': dayIndex,
+};

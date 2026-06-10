@@ -9,5 +9,9 @@ import 'entities/detected_location.dart';
 /// bundled SQLite prayer-time database. When [DetectedLocation.isInDb] is
 /// false the app should fall back to astronomical calculation.
 abstract class ILocationDetector {
-  Future<Either<Failure, DetectedLocation>> detectLocation();
+  /// [locale] biases the native reverse geocoder (Apple Maps / Google
+  /// Geocoder) toward returning placemark names in that language — pass
+  /// the app's current locale (e.g. 'ar' or 'en') so detected city names
+  /// match the UI language. Falls back to device default when null.
+  Future<Either<Failure, DetectedLocation>> detectLocation({String? locale});
 }

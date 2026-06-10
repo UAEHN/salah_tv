@@ -30,15 +30,17 @@ class TvFeedbackQrEmailPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final telegramUrl = AppConfig.supportTelegramUrl;
-    final telegramTarget =
-        telegramUrl.isNotEmpty ? telegramUrl : AppConfig.tvFeedbackUrl;
+    final telegramTarget = telegramUrl.isNotEmpty
+        ? telegramUrl
+        : AppConfig.tvFeedbackUrl;
     final hasEmail = AppConfig.supportEmail.isNotEmpty;
 
     return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: tc.glass(opacity: 0.07, borderRadius: 16).copyWith(
-            border: Border.all(color: tc.borderGlass),
-          ),
+      width: double.infinity,
+      padding: const EdgeInsets.all(28),
+      decoration: tc
+          .glass(opacity: 0.07, borderRadius: 20)
+          .copyWith(border: Border.all(color: tc.borderGlass)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -46,12 +48,12 @@ class TvFeedbackQrEmailPanel extends StatelessWidget {
             title,
             style: TextStyle(
               color: tc.textPrimary,
-              fontSize: 14,
+              fontSize: 20,
               fontWeight: FontWeight.w700,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 28),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -64,13 +66,9 @@ class TvFeedbackQrEmailPanel extends StatelessWidget {
                 ),
               ),
               if (hasEmail) ...[
-                const SizedBox(width: 8),
-                Container(
-                  width: 1,
-                  height: 130,
-                  color: tc.borderGlass,
-                ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 24),
+                Container(width: 1, height: 200, color: tc.borderGlass),
+                const SizedBox(width: 24),
                 Expanded(
                   child: _QrTile(
                     data: 'mailto:${AppConfig.supportEmail}',
@@ -83,18 +81,18 @@ class TvFeedbackQrEmailPanel extends StatelessWidget {
             ],
           ),
           if (hasEmail) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 24),
             Text(
               orFromPhoneLabel,
-              style: TextStyle(color: tc.textMuted, fontSize: 11),
+              style: TextStyle(color: tc.textMuted, fontSize: 14),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 4),
             Text(
               AppConfig.supportEmail,
               style: TextStyle(
                 color: tc.textPrimary,
-                fontSize: 12,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
               textDirection: TextDirection.ltr,
@@ -126,25 +124,25 @@ class _QrTile extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           child: QrImageView(
             data: data,
             version: QrVersions.auto,
-            size: 95,
+            size: 180,
             backgroundColor: Colors.white,
-            padding: const EdgeInsets.all(4),
+            padding: const EdgeInsets.all(8),
           ),
         ),
-        const SizedBox(height: 6),
-        Icon(icon, color: Colors.amber, size: 16),
-        const SizedBox(height: 2),
+        const SizedBox(height: 12),
+        Icon(icon, color: Colors.amber, size: 22),
+        const SizedBox(height: 4),
         Text(
           caption,
           style: TextStyle(
             color: tc.textMuted,
-            fontSize: 11,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
-            height: 1.2,
+            height: 1.25,
           ),
           textAlign: TextAlign.center,
         ),

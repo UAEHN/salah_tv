@@ -20,11 +20,7 @@ class TopBar extends StatelessWidget {
           ),
         ),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-        ],
-      ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: []),
     );
   }
 }

@@ -8,70 +8,72 @@ import 'settings_prefs_keys.dart';
 
 /// SharedPreferences ↔ [AppSettings] codec. Keys live in [PrefsKeys] so this
 /// file holds only the round-trip serialization.
-AppSettings loadAppSettings(SharedPreferences prefs) =>
-    appSettingsFromMap({
-      'themeColorKey': prefs.getString(PrefsKeys.theme),
-      'use24HourFormat': prefs.getBool(PrefsKeys.h24),
-      'adhanMode': prefs.getString(PrefsKeys.adhanMode),
-      'iqamaMode': prefs.getString(PrefsKeys.iqamaMode),
-      'isMosqueMode': prefs.getBool(PrefsKeys.mosqueMode),
-      // Legacy bool keys — read so the mapper can migrate old installs.
-      'playAdhan': prefs.getBool(PrefsKeys.adhan),
-      'playIqama': prefs.getBool(PrefsKeys.iqama2),
-      'isDarkMode': prefs.getBool(PrefsKeys.dark),
-      'themeMode': prefs.getString(PrefsKeys.themeMode),
-      'iqamaDelays': prefs.getString(PrefsKeys.iqama),
-      'adhanOffsets': prefs.getString(PrefsKeys.adhanOff),
-      'hadithText': prefs.getString(PrefsKeys.hadithText),
-      'hadithSource': prefs.getString(PrefsKeys.hadithSrc),
-      'fontFamily': prefs.getString(PrefsKeys.font),
-      'locale': prefs.getString(PrefsKeys.locale),
-      'isQuranEnabled': prefs.getBool(PrefsKeys.quranEnabled),
-      'quranReciterName': prefs.getString(PrefsKeys.reciterName),
-      'quranReciterServerUrl': prefs.getString(PrefsKeys.reciterUrl),
-      'favoriteReciterServerUrls': prefs.getString(PrefsKeys.favReciters),
-      'selectedCountry': prefs.getString(PrefsKeys.country),
-      'selectedCity': prefs.getString(PrefsKeys.city),
-      'selectedLatitude': prefs.getDouble(PrefsKeys.lat),
-      'selectedLongitude': prefs.getDouble(PrefsKeys.lng),
-      'calculationMethod': prefs.getString(PrefsKeys.calcMethod),
-      'madhab': prefs.getString(PrefsKeys.madhab),
-      'isCalculatedLocation': prefs.getBool(PrefsKeys.isCalc),
-      'selectedTimeZoneId': prefs.getString(PrefsKeys.tzId),
-      'utcOffsetHours': prefs.getDouble(PrefsKeys.utcOff),
-      'layoutStyle': prefs.getString(PrefsKeys.layout),
-      'adhanSound': prefs.getString(PrefsKeys.adhanSound),
-      'isAnalogClock': prefs.getBool(PrefsKeys.analog),
-      'isAdhkarEnabled': prefs.getBool(PrefsKeys.adhkar),
-      'prayerNotificationEnabled': prefs.getString(PrefsKeys.prayerNotif),
-      'preAdhanReminderEnabled': prefs.getString(PrefsKeys.preAdhanMap),
-      'preAdhanReminderMinutes': prefs.getInt(PrefsKeys.preAdhanMin),
-      'iqamaNotificationEnabled': prefs.getString(PrefsKeys.iqamaNotif),
-      'preIqamaReminderEnabled': prefs.getString(PrefsKeys.preIqamaMap),
-      'preIqamaReminderMinutes': prefs.getInt(PrefsKeys.preIqamaMin),
-      'isMorningAdhkarNotificationEnabled':
-          prefs.getBool(PrefsKeys.morningAdhkarNotif),
-      'isEveningAdhkarNotificationEnabled':
-          prefs.getBool(PrefsKeys.eveningAdhkarNotif),
-      'morningAdhkarMinuteOfDay':
-          prefs.getInt(PrefsKeys.morningAdhkarMinuteOfDay),
-      'eveningAdhkarMinuteOfDay':
-          prefs.getInt(PrefsKeys.eveningAdhkarMinuteOfDay),
-      'isAlKahfReminderEnabled':
-          prefs.getBool(PrefsKeys.alKahfReminder),
-      'alKahfReminderMinuteOfDay':
-          prefs.getInt(PrefsKeys.alKahfReminderMinuteOfDay),
-      'isNotificationOnboardingDone':
-          prefs.getBool(PrefsKeys.notifOnboardingDone),
-      'customAdhans': prefs.getString(PrefsKeys.customAdhans),
-      'quranPlaybackMode': prefs.getString(PrefsKeys.playbackMode),
-      'selectedSurahNumber': prefs.getInt(PrefsKeys.selectedSurah),
-      'surahPlaylist': prefs.getString(PrefsKeys.playlist),
-      'surahRepeatCount': prefs.getInt(PrefsKeys.repeatCount),
-      'playlistCycleCount': prefs.getInt(PrefsKeys.cycleCount),
-      'continuousStartMode': prefs.getString(PrefsKeys.continuousStart),
-      'lastPlayedSurah': prefs.getInt(PrefsKeys.lastPlayed),
-    });
+AppSettings loadAppSettings(SharedPreferences prefs) => appSettingsFromMap({
+  'themeColorKey': prefs.getString(PrefsKeys.theme),
+  'use24HourFormat': prefs.getBool(PrefsKeys.h24),
+  'adhanMode': prefs.getString(PrefsKeys.adhanMode),
+  'iqamaMode': prefs.getString(PrefsKeys.iqamaMode),
+  'isMosqueMode': prefs.getBool(PrefsKeys.mosqueMode),
+  // Legacy bool keys — read so the mapper can migrate old installs.
+  'playAdhan': prefs.getBool(PrefsKeys.adhan),
+  'playIqama': prefs.getBool(PrefsKeys.iqama2),
+  'isDarkMode': prefs.getBool(PrefsKeys.dark),
+  'themeMode': prefs.getString(PrefsKeys.themeMode),
+  'iqamaDelays': prefs.getString(PrefsKeys.iqama),
+  'adhanOffsets': prefs.getString(PrefsKeys.adhanOff),
+  'hadithText': prefs.getString(PrefsKeys.hadithText),
+  'hadithSource': prefs.getString(PrefsKeys.hadithSrc),
+  'fontFamily': prefs.getString(PrefsKeys.font),
+  'locale': prefs.getString(PrefsKeys.locale),
+  'isQuranEnabled': prefs.getBool(PrefsKeys.quranEnabled),
+  'quranReciterName': prefs.getString(PrefsKeys.reciterName),
+  'quranReciterServerUrl': prefs.getString(PrefsKeys.reciterUrl),
+  'favoriteReciterServerUrls': prefs.getString(PrefsKeys.favReciters),
+  'selectedCountry': prefs.getString(PrefsKeys.country),
+  'selectedCity': prefs.getString(PrefsKeys.city),
+  'selectedLatitude': prefs.getDouble(PrefsKeys.lat),
+  'selectedLongitude': prefs.getDouble(PrefsKeys.lng),
+  'calculationMethod': prefs.getString(PrefsKeys.calcMethod),
+  'madhab': prefs.getString(PrefsKeys.madhab),
+  'highLatitudeRule': prefs.getString(PrefsKeys.highLatRule),
+  'isCalculatedLocation': prefs.getBool(PrefsKeys.isCalc),
+  'selectedTimeZoneId': prefs.getString(PrefsKeys.tzId),
+  'utcOffsetHours': prefs.getDouble(PrefsKeys.utcOff),
+  'layoutStyle': prefs.getString(PrefsKeys.layout),
+  'adhanSound': prefs.getString(PrefsKeys.adhanSound),
+  'isAnalogClock': prefs.getBool(PrefsKeys.analog),
+  'isAdhkarEnabled': prefs.getBool(PrefsKeys.adhkar),
+  'isAfterPrayerAdhkarEnabled': prefs.getBool(PrefsKeys.afterPrayerAdhkar),
+  'isTickerEnabled': prefs.getBool(PrefsKeys.ticker),
+  'isScreensaverEnabled': prefs.getBool(PrefsKeys.screensaver),
+  'prayerNotificationEnabled': prefs.getString(PrefsKeys.prayerNotif),
+  'preAdhanReminderEnabled': prefs.getString(PrefsKeys.preAdhanMap),
+  'preAdhanReminderMinutes': prefs.getInt(PrefsKeys.preAdhanMin),
+  'iqamaNotificationEnabled': prefs.getString(PrefsKeys.iqamaNotif),
+  'preIqamaReminderEnabled': prefs.getString(PrefsKeys.preIqamaMap),
+  'preIqamaReminderMinutes': prefs.getInt(PrefsKeys.preIqamaMin),
+  'isMorningAdhkarNotificationEnabled': prefs.getBool(
+    PrefsKeys.morningAdhkarNotif,
+  ),
+  'isEveningAdhkarNotificationEnabled': prefs.getBool(
+    PrefsKeys.eveningAdhkarNotif,
+  ),
+  'morningAdhkarMinuteOfDay': prefs.getInt(PrefsKeys.morningAdhkarMinuteOfDay),
+  'eveningAdhkarMinuteOfDay': prefs.getInt(PrefsKeys.eveningAdhkarMinuteOfDay),
+  'isAlKahfReminderEnabled': prefs.getBool(PrefsKeys.alKahfReminder),
+  'alKahfReminderMinuteOfDay': prefs.getInt(
+    PrefsKeys.alKahfReminderMinuteOfDay,
+  ),
+  'isNotificationOnboardingDone': prefs.getBool(PrefsKeys.notifOnboardingDone),
+  'customAdhans': prefs.getString(PrefsKeys.customAdhans),
+  'quranPlaybackMode': prefs.getString(PrefsKeys.playbackMode),
+  'selectedSurahNumber': prefs.getInt(PrefsKeys.selectedSurah),
+  'surahPlaylist': prefs.getString(PrefsKeys.playlist),
+  'surahRepeatCount': prefs.getInt(PrefsKeys.repeatCount),
+  'playlistCycleCount': prefs.getInt(PrefsKeys.cycleCount),
+  'continuousStartMode': prefs.getString(PrefsKeys.continuousStart),
+  'lastPlayedSurah': prefs.getInt(PrefsKeys.lastPlayed),
+});
 
 Future<void> saveAppSettings(SharedPreferences prefs, AppSettings s) async {
   await prefs.setString(PrefsKeys.theme, s.themeColorKey);
@@ -104,6 +106,7 @@ Future<void> saveAppSettings(SharedPreferences prefs, AppSettings s) async {
   await setOrRemoveDouble(prefs, PrefsKeys.lng, s.selectedLongitude);
   await prefs.setString(PrefsKeys.calcMethod, s.calculationMethod);
   await prefs.setString(PrefsKeys.madhab, s.madhab);
+  await prefs.setString(PrefsKeys.highLatRule, s.highLatitudeRule);
   await prefs.setBool(PrefsKeys.isCalc, s.isCalculatedLocation);
   await setOrRemoveString(prefs, PrefsKeys.tzId, s.selectedTimeZoneId);
   await setOrRemoveDouble(prefs, PrefsKeys.utcOff, s.utcOffsetHours);
@@ -111,6 +114,12 @@ Future<void> saveAppSettings(SharedPreferences prefs, AppSettings s) async {
   await prefs.setString(PrefsKeys.adhanSound, s.adhanSound);
   await prefs.setBool(PrefsKeys.analog, s.isAnalogClock);
   await prefs.setBool(PrefsKeys.adhkar, s.isAdhkarEnabled);
+  await prefs.setBool(
+    PrefsKeys.afterPrayerAdhkar,
+    s.isAfterPrayerAdhkarEnabled,
+  );
+  await prefs.setBool(PrefsKeys.ticker, s.isTickerEnabled);
+  await prefs.setBool(PrefsKeys.screensaver, s.isScreensaverEnabled);
   await prefs.setString(
     PrefsKeys.prayerNotif,
     jsonEncode(s.prayerNotificationEnabled),
@@ -145,10 +154,7 @@ Future<void> saveAppSettings(SharedPreferences prefs, AppSettings s) async {
     PrefsKeys.eveningAdhkarMinuteOfDay,
     s.eveningAdhkarMinuteOfDay,
   );
-  await prefs.setBool(
-    PrefsKeys.alKahfReminder,
-    s.isAlKahfReminderEnabled,
-  );
+  await prefs.setBool(PrefsKeys.alKahfReminder, s.isAlKahfReminderEnabled);
   await prefs.setInt(
     PrefsKeys.alKahfReminderMinuteOfDay,
     s.alKahfReminderMinuteOfDay,
@@ -166,9 +172,6 @@ Future<void> saveAppSettings(SharedPreferences prefs, AppSettings s) async {
   await prefs.setString(PrefsKeys.playlist, jsonEncode(s.surahPlaylist));
   await prefs.setInt(PrefsKeys.repeatCount, s.surahRepeatCount);
   await prefs.setInt(PrefsKeys.cycleCount, s.playlistCycleCount);
-  await prefs.setString(
-    PrefsKeys.continuousStart,
-    s.continuousStartMode.name,
-  );
+  await prefs.setString(PrefsKeys.continuousStart, s.continuousStartMode.name);
   await prefs.setInt(PrefsKeys.lastPlayed, s.lastPlayedSurah);
 }

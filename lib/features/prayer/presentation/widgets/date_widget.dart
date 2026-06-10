@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,16 +59,15 @@ class _DateWidgetState extends State<DateWidget> {
       fit: BoxFit.scaleDown,
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 600),
-        transitionBuilder: (child, animation) => FadeTransition(
-          opacity: animation,
-          child: child,
-        ),
+        transitionBuilder: (child, animation) =>
+            FadeTransition(opacity: animation, child: child),
         child: Text(
           text,
           key: ValueKey(text),
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: screenH *
+            fontSize:
+                screenH *
                 (widget.compact
                     ? (isMosque ? 0.036 : 0.032)
                     : (isMosque ? 0.052 : 0.048)),

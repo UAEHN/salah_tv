@@ -57,10 +57,6 @@ class TodayLoaded extends TodayState {
           other.hasPartialFailure == hasPartialFailure;
 
   @override
-  int get hashCode => Object.hash(
-        greeting,
-        upcomingOccasion,
-        dailyVerse,
-        hasPartialFailure,
-      );
+  int get hashCode =>
+      Object.hash(greeting, upcomingOccasion, dailyVerse, hasPartialFailure);
 }

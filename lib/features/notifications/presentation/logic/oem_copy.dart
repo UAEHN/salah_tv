@@ -6,12 +6,12 @@ class OemCopy {
   const OemCopy();
 
   String label(String vendor) => switch (vendor) {
-        'xiaomi' => 'Xiaomi / Redmi / Poco (MIUI)',
-        'huawei' => 'Huawei / Honor (EMUI)',
-        'oppo' => 'Oppo / Realme (ColorOS)',
-        'vivo' => 'Vivo (FunTouch)',
-        _ => vendor,
-      };
+    'xiaomi' => 'Xiaomi / Redmi / Poco (MIUI)',
+    'huawei' => 'Huawei / Honor (EMUI)',
+    'oppo' => 'Oppo / Realme (ColorOS)',
+    'vivo' => 'Vivo (FunTouch)',
+    _ => vendor,
+  };
 
   String guidanceMessage(String vendor) =>
       'نظام ${label(vendor)} يقتل التطبيقات في الخلفية حتى مع إعفاء البطارية. '

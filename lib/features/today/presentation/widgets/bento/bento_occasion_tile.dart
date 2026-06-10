@@ -25,67 +25,69 @@ class BentoOccasionTile extends StatelessWidget {
     return GestureDetector(
       onLongPress: () => showOccasionDetailsSheet(context, occasion),
       child: BentoTile(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (occasion.daysUntil == 0)
-            Text(
-              l.todayOccasionToday,
-              style: MobileTextStyles.titleMd(context).copyWith(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-                color: accent,
-                letterSpacing: -0.4,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (occasion.daysUntil == 0)
+              Text(
+                l.todayOccasionToday,
+                style: MobileTextStyles.titleMd(context).copyWith(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                  color: accent,
+                  letterSpacing: -0.4,
+                ),
+                maxLines: 1,
+              )
+            else ...[
+              Text(
+                '${occasion.daysUntil}',
+                style: TextStyle(
+                  fontFamily: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.fontFamily,
+                  fontSize: 38,
+                  fontWeight: FontWeight.w900,
+                  color: accent,
+                  height: 1.0,
+                  letterSpacing: -1.4,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
               ),
-              maxLines: 1,
-            )
-          else ...[
-            Text(
-              '${occasion.daysUntil}',
-              style: TextStyle(
-                fontFamily: Theme.of(context).textTheme.bodyMedium?.fontFamily,
-                fontSize: 38,
-                fontWeight: FontWeight.w900,
-                color: accent,
-                height: 1.0,
-                letterSpacing: -1.4,
-                fontFeatures: const [FontFeature.tabularFigures()],
+              const SizedBox(height: 4),
+              Text(
+                occasion.daysUntil == 1
+                    ? l.todayOccasionTomorrow
+                    : l.todayDaysUnit,
+                style: MobileTextStyles.labelSm(context).copyWith(
+                  fontSize: 12,
+                  color: surface.foregroundMuted,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0.2,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              occasion.daysUntil == 1
-                  ? l.todayOccasionTomorrow
-                  : l.todayDaysUnit,
-              style: MobileTextStyles.labelSm(context).copyWith(
-                fontSize: 12,
-                color: surface.foregroundMuted,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.2,
+            ],
+            const SizedBox(height: 10),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(
+                label,
+                style: MobileTextStyles.bodyMd(context).copyWith(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: surface.foreground,
+                  letterSpacing: -0.2,
+                ),
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
-          const SizedBox(height: 10),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: AlignmentDirectional.centerStart,
-            child: Text(
-              label,
-              style: MobileTextStyles.bodyMd(context).copyWith(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: surface.foreground,
-                letterSpacing: -0.2,
-              ),
-              maxLines: 1,
-              softWrap: false,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
+        ),
       ),
     );
   }

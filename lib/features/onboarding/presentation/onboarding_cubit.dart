@@ -27,12 +27,12 @@ class OnboardingCubit extends Cubit<OnboardingState>
     required OnboardingCompletionService completionService,
     required OnboardingFilterController filterController,
     IAnalyticsService? analytics,
-  })  : _settingsProvider = settingsProvider,
-        _countryLoader = countryLoader,
-        _completion = completionService,
-        _filterController = filterController,
-        _analytics = analytics,
-        super(const OnboardingState()) {
+  }) : _settingsProvider = settingsProvider,
+       _countryLoader = countryLoader,
+       _completion = completionService,
+       _filterController = filterController,
+       _analytics = analytics,
+       super(const OnboardingState()) {
     _initCountries();
   }
 
@@ -112,15 +112,50 @@ class OnboardingCubit extends Cubit<OnboardingState>
     await complete();
   }
 
+  /// Stages a GPS-detected location for user confirmation on the unified
+  /// onboarding location page. Commit only happens after [confirmPending].
+  void setPendingConfirmation(DetectedLocation location) {
+    emit(state.copyWith(pendingConfirmation: location));
+  }
+
+  /// Applies the staged location and commits onboarding.
+  Future<void> confirmPending() async {
+    final pending = state.pendingConfirmation;
+    if (pending == null) return;
+    emit(
+      mapDetectedLocationState(
+        state,
+        pending,
+      ).copyWith(clearPendingConfirmation: true),
+    );
+    await complete();
+  }
+
+  /// Dismisses the confirmation card so the user can search manually.
+  void rejectPending() {
+    emit(state.copyWith(clearPendingConfirmation: true));
+  }
+
+  /// Applies an online (Nominatim) pick and commits directly — explicit user
+  /// choice bypasses the confirmation card.
+  Future<void> selectOnlineLocationAndComplete(
+    DetectedLocation location,
+  ) async {
+    emit(mapDetectedLocationState(state, location));
+    await complete();
+  }
+
   Future<void> complete() async {
     emit(state.copyWith(isLoading: true, clearCompletionError: true));
     final result = await _completion.persistSelection(state);
     if (isClosed) return;
     result.fold(
-      (_) => emit(state.copyWith(
-        isLoading: false,
-        completionError: 'تعذّر تحميل بيانات المدينة، تحقّق من الاتصال',
-      )),
+      (_) => emit(
+        state.copyWith(
+          isLoading: false,
+          completionError: 'تعذّر تحميل بيانات المدينة، تحقّق من الاتصال',
+        ),
+      ),
       (_) {
         _analytics?.logOnboardingCompleted(
           state.selectedCountryKey ?? '',

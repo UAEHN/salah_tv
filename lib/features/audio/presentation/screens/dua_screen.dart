@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../core/app_colors.dart';
 import '../../../prayer/presentation/painters/arabesque_painter.dart';
@@ -16,7 +16,6 @@ class DuaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       color: Colors.white,
       child: Stack(
@@ -32,7 +31,10 @@ class DuaScreen extends StatelessWidget {
                 gradient: RadialGradient(
                   center: Alignment.center,
                   radius: 1.3,
-                  colors: [palette.primary.withValues(alpha: 0.07), Colors.white],
+                  colors: [
+                    palette.primary.withValues(alpha: 0.07),
+                    Colors.white,
+                  ],
                 ),
               ),
             ),

@@ -15,20 +15,19 @@ class NotificationOnboardingState {
   });
 
   const NotificationOnboardingState.initial()
-      : health = NotificationHealth.empty,
-        isLoading = true,
-        isTesting = false;
+    : health = NotificationHealth.empty,
+      isLoading = true,
+      isTesting = false;
 
   NotificationOnboardingState copyWith({
     NotificationHealth? health,
     bool? isLoading,
     bool? isTesting,
-  }) =>
-      NotificationOnboardingState(
-        health: health ?? this.health,
-        isLoading: isLoading ?? this.isLoading,
-        isTesting: isTesting ?? this.isTesting,
-      );
+  }) => NotificationOnboardingState(
+    health: health ?? this.health,
+    isLoading: isLoading ?? this.isLoading,
+    isTesting: isTesting ?? this.isTesting,
+  );
 
   bool get isOemStepRelevant => health.oem.needsAttention;
 

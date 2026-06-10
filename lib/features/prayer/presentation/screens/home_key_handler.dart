@@ -20,6 +20,7 @@ KeyEventResult handleHomeKey(
   required String takbeeratReciterUrl,
 }) {
   if (event is! KeyDownEvent) return KeyEventResult.ignored;
+
   final intent = decideHomeKeyIntent(
     HomeKeyInput(
       key: _mapLogicalKey(event.logicalKey),

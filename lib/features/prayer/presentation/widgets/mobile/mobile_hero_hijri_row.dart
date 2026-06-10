@@ -35,14 +35,16 @@ class MobileHeroHijriRow extends StatelessWidget {
             onTap: isBusy ? null : onPrevious,
           ),
           const SizedBox(width: 8),
-          Expanded(child: _DatePill(
-            hijriDate: hijriDate,
-            gregorianDate: gregorianDate,
-            isViewingToday: isViewingToday,
-            isBusy: isBusy,
-            backToTodayLabel: l.backToToday,
-            onReset: onReset,
-          )),
+          Expanded(
+            child: _DatePill(
+              hijriDate: hijriDate,
+              gregorianDate: gregorianDate,
+              isViewingToday: isViewingToday,
+              isBusy: isBusy,
+              backToTodayLabel: l.backToToday,
+              onReset: onReset,
+            ),
+          ),
           const SizedBox(width: 8),
           _ArrowButton(
             icon: Icons.chevron_right_rounded,

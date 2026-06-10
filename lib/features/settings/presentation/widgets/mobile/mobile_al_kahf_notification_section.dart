@@ -76,8 +76,7 @@ class _AlKahfDebugTestButton extends StatefulWidget {
   const _AlKahfDebugTestButton();
 
   @override
-  State<_AlKahfDebugTestButton> createState() =>
-      _AlKahfDebugTestButtonState();
+  State<_AlKahfDebugTestButton> createState() => _AlKahfDebugTestButtonState();
 }
 
 class _AlKahfDebugTestButtonState extends State<_AlKahfDebugTestButton> {

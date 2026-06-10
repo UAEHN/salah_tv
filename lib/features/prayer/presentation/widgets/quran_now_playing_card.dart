@@ -27,7 +27,8 @@ class QuranNowPlayingCard extends StatelessWidget {
       ),
     );
     final surahNum = flags.$1;
-    if (!flags.$2 || flags.$3 || surahNum == null) return const SizedBox.shrink();
+    if (!flags.$2 || flags.$3 || surahNum == null)
+      return const SizedBox.shrink();
     final surah = surahByNumber(surahNum);
     if (surah == null) return const SizedBox.shrink();
 

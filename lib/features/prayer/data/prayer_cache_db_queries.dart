@@ -61,14 +61,12 @@ class PrayerCacheDbQueries {
   /// Inserts or ignores country row; returns its id.
   Future<int> upsertCountry(Database db, String key) async {
     final lower = key.toLowerCase();
-    await db.execute(
-      'INSERT OR IGNORE INTO countries (key) VALUES (?)',
-      [lower],
-    );
-    final rows = await db.rawQuery(
-      'SELECT id FROM countries WHERE key = ?',
-      [lower],
-    );
+    await db.execute('INSERT OR IGNORE INTO countries (key) VALUES (?)', [
+      lower,
+    ]);
+    final rows = await db.rawQuery('SELECT id FROM countries WHERE key = ?', [
+      lower,
+    ]);
     return rows.first['id'] as int;
   }
 
@@ -104,16 +102,14 @@ class PrayerCacheDbQueries {
   Future<({String countryKey, String cityName})?> getLastCachedCity(
     Database db,
   ) async {
-    final rows = await db.rawQuery(
-      '''
+    final rows = await db.rawQuery('''
       SELECT co.key AS countryKey, c.name AS cityName
       FROM   city_cache_meta m
       JOIN   cities    c  ON c.id  = m.city_id
       JOIN   countries co ON co.id = c.country_id
       ORDER  BY m.fetched_at DESC
       LIMIT  1
-      ''',
-    );
+      ''');
     if (rows.isEmpty) return null;
     return (
       countryKey: rows.first['countryKey'] as String,
@@ -124,11 +120,7 @@ class PrayerCacheDbQueries {
   /// Removes all prayer_times rows and the meta record for [cityId].
   /// Called before writing new data to clean up any previous partial download.
   Future<void> deleteCityData(Database db, int cityId) async {
-    await db.delete(
-      'prayer_times',
-      where: 'city_id = ?',
-      whereArgs: [cityId],
-    );
+    await db.delete('prayer_times', where: 'city_id = ?', whereArgs: [cityId]);
     await db.delete(
       'city_cache_meta',
       where: 'city_id = ?',

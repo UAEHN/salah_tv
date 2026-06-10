@@ -10,23 +10,19 @@ import '../i_remote_version_repository.dart';
 /// and produces an [UpdateDecision]. The caller (UI bridge) decides what
 /// dialog — if any — to show.
 class CheckForUpdateUseCase {
-  CheckForUpdateUseCase({
-    required this.remoteRepo,
-    required this.versionInfo,
-  });
+  CheckForUpdateUseCase({required this.remoteRepo, required this.versionInfo});
 
   final IRemoteVersionRepository remoteRepo;
   final IAppVersionInfoPort versionInfo;
 
   Future<Either<Failure, UpdateDecision>> call() async {
     final remote = await remoteRepo.fetchLatest();
-    return remote.fold(
-      Left.new,
-      (info) async {
-        final current = await versionInfo.currentBuildNumber();
-        return Right(UpdateDecision(status: _classify(current, info), info: info));
-      },
-    );
+    return remote.fold(Left.new, (info) async {
+      final current = await versionInfo.currentBuildNumber();
+      return Right(
+        UpdateDecision(status: _classify(current, info), info: info),
+      );
+    });
   }
 
   UpdateStatus _classify(int current, RemoteVersionInfo info) {

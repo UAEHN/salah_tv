@@ -36,7 +36,7 @@ class PrayerCacheDbWriter {
       for (var i = 0; i < rows.length; i += _batchSize) {
         if (cancelToken.isCancelled) throw CancellationException();
 
-        final end   = (i + _batchSize).clamp(0, rows.length);
+        final end = (i + _batchSize).clamp(0, rows.length);
         final batch = txn.batch();
         for (final row in rows.sublist(i, end)) {
           batch.rawInsert(
@@ -51,4 +51,3 @@ class PrayerCacheDbWriter {
     });
   }
 }
-

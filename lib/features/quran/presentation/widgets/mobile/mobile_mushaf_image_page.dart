@@ -76,28 +76,32 @@ class MobileMushafImagePage extends StatelessWidget {
                       ),
                     ),
                     Positioned.fill(
-                      child: BlocSelector<MushafReaderCubit, MushafReaderState,
-                          ({int? surah, int? ayah})>(
-                        // Flash highlight (quick-link navigation) wins
-                        // over the playing-ayah highlight while it's
-                        // active — the 2-second cubit timer clears it
-                        // automatically.
-                        selector: (s) => s.flashSurah != null &&
-                                s.flashAyah != null
-                            ? (surah: s.flashSurah, ayah: s.flashAyah)
-                            : (surah: s.playingSurah, ayah: s.playingAyah),
-                        builder: (_, p) {
-                          if (p.surah == null || p.ayah == null) {
-                            return const SizedBox.shrink();
-                          }
-                          return MobileMushafAyahHighlight(
-                            pageNumber: pageNumber,
-                            surah: p.surah!,
-                            ayah: p.ayah!,
-                            color: palette.highlight,
-                          );
-                        },
-                      ),
+                      child:
+                          BlocSelector<
+                            MushafReaderCubit,
+                            MushafReaderState,
+                            ({int? surah, int? ayah})
+                          >(
+                            // Flash highlight (quick-link navigation) wins
+                            // over the playing-ayah highlight while it's
+                            // active — the 2-second cubit timer clears it
+                            // automatically.
+                            selector: (s) =>
+                                s.flashSurah != null && s.flashAyah != null
+                                ? (surah: s.flashSurah, ayah: s.flashAyah)
+                                : (surah: s.playingSurah, ayah: s.playingAyah),
+                            builder: (_, p) {
+                              if (p.surah == null || p.ayah == null) {
+                                return const SizedBox.shrink();
+                              }
+                              return MobileMushafAyahHighlight(
+                                pageNumber: pageNumber,
+                                surah: p.surah!,
+                                ayah: p.ayah!,
+                                color: palette.highlight,
+                              );
+                            },
+                          ),
                     ),
                     if (onAyahTap != null)
                       Positioned.fill(
@@ -154,8 +158,9 @@ class _PageImageState extends State<_PageImage> {
   void didUpdateWidget(covariant _PageImage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.pageNumber != widget.pageNumber) {
-      _pathFuture =
-          GetIt.I<IPageImageRepository>().ensurePage(widget.pageNumber);
+      _pathFuture = GetIt.I<IPageImageRepository>().ensurePage(
+        widget.pageNumber,
+      );
     }
   }
 
@@ -184,20 +189,20 @@ class _PageImageState extends State<_PageImage> {
   }
 
   Widget _placeholder() => const Center(
-        child: SizedBox(
-          width: 40,
-          height: 40,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
-      );
+    child: SizedBox(
+      width: 40,
+      height: 40,
+      child: CircularProgressIndicator(strokeWidth: 2),
+    ),
+  );
 
   Widget _error() => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            'تعذّر تحميل الصفحة',
-            style: TextStyle(color: widget.palette.text, fontSize: 32),
-          ),
-        ),
-      );
+    child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Text(
+        'تعذّر تحميل الصفحة',
+        style: TextStyle(color: widget.palette.text, fontSize: 32),
+      ),
+    ),
+  );
 }

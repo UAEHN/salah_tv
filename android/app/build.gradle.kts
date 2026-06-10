@@ -4,6 +4,7 @@ plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
     // END: FlutterFire Configuration
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -74,4 +75,11 @@ dependencies {
     // Native notification engine: periodic safety net that re-arms alarms
     // every 6 hours so the OS cannot silently drop them on aggressive OEMs.
     implementation("androidx.work:work-runtime-ktx:2.9.1")
+    // Firebase BoM aligns every Firebase artifact to a single tested set.
+    // The version is pinned to the firebase_messaging Flutter plugin
+    // (15.2.x → maps to BoM ≥ 33.6.0).
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    // FCM SDK — referenced directly from
+    // com.ghasaq.app.notifications.fcm.AppFirebaseMessagingService.
+    implementation("com.google.firebase:firebase-messaging-ktx")
 }

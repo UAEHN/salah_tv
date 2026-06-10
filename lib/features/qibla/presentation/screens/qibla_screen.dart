@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
@@ -12,11 +12,7 @@ class QiblaScreen extends StatelessWidget {
   final String city;
   final String country;
 
-  const QiblaScreen({
-    super.key,
-    required this.city,
-    required this.country,
-  });
+  const QiblaScreen({super.key, required this.city, required this.country});
 
   @override
   Widget build(BuildContext context) {

@@ -50,10 +50,10 @@ class _ReciterPickerDialogState extends State<ReciterPickerDialog> {
   }
 
   void _retry() => setState(() {
-        _error = null;
-        _reciters = null;
-        _load();
-      });
+    _error = null;
+    _reciters = null;
+    _load();
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -71,16 +71,24 @@ class _ReciterPickerDialogState extends State<ReciterPickerDialog> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                Icon(Icons.mic_rounded,
-                    color: widget.palette.primary, size: 26),
-                const SizedBox(width: 12),
-                Text(l.settingsSelectReciter,
+              Row(
+                children: [
+                  Icon(
+                    Icons.mic_rounded,
+                    color: widget.palette.primary,
+                    size: 26,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    l.settingsSelectReciter,
                     style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white)),
-              ]),
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 12),
               if (_reciters != null)
                 TvSearchBar(

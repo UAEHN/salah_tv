@@ -82,6 +82,15 @@ extension SettingsProviderAppearance on SettingsProvider {
   Future<void> updateIsAdhkarEnabled(bool value) =>
       _update(_settings.copyWith(isAdhkarEnabled: value));
 
+  Future<void> updateIsAfterPrayerAdhkarEnabled(bool value) =>
+      _update(_settings.copyWith(isAfterPrayerAdhkarEnabled: value));
+
+  Future<void> updateIsTickerEnabled(bool value) =>
+      _update(_settings.copyWith(isTickerEnabled: value));
+
+  Future<void> updateIsScreensaverEnabled(bool value) =>
+      _update(_settings.copyWith(isScreensaverEnabled: value));
+
   Future<void> updateMorningAdhkarNotification(bool value) =>
       _update(_settings.copyWith(isMorningAdhkarNotificationEnabled: value));
 

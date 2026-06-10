@@ -22,6 +22,7 @@ class CalculatedPrayerRepository implements IPrayerTimesRepository {
   double _lng = 0;
   String _methodKey = 'muslim_world_league';
   String _madhabKey = 'shafi';
+  String _highLatRuleKey = 'auto';
   String? _timeZoneId;
   double? _utcOffsetHours;
   String _cityLabel = '';
@@ -55,6 +56,7 @@ class CalculatedPrayerRepository implements IPrayerTimesRepository {
     double lng,
     String methodKey, {
     String madhabKey = 'shafi',
+    String highLatitudeRuleKey = 'auto',
     String cityLabel = '',
     String? timeZoneId,
     double? utcOffsetHours,
@@ -63,13 +65,18 @@ class CalculatedPrayerRepository implements IPrayerTimesRepository {
     _lng = lng;
     _methodKey = methodKey;
     _madhabKey = madhabKey;
+    _highLatRuleKey = highLatitudeRuleKey;
     _timeZoneId = timeZoneId;
     _utcOffsetHours = utcOffsetHours;
     _cityLabel = cityLabel;
     _isInitialized = true;
     _cache.refresh(
-      _source, _lat, _lng, _methodKey,
+      _source,
+      _lat,
+      _lng,
+      _methodKey,
       madhabKey: _madhabKey,
+      highLatitudeRuleKey: _highLatRuleKey,
       timeZoneId: _timeZoneId,
       utcOffsetHours: _utcOffsetHours,
     );
@@ -98,14 +105,33 @@ class CalculatedPrayerRepository implements IPrayerTimesRepository {
       final key = calc.dateKey(date);
       final cached = _cache.getByKey(key);
       if (cached != null) return Right(cached);
-      return Right(
-        _source.calculateForDate(
-          _lat, _lng, date, _methodKey,
+      final fresh = _source.calculateForDate(
+        _lat,
+        _lng,
+        date,
+        _methodKey,
+        madhabKey: _madhabKey,
+        highLatitudeRuleKey: _highLatRuleKey,
+        timeZoneId: _timeZoneId,
+        utcOffsetHours: _utcOffsetHours,
+      );
+      if (!AdhanCalculationSource.isValid(fresh)) {
+        // Calculation went non-monotonic (extreme latitude edge case).
+        // Fall back to yesterday's times — preferable to passing
+        // garbage to the prayer cycle.
+        final yesterday = _source.calculateForDate(
+          _lat,
+          _lng,
+          date.subtract(const Duration(days: 1)),
+          _methodKey,
           madhabKey: _madhabKey,
+          highLatitudeRuleKey: 'middle_of_the_night',
           timeZoneId: _timeZoneId,
           utcOffsetHours: _utcOffsetHours,
-        ),
-      );
+        );
+        return Right(yesterday);
+      }
+      return Right(fresh);
     } catch (e) {
       return Left(
         CacheFailure('Failed to calculate prayer times for date: $e'),
@@ -115,10 +141,17 @@ class CalculatedPrayerRepository implements IPrayerTimesRepository {
 
   @override
   DailyPrayerTimes? getToday() {
-    if (_cache.isStale(timeZoneId: _timeZoneId, utcOffsetHours: _utcOffsetHours)) {
+    if (_cache.isStale(
+      timeZoneId: _timeZoneId,
+      utcOffsetHours: _utcOffsetHours,
+    )) {
       _cache.refresh(
-        _source, _lat, _lng, _methodKey,
+        _source,
+        _lat,
+        _lng,
+        _methodKey,
         madhabKey: _madhabKey,
+        highLatitudeRuleKey: _highLatRuleKey,
         timeZoneId: _timeZoneId,
         utcOffsetHours: _utcOffsetHours,
       );

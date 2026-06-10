@@ -32,7 +32,8 @@ class NotificationIdPolicy {
     required String prayerKey,
   }) {
     final base = _base[type] ?? (throw ArgumentError('Unknown type: $type'));
-    final slot = _prayerSlot[prayerKey] ??
+    final slot =
+        _prayerSlot[prayerKey] ??
         (throw ArgumentError('Unknown prayerKey: $prayerKey'));
     return base + dayIndex * 10 + slot;
   }

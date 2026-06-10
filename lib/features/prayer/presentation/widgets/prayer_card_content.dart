@@ -37,29 +37,26 @@ class PrayerCardContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
 
+    // Active card uses a solid palette color (mirrors mobile active row) so the
+    // selection reads at a glance from across the room. On dark mode we darken
+    // the primary slightly so it doesn't glow harder than the surface around it.
+    final activeFill = isDarkMode
+        ? Color.lerp(palette.primary, Colors.black, 0.20) ?? palette.primary
+        : palette.primary;
+
     final borderColor = isPreAlert
         ? palette.primary.withValues(alpha: 0.30 + pulse * 0.20)
         : isNext
-            ? palette.primary.withValues(alpha: 0.85) // Bright active border
-            : tc.borderGlass;
+        ? Colors.white.withValues(alpha: isDarkMode ? 0.18 : 0.35)
+        : tc.borderGlass;
 
     final shadowColor = isPreAlert
         ? palette.primary.withValues(alpha: 0.08 + pulse * 0.12)
         : isNext
-            ? palette.glow.withValues(alpha: 0.4) // Stronger green glow
-            : Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.04);
+        ? palette.glow.withValues(alpha: 0.45)
+        : Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.04);
 
-    // Single solid color for both states — no gradient, no per-stop alpha.
-    // Active card is a pre-computed tinted shade of the palette over the
-    // surface base, giving a clearly visible distinction from the non-active
-    // cards while staying renderable on cheap Android TV GPUs (which choke
-    // on gradients between two semi-transparent colors).
-    final fillColor = isNext
-        ? Color.alphaBlend(
-            palette.primary.withValues(alpha: 0.30),
-            tc.bgSurface,
-          )
-        : tc.bgSurface;
+    final fillColor = isNext ? activeFill : tc.bgSurface;
     const Gradient? fillGradient = null;
 
     return CustomPaint(
@@ -79,15 +76,25 @@ class PrayerCardContent extends StatelessWidget {
   }
 
   Widget _buildCardBody(BuildContext context, AppLocalizations l) {
+    // Active card is filled with the palette primary — force white text/icon
+    // so it stays readable across every theme (gold, blue, purple, ...) and
+    // both light/dark surfaces. Inactive cards keep the theme text colors.
+    final Color contentPrimary = isNext ? Colors.white : tc.textPrimary;
+    final Color contentSecondary = isNext
+        ? Colors.white.withValues(alpha: 0.92)
+        : tc.textSecondary;
+    final Color contentMuted = isNext
+        ? Colors.white.withValues(alpha: 0.78)
+        : tc.textMuted;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-
         SizedBox(height: screenH * 0.008),
         Icon(
           icon,
           size: screenH * 0.050,
-          color: isNext ? tc.textPrimary : tc.textSecondary,
+          color: isNext ? contentPrimary : contentSecondary,
         ),
         SizedBox(height: screenH * 0.008),
         Text(
@@ -95,7 +102,7 @@ class PrayerCardContent extends StatelessWidget {
           style: TextStyle(
             fontSize: screenH * 0.040,
             fontWeight: isNext ? FontWeight.w700 : FontWeight.w500,
-            color: tc.textPrimary,
+            color: contentPrimary,
           ),
         ),
         SizedBox(height: screenH * 0.010),
@@ -105,7 +112,7 @@ class PrayerCardContent extends StatelessWidget {
           style: TextStyle(
             fontSize: screenH * 0.045,
             fontWeight: FontWeight.w700,
-            color: tc.textPrimary,
+            color: contentPrimary,
           ),
         ),
         if (prayer.isCountable) ...[
@@ -113,10 +120,7 @@ class PrayerCardContent extends StatelessWidget {
           Text(
             '${l.iqamaLabel} $formattedIqama',
             textDirection: TextDirection.rtl,
-            style: TextStyle(
-              fontSize: screenH * 0.026,
-              color: tc.textMuted,
-            ),
+            style: TextStyle(fontSize: screenH * 0.026, color: contentMuted),
           ),
         ],
       ],

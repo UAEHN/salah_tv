@@ -2,12 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/app_colors.dart';
 import '../../../../core/localization/prayer_name_localizer.dart';
 import '../../../../core/time_formatters.dart';
-import '../bloc/prayer_bloc.dart';
 import '../../../settings/presentation/settings_provider.dart';
+import '../bloc/prayer_bloc.dart';
+import 'classic/classic_count_card.dart';
+import 'classic/classic_visuals.dart';
 
+/// Iqama countdown rendered in the classic count card — same chrome as the
+/// next-prayer card so the transition between them is seamless. Digits +
+/// progress are isolated so the card is not rebuilt up to ~1800 times during
+/// a single iqama wait.
 class IqamaCountdownWidget extends StatelessWidget {
   final AccentPalette palette;
 
@@ -16,82 +23,77 @@ class IqamaCountdownWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    // Narrow select: only rebuild when these three fields change.
-    final data = context.select<PrayerBloc, (bool, String, Duration)>(
-      (b) => (
-        b.state.isIqamaCountdown,
-        b.state.iqamaPrayerKey,
-        b.state.iqamaCountdown,
-      ),
+    final data = context.select<PrayerBloc, (bool, String)>(
+      (b) => (b.state.isIqamaCountdown, b.state.iqamaPrayerKey),
     );
     final isIqamaCountdown = data.$1;
     final iqamaPrayerKey = data.$2;
-    final iqamaCountdown = data.$3;
     final isDark = context.select<SettingsProvider, bool>(
       (p) => p.settings.isDarkMode,
     );
-    final tc = ThemeColors.of(isDark);
+    final vis = ClassicVisuals(ThemeColors.of(isDark), palette);
     final screenH = MediaQuery.of(context).size.height;
-    final screenW = MediaQuery.of(context).size.width;
 
     if (!isIqamaCountdown) return const SizedBox.shrink();
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 400),
-      padding: EdgeInsets.symmetric(
-        horizontal: screenW * 0.03,
-        vertical: screenH * 0.022,
-      ),
-      decoration: BoxDecoration(
-        // Light: opaque to detach from the warm parchment background.
-        // Dark: transparent so the dark gradient bleeds through naturally.
-        color: isDark ? Colors.transparent : tc.bgSurface,
-        border: Border.all(
-          color: palette.primary.withValues(alpha: 0.85),
-          width: 2.0,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+    final prayerName = localizedPrayerName(context, iqamaPrayerKey);
+    final title = l.localeName == 'ar' ? 'باقي على إقامة' : 'Iqama in';
+    final countdownSize = screenH * 0.106;
+
+    return ClassicCountCard(
+      vis: vis,
+      eyebrow: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Label
           Text(
-            l.iqamaAfterPrayer(
-              localizedPrayerName(context, iqamaPrayerKey),
-            ),
+            title,
+            textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: screenH * 0.040,
-              fontWeight: FontWeight.w500,
-              color: tc.textSecondary,
+              fontSize: screenH * 0.032,
+              fontWeight: FontWeight.w600,
+              color: vis.fgSec,
             ),
           ),
-          SizedBox(height: screenH * 0.008),
-          // Countdown
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.access_time_filled_rounded,
-                color: tc.textSecondary,
-                size: screenH * 0.038,
-              ),
-              SizedBox(width: screenW * 0.008),
-              Text(
-                formatIqamaCountdown(iqamaCountdown),
-                textDirection: TextDirection.ltr,
-                style: TextStyle(
-                  fontSize: screenH * 0.065,
-                  fontWeight: FontWeight.w700,
-                  color: tc.textPrimary,
-                ),
-              ),
-            ],
+          SizedBox(height: screenH * 0.006),
+          Text(
+            prayerName,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: screenH * 0.054,
+              fontWeight: FontWeight.w900,
+              color: vis.countdownText,
+              height: 1.0,
+            ),
           ),
         ],
       ),
+      big: _IqamaCountdownText(
+        style: TextStyle(
+          fontSize: countdownSize,
+          fontWeight: FontWeight.w700,
+          color: vis.countdownText,
+          fontFeatures: const [FontFeature.tabularFigures()],
+        ),
+      ),
+    );
+  }
+}
+
+/// Rebuilds every second. Receives precomputed style from parent.
+class _IqamaCountdownText extends StatelessWidget {
+  final TextStyle style;
+
+  const _IqamaCountdownText({required this.style});
+
+  @override
+  Widget build(BuildContext context) {
+    final iqamaCountdown = context.select<PrayerBloc, Duration>(
+      (b) => b.state.iqamaCountdown,
+    );
+    return Text(
+      formatIqamaCountdown(iqamaCountdown),
+      textDirection: TextDirection.ltr,
+      style: style,
     );
   }
 }

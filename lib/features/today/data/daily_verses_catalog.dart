@@ -117,8 +117,7 @@ const List<DailyVerse> kDailyVersesCatalog = [
     surahNumber: 33,
     ayahNumber: 41,
     surahLabelKey: 'surahAhzab',
-    textAr:
-        'يَا أَيُّهَا الَّذِينَ آمَنُوا اذْكُرُوا اللَّهَ ذِكْرًا كَثِيرًا',
+    textAr: 'يَا أَيُّهَا الَّذِينَ آمَنُوا اذْكُرُوا اللَّهَ ذِكْرًا كَثِيرًا',
   ),
   DailyVerse(
     surahNumber: 39,

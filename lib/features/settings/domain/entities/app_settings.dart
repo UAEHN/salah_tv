@@ -51,6 +51,14 @@ class AppSettings {
   final double? selectedLongitude;
   final String calculationMethod;
   final String madhab; // 'shafi' | 'hanafi'
+
+  /// High-latitude adjustment for Fajr/Isha when the sun does not dip
+  /// below the standard twilight angle (mainly Europe, > ~48°N).
+  /// One of `auto` | `middle_of_the_night` | `seventh_of_the_night` |
+  /// `twilight_angle`. `auto` keeps the legacy behavior (apply
+  /// `middleOfTheNight` only above the in-source latitude threshold).
+  final String highLatitudeRule;
+
   final bool isCalculatedLocation;
 
   /// IANA timezone identifier of the selected city (e.g. Europe/Berlin).
@@ -68,6 +76,23 @@ class AppSettings {
   final bool isAnalogClock;
   final bool isAdhkarEnabled;
 
+  /// Whether the «أذكار بعد الصلاة» takeover plays for a few minutes after each
+  /// iqama on the TV cycle. Independent of [isAdhkarEnabled] so the
+  /// morning/evening hero adhkar can stay on while this is turned off. Consumed
+  /// by the engine at iqama end, so it participates in [prayerFieldsEqual].
+  final bool isAfterPrayerAdhkarEnabled;
+
+  /// Whether the home ticker bar (scrolling verses/hadith/adhkar) is shown
+  /// on the TV home screen. Cosmetic-only — excluded from [prayerFieldsEqual]
+  /// so toggling it never triggers a prayer-cycle reload.
+  final bool isTickerEnabled;
+
+  /// Whether the ambient idle screensaver (rotating verses / أسماء الله الحسنى
+  /// / adhkar) takes over the TV home after a period of no remote activity.
+  /// Cosmetic/presentation-only — driven entirely in the UI layer, so it is
+  /// excluded from [prayerFieldsEqual] (never triggers a prayer-cycle reload).
+  final bool isScreensaverEnabled;
+
   // ── Notification settings (mobile only) ─────────────────────────────────
   final Map<String, bool> prayerNotificationEnabled;
   final Map<String, bool> preAdhanReminderEnabled;
@@ -79,9 +104,11 @@ class AppSettings {
   // ── Adhkar notification settings (mobile only) ──────────────────────────
   final bool isMorningAdhkarNotificationEnabled;
   final bool isEveningAdhkarNotificationEnabled;
+
   /// Minutes-from-midnight when the morning adhkar notification fires.
   /// 420 = 07:00 AM (default).
   final int morningAdhkarMinuteOfDay;
+
   /// Minutes-from-midnight for evening. 1020 = 17:00 PM (default).
   final int eveningAdhkarMinuteOfDay;
 
@@ -91,6 +118,7 @@ class AppSettings {
   /// ما بين الجمعتين» is broadly endorsed, so most users benefit from the
   /// nudge. The toggle lives in mobile notification settings.
   final bool isAlKahfReminderEnabled;
+
   /// Minutes-from-midnight when the Al-Kahf reminder fires every Friday.
   /// 390 = 06:30 AM (default — shortly after Fajr in most timezones).
   final int alKahfReminderMinuteOfDay;
@@ -116,6 +144,7 @@ class AppSettings {
     this.selectedLongitude,
     this.calculationMethod = 'muslim_world_league',
     this.madhab = 'shafi',
+    this.highLatitudeRule = 'auto',
     this.isCalculatedLocation = false,
     this.selectedTimeZoneId,
     this.utcOffsetHours,
@@ -124,6 +153,9 @@ class AppSettings {
     this.customAdhans = const [],
     this.isAnalogClock = false,
     this.isAdhkarEnabled = true,
+    this.isAfterPrayerAdhkarEnabled = true,
+    this.isTickerEnabled = false,
+    this.isScreensaverEnabled = false,
     this.preAdhanReminderMinutes = 15,
     this.iqamaDelays = const {
       'fajr': 20,

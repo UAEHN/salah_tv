@@ -36,8 +36,10 @@ class MobileHomeScreen extends StatelessWidget {
     final scaledMq = isRubik
         ? mq
         : mq.copyWith(
-            textScaler: mq.textScaler
-                .clamp(minScaleFactor: 1.15, maxScaleFactor: 1.3),
+            textScaler: mq.textScaler.clamp(
+              minScaleFactor: 1.15,
+              maxScaleFactor: 1.3,
+            ),
           );
     return MediaQuery(
       data: scaledMq,
@@ -79,29 +81,30 @@ class MobileHomeScreen extends StatelessWidget {
             bloc.add(const PrayerReloaded());
             return true;
           },
-          onSaveWorld: (
-            c,
-            city,
-            lat,
-            lng,
-            method, {
-            String? timeZoneId,
-            double? utcOffsetHours,
-          }) async {
-            await locationCubit.save(
-              LocationChoice.worldFromValues(
-                countryKey: c,
-                cityName: city,
-                latitude: lat,
-                longitude: lng,
-                calculationMethod: method,
-                timeZoneId: timeZoneId,
-                utcOffsetHours: utcOffsetHours,
-              ),
-            );
-            bloc.add(const PrayerReloaded());
-            return true;
-          },
+          onSaveWorld:
+              (
+                c,
+                city,
+                lat,
+                lng,
+                method, {
+                String? timeZoneId,
+                double? utcOffsetHours,
+              }) async {
+                await locationCubit.save(
+                  LocationChoice.worldFromValues(
+                    countryKey: c,
+                    cityName: city,
+                    latitude: lat,
+                    longitude: lng,
+                    calculationMethod: method,
+                    timeZoneId: timeZoneId,
+                    utcOffsetHours: utcOffsetHours,
+                  ),
+                );
+                bloc.add(const PrayerReloaded());
+                return true;
+              },
         ),
       ),
     ).whenComplete(locationCubit.close);

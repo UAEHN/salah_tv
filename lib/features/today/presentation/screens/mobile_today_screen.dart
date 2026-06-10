@@ -44,8 +44,7 @@ class _MobileTodayScreenState extends State<MobileTodayScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // Backgrounds are theme-driven now (no longer time-of-day): a soft warm
     // beige in light mode, the premium night gradient in dark mode.
-    final skyColors =
-        isDark ? kPremiumNightGradient : kSoftLightGradient;
+    final skyColors = isDark ? kPremiumNightGradient : kSoftLightGradient;
 
     final mq = MediaQuery.of(context);
     final fontFamily = context.select<SettingsProvider, String>(
@@ -55,8 +54,10 @@ class _MobileTodayScreenState extends State<MobileTodayScreen> {
     final scaledMq = isRubik
         ? mq
         : mq.copyWith(
-            textScaler: mq.textScaler
-                .clamp(minScaleFactor: 1.15, maxScaleFactor: 1.3),
+            textScaler: mq.textScaler.clamp(
+              minScaleFactor: 1.15,
+              maxScaleFactor: 1.3,
+            ),
           );
     return MediaQuery(
       data: scaledMq,

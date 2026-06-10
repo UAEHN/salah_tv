@@ -15,7 +15,7 @@ import '../../domain/entities/takbeerat_reciter.dart';
 /// any unexpected failure — repository wraps it into a [Failure].
 class TakbeeratRemoteConfigDataSource {
   TakbeeratRemoteConfigDataSource({FirebaseRemoteConfig? rc})
-      : _rc = rc ?? FirebaseRemoteConfig.instance;
+    : _rc = rc ?? FirebaseRemoteConfig.instance;
 
   final FirebaseRemoteConfig _rc;
 
@@ -25,9 +25,13 @@ class TakbeeratRemoteConfigDataSource {
         isFeatureEnabled: _rc.getBool(AppConfig.rcKeyTakbeeratEnabled),
         hasForceHide: _rc.getBool(AppConfig.rcKeyTakbeeratForceHide),
         hasForceShow: _rc.getBool(AppConfig.rcKeyTakbeeratForceShow),
-        fitrStartOffsetDays: _rc.getInt(AppConfig.rcKeyTakbeeratFitrStartOffset),
+        fitrStartOffsetDays: _rc.getInt(
+          AppConfig.rcKeyTakbeeratFitrStartOffset,
+        ),
         fitrEndOffsetDays: _rc.getInt(AppConfig.rcKeyTakbeeratFitrEndOffset),
-        adhaStartOffsetDays: _rc.getInt(AppConfig.rcKeyTakbeeratAdhaStartOffset),
+        adhaStartOffsetDays: _rc.getInt(
+          AppConfig.rcKeyTakbeeratAdhaStartOffset,
+        ),
         adhaEndOffsetDays: _rc.getInt(AppConfig.rcKeyTakbeeratAdhaEndOffset),
         reciters: _parseReciters(
           _rc.getString(AppConfig.rcKeyTakbeeratRecitersJson),

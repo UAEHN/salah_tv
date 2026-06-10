@@ -1,3 +1,4 @@
+import '../../../analytics/domain/i_analytics_service.dart';
 import '../i_prayer_audio_port.dart';
 import '../i_takbeerat_audio_port.dart';
 import '../../../notifications/domain/i_prayer_notification_port.dart';
@@ -20,4 +21,10 @@ abstract class PrayerCycleBase {
 
   /// Null on TV — notifications are mobile-only.
   IPrayerNotificationPort? get notifications;
+
+  /// Nullable so legacy tests / mocks can build the engine without analytics.
+  /// In production it is always injected by [PrayerBloc]. All call sites
+  /// MUST use the null-safe `analytics?.log...` pattern — telemetry must
+  /// never break the prayer cycle (§8 CLAUDE.md).
+  IAnalyticsService? get analytics;
 }

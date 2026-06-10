@@ -26,7 +26,9 @@ class PrayerDisplayedDateController {
             next.isCalculatedLocation != prev.isCalculatedLocation ||
             next.selectedLatitude != prev.selectedLatitude ||
             next.selectedLongitude != prev.selectedLongitude ||
-            next.calculationMethod != prev.calculationMethod);
+            next.calculationMethod != prev.calculationMethod ||
+            next.madhab != prev.madhab ||
+            next.highLatitudeRule != prev.highLatitudeRule);
   }
 
   void clear() {
@@ -74,7 +76,9 @@ class PrayerDisplayedDateController {
     }
     _isBusy = true;
     final result = await _getPrayerTimesByDate(targetDate);
-    result.fold((f) => debugPrint('[DateNav] load $targetDate failed: $f'), (prayers) {
+    result.fold((f) => debugPrint('[DateNav] load $targetDate failed: $f'), (
+      prayers,
+    ) {
       if (prayers != null) {
         _selectedDate = targetDate;
         _selectedDatePrayers = prayers;

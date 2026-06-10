@@ -15,8 +15,8 @@ import 'sqlite_prayer_queries.dart';
 /// [Database] instance differs (writable cache vs. bundled read-only DB).
 class DownloadedPrayerRepository implements IPrayerTimesRepository {
   DownloadedPrayerRepository(this._db)
-      : _queries = SqlitePrayerQueries(),
-        _cache = SqlitePrayerCache();
+    : _queries = SqlitePrayerQueries(),
+      _cache = SqlitePrayerCache();
 
   final Database _db;
   final SqlitePrayerQueries _queries;
@@ -124,6 +124,7 @@ class DownloadedPrayerRepository implements IPrayerTimesRepository {
     double lng,
     String methodKey, {
     String madhabKey = 'shafi',
+    String highLatitudeRuleKey = 'auto',
     String cityLabel = '',
     String? timeZoneId,
     double? utcOffsetHours,

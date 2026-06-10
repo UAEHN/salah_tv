@@ -35,7 +35,8 @@ class QuranAudioService {
       _isTransitioning = true;
       final resolver = _nextSurahResolver;
       final nextNumber = resolver == null
-          ? ((_quranSurahIndex + 1) % 114) + 1 // default rolling (1..114)
+          ? ((_quranSurahIndex + 1) % 114) +
+                1 // default rolling (1..114)
           : resolver(completedSurahNumber);
       if (nextNumber == null || nextNumber < 1 || nextNumber > 114) {
         _quranServerUrl = '';
@@ -71,8 +72,7 @@ class QuranAudioService {
     }
   }
 
-  Future<void> playQuranFromServer(String serverUrl) =>
-      playSurah(serverUrl, 1);
+  Future<void> playQuranFromServer(String serverUrl) => playSurah(serverUrl, 1);
 
   Future<void> playSurah(String serverUrl, int surahNumber) async {
     if (!_isAllowedQuranUrl(serverUrl)) return;
@@ -98,8 +98,8 @@ class QuranAudioService {
   Future<void> resumeOrRestartQuranPlayer(String serverUrl) async {
     final pausedAt = _quranPausedAt;
     _quranPausedAt = null;
-    final longPause = pausedAt != null &&
-        DateTime.now().difference(pausedAt).inSeconds > 60;
+    final longPause =
+        pausedAt != null && DateTime.now().difference(pausedAt).inSeconds > 60;
     if (longPause) return restartQuranCurrentSurah(serverUrl);
     try {
       await _quranPlayer.resume();

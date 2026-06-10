@@ -33,10 +33,7 @@ class AdhanPreviewService implements IAdhanPreviewPort {
       if (path != null) return DeviceFileSource(path);
     }
     final asset = kAdhanSounds
-        .firstWhere(
-          (s) => s.key == soundKey,
-          orElse: () => kAdhanSounds.first,
-        )
+        .firstWhere((s) => s.key == soundKey, orElse: () => kAdhanSounds.first)
         .asset;
     return AssetSource(asset);
   }

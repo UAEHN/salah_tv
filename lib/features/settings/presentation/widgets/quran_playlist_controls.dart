@@ -35,17 +35,21 @@ class QuranPlaylistControls extends StatelessWidget {
           children: [
             Expanded(
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 decoration: tc.glass(opacity: 0.06, borderRadius: 10),
-                child: Text(label,
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: playlist.isEmpty ? tc.textMuted : tc.textPrimary,
-                      fontWeight: playlist.isEmpty
-                          ? FontWeight.normal
-                          : FontWeight.w600,
-                    )),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: playlist.isEmpty ? tc.textMuted : tc.textPrimary,
+                    fontWeight: playlist.isEmpty
+                        ? FontWeight.normal
+                        : FontWeight.w600,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -60,9 +64,10 @@ class QuranPlaylistControls extends StatelessWidget {
               ),
               accent: palette.primary,
               filled: true,
-              child: Text(l.settingsQuranEditPlaylist,
-                  style:
-                      const TextStyle(fontSize: 18, color: Colors.white)),
+              child: Text(
+                l.settingsQuranEditPlaylist,
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
             ),
           ],
         ),

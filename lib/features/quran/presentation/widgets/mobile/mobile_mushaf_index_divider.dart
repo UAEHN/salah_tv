@@ -15,16 +15,12 @@ class MobileMushafIndexDivider extends StatelessWidget {
       padding: const EdgeInsets.only(top: 6, bottom: 10),
       child: Row(
         children: [
-          Expanded(
-            child: Divider(color: faint, thickness: 0.6, endIndent: 12),
-          ),
+          Expanded(child: Divider(color: faint, thickness: 0.6, endIndent: 12)),
           Text(
             AppLocalizations.of(context).mushafSurahIndex,
             style: MobileTextStyles.headlineMd(context),
           ),
-          Expanded(
-            child: Divider(color: faint, thickness: 0.6, indent: 12),
-          ),
+          Expanded(child: Divider(color: faint, thickness: 0.6, indent: 12)),
         ],
       ),
     );

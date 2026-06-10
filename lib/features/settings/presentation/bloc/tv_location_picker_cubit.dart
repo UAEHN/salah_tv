@@ -23,7 +23,8 @@ class TvLocationPickerCubit extends Cubit<TvLocationPickerState> {
        );
 
   Future<void> load({bool showCitiesForCurrentCountry = false}) async {
-    // TV shows only DB-backed countries — no GPS / calculated-mode support.
+    // Render DB-backed countries immediately so the picker isn't blank
+    // while the world catalogue loads from the asset bundle.
     _allCountries = buildUnifiedCountries(null);
     emit(
       state.copyWith(
@@ -37,6 +38,28 @@ class TvLocationPickerCubit extends Cubit<TvLocationPickerState> {
     if (showCitiesForCurrentCountry) {
       openCurrentCountryCities();
     }
+    // Then await the world catalogue (`world_cities.json`) — without this
+    // `_worldRepo.countries` returns const [] and only DB countries show.
+    // Mobile follows the same 2-stage pattern in MobileLocationDialog.
+    await _worldRepo.initialize();
+    if (isClosed) return;
+    // TV allowlist is applied inside buildUnifiedCountries via kIsTV — see
+    // location_picker_logic.dart. No filtering needed here.
+    _allCountries = buildUnifiedCountries(_worldRepo);
+    if (state.showsCities) return;
+    // Retry: world-allowlist countries (TR/FR) weren't in the DB-only set on
+    // the first pass, so the earlier openCurrentCountryCities() silently
+    // failed and the dialog is still stuck on countries-view. Now that the
+    // world catalogue is loaded, the lookup succeeds and jumps to cities.
+    if (showCitiesForCurrentCountry) {
+      openCurrentCountryCities();
+      if (state.showsCities) return;
+    }
+    emit(
+      state.copyWith(
+        countries: filterUnifiedCountries(state.query, _allCountries),
+      ),
+    );
   }
 
   void updateQuery(String query) {

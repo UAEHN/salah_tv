@@ -20,11 +20,19 @@ class AnalogClockPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
-    final bgColor = isDarkMode ? Colors.white : tc.bgSurface.withValues(alpha: 0.88);
-    final ringColor = isDarkMode ? Colors.black : palette.primary.withValues(alpha: 0.75);
+    final bgColor = isDarkMode
+        ? Colors.white
+        : tc.bgSurface.withValues(alpha: 0.88);
+    final ringColor = isDarkMode
+        ? Colors.black
+        : palette.primary.withValues(alpha: 0.75);
     final handColor = isDarkMode ? Colors.black87 : tc.textPrimary;
-    final tickMain = isDarkMode ? Colors.black87 : tc.textPrimary.withValues(alpha: 0.88);
-    final tickMinor = isDarkMode ? Colors.black45 : tc.textSecondary.withValues(alpha: 0.50);
+    final tickMain = isDarkMode
+        ? Colors.black87
+        : tc.textPrimary.withValues(alpha: 0.88);
+    final tickMinor = isDarkMode
+        ? Colors.black45
+        : tc.textSecondary.withValues(alpha: 0.50);
     final centerDot = isDarkMode ? Colors.black : tc.textPrimary;
 
     // Background fill
@@ -47,8 +55,14 @@ class AnalogClockPainter extends CustomPainter {
       final outerR = radius * 0.86;
       final innerR = isMain ? radius * 0.72 : radius * 0.79;
       canvas.drawLine(
-        Offset(center.dx + innerR * math.cos(angle), center.dy + innerR * math.sin(angle)),
-        Offset(center.dx + outerR * math.cos(angle), center.dy + outerR * math.sin(angle)),
+        Offset(
+          center.dx + innerR * math.cos(angle),
+          center.dy + innerR * math.sin(angle),
+        ),
+        Offset(
+          center.dx + outerR * math.cos(angle),
+          center.dy + outerR * math.sin(angle),
+        ),
         Paint()
           ..color = isMain ? tickMain : tickMinor
           ..strokeWidth = isMain ? radius * 0.045 : radius * 0.025
@@ -105,9 +119,15 @@ class AnalogClockPainter extends CustomPainter {
       ..color = color
       ..strokeWidth = width
       ..strokeCap = StrokeCap.round;
-    final tip = Offset(center.dx + length * math.cos(angle), center.dy + length * math.sin(angle));
+    final tip = Offset(
+      center.dx + length * math.cos(angle),
+      center.dy + length * math.sin(angle),
+    );
     final base = tail > 0
-        ? Offset(center.dx - tail * math.cos(angle), center.dy - tail * math.sin(angle))
+        ? Offset(
+            center.dx - tail * math.cos(angle),
+            center.dy - tail * math.sin(angle),
+          )
         : center;
     canvas.drawLine(base, tip, paint);
   }

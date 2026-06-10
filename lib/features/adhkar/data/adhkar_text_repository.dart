@@ -43,19 +43,18 @@ class AdhkarTextRepository implements IAdhkarTextRepository {
       (_adhkarByCategory![dhikr.categoryId] ??= []).add(dhikr);
     }
 
-    _categories = (data['categories'] as List)
-        .cast<Map<String, dynamic>>()
-        .map((c) {
-          final id = c['id'] as String;
-          return AdhkarCategory(
-            id: id,
-            nameAr: c['nameAr'] as String,
-            nameEn: c['nameEn'] as String? ?? '',
-            icon: _kIconMap[c['icon'] as String] ?? 'auto_stories',
-            totalCount: _adhkarByCategory![id]?.length ?? 0,
-          );
-        })
-        .toList();
+    _categories = (data['categories'] as List).cast<Map<String, dynamic>>().map(
+      (c) {
+        final id = c['id'] as String;
+        return AdhkarCategory(
+          id: id,
+          nameAr: c['nameAr'] as String,
+          nameEn: c['nameEn'] as String? ?? '',
+          icon: _kIconMap[c['icon'] as String] ?? 'auto_stories',
+          totalCount: _adhkarByCategory![id]?.length ?? 0,
+        );
+      },
+    ).toList();
   }
 
   @override

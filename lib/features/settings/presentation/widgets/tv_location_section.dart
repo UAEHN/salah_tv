@@ -7,11 +7,14 @@ import '../../../../core/city_translations.dart';
 import '../../../../features/prayer/data/composite_prayer_repository.dart';
 import '../../../../features/prayer/domain/usecases/download_city_use_case.dart';
 import '../../../../injection.dart';
+import '../../domain/i_online_geocoding_repository.dart';
 import '../../domain/i_world_city_repository.dart';
 import '../bloc/location_selection_cubit.dart';
+import '../bloc/online_geocoding_cubit.dart';
 import '../bloc/tv_location_picker_cubit.dart';
 import '../settings_provider.dart';
 import 'location_value_card.dart';
+import 'tv_calc_settings_section.dart';
 import 'tv_location_picker/tv_location_picker_dialog.dart';
 
 class TvLocationSection extends StatelessWidget {
@@ -50,6 +53,7 @@ class TvLocationSection extends StatelessWidget {
           onPressed: () =>
               _showLocationDialog(context, showCitiesForCurrentCountry: true),
         ),
+        const TvCalcSettingsSection(),
       ],
     );
   }
@@ -77,6 +81,10 @@ class TvLocationSection extends StatelessWidget {
               currentCountry: settings.selectedCountry,
               currentCity: settings.selectedCity,
             )..load(showCitiesForCurrentCountry: showCitiesForCurrentCountry),
+          ),
+          BlocProvider(
+            create: (_) =>
+                OnlineGeocodingCubit(getIt<IOnlineGeocodingRepository>()),
           ),
         ],
         child: const TvLocationPickerDialog(),

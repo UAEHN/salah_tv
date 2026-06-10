@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -50,8 +50,10 @@ class AdhanOffsetsTable extends StatelessWidget {
                 offset: offset,
                 palette: palette,
                 tc: tc,
-                onDecrement: () => settingsProv.updateAdhanOffset(key, offset - 1),
-                onIncrement: () => settingsProv.updateAdhanOffset(key, offset + 1),
+                onDecrement: () =>
+                    settingsProv.updateAdhanOffset(key, offset - 1),
+                onIncrement: () =>
+                    settingsProv.updateAdhanOffset(key, offset + 1),
               ),
             ],
           );

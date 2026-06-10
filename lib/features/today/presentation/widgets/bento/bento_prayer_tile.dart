@@ -134,7 +134,9 @@ class _ExpandedBody extends StatelessWidget {
               padding: const EdgeInsetsDirectional.only(start: 4),
               child: Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: _IqamaBadge(label: AppLocalizations.of(context).iqamaLabel),
+                child: _IqamaBadge(
+                  label: AppLocalizations.of(context).iqamaLabel,
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -203,10 +205,7 @@ class _ProgressBar extends StatelessWidget {
       borderRadius: BorderRadius.circular(99),
       child: Stack(
         children: [
-          Container(
-            height: 5,
-            color: Colors.white.withValues(alpha: 0.30),
-          ),
+          Container(height: 5, color: Colors.white.withValues(alpha: 0.30)),
           FractionallySizedBox(
             widthFactor: progress.clamp(0.0, 1.0),
             child: Container(
@@ -297,6 +296,5 @@ class _Snapshot {
       other.isIqama == isIqama;
 
   @override
-  int get hashCode =>
-      Object.hash(prayerKey, countdown.inSeconds, isIqama);
+  int get hashCode => Object.hash(prayerKey, countdown.inSeconds, isIqama);
 }

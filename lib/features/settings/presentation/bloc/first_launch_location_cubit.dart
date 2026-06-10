@@ -37,7 +37,9 @@ class FirstLaunchLocationCubit extends Cubit<FirstLaunchLocationState> {
     emit(const FirstLaunchLocationState(FirstLaunchLocationStatus.loading));
 
     try {
-      final detected = await _useCase();
+      final detected = await _useCase(
+        locale: _settingsProvider.settings.locale,
+      );
       if (detected == null) {
         emit(const FirstLaunchLocationState(FirstLaunchLocationStatus.skipped));
         return;

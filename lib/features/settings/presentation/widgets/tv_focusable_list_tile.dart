@@ -58,9 +58,7 @@ class _TvFocusableListTileState extends State<TvFocusableListTile> {
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: _isFocused
-                  ? widget.accent
-                  : Colors.transparent,
+              color: _isFocused ? widget.accent : Colors.transparent,
               width: 2,
             ),
           ),

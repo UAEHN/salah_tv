@@ -41,12 +41,10 @@ class _QiblaCompassState extends State<QiblaCompass>
     _smoothHeading = widget.deviceHeading;
     _targetHeading = widget.deviceHeading;
     _wasAligned = widget.isAligned;
-    _ticker = AnimationController(
-      vsync: this,
-      duration: const Duration(days: 1),
-    )
-      ..addListener(_onFrame)
-      ..repeat();
+    _ticker =
+        AnimationController(vsync: this, duration: const Duration(days: 1))
+          ..addListener(_onFrame)
+          ..repeat();
   }
 
   @override

@@ -54,17 +54,17 @@ class UpcomingOccasion {
   });
 
   UpcomingOccasion copyWithDaysUntil(int newDaysUntil) => UpcomingOccasion(
-        id: id,
-        labelKey: labelKey,
-        hijriMonth: hijriMonth,
-        hijriDay: hijriDay,
-        daysUntil: newDaysUntil,
-        labelAr: labelAr,
-        labelEn: labelEn,
-        iconName: iconName,
-        bannerUrl: bannerUrl,
-        ctaUrl: ctaUrl,
-      );
+    id: id,
+    labelKey: labelKey,
+    hijriMonth: hijriMonth,
+    hijriDay: hijriDay,
+    daysUntil: newDaysUntil,
+    labelAr: labelAr,
+    labelEn: labelEn,
+    iconName: iconName,
+    bannerUrl: bannerUrl,
+    ctaUrl: ctaUrl,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -82,14 +82,14 @@ class UpcomingOccasion {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        hijriMonth,
-        hijriDay,
-        daysUntil,
-        labelAr,
-        labelEn,
-        iconName,
-        bannerUrl,
-        ctaUrl,
-      );
+    id,
+    hijriMonth,
+    hijriDay,
+    daysUntil,
+    labelAr,
+    labelEn,
+    iconName,
+    bannerUrl,
+    ctaUrl,
+  );
 }

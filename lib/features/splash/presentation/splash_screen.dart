@@ -38,8 +38,7 @@ class _SplashScreenState extends State<SplashScreen>
     final hasSeen = await repo.hasSeenSplash();
     if (!mounted) return;
     _brandController.duration = Duration(milliseconds: hasSeen ? 480 : 1300);
-    _fadeOutController.duration =
-        Duration(milliseconds: hasSeen ? 200 : 320);
+    _fadeOutController.duration = Duration(milliseconds: hasSeen ? 200 : 320);
     if (!hasSeen) await repo.markSplashSeen();
     if (!mounted) return;
     _brandController.forward().whenComplete(_fadeAndNavigate);
@@ -107,9 +106,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
             ),
-            Center(
-              child: SplashBrandContent(brandAnimation: _brandController),
-            ),
+            Center(child: SplashBrandContent(brandAnimation: _brandController)),
           ],
         ),
       ),

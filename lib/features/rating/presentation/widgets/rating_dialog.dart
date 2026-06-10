@@ -17,7 +17,6 @@ class RatingDialog extends StatelessWidget {
 
   final IRatingService service;
 
-
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);

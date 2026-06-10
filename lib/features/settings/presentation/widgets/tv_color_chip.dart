@@ -63,12 +63,14 @@ class _TvColorChipState extends State<TvColorChip> {
                   border: _isFocused
                       ? Border.all(color: Colors.white, width: 4.5)
                       : widget.isSelected
-                          ? Border.all(color: widget.palette.secondary, width: 2.5)
-                          : Border.all(color: Colors.transparent, width: 2),
+                      ? Border.all(color: widget.palette.secondary, width: 2.5)
+                      : Border.all(color: Colors.transparent, width: 2),
                   boxShadow: _isFocused
                       ? [
                           BoxShadow(
-                            color: widget.palette.secondary.withValues(alpha: 0.95),
+                            color: widget.palette.secondary.withValues(
+                              alpha: 0.95,
+                            ),
                             blurRadius: 0,
                             spreadRadius: 4,
                           ),
@@ -79,17 +81,21 @@ class _TvColorChipState extends State<TvColorChip> {
                           ),
                         ]
                       : widget.isSelected
-                          ? [
-                              BoxShadow(
-                                color: widget.palette.glow,
-                                blurRadius: 18,
-                                spreadRadius: 3,
-                              ),
-                            ]
-                          : null,
+                      ? [
+                          BoxShadow(
+                            color: widget.palette.glow,
+                            blurRadius: 18,
+                            spreadRadius: 3,
+                          ),
+                        ]
+                      : null,
                 ),
                 child: widget.isSelected
-                    ? const Icon(Icons.check_rounded, color: Colors.white, size: 36)
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: Colors.white,
+                        size: 36,
+                      )
                     : null,
               ),
               const SizedBox(height: 8),
@@ -97,7 +103,9 @@ class _TvColorChipState extends State<TvColorChip> {
                 duration: const Duration(milliseconds: 150),
                 style: TextStyle(
                   fontSize: 15,
-                  color: (_isFocused || widget.isSelected) ? tc.textPrimary : tc.textMuted,
+                  color: (_isFocused || widget.isSelected)
+                      ? tc.textPrimary
+                      : tc.textMuted,
                   fontWeight: (_isFocused || widget.isSelected)
                       ? FontWeight.w700
                       : FontWeight.w400,

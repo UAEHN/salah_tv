@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../core/adhan_sounds.dart';
@@ -34,7 +34,11 @@ class AdhanSoundPickerDialog extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.volume_up_rounded, color: palette.primary, size: 26),
+                  Icon(
+                    Icons.volume_up_rounded,
+                    color: palette.primary,
+                    size: 26,
+                  ),
                   const SizedBox(width: 12),
                   Text(
                     l.settingsChooseAdhanSound,
@@ -67,13 +71,17 @@ class AdhanSoundPickerDialog extends StatelessWidget {
                       label,
                       style: TextStyle(
                         color: isSelected ? palette.primary : Colors.white,
-                        fontWeight:
-                            isSelected ? FontWeight.w700 : FontWeight.normal,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.normal,
                         fontSize: 18,
                       ),
                     ),
                     trailing: isSelected
-                        ? Icon(Icons.check_circle_rounded, color: palette.primary)
+                        ? Icon(
+                            Icons.check_circle_rounded,
+                            color: palette.primary,
+                          )
                         : null,
                     onTap: () {
                       onSelected(key);

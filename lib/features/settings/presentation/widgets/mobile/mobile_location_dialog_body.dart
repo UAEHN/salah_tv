@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/mobile_theme.dart';
 import '../../../domain/entities/detected_location.dart';
+import '../../../domain/entities/online_geocoding_result.dart';
 import '../../../domain/entities/world_city.dart';
+import '../../bloc/online_geocoding_cubit.dart';
 import 'mobile_location_cities_list.dart';
 import 'mobile_location_world_cities_list.dart';
 import 'mobile_location_countries_list.dart';
@@ -20,6 +22,7 @@ class MobileLocationDialogBody extends StatelessWidget {
   final List<UnifiedCountry> filteredCountries;
   final List<String> filteredDbCities;
   final List<WorldCity> filteredWorldCities;
+  final OnlineGeocodingState onlineState;
   final ValueChanged<String> onQueryChanged;
   final VoidCallback onClear;
   final VoidCallback onShowCountries;
@@ -27,6 +30,7 @@ class MobileLocationDialogBody extends StatelessWidget {
   final ValueChanged<String> onSelectDbCity;
   final ValueChanged<WorldCity> onSelectWorldCity;
   final Future<void> Function(DetectedLocation) onLocationDetected;
+  final ValueChanged<OnlineGeocodingResult>? onSelectOnline;
 
   const MobileLocationDialogBody({
     super.key,
@@ -39,6 +43,7 @@ class MobileLocationDialogBody extends StatelessWidget {
     required this.filteredCountries,
     required this.filteredDbCities,
     required this.filteredWorldCities,
+    required this.onlineState,
     required this.onQueryChanged,
     required this.onClear,
     required this.onShowCountries,
@@ -46,6 +51,7 @@ class MobileLocationDialogBody extends StatelessWidget {
     required this.onSelectDbCity,
     required this.onSelectWorldCity,
     required this.onLocationDetected,
+    this.onSelectOnline,
   });
 
   @override
@@ -53,13 +59,9 @@ class MobileLocationDialogBody extends StatelessWidget {
     final showCities = selectedCountryKey != null;
     final mq = MediaQuery.of(context);
     final kb = mq.viewInsets.bottom;
-    // Lift the sheet above the keyboard by adding bottom padding equal to
-    // the keyboard inset, and resize it to fill the area above the
-    // keyboard so the list keeps room to scroll instead of vanishing
-    // under it.
     final restingHeight = mq.size.height * 0.78;
-    final keyboardOpenHeight =
-        (mq.size.height - kb - mq.padding.top - 16).clamp(320.0, double.infinity);
+    final keyboardOpenHeight = (mq.size.height - kb - mq.padding.top - 16)
+        .clamp(320.0, double.infinity);
     final sheetHeight = kb > 0 ? keyboardOpenHeight : restingHeight;
     return AnimatedPadding(
       duration: const Duration(milliseconds: 200),
@@ -78,21 +80,21 @@ class MobileLocationDialogBody extends StatelessWidget {
         ),
         child: Column(
           children: [
-          MobileLocationDialogHeader(
-            showCities: showCities,
-            title: title,
-            onBack: onShowCountries,
-            onClose: () => Navigator.pop(context),
-          ),
-          MobileLocationSearchField(
-            controller: searchController,
-            hintText: locationSearchHint(context, showCities),
-            onChanged: onQueryChanged,
-            onClear: onClear,
-            showClearIcon: true,
-          ),
-          if (!showCities)
-            MobileDetectLocationButton(onDetected: onLocationDetected),
+            MobileLocationDialogHeader(
+              showCities: showCities,
+              title: title,
+              onBack: onShowCountries,
+              onClose: () => Navigator.pop(context),
+            ),
+            MobileLocationSearchField(
+              controller: searchController,
+              hintText: locationSearchHint(context, showCities),
+              onChanged: onQueryChanged,
+              onClear: onClear,
+              showClearIcon: true,
+            ),
+            if (!showCities)
+              MobileDetectLocationButton(onDetected: onLocationDetected),
             Expanded(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 280),
@@ -113,6 +115,8 @@ class MobileLocationDialogBody extends StatelessWidget {
         countries: filteredCountries,
         currentCountry: currentCountry,
         onSelect: onSelectCountry,
+        onlineState: onlineState,
+        onSelectOnline: onSelectOnline,
       );
     }
     if (isSelectedCountryDb) {
@@ -122,6 +126,8 @@ class MobileLocationDialogBody extends StatelessWidget {
         currentCity: currentCity,
         selectedCountryKey: selectedCountryKey!,
         onSelect: onSelectDbCity,
+        onlineState: onlineState,
+        onSelectOnline: onSelectOnline,
       );
     }
     return MobileLocationWorldCitiesList(
@@ -130,6 +136,8 @@ class MobileLocationDialogBody extends StatelessWidget {
       currentCity: currentCity,
       selectedCountryKey: selectedCountryKey!,
       onSelect: onSelectWorldCity,
+      onlineState: onlineState,
+      onSelectOnline: onSelectOnline,
     );
   }
 }

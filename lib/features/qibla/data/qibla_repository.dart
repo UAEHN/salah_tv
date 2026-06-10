@@ -58,7 +58,9 @@ class QiblaRepository implements IQiblaRepository {
       _distanceKm = calculateDistanceKm(pos.latitude, pos.longitude);
     } catch (e) {
       debugPrint('[Qibla] position failed: $e');
-      _controller?.add(const Left(LocationFailure('Unable to determine location')));
+      _controller?.add(
+        const Left(LocationFailure('Unable to determine location')),
+      );
       return;
     }
 

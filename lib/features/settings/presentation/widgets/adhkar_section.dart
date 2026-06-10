@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -48,7 +48,9 @@ class AdhkarSection extends StatelessWidget {
               settings.isAdhkarEnabled ? l.commonEnabled : l.commonDisabled,
               style: TextStyle(
                 fontSize: 20,
-                color: settings.isAdhkarEnabled ? palette.primary : tc.textMuted,
+                color: settings.isAdhkarEnabled
+                    ? palette.primary
+                    : tc.textMuted,
                 fontWeight: FontWeight.w600,
               ),
             ),

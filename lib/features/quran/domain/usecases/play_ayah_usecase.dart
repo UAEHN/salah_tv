@@ -8,12 +8,11 @@ class PlayAyahUseCase {
     required int surahNumber,
     required int ayahNumber,
     required String reciterUrlSegment,
-  }) =>
-      _port.playAyah(
-        surahNumber: surahNumber,
-        ayahNumber: ayahNumber,
-        reciterUrlSegment: reciterUrlSegment,
-      );
+  }) => _port.playAyah(
+    surahNumber: surahNumber,
+    ayahNumber: ayahNumber,
+    reciterUrlSegment: reciterUrlSegment,
+  );
 }
 
 class StopAyahAudioUseCase {

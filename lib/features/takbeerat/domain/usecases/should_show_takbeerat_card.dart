@@ -20,8 +20,8 @@ class ShouldShowTakbeeratCard {
   ShouldShowTakbeeratCard({
     required ITakbeeratConfigRepository configRepo,
     required IHijriDateProvider hijri,
-  })  : _configRepo = configRepo,
-        _hijri = hijri;
+  }) : _configRepo = configRepo,
+       _hijri = hijri;
 
   final ITakbeeratConfigRepository _configRepo;
   final IHijriDateProvider _hijri;

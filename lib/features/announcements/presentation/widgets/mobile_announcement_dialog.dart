@@ -79,8 +79,9 @@ class MobileAnnouncementDialog extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     height: 1.6,
-                    color: MobileColors.onSurface(context)
-                        .withValues(alpha: 0.75),
+                    color: MobileColors.onSurface(
+                      context,
+                    ).withValues(alpha: 0.75),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -114,8 +115,9 @@ class MobileAnnouncementDialog extends StatelessWidget {
                       ? (isEnglish ? 'Close' : 'إغلاق')
                       : (isEnglish ? 'OK' : 'حسناً'),
                   style: TextStyle(
-                    color: MobileColors.onSurface(context)
-                        .withValues(alpha: 0.7),
+                    color: MobileColors.onSurface(
+                      context,
+                    ).withValues(alpha: 0.7),
                   ),
                 ),
               ),

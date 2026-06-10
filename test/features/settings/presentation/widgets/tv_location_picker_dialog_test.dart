@@ -1,9 +1,17 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 import 'package:ghasaq/core/city_translations.dart';
+import 'package:ghasaq/core/error/failures.dart';
+import 'package:ghasaq/core/platform_config.dart';
+import 'package:ghasaq/features/settings/domain/entities/online_geocoding_result.dart';
 import 'package:ghasaq/features/settings/domain/entities/world_city.dart';
+import 'package:ghasaq/features/settings/domain/i_online_geocoding_repository.dart';
 import 'package:ghasaq/features/settings/presentation/bloc/location_selection_cubit.dart';
+import 'package:ghasaq/features/settings/presentation/bloc/online_geocoding_cubit.dart';
 import 'package:ghasaq/features/settings/presentation/bloc/tv_location_picker_cubit.dart';
 import 'package:ghasaq/features/settings/presentation/settings_provider.dart';
 import 'package:ghasaq/features/settings/presentation/widgets/tv_location_picker/tv_location_picker_dialog.dart';
@@ -17,6 +25,12 @@ void main() {
 
   setUpAll(() async {
     await loadCityTranslations();
+    // Production code calls `kIsTV` (which reads `PlatformConfig` from
+    // GetIt) when building the country list. The test environment never
+    // boots `initDependencies`, so register a benign mobile-mode instance.
+    if (!GetIt.I.isRegistered<PlatformConfig>()) {
+      GetIt.I.registerSingleton<PlatformConfig>(PlatformConfig());
+    }
   });
 
   late CompositePrayerRepository fakeCompositeRepo;
@@ -41,26 +55,35 @@ void main() {
               onPressed: () {
                 showDialog<void>(
                   context: context,
-                  builder: (_) => MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (_) => LocationSelectionCubit(
-                          settingsProvider,
-                          FakeDownloadCityUseCase(),
-                          fakeCompositeRepo,
+                  builder: (_) =>
+                      ChangeNotifierProvider<SettingsProvider>.value(
+                        value: settingsProvider,
+                        child: MultiBlocProvider(
+                          providers: [
+                            BlocProvider(
+                              create: (_) => LocationSelectionCubit(
+                                settingsProvider,
+                                FakeDownloadCityUseCase(),
+                                fakeCompositeRepo,
+                              ),
+                            ),
+                            BlocProvider(
+                              create: (_) => TvLocationPickerCubit(
+                                worldRepo,
+                                currentCountry:
+                                    settingsProvider.settings.selectedCountry,
+                                currentCity:
+                                    settingsProvider.settings.selectedCity,
+                              )..load(),
+                            ),
+                            BlocProvider(
+                              create: (_) =>
+                                  OnlineGeocodingCubit(_StubOnlineGeocoding()),
+                            ),
+                          ],
+                          child: const TvLocationPickerDialog(),
                         ),
                       ),
-                      BlocProvider(
-                        create: (_) => TvLocationPickerCubit(
-                          worldRepo,
-                          currentCountry:
-                              settingsProvider.settings.selectedCountry,
-                          currentCity: settingsProvider.settings.selectedCity,
-                        )..load(),
-                      ),
-                    ],
-                    child: const TvLocationPickerDialog(),
-                  ),
                 );
               },
               child: const Text('open'),
@@ -133,4 +156,23 @@ void main() {
     expect(provider.settings.isCalculatedLocation, isTrue);
     expect(find.byType(Dialog), findsNothing);
   });
+}
+
+/// Always returns no results so the inline online section stays hidden
+/// during widget tests focused on the bundled search path.
+class _StubOnlineGeocoding implements IOnlineGeocodingRepository {
+  @override
+  Future<Either<Failure, List<OnlineGeocodingResult>>> search(
+    String q, {
+    String? countryCode,
+  }) async {
+    return const Right([]);
+  }
+
+  @override
+  Future<Either<Failure, OnlineGeocodingResult?>> reverse({
+    required double latitude,
+    required double longitude,
+    String? localeHint,
+  }) async => const Right(null);
 }

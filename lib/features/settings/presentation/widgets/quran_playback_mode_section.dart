@@ -28,7 +28,10 @@ class QuranPlaybackModeSection extends StatelessWidget {
         Text(
           l.settingsQuranPlaybackMode,
           style: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.w600, color: tc.textPrimary),
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: tc.textPrimary,
+          ),
         ),
         const SizedBox(height: 10),
         _ModeChoice(
@@ -112,24 +115,33 @@ class _ModeChoice extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon,
-                color: isSelected ? palette.primary : tc.textMuted, size: 24),
+            Icon(
+              icon,
+              color: isSelected ? palette.primary : tc.textMuted,
+              size: 24,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                          color: tc.textPrimary)),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: tc.textPrimary,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: tc.textSecondary,
-                          height: 1.35)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: tc.textSecondary,
+                      height: 1.35,
+                    ),
+                  ),
                 ],
               ),
             ),

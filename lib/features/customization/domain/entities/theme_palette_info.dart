@@ -38,6 +38,5 @@ class ThemePaletteInfo {
           other.isLegacy == isLegacy;
 
   @override
-  int get hashCode =>
-      Object.hash(id, primaryArgb, secondaryArgb, isLegacy);
+  int get hashCode => Object.hash(id, primaryArgb, secondaryArgb, isLegacy);
 }

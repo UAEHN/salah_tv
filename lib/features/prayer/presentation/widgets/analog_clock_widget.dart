@@ -28,8 +28,8 @@ class AnalogClockWidget extends StatelessWidget {
     final diameter = tiny
         ? screenH * 0.11
         : compact
-            ? screenH * 0.26
-            : screenH * 0.40;
+        ? screenH * 0.26
+        : screenH * 0.40;
 
     // RepaintBoundary isolates the per-second `now` invalidation so only the
     // clock's own layer is rasterized each tick — never the parent card.

@@ -9,11 +9,12 @@ import '../../../../core/time_formatters.dart';
 import '../../../../core/widgets/flip_clock.dart';
 import '../../../settings/presentation/settings_provider.dart';
 import '../bloc/prayer_bloc.dart';
+import 'classic/classic_count_card.dart';
+import 'classic/classic_visuals.dart';
 
-/// Outer widget: rebuilds only when [nextPrayerKey] or [isDarkMode] changes.
-/// The countdown digits are isolated in [_CountdownClock] which rebuilds every
-/// second — this prevents the Container, Border, TextStyles, Icon, and prayer
-/// name Text from being recreated 3 600 times/hour.
+/// Next-prayer countdown rendered in the classic count card. The eyebrow reads
+/// "time remaining for the [prayerName] prayer". Countdown digits are isolated
+/// so the card chrome is not rebuilt every second.
 class NextPrayerWidget extends StatelessWidget {
   final AccentPalette palette;
 
@@ -28,76 +29,54 @@ class NextPrayerWidget extends StatelessWidget {
     final isDark = context.select<SettingsProvider, bool>(
       (p) => p.settings.isDarkMode,
     );
-    final tc = ThemeColors.of(isDark);
+    final vis = ClassicVisuals(ThemeColors.of(isDark), palette);
     final screenH = MediaQuery.of(context).size.height;
-    final screenW = MediaQuery.of(context).size.width;
+    final prayerName = localizedPrayerName(context, nextPrayerKey);
+    final title = l.localeName == 'ar' ? 'باقي على صلاة' : 'Next prayer in';
+    final countdownSize = screenH * 0.106;
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: screenW * 0.03,
-        vertical: screenH * 0.025,
-      ),
-      decoration: BoxDecoration(
-        // Light: opaque to detach from the warm parchment background.
-        // Dark: transparent so the dark gradient bleeds through naturally.
-        color: isDark ? Colors.transparent : tc.bgSurface,
-        border: Border.all(
-          color: palette.primary.withValues(alpha: 0.55),
-          width: 1.5,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+    return ClassicCountCard(
+      vis: vis,
+      eyebrow: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            l.nextPrayerLabel,
+            title,
+            textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: screenH * 0.040,
-              fontWeight: FontWeight.w400,
-              color: tc.textSecondary,
-            ),
-          ),
-          Text(
-            localizedPrayerName(context, nextPrayerKey),
-            style: TextStyle(
-              fontSize: screenH * 0.09,
+              fontSize: screenH * 0.032,
               fontWeight: FontWeight.w600,
-              color: tc.textPrimary,
-              height: 1.1,
+              color: vis.fgSec,
             ),
           ),
-          SizedBox(height: screenH * 0.01),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.timer_outlined,
-                color: tc.textSecondary,
-                size: screenH * 0.035,
-              ),
-              SizedBox(width: screenW * 0.008),
-              _CountdownClock(
-                style: TextStyle(
-                  fontSize: screenH * 0.060,
-                  fontWeight: FontWeight.w600,
-                  color: tc.textPrimary,
-                ),
-                digitWidth: screenH * 0.060 * 0.68,
-                digitHeight: screenH * 0.060 * 1.22,
-              ),
-            ],
+          SizedBox(height: screenH * 0.006),
+          Text(
+            prayerName,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: screenH * 0.054,
+              fontWeight: FontWeight.w900,
+              color: vis.countdownText,
+              height: 1.0,
+            ),
           ),
         ],
+      ),
+      big: _CountdownClock(
+        style: TextStyle(
+          fontSize: countdownSize,
+          fontWeight: FontWeight.w700,
+          color: vis.countdownText,
+          fontFeatures: const [FontFeature.tabularFigures()],
+        ),
+        digitWidth: countdownSize * 0.62,
+        digitHeight: countdownSize * 1.16,
       ),
     );
   }
 }
 
-/// Rebuilds every second (countdown changes). Receives precomputed style from
-/// parent so it does not re-read settings or screenH on every tick.
+/// Rebuilds every second. Receives precomputed style from parent.
 class _CountdownClock extends StatelessWidget {
   final TextStyle style;
   final double digitWidth;

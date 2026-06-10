@@ -60,7 +60,10 @@ class _SurahPlaylistEditorDialogState extends State<SurahPlaylistEditorDialog> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SurahPlaylistEditorHeader(palette: palette, count: _selected.length),
+                SurahPlaylistEditorHeader(
+                  palette: palette,
+                  count: _selected.length,
+                ),
                 const SizedBox(height: 10),
                 TvSearchBar(
                   hintText: AppLocalizations.of(context).searchSurahHint,
@@ -116,39 +119,41 @@ class _SurahPlaylistEditorDialogState extends State<SurahPlaylistEditorDialog> {
           const Divider(color: Colors.white10, height: 1),
       itemBuilder: (context, i) {
         final surah = list[i];
-          final isSelected = _selected.contains(surah.number);
-          return TvFocusableListTile(
-            accent: palette.primary,
-            leading: SizedBox(
-              width: 40,
-              child: Text(
-                '${surah.number}',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: isSelected ? palette.primary : Colors.white38,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-            title: Text(
-              surah.nameAr,
+        final isSelected = _selected.contains(surah.number);
+        // Initial focus on the first row so DPad-Down navigates the list
+        // immediately instead of opening the on-screen keyboard via search.
+        return TvFocusableListTile(
+          autofocus: i == 0 && _query.isEmpty,
+          accent: palette.primary,
+          leading: SizedBox(
+            width: 40,
+            child: Text(
+              '${surah.number}',
+              textAlign: TextAlign.center,
               style: TextStyle(
-                color: isSelected ? palette.primary : Colors.white,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
-                fontSize: 18,
+                color: isSelected ? palette.primary : Colors.white38,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
               ),
             ),
-            trailing: Icon(
-              isSelected
-                  ? Icons.check_box_rounded
-                  : Icons.check_box_outline_blank_rounded,
-              color: isSelected ? palette.primary : Colors.white38,
+          ),
+          title: Text(
+            surah.nameAr,
+            style: TextStyle(
+              color: isSelected ? palette.primary : Colors.white,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
+              fontSize: 18,
             ),
-            onTap: () => _toggle(surah.number),
-          );
-        },
-      );
+          ),
+          trailing: Icon(
+            isSelected
+                ? Icons.check_box_rounded
+                : Icons.check_box_outline_blank_rounded,
+            color: isSelected ? palette.primary : Colors.white38,
+          ),
+          onTap: () => _toggle(surah.number),
+        );
+      },
+    );
   }
 }
-

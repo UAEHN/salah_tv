@@ -62,8 +62,8 @@ class _TvOnboardingListItemState extends State<TvOnboardingListItem> {
                 color: _isFocused
                     ? brandGold
                     : widget.isSelected
-                        ? brandGold.withValues(alpha: 0.2)
-                        : Colors.white.withValues(alpha: 0.05),
+                    ? brandGold.withValues(alpha: 0.2)
+                    : Colors.white.withValues(alpha: 0.05),
                 border: Border.all(
                   color: _isFocused || widget.isSelected
                       ? brandGold

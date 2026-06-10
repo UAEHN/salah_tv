@@ -27,14 +27,17 @@ class _ParticlePainter extends CustomPainter {
 
   static List<_P> _gen(int n, int seed) {
     final r = Random(seed);
-    return List.generate(n, (_) => _P(
-      x0: r.nextDouble() * 0.5 + 0.25,
-      y0: r.nextDouble(),
-      speed: 0.08 + r.nextDouble() * 0.15,
-      radius: 0.4 + r.nextDouble() * 1.0,
-      phase: r.nextDouble() * pi * 2,
-      drift: 0.008 + r.nextDouble() * 0.012,
-    ));
+    return List.generate(
+      n,
+      (_) => _P(
+        x0: r.nextDouble() * 0.5 + 0.25,
+        y0: r.nextDouble(),
+        speed: 0.08 + r.nextDouble() * 0.15,
+        radius: 0.4 + r.nextDouble() * 1.0,
+        phase: r.nextDouble() * pi * 2,
+        drift: 0.008 + r.nextDouble() * 0.012,
+      ),
+    );
   }
 
   @override
@@ -59,7 +62,11 @@ class _ParticlePainter extends CustomPainter {
 class _P {
   final double x0, y0, speed, radius, phase, drift;
   const _P({
-    required this.x0, required this.y0, required this.speed,
-    required this.radius, required this.phase, required this.drift,
+    required this.x0,
+    required this.y0,
+    required this.speed,
+    required this.radius,
+    required this.phase,
+    required this.drift,
   });
 }

@@ -73,9 +73,8 @@ class _QuranPlayPauseButtonState extends State<QuranPlayPauseButton>
     super.dispose();
   }
 
-  void _toggle() => context
-      .read<PrayerBloc>()
-      .add(PrayerQuranToggled(widget.serverUrl));
+  void _toggle() =>
+      context.read<PrayerBloc>().add(PrayerQuranToggled(widget.serverUrl));
 
   KeyEventResult _onKey(FocusNode _, KeyEvent event) {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;

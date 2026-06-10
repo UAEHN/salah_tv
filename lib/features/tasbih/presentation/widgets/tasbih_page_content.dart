@@ -76,10 +76,9 @@ class _PhraseSection extends StatelessWidget {
             arabicTasbihPhrase(presetKey),
             // titleMd already resolves the active font via Theme; the explicit
             // override here forced 'Cairo' regardless of the user's choice.
-            style: MobileTextStyles.titleMd(context).copyWith(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
+            style: MobileTextStyles.titleMd(
+              context,
+            ).copyWith(fontSize: 32, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
             textDirection: TextDirection.rtl,
           ),
@@ -123,9 +122,9 @@ class _BottomHint extends StatelessWidget {
           : Text(
               l.tasbihSwipeHint,
               key: const ValueKey('hint'),
-              style: MobileTextStyles.labelSm(context).copyWith(
-                color: MobileColors.onSurfaceFaint(context),
-              ),
+              style: MobileTextStyles.labelSm(
+                context,
+              ).copyWith(color: MobileColors.onSurfaceFaint(context)),
             ),
     );
   }

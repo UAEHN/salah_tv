@@ -37,61 +37,54 @@ class MobileTopBar extends StatelessWidget {
           GestureDetector(
             onTap: onLocationTap,
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: MobileColors.cardColor(
                   context,
                 ).withValues(alpha: isDark ? 0.88 : 0.92),
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(
-                  color: MobileColors.border(
-                    context,
-                  ).withValues(alpha: 0.5),
+                  color: MobileColors.border(context).withValues(alpha: 0.5),
                 ),
               ),
               child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Glowing location pin
-                      Container(
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: MobileColors.activePrimaryContainer(
-                            context,
-                          ).withValues(alpha: 0.15),
-                        ),
-                        child: Icon(
-                          Icons.location_on_rounded,
-                          color: MobileColors.activePrimaryContainer(context),
-                          size: 14,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        localizedCity,
-                        style: MobileTextStyles.labelSm(context).copyWith(
-                          color: MobileColors.onSurface(context),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textDirection: isEn
-                            ? TextDirection.ltr
-                            : TextDirection.rtl,
-                      ),
-                      if (onLocationTap != null) ...[
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.expand_more_rounded,
-                          color: MobileColors.onSurfaceMuted(context),
-                          size: 16,
-                        ),
-                      ],
-                    ],
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Glowing location pin
+                  Container(
+                    width: 22,
+                    height: 22,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: MobileColors.activePrimaryContainer(
+                        context,
+                      ).withValues(alpha: 0.15),
+                    ),
+                    child: Icon(
+                      Icons.location_on_rounded,
+                      color: MobileColors.activePrimaryContainer(context),
+                      size: 14,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    localizedCity,
+                    style: MobileTextStyles.labelSm(context).copyWith(
+                      color: MobileColors.onSurface(context),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textDirection: isEn ? TextDirection.ltr : TextDirection.rtl,
+                  ),
+                  if (onLocationTap != null) ...[
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.expand_more_rounded,
+                      color: MobileColors.onSurfaceMuted(context),
+                      size: 16,
+                    ),
+                  ],
+                ],
               ),
             ),
           ),

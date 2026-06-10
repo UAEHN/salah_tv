@@ -55,10 +55,9 @@ class MobileThemePickerScreen extends StatelessWidget {
   Widget _buildBody(BuildContext context, ThemePickerState state) {
     return switch (state) {
       ThemePickerInitial() || ThemePickerLoading() => const Center(
-          child: CircularProgressIndicator(strokeWidth: 2.4),
-        ),
-      ThemePickerError(:final messageKey) =>
-        _ErrorView(messageKey: messageKey),
+        child: CircularProgressIndicator(strokeWidth: 2.4),
+      ),
+      ThemePickerError(:final messageKey) => _ErrorView(messageKey: messageKey),
       ThemePickerLoaded(
         :final palettes,
         :final selectedId,

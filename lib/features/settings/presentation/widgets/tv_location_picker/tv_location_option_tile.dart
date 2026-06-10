@@ -42,13 +42,13 @@ class _TvLocationOptionTileState extends State<TvLocationOptionTile> {
     final restingBg = widget.isSelected
         ? accent.withValues(alpha: 0.12)
         : (isDark
-            ? Colors.white.withValues(alpha: 0.04)
-            : Colors.black.withValues(alpha: 0.03));
+              ? Colors.white.withValues(alpha: 0.04)
+              : Colors.black.withValues(alpha: 0.03));
     final focusedBg = widget.isSelected
         ? accent.withValues(alpha: 0.18)
         : (isDark
-            ? Colors.white.withValues(alpha: 0.08)
-            : Colors.black.withValues(alpha: 0.05));
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.05));
     return Focus(
       autofocus: widget.autofocus,
       onFocusChange: (f) {
@@ -67,61 +67,65 @@ class _TvLocationOptionTileState extends State<TvLocationOptionTile> {
       },
       child: GestureDetector(
         onTap: widget.isBusy ? null : widget.onPressed,
-        child: AnimatedScale(
-          scale: _isFocused ? 1.02 : 1.0,
+        // Dropped the AnimatedScale(1.02) wrapper — on TV the scale-on-focus
+        // pushed the rendered box ~0.5px past the layout slot, which the list
+        // viewport clipped at the bottom edge (the "missing bottom border"
+        // visible in dark-mode pickers). Focus is already clear from the
+        // brighter border + glow; no scale needed.
+        child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeOut,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            curve: Curves.easeOut,
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-            decoration: BoxDecoration(
-              color: _isFocused ? focusedBg : restingBg,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: _isFocused
-                    ? accent
-                    : (widget.isSelected
+          // Symmetric vertical margin so the focus glow has breathing room on
+          // both sides instead of bleeding asymmetrically into the next tile.
+          margin: const EdgeInsets.symmetric(vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          decoration: BoxDecoration(
+            color: _isFocused ? focusedBg : restingBg,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: _isFocused
+                  ? accent
+                  : (widget.isSelected
                         ? accent.withValues(alpha: 0.55)
                         : accent.withValues(alpha: 0.18)),
-                width: _isFocused ? 2.5 : (widget.isSelected ? 1.5 : 1.0),
-              ),
-              boxShadow: _isFocused
-                  ? [
-                      BoxShadow(
-                        color: accent.withValues(alpha: 0.40),
-                        blurRadius: 24,
-                        spreadRadius: 1.5,
-                      ),
-                    ]
-                  : null,
+              width: _isFocused ? 2.5 : (widget.isSelected ? 1.5 : 1.0),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    widget.title,
-                    style: TextStyle(
-                      color: tc.textPrimary,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+            // Softer halo — blur 24 + spread 1.5 was wider than the 10 px gap
+            // between tiles, so the glow bled under the next tile and made
+            // the focused tile's bottom edge look chopped.
+            boxShadow: _isFocused
+                ? [
+                    BoxShadow(
+                      color: accent.withValues(alpha: 0.35),
+                      blurRadius: 14,
                     ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.title,
+                  style: TextStyle(
+                    color: tc.textPrimary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                if (widget.isBusy)
-                  SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation(accent),
-                    ),
-                  )
-                else if (widget.isSelected)
-                  Icon(Icons.check_circle_rounded, color: accent),
-              ],
-            ),
+              ),
+              if (widget.isBusy)
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation(accent),
+                  ),
+                )
+              else if (widget.isSelected)
+                Icon(Icons.check_circle_rounded, color: accent),
+            ],
           ),
         ),
       ),

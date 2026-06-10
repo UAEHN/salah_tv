@@ -28,9 +28,9 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     IPrayerNotificationPort? notifications,
     IAnalyticsService? analytics,
     void Function(int)? onCurrentSurahChanged,
-  })  : _analytics = analytics,
-        _onCurrentSurahChanged = onCurrentSurahChanged,
-        super(PrayerState.initial()) {
+  }) : _analytics = analytics,
+       _onCurrentSurahChanged = onCurrentSurahChanged,
+       super(PrayerState.initial()) {
     _dateController = PrayerDisplayedDateController.fromRepository(repo);
     _engine = PrayerCycleEngine(
       repo,
@@ -39,6 +39,7 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
       initialSettings,
       _onEngineChanged,
       notifications: notifications,
+      analytics: analytics,
     );
     on<PrayerEngineRefreshed>(_onRefreshed);
     on<PrayerStarted>(_onStarted);
@@ -54,6 +55,7 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     on<PrayerReloaded>(_onReloaded);
     on<PrayerDateChanged>(_onDateChanged);
     on<PrayerDateReset>(_onDateReset);
+    on<PrayerSessionAdhkarStopped>(_onSessionAdhkarStopped);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -165,6 +167,11 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
 
   void _onDateReset(PrayerDateReset _, Emitter<PrayerState> emit) =>
       _runSync(_dateController.clear, emit);
+
+  void _onSessionAdhkarStopped(
+    PrayerSessionAdhkarStopped _,
+    Emitter<PrayerState> emit,
+  ) => _runSync(_engine.stopSessionAdhkar, emit);
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {

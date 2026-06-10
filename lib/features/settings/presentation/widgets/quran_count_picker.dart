@@ -30,11 +30,14 @@ class QuranCountPicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: tc.textPrimary)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: tc.textPrimary,
+          ),
+        ),
         const SizedBox(height: 10),
         Row(
           children: [

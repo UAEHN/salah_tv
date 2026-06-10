@@ -1,4 +1,4 @@
-﻿import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 String localizedAdhanSoundLabel(BuildContext context, String soundKey) {

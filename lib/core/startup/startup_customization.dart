@@ -31,12 +31,12 @@ void registerCustomization() {
     () => GetAllQuranFontsUseCase(getIt<IQuranFontCatalogRepository>()),
   );
   getIt.registerFactoryParam<
-      ApplyThemePaletteUseCase,
-      IAppearanceWriterPort,
-      void>(
-    (writer, _) => ApplyThemePaletteUseCase(writer),
-  );
-  getIt.registerFactoryParam<ApplyQuranFontUseCase, IAppearanceWriterPort, void>(
-    (writer, _) => ApplyQuranFontUseCase(writer),
-  );
+    ApplyThemePaletteUseCase,
+    IAppearanceWriterPort,
+    void
+  >((writer, _) => ApplyThemePaletteUseCase(writer));
+  getIt
+      .registerFactoryParam<ApplyQuranFontUseCase, IAppearanceWriterPort, void>(
+        (writer, _) => ApplyQuranFontUseCase(writer),
+      );
 }

@@ -25,9 +25,9 @@ class IslamicOccasionsRepositoryImpl implements IIslamicOccasionsRepository {
     required OccasionsRemoteDataSource remoteSource,
     required OccasionsLocalDataSource localSource,
     required IAppVersionInfoPort versionInfo,
-  })  : _remote = remoteSource,
-        _local = localSource,
-        _versionInfo = versionInfo;
+  }) : _remote = remoteSource,
+       _local = localSource,
+       _versionInfo = versionInfo;
 
   final OccasionsRemoteDataSource _remote;
   final OccasionsLocalDataSource _local;

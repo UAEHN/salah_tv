@@ -21,8 +21,8 @@ class NotificationSerializer {
   NotificationSerializer({
     NotificationChannelResolver? channels,
     NotificationPayloadFactory? factory,
-  })  : _channels = channels ?? NotificationChannelResolver(),
-        _factory = factory ?? NotificationPayloadFactory();
+  }) : _channels = channels ?? NotificationChannelResolver(),
+       _factory = factory ?? NotificationPayloadFactory();
 
   String build(List<DailyPrayerTimes> days, AppSettings settings) {
     final l = lookupAppLocalizations(Locale(settings.locale));
@@ -38,9 +38,9 @@ class NotificationSerializer {
     });
   }
 
-  List<Map<String, String>> _customAdhansPayload(AppSettings s) =>
-      s.customAdhans
-          .where((c) => c.contentUri.isNotEmpty)
-          .map((c) => {'fileName': c.fileName, 'contentUri': c.contentUri})
-          .toList(growable: false);
+  List<Map<String, String>> _customAdhansPayload(AppSettings s) => s
+      .customAdhans
+      .where((c) => c.contentUri.isNotEmpty)
+      .map((c) => {'fileName': c.fileName, 'contentUri': c.contentUri})
+      .toList(growable: false);
 }

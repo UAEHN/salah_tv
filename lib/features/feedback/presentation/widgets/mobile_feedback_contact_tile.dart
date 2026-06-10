@@ -43,8 +43,9 @@ class MobileFeedbackContactTile extends StatelessWidget {
                   children: [
                     Text(
                       label,
-                      style: MobileTextStyles.bodyMd(context)
-                          .copyWith(fontSize: 14),
+                      style: MobileTextStyles.bodyMd(
+                        context,
+                      ).copyWith(fontSize: 14),
                     ),
                     if (subtitle != null && subtitle.isNotEmpty) ...[
                       const SizedBox(height: 2),

@@ -1,4 +1,4 @@
-﻿abstract class Failure {
+abstract class Failure {
   final String message;
   const Failure(this.message);
 }
@@ -16,7 +16,8 @@ class LocationPermissionFailure extends Failure {
 }
 
 class LocationServiceDisabledFailure extends Failure {
-  const LocationServiceDisabledFailure() : super('Location service is disabled');
+  const LocationServiceDisabledFailure()
+    : super('Location service is disabled');
 }
 
 class LocationFailure extends Failure {

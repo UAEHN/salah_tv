@@ -6,10 +6,7 @@ class TasbihState {
   final int presetIndex;
   final List<int> counts;
 
-  const TasbihState({
-    this.presetIndex = 0,
-    this.counts = const [0, 0, 0, 0],
-  });
+  const TasbihState({this.presetIndex = 0, this.counts = const [0, 0, 0, 0]});
 
   int get count => counts[presetIndex];
   TasbihPreset get preset => kTasbihPresets[presetIndex];

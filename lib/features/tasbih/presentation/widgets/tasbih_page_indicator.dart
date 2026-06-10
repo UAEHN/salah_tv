@@ -26,9 +26,7 @@ class TasbihPageIndicator extends StatelessWidget {
           height: 8,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
-            color: isActive
-                ? accent
-                : accent.withValues(alpha: 0.22),
+            color: isActive ? accent : accent.withValues(alpha: 0.22),
           ),
         );
       }),

@@ -50,10 +50,9 @@ class MobileMushafOpenButton extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 AppLocalizations.of(context).mushafOpenFromStart,
-                style: MobileTextStyles.headlineMd(context).copyWith(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
+                style: MobileTextStyles.headlineMd(
+                  context,
+                ).copyWith(color: Colors.white, fontSize: 16),
               ),
             ],
           ),

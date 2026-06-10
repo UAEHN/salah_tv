@@ -13,7 +13,7 @@ import 'widgets/tv_optional_update_dialog.dart';
 /// and shows the matching platform-specific dialog (TV vs mobile).
 class RemoteUpdateHandler {
   RemoteUpdateHandler({CheckForUpdateUseCase? useCase})
-      : _useCase = useCase ?? GetIt.I<CheckForUpdateUseCase>();
+    : _useCase = useCase ?? GetIt.I<CheckForUpdateUseCase>();
 
   final CheckForUpdateUseCase _useCase;
 

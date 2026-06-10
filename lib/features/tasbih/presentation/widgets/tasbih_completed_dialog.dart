@@ -54,10 +54,9 @@ class TasbihCompletedDialog extends StatelessWidget {
                 ),
                 child: Text(
                   'حسناً',
-                  style: MobileTextStyles.bodyMd(context).copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: MobileTextStyles.bodyMd(
+                    context,
+                  ).copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),

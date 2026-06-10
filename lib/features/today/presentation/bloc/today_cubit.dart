@@ -19,10 +19,10 @@ class TodayCubit extends Cubit<TodayState> {
     required GetCurrentGreetingUseCase getGreeting,
     required GetUpcomingOccasionUseCase getOccasion,
     required GetDailyVerseUseCase getVerse,
-  })  : _getGreeting = getGreeting,
-        _getOccasion = getOccasion,
-        _getVerse = getVerse,
-        super(const TodayLoading());
+  }) : _getGreeting = getGreeting,
+       _getOccasion = getOccasion,
+       _getVerse = getVerse,
+       super(const TodayLoading());
 
   Future<void> load({DateTime? now}) async {
     final greeting = _getGreeting(now: now);
@@ -34,14 +34,8 @@ class TodayCubit extends Cubit<TodayState> {
     DailyVerse? verse;
     var partial = false;
 
-    occasionResult.fold(
-      (_) => partial = true,
-      (value) => occasion = value,
-    );
-    verseResult.fold(
-      (_) => partial = true,
-      (value) => verse = value,
-    );
+    occasionResult.fold((_) => partial = true, (value) => occasion = value);
+    verseResult.fold((_) => partial = true, (value) => verse = value);
 
     emit(
       TodayLoaded(

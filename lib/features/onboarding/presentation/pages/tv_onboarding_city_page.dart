@@ -9,10 +9,7 @@ import '../widgets/tv_onboarding_search_field.dart';
 
 /// Step 2 of TV onboarding: pick a city after country is selected.
 class TvOnboardingCityPage extends StatefulWidget {
-  const TvOnboardingCityPage({
-    super.key,
-    required this.entranceAnimation,
-  });
+  const TvOnboardingCityPage({super.key, required this.entranceAnimation});
 
   final Animation<double> entranceAnimation;
 
@@ -131,8 +128,11 @@ class _BackButton extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.arrow_back_rounded,
-              color: Colors.white.withValues(alpha: 0.5), size: 16),
+          Icon(
+            Icons.arrow_back_rounded,
+            color: Colors.white.withValues(alpha: 0.5),
+            size: 16,
+          ),
           const SizedBox(width: 6),
           Text(
             AppLocalizations.of(context).onboardingSelectCountry,
@@ -146,4 +146,3 @@ class _BackButton extends StatelessWidget {
     );
   }
 }
-

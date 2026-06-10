@@ -47,13 +47,11 @@ class BentoVerseTile extends StatelessWidget {
               child: Text(
                 verse.textAr,
                 style: TextStyle(
-                  fontFamily:
-                      Theme.of(context).textTheme.bodyMedium?.fontFamily,
-                  fontSize: 23,
-                  fontWeight: FontWeight.w700,
+                  fontFamily: 'AmiriQuran',
+                  fontSize: 22,
+                  fontWeight: FontWeight.w400,
                   color: surface.foreground,
-                  height: 1.9,
-                  letterSpacing: 0.2,
+                  height: 2.1,
                 ),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,

@@ -34,9 +34,10 @@ class MobilePrayerOffsetSection extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: MobileTextStyles.headlineMd(
-                  context,
-                ).copyWith(color: MobileColors.onSurface(context), fontSize: 16),
+                style: MobileTextStyles.headlineMd(context).copyWith(
+                  color: MobileColors.onSurface(context),
+                  fontSize: 16,
+                ),
                 textDirection: TextDirection.rtl,
               ),
               const SizedBox(width: 8),

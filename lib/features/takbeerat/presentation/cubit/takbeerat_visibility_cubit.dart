@@ -15,9 +15,9 @@ class TakbeeratVisibilityCubit extends Cubit<TakbeeratVisibilityState> {
   TakbeeratVisibilityCubit({
     required ShouldShowTakbeeratCard shouldShow,
     required ITakbeeratConfigRepository configRepo,
-  })  : _shouldShow = shouldShow,
-        _configRepo = configRepo,
-        super(TakbeeratVisibilityState.hidden());
+  }) : _shouldShow = shouldShow,
+       _configRepo = configRepo,
+       super(TakbeeratVisibilityState.hidden());
 
   final ShouldShowTakbeeratCard _shouldShow;
   final ITakbeeratConfigRepository _configRepo;
@@ -38,9 +38,6 @@ class TakbeeratVisibilityCubit extends Cubit<TakbeeratVisibilityState> {
       (_) => const <TakbeeratReciter>[],
       (cfg) => cfg.reciters,
     );
-    emit(TakbeeratVisibilityState(
-      visibility: visibility,
-      reciters: reciters,
-    ));
+    emit(TakbeeratVisibilityState(visibility: visibility, reciters: reciters));
   }
 }

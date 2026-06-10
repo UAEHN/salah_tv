@@ -12,7 +12,7 @@ import '../../domain/entities/remote_version_info.dart';
 /// wrapping it into a [Failure].
 class RemoteConfigDataSource {
   RemoteConfigDataSource({FirebaseRemoteConfig? rc})
-      : _rc = rc ?? FirebaseRemoteConfig.instance;
+    : _rc = rc ?? FirebaseRemoteConfig.instance;
 
   final FirebaseRemoteConfig _rc;
 

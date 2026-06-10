@@ -18,8 +18,9 @@ class GetCurrentGreetingUseCase {
     );
   }
 
-  GreetingPeriod _periodForHour(int hour) =>
-      hour < kEveningStartHour ? GreetingPeriod.morning : GreetingPeriod.evening;
+  GreetingPeriod _periodForHour(int hour) => hour < kEveningStartHour
+      ? GreetingPeriod.morning
+      : GreetingPeriod.evening;
 
   String _capitalize(String s) =>
       s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';

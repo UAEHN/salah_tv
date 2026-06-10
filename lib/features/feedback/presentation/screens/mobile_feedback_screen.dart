@@ -36,7 +36,9 @@ class MobileFeedbackScreen extends StatelessWidget {
               height: 250,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: MobileColors.activePrimary(context).withValues(alpha: 0.12),
+                color: MobileColors.activePrimary(
+                  context,
+                ).withValues(alpha: 0.12),
               ),
             ),
           ),
@@ -48,9 +50,9 @@ class MobileFeedbackScreen extends StatelessWidget {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: MobileColors.activeSecondary(context).withValues(
-                  alpha: MobileColors.isDark(context) ? 0.07 : 0.09,
-                ),
+                color: MobileColors.activeSecondary(
+                  context,
+                ).withValues(alpha: MobileColors.isDark(context) ? 0.07 : 0.09),
               ),
             ),
           ),

@@ -22,8 +22,7 @@ class MobilePrayerOffsetStepperButton extends StatefulWidget {
   });
 
   @override
-  State<MobilePrayerOffsetStepperButton> createState() =>
-      _StepperButtonState();
+  State<MobilePrayerOffsetStepperButton> createState() => _StepperButtonState();
 }
 
 class _StepperButtonState extends State<MobilePrayerOffsetStepperButton> {

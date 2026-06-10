@@ -64,8 +64,8 @@ class ReadingPalette {
   );
 
   static ReadingPalette of(ReadingTheme t) => switch (t) {
-        ReadingTheme.paper => paper,
-        ReadingTheme.sepia => sepia,
-        ReadingTheme.night => night,
-      };
+    ReadingTheme.paper => paper,
+    ReadingTheme.sepia => sepia,
+    ReadingTheme.night => night,
+  };
 }

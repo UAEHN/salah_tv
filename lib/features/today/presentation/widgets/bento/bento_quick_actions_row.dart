@@ -140,8 +140,7 @@ class _ActionTileState extends State<_ActionTile> {
                   : const [],
             ),
             child: BentoTile(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
               radius: 20,
               child: Column(
                 mainAxisSize: MainAxisSize.min,

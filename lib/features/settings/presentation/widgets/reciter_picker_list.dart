@@ -39,14 +39,17 @@ class ReciterPickerList extends StatelessWidget {
       reciters: reciters,
       favoriteUrls: favorites,
       isSearching: normalized.isNotEmpty,
-      matchesQuery: (name) => normalized.isEmpty ||
+      matchesQuery: (name) =>
+          normalized.isEmpty ||
           normalizeArabicForSearch(name).contains(normalized),
     );
     final rows = entries.whereType<ReciterRow>().toList(growable: false);
     if (rows.isEmpty) {
       return Center(
-        child: Text(l.searchNoResults,
-            style: const TextStyle(color: Colors.white54)),
+        child: Text(
+          l.searchNoResults,
+          style: const TextStyle(color: Colors.white54),
+        ),
       );
     }
     final autofocusUrl = rows
@@ -69,7 +72,9 @@ class ReciterPickerList extends StatelessWidget {
   ) {
     if (entry is ReciterSectionHeader) {
       return ReciterSectionLabel(
-          section: entry.section, accent: palette.primary);
+        section: entry.section,
+        accent: palette.primary,
+      );
     }
     final row = entry as ReciterRow;
     return ReciterListRow(

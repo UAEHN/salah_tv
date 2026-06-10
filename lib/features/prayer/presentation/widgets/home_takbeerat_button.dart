@@ -47,9 +47,8 @@ class _HomeTakbeeratButtonState extends State<HomeTakbeeratButton> {
     super.dispose();
   }
 
-  void _toggle() => context
-      .read<PrayerBloc>()
-      .add(PrayerTakbeeratToggled(widget.reciterUrl));
+  void _toggle() =>
+      context.read<PrayerBloc>().add(PrayerTakbeeratToggled(widget.reciterUrl));
 
   @override
   Widget build(BuildContext context) {

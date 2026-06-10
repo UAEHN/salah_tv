@@ -5,6 +5,24 @@ import 'prayer_cycle_base.dart';
 import 'adhan_cycle_mixin.dart';
 import 'iqama_mixin.dart';
 import 'recovery_mixin.dart';
+import 'tick_diagnostics.dart';
+
+/// Display window for the after-prayer adhkar takeover before Quran resumes.
+const Duration _kAfterPrayerAdhkarWindow = Duration(minutes: 5);
+
+/// Safety cap for the morning/evening session adhkar takeover. It normally ends
+/// when its audio playlist finishes (via [stopSessionAdhkar], relayed from the
+/// screen); this window only forces Quran back if that completion never fires.
+/// Scheduling (iqama end + 25 min) lives in [IqamaMixin.stopIqama].
+const Duration _kSessionAdhkarWindow = Duration(minutes: 30);
+
+/// Tick-to-tick drift above this is treated as a real clock change (manual
+/// adjustment / timezone / DST) and triggers a reload. Set well above any
+/// plausible 1 Hz tick stall on slow TV boxes (a few seconds of GC / decode):
+/// a 5s threshold misread such stalls as time jumps and reset the cycle,
+/// marking the due prayer as missed so its adhan never fired. Real clock
+/// changes are minutes/hours, so 30s keeps detection intact.
+const int _kTimeJumpThresholdSeconds = 30;
 
 /// Manages the 1-second tick, date-change detection, next-prayer calculation,
 /// and pre-alert/announcement checks.
@@ -14,10 +32,11 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
     final prev = s.now;
     s.now = currentTime();
 
-    // Detect system time change: if the clock jumped by more than 5 seconds
-    // (forward or backward), treat it as a manual time adjustment and reload.
+    // Detect system time change: a tick-to-tick jump beyond the threshold
+    // (forward or backward) is treated as a manual time adjustment and reloads.
     final drift = s.now.difference(prev).inSeconds;
-    if (drift.abs() > 5) {
+    if (drift.abs() > _kTimeJumpThresholdSeconds) {
+      analytics?.logTimeJumpDetected(driftSeconds: drift);
       s.adhansToday.clear();
       loadToday();
       recoverIqamaState();
@@ -29,6 +48,10 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
     // that could be skipped when Timer.periodic drifts on slow hardware.
     if (s.now.day != s.lastLoadedDay) {
       s.adhansToday.clear();
+      // Phase 1C.1: dedup sets are scoped per day. Reset them with
+      // adhansToday so today's overdue/skipped events can fire fresh.
+      s.overdueReported.clear();
+      s.skippedReported.clear();
       s.preAlertBellPlayed.clear();
       s.preAnnouncementPlayed.clear();
       loadToday();
@@ -48,11 +71,14 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
       s.prayerInProgressEndsAt = null;
     }
 
+    checkAfterPrayerAdhkar();
+    checkSessionAdhkar();
     updateNextPrayer();
     checkPreAnnouncement();
     checkPreAlertBell();
     checkAdhanTrigger();
     tickIqama();
+    runTickDiagnostics(); // Phase 1C — see tick_diagnostics.dart
     notify();
   }
 
@@ -132,5 +158,66 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
     if (s.preAlertBellPlayed.contains(key)) return;
     s.preAlertBellPlayed.add(key);
     audio.playPreAlertBell();
+  }
+
+  /// Drives the after-prayer adhkar takeover scheduled by [stopIqama]: starts
+  /// it (pausing Quran) when its time arrives, and ends it (resuming Quran)
+  /// after the display window. pauseQuranForAdhan/resumeQuranAfterAdhan reach
+  /// here transitively through AdhanCycleMixin → QuranMixin.
+  void checkAfterPrayerAdhkar() {
+    final startAt = s.afterPrayerAdhkarStartsAt;
+    if (startAt != null &&
+        !s.now.isBefore(startAt) &&
+        !s.isAfterPrayerAdhkarPlaying) {
+      s.afterPrayerAdhkarStartsAt = null;
+      s.isAfterPrayerAdhkarPlaying = true;
+      s.afterPrayerAdhkarEndsAt = s.now.add(_kAfterPrayerAdhkarWindow);
+      pauseQuranForAdhan();
+    }
+    final endAt = s.afterPrayerAdhkarEndsAt;
+    if (s.isAfterPrayerAdhkarPlaying &&
+        endAt != null &&
+        !s.now.isBefore(endAt)) {
+      s.isAfterPrayerAdhkarPlaying = false;
+      s.afterPrayerAdhkarEndsAt = null;
+      resumeQuranAfterAdhan();
+    }
+  }
+
+  /// Drives the morning/evening session adhkar takeover scheduled by [stopIqama]
+  /// (iqama end + 25 min): starts it (pausing Quran) when its time arrives, and
+  /// ends it (resuming Quran) after the display window. The
+  /// [isAfterPrayerAdhkarPlaying] guard is defensive — the 25-min delay already
+  /// clears the after-prayer window, so the two never overlap.
+  void checkSessionAdhkar() {
+    final startAt = s.sessionAdhkarStartsAt;
+    if (startAt != null &&
+        !s.now.isBefore(startAt) &&
+        !s.isSessionAdhkarPlaying &&
+        !s.isAfterPrayerAdhkarPlaying) {
+      s.sessionAdhkarStartsAt = null;
+      s.isSessionAdhkarPlaying = true;
+      s.sessionAdhkarEndsAt = s.now.add(_kSessionAdhkarWindow);
+      pauseQuranForAdhan();
+    }
+    final endAt = s.sessionAdhkarEndsAt;
+    if (s.isSessionAdhkarPlaying && endAt != null && !s.now.isBefore(endAt)) {
+      s.isSessionAdhkarPlaying = false;
+      s.sessionAdhkarEndsAt = null;
+      s.sessionAdhkarCategory = '';
+      resumeQuranAfterAdhan();
+    }
+  }
+
+  /// Ends the session adhkar takeover early when its audio playlist finishes
+  /// (relayed from the screen as [PrayerSessionAdhkarStopped]), resuming Quran.
+  /// The window in [checkSessionAdhkar] stays as a safety cap if this never runs.
+  void stopSessionAdhkar() {
+    if (!s.isSessionAdhkarPlaying) return;
+    s.isSessionAdhkarPlaying = false;
+    s.sessionAdhkarEndsAt = null;
+    s.sessionAdhkarCategory = '';
+    resumeQuranAfterAdhan();
+    notify();
   }
 }

@@ -39,17 +39,16 @@ class MobileMushafIntroItem extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: MobileTextStyles.titleMd(context).copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: MobileTextStyles.titleMd(
+                    context,
+                  ).copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   body,
-                  style: MobileTextStyles.bodyMd(context).copyWith(
-                    color: colors.onSurfaceVariant,
-                    height: 1.45,
-                  ),
+                  style: MobileTextStyles.bodyMd(
+                    context,
+                  ).copyWith(color: colors.onSurfaceVariant, height: 1.45),
                 ),
               ],
             ),

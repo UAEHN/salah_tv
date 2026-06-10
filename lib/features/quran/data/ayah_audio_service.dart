@@ -38,11 +38,13 @@ class AyahAudioService implements IAyahAudioPort {
   void _emitCompleted() {
     if (!_isPlaying) return;
     _isPlaying = false;
-    _events.add(AyahPlaybackEvent(
-      AyahAudioStatus.completed,
-      surahNumber: _currentSurah,
-      ayahNumber: _currentAyah,
-    ));
+    _events.add(
+      AyahPlaybackEvent(
+        AyahAudioStatus.completed,
+        surahNumber: _currentSurah,
+        ayahNumber: _currentAyah,
+      ),
+    );
   }
 
   @override
@@ -60,11 +62,13 @@ class AyahAudioService implements IAyahAudioPort {
       _appInitiatedStop = false;
       _currentSurah = surahNumber;
       _currentAyah = ayahNumber;
-      _events.add(AyahPlaybackEvent(
-        AyahAudioStatus.loading,
-        surahNumber: surahNumber,
-        ayahNumber: ayahNumber,
-      ));
+      _events.add(
+        AyahPlaybackEvent(
+          AyahAudioStatus.loading,
+          surahNumber: surahNumber,
+          ayahNumber: ayahNumber,
+        ),
+      );
       final url = AppConfig.ayahAudioUrl(
         surah: surahNumber,
         ayah: ayahNumber,
@@ -84,20 +88,24 @@ class AyahAudioService implements IAyahAudioPort {
         // the ayah (just no offline benefit for this tap).
         await _player.play(UrlSource(url));
       }
-      _events.add(AyahPlaybackEvent(
-        AyahAudioStatus.playing,
-        surahNumber: surahNumber,
-        ayahNumber: ayahNumber,
-      ));
+      _events.add(
+        AyahPlaybackEvent(
+          AyahAudioStatus.playing,
+          surahNumber: surahNumber,
+          ayahNumber: ayahNumber,
+        ),
+      );
     } catch (e) {
       _appInitiatedStop = false;
       _isPlaying = false;
       debugPrint('[AyahAudio] play failed: $e');
-      _events.add(AyahPlaybackEvent(
-        AyahAudioStatus.error,
-        surahNumber: surahNumber,
-        ayahNumber: ayahNumber,
-      ));
+      _events.add(
+        AyahPlaybackEvent(
+          AyahAudioStatus.error,
+          surahNumber: surahNumber,
+          ayahNumber: ayahNumber,
+        ),
+      );
     }
   }
 
@@ -105,11 +113,13 @@ class AyahAudioService implements IAyahAudioPort {
   Future<void> pause() async {
     try {
       await _player.pause();
-      _events.add(AyahPlaybackEvent(
-        AyahAudioStatus.paused,
-        surahNumber: _currentSurah,
-        ayahNumber: _currentAyah,
-      ));
+      _events.add(
+        AyahPlaybackEvent(
+          AyahAudioStatus.paused,
+          surahNumber: _currentSurah,
+          ayahNumber: _currentAyah,
+        ),
+      );
     } catch (e) {
       debugPrint('[AyahAudio] pause failed: $e');
     }
@@ -119,11 +129,13 @@ class AyahAudioService implements IAyahAudioPort {
   Future<void> resume() async {
     try {
       await _player.resume();
-      _events.add(AyahPlaybackEvent(
-        AyahAudioStatus.playing,
-        surahNumber: _currentSurah,
-        ayahNumber: _currentAyah,
-      ));
+      _events.add(
+        AyahPlaybackEvent(
+          AyahAudioStatus.playing,
+          surahNumber: _currentSurah,
+          ayahNumber: _currentAyah,
+        ),
+      );
     } catch (e) {
       debugPrint('[AyahAudio] resume failed: $e');
     }

@@ -26,10 +26,9 @@ class EidVisibility {
   factory EidVisibility.showing({
     required EidType? eid,
     bool isForcedByRemote = false,
-  }) =>
-      EidVisibility(
-        hasCard: true,
-        activeEid: eid,
-        isForcedByRemote: isForcedByRemote,
-      );
+  }) => EidVisibility(
+    hasCard: true,
+    activeEid: eid,
+    isForcedByRemote: isForcedByRemote,
+  );
 }

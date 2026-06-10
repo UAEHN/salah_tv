@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/calculation_method_info.dart';
@@ -30,6 +30,9 @@ class MobileCalculationMethodDialog extends StatelessWidget {
     'north_america',
     'france',
     'uoif',
+    'uk',
+    'germany',
+    'russia',
     'jafari',
     'moonsighting_committee',
   ];
@@ -65,48 +68,46 @@ class MobileCalculationMethodDialog extends StatelessWidget {
   }
 
   Widget _buildHandle(BuildContext context) => Container(
-        width: 40,
-        height: 4,
-        decoration: BoxDecoration(
-          color: MobileColors.onSurfaceMuted(context).withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(2),
-        ),
-      );
+    width: 40,
+    height: 4,
+    decoration: BoxDecoration(
+      color: MobileColors.onSurfaceMuted(context).withValues(alpha: 0.2),
+      borderRadius: BorderRadius.circular(2),
+    ),
+  );
 
   Widget _buildHeader(BuildContext context, AppLocalizations l) => Text(
-        l.settingsCalculationMethodLabel,
-        style: MobileTextStyles.titleMd(context).copyWith(
-          color: MobileColors.onSurface(context),
-          fontSize: 18,
-        ),
-      );
+    l.settingsCalculationMethodLabel,
+    style: MobileTextStyles.titleMd(
+      context,
+    ).copyWith(color: MobileColors.onSurface(context), fontSize: 18),
+  );
 
   Widget _buildNote(BuildContext context, AppLocalizations l) => Text(
-        l.settingsMethodAffectsGpsOnly,
-        style: MobileTextStyles.bodyMd(context).copyWith(
-          color: MobileColors.onSurfaceMuted(context),
-          fontSize: 12,
-        ),
-        textDirection: TextDirection.rtl,
-      );
+    l.settingsMethodAffectsGpsOnly,
+    style: MobileTextStyles.bodyMd(
+      context,
+    ).copyWith(color: MobileColors.onSurfaceMuted(context), fontSize: 12),
+    textDirection: TextDirection.rtl,
+  );
 
   Widget _buildList(BuildContext context) => ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.55,
-        ),
-        child: ListView(
-          shrinkWrap: true,
-          children: _methods.map((key) {
-            return MobileSelectOptionTile(
-              title: localizedCalculationMethod(context, key),
-              icon: Icons.calculate_rounded,
-              isSelected: currentMethod == key,
-              onTap: () {
-                onSave(key);
-                Navigator.pop(context);
-              },
-            );
-          }).toList(),
-        ),
-      );
+    constraints: BoxConstraints(
+      maxHeight: MediaQuery.of(context).size.height * 0.55,
+    ),
+    child: ListView(
+      shrinkWrap: true,
+      children: _methods.map((key) {
+        return MobileSelectOptionTile(
+          title: localizedCalculationMethod(context, key),
+          icon: Icons.calculate_rounded,
+          isSelected: currentMethod == key,
+          onTap: () {
+            onSave(key);
+            Navigator.pop(context);
+          },
+        );
+      }).toList(),
+    ),
+  );
 }

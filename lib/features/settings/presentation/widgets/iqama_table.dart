@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -43,8 +43,10 @@ class IqamaTable extends StatelessWidget {
                 delay: delay,
                 palette: palette,
                 tc: tc,
-                onDecrement: () => settingsProv.updateIqamaDelay(key, delay - 1),
-                onIncrement: () => settingsProv.updateIqamaDelay(key, delay + 1),
+                onDecrement: () =>
+                    settingsProv.updateIqamaDelay(key, delay - 1),
+                onIncrement: () =>
+                    settingsProv.updateIqamaDelay(key, delay + 1),
               ),
             ],
           );

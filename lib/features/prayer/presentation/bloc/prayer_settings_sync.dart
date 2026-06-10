@@ -14,6 +14,7 @@ Future<void> syncPrayerRepositoryMode(
       next.selectedLongitude!,
       next.calculationMethod,
       madhabKey: next.madhab,
+      highLatitudeRuleKey: next.highLatitudeRule,
       cityLabel: next.selectedCity,
       timeZoneId: next.selectedTimeZoneId,
       utcOffsetHours: next.utcOffsetHours,
@@ -21,8 +22,7 @@ Future<void> syncPrayerRepositoryMode(
     return;
   }
 
-  final wasModeSwitch =
-      next.isCalculatedLocation != prev.isCalculatedLocation;
+  final wasModeSwitch = next.isCalculatedLocation != prev.isCalculatedLocation;
   if (wasModeSwitch || next.selectedCountry != prev.selectedCountry) {
     repo.configureDatabaseMode();
     await repo.loadCountry(next.selectedCountry);

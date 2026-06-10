@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '../../../settings/domain/entities/app_settings.dart';
 import '../prayer_time_calculator.dart' as calc;
+import 'engine_telemetry_extension.dart';
 import 'prayer_cycle_base.dart';
 import 'adhan_cycle_mixin.dart';
 import 'iqama_mixin.dart';
@@ -21,11 +22,15 @@ mixin SettingsMixin
   /// Called via bridge when settings change. Async because city/country reset
   /// must await audio.stop() before clearing flags (Issue 1 guard).
   Future<void> updateSettings(AppSettings newSettings) async {
+    if (s.isCycleActive) {
+      telSettingsChangeDuringCycle(activeCyclePhase(s), 'settings_update');
+    }
     final oldUrl = settings.quranReciterServerUrl;
     final oldCity = settings.selectedCity;
     final oldCountry = settings.selectedCountry;
     final oldMethod = settings.calculationMethod;
     final oldMadhab = settings.madhab;
+    final oldHighLatRule = settings.highLatitudeRule;
     final oldAdhanSound = settings.adhanSound;
     final oldMode = settings.quranPlaybackMode;
     final oldSurah = settings.selectedSurahNumber;
@@ -47,10 +52,15 @@ mixin SettingsMixin
     s.now = currentTime();
 
     // Reload prayer times when location or calculation parameters change.
-    // calculationMethod / madhab: syncPrayerRepositoryMode already re-inits
-    // the calcRepo cache before this runs, so loadToday picks up new values.
-    final isCalcChange = newSettings.calculationMethod != oldMethod ||
-        newSettings.madhab != oldMadhab;
+    // calculationMethod / madhab / highLatitudeRule: syncPrayerRepositoryMode
+    // already re-inits the calcRepo cache before this runs, so loadToday picks
+    // up new values. Without highLatitudeRule here, changing the rule in
+    // settings would refresh the cache but the engine would keep showing the
+    // pre-change todayPrayers until the next manual reload.
+    final isCalcChange =
+        newSettings.calculationMethod != oldMethod ||
+        newSettings.madhab != oldMadhab ||
+        newSettings.highLatitudeRule != oldHighLatRule;
 
     if (newSettings.selectedCity != oldCity ||
         newSettings.selectedCountry != oldCountry ||
@@ -73,16 +83,18 @@ mixin SettingsMixin
         final tomorrowKey = calc.dateKey(
           DateTime(s.now.year, s.now.month, s.now.day + 1),
         );
-        unawaited(notifications?.scheduleForDay(
-          s.todayPrayers!,
-          repo.getTomorrowByKey(tomorrowKey),
-          settings,
-        ));
+        unawaited(
+          notifications?.scheduleForDay(
+            s.todayPrayers!,
+            repo.getTomorrowByKey(tomorrowKey),
+            settings,
+          ),
+        );
       }
       // Re-schedule the 7-day adhkar window whenever the user toggles
       // morning/evening reminders or changes either chosen wall-clock time.
-      final adhkarChanged = newSettings.isMorningAdhkarNotificationEnabled !=
-              oldMorningAdhkar ||
+      final adhkarChanged =
+          newSettings.isMorningAdhkarNotificationEnabled != oldMorningAdhkar ||
           newSettings.isEveningAdhkarNotificationEnabled != oldEveningAdhkar ||
           newSettings.morningAdhkarMinuteOfDay != oldMorningMinute ||
           newSettings.eveningAdhkarMinuteOfDay != oldEveningMinute ||
@@ -112,9 +124,11 @@ mixin SettingsMixin
 
     // Restart Quran if reciter OR playback mode/surah/repeat/playlist changed
     // while Quran is actively playing.
-    final reciterChanged = newSettings.quranReciterServerUrl.isNotEmpty &&
+    final reciterChanged =
+        newSettings.quranReciterServerUrl.isNotEmpty &&
         newSettings.quranReciterServerUrl != oldUrl;
-    final modeChanged = newSettings.quranPlaybackMode != oldMode ||
+    final modeChanged =
+        newSettings.quranPlaybackMode != oldMode ||
         newSettings.selectedSurahNumber != oldSurah ||
         newSettings.surahPlaylist.toString() != oldPlaylist ||
         newSettings.surahRepeatCount != oldRepeatCount ||

@@ -38,16 +38,13 @@ class OnboardingCompletionService {
         cityName: cityName,
         cancelToken: CancellationToken(),
       );
-      return result.fold(
-        (failure) async => Left(failure),
-        (_) async {
-          await _compositeRepo.downloadedRepo.loadCity(countryKey, cityName);
-          _compositeRepo.configureDatabaseMode();
-          await _settings.updateLocation(countryKey, cityName);
-          await _settingsRepository.markLaunched();
-          return const Right(Success());
-        },
-      );
+      return result.fold((failure) async => Left(failure), (_) async {
+        await _compositeRepo.downloadedRepo.loadCity(countryKey, cityName);
+        _compositeRepo.configureDatabaseMode();
+        await _settings.updateLocation(countryKey, cityName);
+        await _settingsRepository.markLaunched();
+        return const Right(Success());
+      });
     }
 
     final worldCity = state.selectedWorldCity!;

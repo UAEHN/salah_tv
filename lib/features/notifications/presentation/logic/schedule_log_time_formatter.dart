@@ -6,7 +6,8 @@ class ScheduleLogTimeFormatter {
 
   String format(DateTime fired, {DateTime? now}) {
     final reference = now ?? DateTime.now();
-    final isToday = reference.year == fired.year &&
+    final isToday =
+        reference.year == fired.year &&
         reference.month == fired.month &&
         reference.day == fired.day;
     final hh = fired.hour.toString().padLeft(2, '0');

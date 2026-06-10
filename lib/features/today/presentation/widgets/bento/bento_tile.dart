@@ -97,8 +97,7 @@ class BentoSurface extends InheritedWidget {
       : Colors.black.withValues(alpha: 0.04);
 
   /// Primary foreground (titles, big numbers).
-  Color get foreground =>
-      isDarkSky ? Colors.white : const Color(0xFF1A1A24);
+  Color get foreground => isDarkSky ? Colors.white : const Color(0xFF1A1A24);
 
   /// Muted foreground (captions, eyebrow labels).
   Color get foregroundMuted => isDarkSky
@@ -152,11 +151,11 @@ class BentoSurface extends InheritedWidget {
   /// lifts off the background. Light mode pushes alpha up so the halo
   /// registers against the warm beige gradient.
   BoxShadow accentTileShadow(Color primary) => BoxShadow(
-        color: primary.withValues(alpha: isDarkSky ? 0.22 : 0.36),
-        blurRadius: isDarkSky ? 26 : 32,
-        offset: const Offset(0, 14),
-        spreadRadius: -6,
-      );
+    color: primary.withValues(alpha: isDarkSky ? 0.22 : 0.36),
+    blurRadius: isDarkSky ? 26 : 32,
+    offset: const Offset(0, 14),
+    spreadRadius: -6,
+  );
 
   @override
   bool updateShouldNotify(BentoSurface oldWidget) =>

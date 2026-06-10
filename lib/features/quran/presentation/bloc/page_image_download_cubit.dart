@@ -18,9 +18,9 @@ class PageImageDownloadCubit extends Cubit<PageImageDownloadState> {
   PageImageDownloadCubit({
     required IPageImageRepository imageRepo,
     required IQuranOfflineChoiceRepository choiceRepo,
-  })  : _imageRepo = imageRepo,
-        _choiceRepo = choiceRepo,
-        super(PageImageDownloadState.initial(imageRepo.totalPages));
+  }) : _imageRepo = imageRepo,
+       _choiceRepo = choiceRepo,
+       super(PageImageDownloadState.initial(imageRepo.totalPages));
 
   /// Reads the on-disk page count + the persisted "has been asked"
   /// flag and emits the resolved initial state. Idempotent; safe to
@@ -29,13 +29,15 @@ class PageImageDownloadCubit extends Cubit<PageImageDownloadState> {
     final chosen = await _choiceRepo.hasChosenOfflineMode();
     final count = await _imageRepo.downloadedCount();
     final total = _imageRepo.totalPages;
-    emit(state.copyWith(
-      hasChosenOfflineMode: chosen,
-      downloadedCount: count,
-      status: count >= total
-          ? PageImageDownloadStatus.complete
-          : PageImageDownloadStatus.idle,
-    ));
+    emit(
+      state.copyWith(
+        hasChosenOfflineMode: chosen,
+        downloadedCount: count,
+        status: count >= total
+            ? PageImageDownloadStatus.complete
+            : PageImageDownloadStatus.idle,
+      ),
+    );
   }
 
   /// User picked "Download the full Mushaf for offline use" from the
@@ -62,31 +64,30 @@ class PageImageDownloadCubit extends Cubit<PageImageDownloadState> {
     await _downloadSub?.cancel();
     _downloadSub = null;
     await _imageRepo.deleteAll();
-    emit(state.copyWith(
-      status: PageImageDownloadStatus.idle,
-      downloadedCount: 0,
-    ));
+    emit(
+      state.copyWith(status: PageImageDownloadStatus.idle, downloadedCount: 0),
+    );
   }
 
   /// Starts or resumes the bulk download. Safe to call on top of a
   /// running download — returns immediately in that case.
   Future<void> startBulkDownload() async {
     if (state.status == PageImageDownloadStatus.downloading) return;
-    emit(state.copyWith(
-      status: PageImageDownloadStatus.downloading,
-      error: null,
-    ));
+    emit(
+      state.copyWith(status: PageImageDownloadStatus.downloading, error: null),
+    );
     await _downloadSub?.cancel();
     _downloadSub = _imageRepo.downloadAll().listen(
-          (n) => emit(state.copyWith(downloadedCount: n)),
-          onError: (Object e) => emit(state.copyWith(
-            status: PageImageDownloadStatus.error,
-            error: e.toString(),
-          )),
-          onDone: () => emit(state.copyWith(
-            status: PageImageDownloadStatus.complete,
-          )),
-        );
+      (n) => emit(state.copyWith(downloadedCount: n)),
+      onError: (Object e) => emit(
+        state.copyWith(
+          status: PageImageDownloadStatus.error,
+          error: e.toString(),
+        ),
+      ),
+      onDone: () =>
+          emit(state.copyWith(status: PageImageDownloadStatus.complete)),
+    );
   }
 
   @override

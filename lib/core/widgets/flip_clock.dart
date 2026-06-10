@@ -34,9 +34,7 @@ class FlipClock extends StatelessWidget {
     // the digits past the precomputed [digitWidth]/[digitHeight] slots —
     // mismatch causes the digits to "dance" inside their boxes as they flip.
     return MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-        textScaler: TextScaler.noScaling,
-      ),
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
       child: Directionality(
         textDirection: TextDirection.ltr,
         child: Row(

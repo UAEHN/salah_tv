@@ -53,15 +53,18 @@ class _MobileAdhanSoundDialogState extends State<MobileAdhanSoundDialog> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: MobileColors.onSurfaceMuted(context).withValues(alpha: 0.2),
+                color: MobileColors.onSurfaceMuted(
+                  context,
+                ).withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
             const SizedBox(height: 24),
             Text(
               l.settingsChooseAdhanSound,
-              style: MobileTextStyles.titleMd(context)
-                  .copyWith(color: MobileColors.onSurface(context), fontSize: 18),
+              style: MobileTextStyles.titleMd(
+                context,
+              ).copyWith(color: MobileColors.onSurface(context), fontSize: 18),
             ),
             const SizedBox(height: 24),
             BlocBuilder<AdhanPreviewCubit, AdhanPreviewState>(
@@ -71,7 +74,8 @@ class _MobileAdhanSoundDialogState extends State<MobileAdhanSoundDialog> {
                       (sound) => MobileAdhanSoundTile(
                         label: localizedAdhanSoundLabel(context, sound.key),
                         isSelected: _selectedSound == sound.key,
-                        isPlaying: previewState is AdhanPreviewPlaying &&
+                        isPlaying:
+                            previewState is AdhanPreviewPlaying &&
                             previewState.soundKey == sound.key,
                         onSelect: () =>
                             setState(() => _selectedSound = sound.key),
@@ -136,8 +140,9 @@ class _SaveButton extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Text(
               label,
-              style: MobileTextStyles.titleMd(context)
-                  .copyWith(color: Colors.white, fontSize: 16),
+              style: MobileTextStyles.titleMd(
+                context,
+              ).copyWith(color: Colors.white, fontSize: 16),
             ),
           ),
         ),

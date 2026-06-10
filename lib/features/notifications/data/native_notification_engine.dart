@@ -29,9 +29,9 @@ class NativeNotificationEngine implements IPrayerNotificationPort {
     HorizonBuilder? horizon,
     NotificationSerializer? serializer,
     DateTime Function()? clock,
-  })  : _horizon = horizon ?? HorizonBuilder(_repo),
-        _serializer = serializer ?? NotificationSerializer(),
-        _clock = clock ?? DateTime.now;
+  }) : _horizon = horizon ?? HorizonBuilder(_repo),
+       _serializer = serializer ?? NotificationSerializer(),
+       _clock = clock ?? DateTime.now;
 
   @override
   Future<void> initialize() async {

@@ -1,7 +1,6 @@
-﻿import 'package:flutter/material.dart';
-import 'package:ghasaq/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
 
-import '../../../../core/app_colors.dart';
+import 'classic/classic_visuals.dart';
 
 IconData prayerIcon(String key) {
   switch (key) {
@@ -22,64 +21,105 @@ IconData prayerIcon(String key) {
   }
 }
 
+/// Centered time cell for a classic prayer row: a prominent Adhan time with a
+/// small day-period suffix, and the Iqama time stacked beneath it (or an em
+/// dash when the prayer has no Iqama, e.g. sunrise).
 class PrayerTimeColumn extends StatelessWidget {
   final String adhanTime;
+  final String? adhanPeriod;
   final String iqamaTime;
+  final String? iqamaPeriod;
   final bool isCountable;
   final bool isNext;
-  final ThemeColors tc;
-  final AccentPalette palette;
+  final ClassicVisuals vis;
   final double screenH;
 
   const PrayerTimeColumn({
     super.key,
     required this.adhanTime,
+    required this.adhanPeriod,
     required this.iqamaTime,
+    required this.iqamaPeriod,
     required this.isCountable,
     required this.isNext,
-    required this.tc,
-    required this.palette,
+    required this.vis,
     required this.screenH,
   });
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
+    final adhanColor = isNext ? vis.onAccent : vis.fg;
+    final iqamaColor = isNext ? vis.onAccent : vis.fgMuted;
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          adhanTime,
-          textDirection: TextDirection.ltr,
-          style: TextStyle(
-            fontSize: screenH * 0.053,
-            fontWeight: isNext ? FontWeight.w600 : FontWeight.w400,
-            color: tc.textPrimary,
-          ),
-        ),
-        if (isCountable) ...[
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(
+              adhanTime,
+              textDirection: TextDirection.ltr,
+              style: TextStyle(
+                fontSize: screenH * 0.050,
+                fontWeight: isNext ? FontWeight.w700 : FontWeight.w600,
+                color: adhanColor,
+              ),
+            ),
+            if (adhanPeriod != null) ...[
+              SizedBox(width: screenH * 0.006),
               Text(
-                '${l.iqamaLabel} ',
+                adhanPeriod!,
                 style: TextStyle(
-                  fontSize: screenH * 0.022,
-                  color: tc.textMuted,
+                  fontSize: screenH * 0.023,
+                  fontWeight: FontWeight.w600,
+                  color: isNext ? vis.onAccent : vis.fgMuted,
                 ),
               ),
+            ],
+          ],
+        ),
+        SizedBox(height: screenH * 0.004),
+        if (isCountable)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
               Text(
                 iqamaTime,
                 textDirection: TextDirection.ltr,
                 style: TextStyle(
-                  fontSize: screenH * 0.026,
-                  fontWeight: FontWeight.w400,
-                  color: tc.textSecondary,
+                  fontSize: screenH * 0.022,
+                  fontWeight: FontWeight.w500,
+                  color: iqamaColor,
                 ),
               ),
+              if (iqamaPeriod != null) ...[
+                SizedBox(width: screenH * 0.004),
+                Text(
+                  iqamaPeriod!,
+                  style: TextStyle(
+                    fontSize: screenH * 0.020,
+                    fontWeight: FontWeight.w500,
+                    color: iqamaColor,
+                  ),
+                ),
+              ],
             ],
+          )
+        else
+          Text(
+            '—',
+            style: TextStyle(
+              fontSize: screenH * 0.022,
+              fontWeight: FontWeight.w500,
+              color: iqamaColor.withValues(alpha: 0.55),
+            ),
           ),
-        ],
       ],
     );
   }

@@ -10,11 +10,7 @@ class QuranQuickLink {
   final int surah;
   final int? ayah;
 
-  const QuranQuickLink({
-    required this.label,
-    required this.surah,
-    this.ayah,
-  });
+  const QuranQuickLink({required this.label, required this.surah, this.ayah});
 
   bool get isWholeSurah => ayah == null;
 }

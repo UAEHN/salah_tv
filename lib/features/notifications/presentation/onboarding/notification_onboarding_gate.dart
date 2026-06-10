@@ -73,8 +73,7 @@ class _SettingsFlagAdapter implements INotificationOnboardingFlagPort {
   bool get isOnboardingDone => _provider.settings.isNotificationOnboardingDone;
 
   @override
-  void addListener(void Function() listener) =>
-      _provider.addListener(listener);
+  void addListener(void Function() listener) => _provider.addListener(listener);
 
   @override
   void removeListener(void Function() listener) =>

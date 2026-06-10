@@ -1,8 +1,9 @@
 import 'entities/adhkar_category.dart';
 import 'entities/text_dhikr.dart';
 
-/// Read-only repository for text-based adhkar (mobile reader feature).
-/// Separate from [IAdhkarStateRepository] which handles TV audio sessions.
+/// Read-only repository for text-based adhkar. Feeds both the mobile counting
+/// reader and the TV full-screen adhkar takeovers (after-prayer + morning/
+/// evening session).
 abstract class IAdhkarTextRepository {
   /// Returns all available adhkar categories.
   List<AdhkarCategory> getCategories();

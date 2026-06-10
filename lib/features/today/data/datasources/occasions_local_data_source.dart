@@ -13,8 +13,8 @@ import 'occasions_remote_data_source.dart';
 /// then has nothing to match against and surfaces `null` (no occasion).
 class OccasionsLocalDataSource {
   OccasionsLocalDataSource({String? bundledAssetPath})
-      : _bundledAssetPath =
-            bundledAssetPath ?? 'assets/occasions/occasions_default.json';
+    : _bundledAssetPath =
+          bundledAssetPath ?? 'assets/occasions/occasions_default.json';
 
   static const _cacheJsonKey = 'occasions_cache_json';
   static const _cacheEtagKey = 'occasions_cache_etag';

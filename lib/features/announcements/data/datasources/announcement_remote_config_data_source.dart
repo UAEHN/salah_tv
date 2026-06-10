@@ -13,7 +13,7 @@ import '../../domain/entities/announcement.dart';
 /// repository can map it.
 class AnnouncementRemoteConfigDataSource {
   AnnouncementRemoteConfigDataSource({FirebaseRemoteConfig? rc})
-      : _rc = rc ?? FirebaseRemoteConfig.instance;
+    : _rc = rc ?? FirebaseRemoteConfig.instance;
 
   final FirebaseRemoteConfig _rc;
 

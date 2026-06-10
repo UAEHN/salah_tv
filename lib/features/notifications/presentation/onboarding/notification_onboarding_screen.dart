@@ -23,7 +23,8 @@ class NotificationOnboardingScreen extends StatefulWidget {
 }
 
 class _NotificationOnboardingScreenState
-    extends State<NotificationOnboardingScreen> with WidgetsBindingObserver {
+    extends State<NotificationOnboardingScreen>
+    with WidgetsBindingObserver {
   int _lastGrantedCount = 0;
 
   @override
@@ -55,14 +56,18 @@ class _NotificationOnboardingScreenState
         children: [
           const NotificationOnboardingBackground(),
           SafeArea(
-            child: BlocConsumer<NotificationOnboardingCubit,
-                NotificationOnboardingState>(
-              listenWhen: (p, c) => p.coreGrantedCount != c.coreGrantedCount,
-              listener: _onGrantedCountChanged,
-              builder: (context, state) => state.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _Body(state: state, onDone: _markDoneAndExit),
-            ),
+            child:
+                BlocConsumer<
+                  NotificationOnboardingCubit,
+                  NotificationOnboardingState
+                >(
+                  listenWhen: (p, c) =>
+                      p.coreGrantedCount != c.coreGrantedCount,
+                  listener: _onGrantedCountChanged,
+                  builder: (context, state) => state.isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : _Body(state: state, onDone: _markDoneAndExit),
+                ),
           ),
         ],
       ),
@@ -103,7 +108,9 @@ class _Body extends StatelessWidget {
             total: state.coreTotalCount,
           ),
           const SizedBox(height: 28),
-          Expanded(child: PermissionCardsList(state: state, cubit: cubit)),
+          Expanded(
+            child: PermissionCardsList(state: state, cubit: cubit),
+          ),
           const SizedBox(height: 12),
           OnboardingActionBar(
             canContinue: state.canContinue,

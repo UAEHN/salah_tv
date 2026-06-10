@@ -27,15 +27,20 @@ KeyEventResult handleSettingsContentKeyEvent(
     return KeyEventResult.ignored;
   }
   final key = event.logicalKey;
-  if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.arrowDown) {
-    final direction =
-        key == LogicalKeyboardKey.arrowDown ? TraversalDirection.down : TraversalDirection.up;
+  if (key == LogicalKeyboardKey.arrowUp ||
+      key == LogicalKeyboardKey.arrowDown) {
+    final direction = key == LogicalKeyboardKey.arrowDown
+        ? TraversalDirection.down
+        : TraversalDirection.up;
     FocusManager.instance.primaryFocus?.focusInDirection(direction);
     return KeyEventResult.handled;
   }
   if (key == LogicalKeyboardKey.arrowRight) {
     final moved =
-        FocusManager.instance.primaryFocus?.focusInDirection(TraversalDirection.right) ?? false;
+        FocusManager.instance.primaryFocus?.focusInDirection(
+          TraversalDirection.right,
+        ) ??
+        false;
     if (!moved) navFocusNodes[selectedIndex].requestFocus();
     return KeyEventResult.handled;
   }

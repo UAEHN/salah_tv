@@ -91,8 +91,9 @@ class _SurahTile extends StatelessWidget {
         style: MobileTextStyles.headlineMd(context),
       ),
       subtitle: Text(
-        AppLocalizations.of(context)
-            .mushafAyahsCount(digitsForLocale(context, surah.ayahCount)),
+        AppLocalizations.of(
+          context,
+        ).mushafAyahsCount(digitsForLocale(context, surah.ayahCount)),
         textAlign: TextAlign.right,
         style: MobileTextStyles.labelSm(context),
       ),

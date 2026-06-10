@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../../analytics/domain/i_analytics_service.dart';
 import 'entities/daily_prayer_times.dart';
 import 'i_prayer_audio_port.dart';
 import 'i_takbeerat_audio_port.dart';
@@ -7,6 +8,7 @@ import '../../notifications/domain/i_prayer_notification_port.dart';
 import 'i_prayer_times_repository.dart';
 import '../../settings/domain/entities/app_settings.dart';
 import 'prayer_time_zone.dart';
+import 'engine/engine_telemetry_extension.dart';
 import 'engine/prayer_cycle_state.dart';
 import 'engine/prayer_cycle_base.dart';
 import 'engine/recovery_mixin.dart';
@@ -53,6 +55,9 @@ class PrayerCycleEngine extends PrayerCycleBase
   final IPrayerNotificationPort? notifications;
 
   @override
+  final IAnalyticsService? analytics;
+
+  @override
   final void Function() notify;
 
   StreamSubscription<void>? _completionSub;
@@ -65,6 +70,7 @@ class PrayerCycleEngine extends PrayerCycleBase
     AppSettings initialSettings,
     this.notify, {
     this.notifications,
+    this.analytics,
   }) : settings = initialSettings {
     // Issue 2: stored subscription; Issue 4: entry guards in each stop method
     // prevent re-entrant / double-fire from onComplete
@@ -77,8 +83,7 @@ class PrayerCycleEngine extends PrayerCycleBase
         await stopIqama();
       }
     });
-    _quranCompletionSub =
-        audio.onQuranSurahCompleted.listen(onSurahCompleted);
+    _quranCompletionSub = audio.onQuranSurahCompleted.listen(onSurahCompleted);
   }
 
   // ── Public getters (delegated to PrayerCycleState) ───────────────────────
@@ -120,6 +125,14 @@ class PrayerCycleEngine extends PrayerCycleBase
   bool get isCycleActive => s.isCycleActive;
   bool get isPrePrayerAlert => s.isPrePrayerAlert;
   bool get isInPostIqamaPrayer => s.isInPostIqamaPrayer;
+  bool get isAfterPrayerAdhkarPlaying => s.isAfterPrayerAdhkarPlaying;
+
+  /// True while the morning/evening session adhkar takeover is on screen.
+  bool get isSessionAdhkarPlaying => s.isSessionAdhkarPlaying;
+
+  /// Category of the active session takeover ('morning' | 'evening' | '').
+  String get sessionAdhkarCategory => s.sessionAdhkarCategory;
+
   bool get isMultiCity => repo.isMultiCity;
   List<String> get availableCities => repo.availableCities;
 
@@ -151,6 +164,7 @@ class PrayerCycleEngine extends PrayerCycleBase
   /// Called by PrayerBloc when the app is sent to the background.
   /// Pauses Quran so it doesn't bleed into the next foreground session.
   void onPaused() {
+    telAppLifecycle('paused', s.isCycleActive, activeCyclePhase(s));
     if (s.isQuranPlaying &&
         !s.isQuranPausedForAdhan &&
         !s.isQuranPausedByUser) {
@@ -161,6 +175,7 @@ class PrayerCycleEngine extends PrayerCycleBase
   /// Called by PrayerBloc when the app returns to foreground.
   void onResumed() {
     s.now = currentTime();
+    telAppLifecycle('resumed', s.isCycleActive, activeCyclePhase(s));
     // Issue 6 + 11: reload if the date changed — catches new day and
     // timezone changes that shift DateTime.now() to a different calendar day.
     if (s.now.day != s.lastLoadedDay) {

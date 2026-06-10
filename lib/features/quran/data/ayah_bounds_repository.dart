@@ -98,15 +98,17 @@ class AyahBoundsRepository implements IAyahBoundsRepository {
       [pageNumber, sura, ayah],
     );
     return rows
-        .map((r) => AyahGlyphBounds(
-              sura: sura,
-              ayah: ayah,
-              line: r['line_number'] as int,
-              minX: r['min_x'] as int,
-              maxX: r['max_x'] as int,
-              minY: r['min_y'] as int,
-              maxY: r['max_y'] as int,
-            ))
+        .map(
+          (r) => AyahGlyphBounds(
+            sura: sura,
+            ayah: ayah,
+            line: r['line_number'] as int,
+            minX: r['min_x'] as int,
+            maxX: r['max_x'] as int,
+            minY: r['min_y'] as int,
+            maxY: r['max_y'] as int,
+          ),
+        )
         .toList(growable: false);
   }
 }

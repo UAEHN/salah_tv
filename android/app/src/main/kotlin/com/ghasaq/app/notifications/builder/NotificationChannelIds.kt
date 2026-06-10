@@ -17,6 +17,9 @@ object NotificationChannelIds {
     const val PRE_IQAMA = "prayer_pre_iqama_v1"
     const val ADHKAR = "adhkar_reminder_v1"
     const val AL_KAHF = "al_kahf_reminder_v1"
+    // Server-pushed broadcasts (daily verse, announcements, milestones).
+    // Kept separate so users can mute push without affecting prayer alarms.
+    const val GENERAL_PUSH = "general_push_v1"
 
     /** Built-in adhan asset → raw resource name (matches pubspec asset list). */
     val builtInAdhans: List<Pair<String, String>> = listOf(

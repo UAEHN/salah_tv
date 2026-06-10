@@ -8,6 +8,7 @@ class FetchRecitersUseCase {
 
   FetchRecitersUseCase(this._repo);
 
-  Future<Either<Failure, List<QuranApiReciter>>> call({String language = 'ar'}) =>
-      _repo.fetchReciters(language: language);
+  Future<Either<Failure, List<QuranApiReciter>>> call({
+    String language = 'ar',
+  }) => _repo.fetchReciters(language: language);
 }

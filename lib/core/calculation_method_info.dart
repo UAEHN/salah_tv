@@ -1,10 +1,7 @@
-﻿import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
-String localizedCalculationMethod(
-  BuildContext context,
-  String methodKey,
-) {
+String localizedCalculationMethod(BuildContext context, String methodKey) {
   final l = AppLocalizations.of(context);
   return localizedCalculationMethodFromLocalizations(l, methodKey);
 }
@@ -44,6 +41,12 @@ String localizedCalculationMethodFromLocalizations(
       return l.calcMethodFrance;
     case 'uoif':
       return l.calcMethodUoif;
+    case 'uk':
+      return l.calcMethodUk;
+    case 'germany':
+      return l.calcMethodGermany;
+    case 'russia':
+      return l.calcMethodRussia;
     case 'jafari':
       return l.calcMethodJafari;
     default:
@@ -69,6 +72,24 @@ String defaultMethodForCountryIso(String? isoCode) {
     // France and the surrounding French-mosque countries (Belgium,
     // Luxembourg, Switzerland).
     'FR' || 'BE' || 'LU' || 'CH' => 'france',
+    // United Kingdom + Ireland — London Central Mosque convention (18°/17°).
+    'GB' || 'IE' => 'uk',
+    // German-speaking + Benelux + Nordic — 18°/17°, matches DITIB & most
+    // Northern European mosque schedules.
+    'DE' || 'AT' || 'NL' || 'DK' || 'SE' || 'NO' || 'FI' || 'IS' => 'germany',
+    // Slavic / high-latitude Eastern Europe — 16°/15°.
+    'RU' ||
+    'BY' ||
+    'UA' ||
+    'PL' ||
+    'CZ' ||
+    'SK' ||
+    'HU' ||
+    'RO' ||
+    'BG' ||
+    'LT' ||
+    'LV' ||
+    'EE' => 'russia',
     _ => 'muslim_world_league',
   };
 }

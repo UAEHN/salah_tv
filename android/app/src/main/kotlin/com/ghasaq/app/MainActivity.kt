@@ -26,10 +26,13 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        // FLAG_KEEP_SCREEN_ON at the native level backs up WakelockPlus.
-        // On some TV boxes WakelockPlus is revoked by the system after hours,
-        // letting the display sleep and destroying the focused window → ANR.
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        // Keep the display alive AND force it on. FLAG_KEEP_SCREEN_ON alone is
+        // revoked by some TV boxes after hours, letting the display sleep and
+        // destroying the focused window → "No focused window" ANR + a frozen
+        // surface that never repaints. We re-assert these flags on every resume
+        // / focus gain (see onResume / onWindowFocusChanged) so the window is
+        // never torn down out from under the Flutter engine.
+        keepScreenAwake()
         requestHighRefreshRate()
         // Cold-start tap: stash payload so Flutter can pull it after splash.
         intent?.let { stashTapPayload(it, isWarm = false) }
@@ -39,6 +42,16 @@ class MainActivity : FlutterActivity() {
         super.onNewIntent(intent)
         // Warm tap: app already running, dispatch immediately to Flutter.
         stashTapPayload(intent, isWarm = true)
+    }
+
+    // TV firmwares can clear FLAG_KEEP_SCREEN_ON when the system briefly takes
+    // over (system overlay, OTA check, power save), which lets the display sleep
+    // and tears down the focused window. Re-assert on every resume so the
+    // display never sleeps out from under the running app.
+    override fun onResume() {
+        super.onResume()
+        keepScreenAwake()
+        applyImmersiveMode()
     }
 
     private fun stashTapPayload(intent: Intent, isWarm: Boolean) {
@@ -53,7 +66,27 @@ class MainActivity : FlutterActivity() {
     // for any subsequent input event and triggers an ANR after 5 seconds.
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) applyImmersiveMode()
+        if (hasFocus) {
+            keepScreenAwake()
+            applyImmersiveMode()
+        }
+    }
+
+    /**
+     * Forces the display on and keeps it from sleeping / being torn down.
+     * [FLAG_TURN_SCREEN_ON] + [setShowWhenLocked]/[setTurnScreenOn] (API 27+)
+     * make the window re-acquire the display even if the system put it to
+     * sleep, which is what destroys the focused window on stubborn TV boxes.
+     */
+    private fun keepScreenAwake() {
+        window.addFlags(
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
+        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        }
     }
 
     private fun applyImmersiveMode() {
@@ -108,6 +141,23 @@ class MainActivity : FlutterActivity() {
                 }
                 "publishAdhanSound" -> handlePublishAdhanSound(call, result)
                 "unpublishAdhanSound" -> handleUnpublishAdhanSound(call, result)
+                "getAudioState" -> {
+                    val am = getSystemService(AUDIO_SERVICE) as android.media.AudioManager
+                    val stream = android.media.AudioManager.STREAM_MUSIC
+                    val volume = am.getStreamVolume(stream)
+                    val muted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        am.isStreamMute(stream)
+                    } else {
+                        false
+                    }
+                    result.success(
+                        mapOf(
+                            "volume" to volume,
+                            "maxVolume" to am.getStreamMaxVolume(stream),
+                            "muted" to (muted || volume <= 0),
+                        ),
+                    )
+                }
                 "isBatteryOptimizationIgnored" -> {
                     val pm = getSystemService(POWER_SERVICE) as PowerManager
                     result.success(pm.isIgnoringBatteryOptimizations(packageName))

@@ -24,7 +24,10 @@ class QuranFadeController {
     }
   }
 
-  Future<void> rampTo(double target, {Duration total = const Duration(milliseconds: 1200)}) async {
+  Future<void> rampTo(
+    double target, {
+    Duration total = const Duration(milliseconds: 1200),
+  }) async {
     _activeRamp?.complete();
     final ramp = Completer<void>();
     _activeRamp = ramp;

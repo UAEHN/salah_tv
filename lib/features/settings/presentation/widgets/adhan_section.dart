@@ -126,7 +126,11 @@ class _AdhanSoundPicker extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.music_note_rounded, color: Colors.white, size: 20),
+              const Icon(
+                Icons.music_note_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 l.settingsChangeAdhan,

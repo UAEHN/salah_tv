@@ -42,9 +42,7 @@ class ThemePreviewCard extends StatelessWidget {
               color: MobileColors.cardColor(context),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isSelected
-                    ? primary
-                    : MobileColors.border(context),
+                color: isSelected ? primary : MobileColors.border(context),
                 width: isSelected ? 2.4 : 1,
               ),
               boxShadow: MobileShadows.sleekCard(context),

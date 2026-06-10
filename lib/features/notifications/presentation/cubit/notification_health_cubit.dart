@@ -24,19 +24,20 @@ class NotificationHealthCubit extends Cubit<NotificationHealthState> {
     required OpenExactAlarmSettings openExactAlarm,
     required OpenBatteryOptimizationSettings openBattery,
     required OpenOemAutostart openOem,
-  })  : _getHealth = getHealth,
-        _runTest = runTest,
-        _openNotifSettings = openNotifSettings,
-        _openExactAlarm = openExactAlarm,
-        _openBattery = openBattery,
-        _openOem = openOem,
-        super(const NotificationHealthState.initial());
+  }) : _getHealth = getHealth,
+       _runTest = runTest,
+       _openNotifSettings = openNotifSettings,
+       _openExactAlarm = openExactAlarm,
+       _openBattery = openBattery,
+       _openOem = openOem,
+       super(const NotificationHealthState.initial());
 
   Future<void> refresh() async {
     emit(state.copyWith(isLoading: true, clearError: true));
     final res = await _getHealth();
     res.fold(
-      (failure) => emit(state.copyWith(isLoading: false, error: failure.message)),
+      (failure) =>
+          emit(state.copyWith(isLoading: false, error: failure.message)),
       (h) => _emitHealth(h),
     );
   }

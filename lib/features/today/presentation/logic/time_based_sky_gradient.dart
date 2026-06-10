@@ -33,10 +33,10 @@ List<Color> skyGradientForHour(int hour, {bool isDark = false}) {
 ///   • isha (19-21)    → dark
 ///   • night (21-3)    → dark
 bool isDarkSkyHour(int hour) {
-  if (hour >= 3 && hour < 5) return true;        // pre-fajr violet
-  if (hour >= 19) return true;                    // isha + night
-  if (hour < 3) return true;                      // late night
-  return false;                                   // dawn → sunset
+  if (hour >= 3 && hour < 5) return true; // pre-fajr violet
+  if (hour >= 19) return true; // isha + night
+  if (hour < 3) return true; // late night
+  return false; // dawn → sunset
 }
 
 /// Premium night gradient used when the user explicitly opts into the dark
@@ -67,78 +67,78 @@ class _PreFajr extends _SkyBand {
   const _PreFajr();
   @override
   List<Color> get colors => const [
-        Color(0xFF1A1B3A),
-        Color(0xFF2E2A4D),
-        Color(0xFF453B62),
-      ];
+    Color(0xFF1A1B3A),
+    Color(0xFF2E2A4D),
+    Color(0xFF453B62),
+  ];
 }
 
 class _Dawn extends _SkyBand {
   const _Dawn();
   @override
   List<Color> get colors => const [
-        Color(0xFFFFB088),
-        Color(0xFFE490A6),
-        Color(0xFF7A6BAA),
-      ];
+    Color(0xFFFFB088),
+    Color(0xFFE490A6),
+    Color(0xFF7A6BAA),
+  ];
 }
 
 class _Morning extends _SkyBand {
   const _Morning();
   @override
   List<Color> get colors => const [
-        Color(0xFFE8F4FA),
-        Color(0xFFB7D4EA),
-        Color(0xFF7AA9CD),
-      ];
+    Color(0xFFE8F4FA),
+    Color(0xFFB7D4EA),
+    Color(0xFF7AA9CD),
+  ];
 }
 
 class _Noon extends _SkyBand {
   const _Noon();
   @override
   List<Color> get colors => const [
-        Color(0xFFC9E4F8),
-        Color(0xFF7FB6E0),
-        Color(0xFF4A8AB8),
-      ];
+    Color(0xFFC9E4F8),
+    Color(0xFF7FB6E0),
+    Color(0xFF4A8AB8),
+  ];
 }
 
 class _Afternoon extends _SkyBand {
   const _Afternoon();
   @override
   List<Color> get colors => const [
-        Color(0xFFFFD7A8),
-        Color(0xFFE8A87C),
-        Color(0xFF9D6B5C),
-      ];
+    Color(0xFFFFD7A8),
+    Color(0xFFE8A87C),
+    Color(0xFF9D6B5C),
+  ];
 }
 
 class _Sunset extends _SkyBand {
   const _Sunset();
   @override
   List<Color> get colors => const [
-        Color(0xFFFF9966),
-        Color(0xFFD46A6A),
-        Color(0xFF6B3E70),
-      ];
+    Color(0xFFFF9966),
+    Color(0xFFD46A6A),
+    Color(0xFF6B3E70),
+  ];
 }
 
 class _Isha extends _SkyBand {
   const _Isha();
   @override
   List<Color> get colors => const [
-        Color(0xFF2E2756),
-        Color(0xFF1F1B3D),
-        Color(0xFF12102A),
-      ];
+    Color(0xFF2E2756),
+    Color(0xFF1F1B3D),
+    Color(0xFF12102A),
+  ];
 }
 
 class _Night extends _SkyBand {
   const _Night();
   @override
   List<Color> get colors => const [
-        Color(0xFF0B1027),
-        Color(0xFF050818),
-        Color(0xFF02030A),
-      ];
+    Color(0xFF0B1027),
+    Color(0xFF050818),
+    Color(0xFF02030A),
+  ];
 }

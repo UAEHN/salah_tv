@@ -29,15 +29,20 @@ void main() {
       expect(times.isha.millisecondsSinceEpoch, isPositive);
     });
 
-    test('Fajr falls in early-morning band (02:30 – 04:30 local)', () {
+    test('Fajr falls in early-morning band (03:00 – 05:00 local)', () {
+      // Seventh-of-the-night auto rule above 48.5°N gives Fajr ≈
+      // Sunrise - 1/7 of the night. Paris on summer solstice:
+      // Maghrib ~21:55, next Sunrise ~5:50, night ~7h55, 1/7 ~1h8 →
+      // Fajr ≈ 4:42 CEST.
       final minutes = times.fajr.hour * 60 + times.fajr.minute;
-      expect(minutes, greaterThanOrEqualTo(2 * 60 + 30));
-      expect(minutes, lessThanOrEqualTo(4 * 60 + 30));
+      expect(minutes, greaterThanOrEqualTo(3 * 60));
+      expect(minutes, lessThanOrEqualTo(5 * 60));
     });
 
-    test('Isha falls in late-evening band (22:00 – 00:30 local)', () {
+    test('Isha falls in late-evening band (22:00 – 23:30 local)', () {
+      // Seventh-of-the-night Isha ≈ Maghrib + 1/7 night = ~23:00 CEST.
       final h = times.isha.hour;
-      final isLateEvening = h >= 22 || h <= 0;
+      final isLateEvening = h >= 22 && h <= 23;
       expect(isLateEvening, isTrue, reason: 'Isha hour=$h');
     });
 
@@ -70,28 +75,43 @@ void main() {
     });
   });
 
-  group('AdhanCalculationSource - London (51.51, MWL + auto HighLatitudeRule)',
-      () {
-    final times = source.calculateForDate(
-      51.5074,
-      -0.1278,
-      summerSolstice,
-      'muslim_world_league',
-      utcOffsetHours: 1, // BST
-    );
+  group(
+    'AdhanCalculationSource - London (51.51, MWL + auto HighLatitudeRule)',
+    () {
+      final times = source.calculateForDate(
+        51.5074,
+        -0.1278,
+        summerSolstice,
+        'muslim_world_league',
+        utcOffsetHours: 1, // BST
+      );
 
-    test('Isha bounded by middle-of-the-night rule (no NaN, before 01:00)', () {
-      final h = times.isha.hour;
-      expect(h, isNot(equals(times.maghrib.hour)));
-      final isBounded = h >= 22 || h <= 1;
-      expect(isBounded, isTrue, reason: 'Isha hour=$h');
-    });
+      test(
+        'Isha in late-evening band (auto = twilightAngle, not midnight collapse)',
+        () {
+          final h = times.isha.hour;
+          expect(h, isNot(equals(times.maghrib.hour)));
+          // twilightAngle scales the 18°/17° angles down with day length.
+          // London on summer solstice: expect Isha 21:30 – 23:30 BST.
+          final isLateEvening = h >= 21 && h <= 23;
+          expect(isLateEvening, isTrue, reason: 'Isha hour=$h');
+        },
+      );
 
-    test('Fajr is after midnight and before sunrise', () {
-      expect(times.fajr.isBefore(times.sunrise), isTrue);
-      expect(times.fajr.hour, lessThan(5));
-    });
-  });
+      test('Fajr separated from Isha by hours, not collapsed to midnight', () {
+        expect(times.fajr.isBefore(times.sunrise), isTrue);
+        // The bug we fixed: middleOfTheNight would put both Fajr and Isha
+        // at ~1:00 AM (1-minute apart). With twilightAngle the gap is
+        // multi-hour even on the longest day.
+        final ishaThenFajr = times.isha.isBefore(
+          times.fajr.add(const Duration(days: 1)),
+        );
+        expect(ishaThenFajr, isTrue);
+        final gapMinutes = times.fajr.difference(times.isha).inMinutes.abs();
+        expect(gapMinutes > 60, isTrue, reason: 'gap=$gapMinutes min');
+      });
+    },
+  );
 
   group('defaultMethodForCountryIso country mapping', () {
     test('FR -> france (Grande Mosquée de Paris convention)', () {
@@ -110,9 +130,15 @@ void main() {
       expect(defaultMethodForCountryIso('CA'), 'north_america');
     });
 
-    test('GB, DE (unmapped) fall back to muslim_world_league', () {
-      expect(defaultMethodForCountryIso('GB'), 'muslim_world_league');
-      expect(defaultMethodForCountryIso('DE'), 'muslim_world_league');
+    test('GB -> uk (London Central 18°/17°)', () {
+      expect(defaultMethodForCountryIso('GB'), 'uk');
+      expect(defaultMethodForCountryIso('IE'), 'uk');
+    });
+
+    test('DE / German-speaking Europe -> germany (DITIB 18°/17°)', () {
+      expect(defaultMethodForCountryIso('DE'), 'germany');
+      expect(defaultMethodForCountryIso('AT'), 'germany');
+      expect(defaultMethodForCountryIso('NL'), 'germany');
     });
 
     test('null / unknown -> muslim_world_league', () {

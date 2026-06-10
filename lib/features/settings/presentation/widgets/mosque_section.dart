@@ -32,11 +32,11 @@ class MosqueSection extends StatelessWidget {
           accent: palette.primary,
           onChanged: settingsProv.updateIsMosqueMode,
           children: [
-            Icon(Icons.mosque_rounded,
-                color: settings.isMosqueMode
-                    ? palette.primary
-                    : tc.textMuted,
-                size: 26),
+            Icon(
+              Icons.mosque_rounded,
+              color: settings.isMosqueMode ? palette.primary : tc.textMuted,
+              size: 26,
+            ),
             const SizedBox(width: 12),
             Text(
               l.settingsMosqueMode,
@@ -55,9 +55,7 @@ class MosqueSection extends StatelessWidget {
               settings.isMosqueMode ? l.commonEnabled : l.commonDisabled,
               style: TextStyle(
                 fontSize: 20,
-                color: settings.isMosqueMode
-                    ? palette.primary
-                    : tc.textMuted,
+                color: settings.isMosqueMode ? palette.primary : tc.textMuted,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -70,8 +68,11 @@ class MosqueSection extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.info_outline_rounded,
-                  color: palette.primary, size: 22),
+              Icon(
+                Icons.info_outline_rounded,
+                color: palette.primary,
+                size: 22,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(

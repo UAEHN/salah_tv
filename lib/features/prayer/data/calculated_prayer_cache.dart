@@ -22,14 +22,12 @@ class CalculatedPrayerCache {
       _cachedDateKey;
 
   DailyPrayerTimes? getToday({String? timeZoneId, double? utcOffsetHours}) =>
-      _map[
-        _dateKey(
-          PrayerTimeZone.now(
-            timeZoneId: timeZoneId,
-            utcOffsetHours: utcOffsetHours,
-          ),
-        )
-      ];
+      _map[_dateKey(
+        PrayerTimeZone.now(
+          timeZoneId: timeZoneId,
+          utcOffsetHours: utcOffsetHours,
+        ),
+      )];
 
   DailyPrayerTimes? getByKey(String key) => _map[key];
 
@@ -45,6 +43,7 @@ class CalculatedPrayerCache {
     double lng,
     String methodKey, {
     String madhabKey = 'shafi',
+    String highLatitudeRuleKey = 'auto',
     String? timeZoneId,
     double? utcOffsetHours,
   }) {
@@ -57,8 +56,12 @@ class CalculatedPrayerCache {
       final date = now.add(Duration(days: offset));
       final key = _dateKey(date);
       newCache[key] = source.calculateForDate(
-        lat, lng, date, methodKey,
+        lat,
+        lng,
+        date,
+        methodKey,
         madhabKey: madhabKey,
+        highLatitudeRuleKey: highLatitudeRuleKey,
         timeZoneId: timeZoneId,
         utcOffsetHours: utcOffsetHours,
       );

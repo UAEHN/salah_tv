@@ -38,20 +38,17 @@ class PageImageDownloadState {
   });
 
   const PageImageDownloadState.initial(int total)
-      : hasChosenOfflineMode = false,
-        status = PageImageDownloadStatus.unknown,
-        downloadedCount = 0,
-        totalCount = total,
-        error = null;
+    : hasChosenOfflineMode = false,
+      status = PageImageDownloadStatus.unknown,
+      downloadedCount = 0,
+      totalCount = total,
+      error = null;
 
-  double get progress =>
-      totalCount == 0 ? 0 : downloadedCount / totalCount;
+  double get progress => totalCount == 0 ? 0 : downloadedCount / totalCount;
 
-  bool get isDownloading =>
-      status == PageImageDownloadStatus.downloading;
+  bool get isDownloading => status == PageImageDownloadStatus.downloading;
 
-  bool get isComplete =>
-      status == PageImageDownloadStatus.complete;
+  bool get isComplete => status == PageImageDownloadStatus.complete;
 
   PageImageDownloadState copyWith({
     bool? hasChosenOfflineMode,
@@ -61,8 +58,7 @@ class PageImageDownloadState {
     Object? error = _sentinel,
   }) {
     return PageImageDownloadState(
-      hasChosenOfflineMode:
-          hasChosenOfflineMode ?? this.hasChosenOfflineMode,
+      hasChosenOfflineMode: hasChosenOfflineMode ?? this.hasChosenOfflineMode,
       status: status ?? this.status,
       downloadedCount: downloadedCount ?? this.downloadedCount,
       totalCount: totalCount ?? this.totalCount,

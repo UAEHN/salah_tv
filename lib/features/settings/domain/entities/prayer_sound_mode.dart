@@ -4,8 +4,4 @@
 ///                no audio. Lets the user see the prayer cue without noise.
 ///   • [off]    — fully bypassed. No screen, no audio. The home countdown
 ///                rolls straight to the next prayer.
-enum PrayerSoundMode {
-  sound,
-  silent,
-  off,
-}
+enum PrayerSoundMode { sound, silent, off }

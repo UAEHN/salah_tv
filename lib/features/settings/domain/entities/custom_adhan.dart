@@ -60,8 +60,8 @@ class CustomAdhan {
   /// key, else null.
   static String? extractFileName(String settingsKey) =>
       settingsKey.startsWith(keyPrefix)
-          ? settingsKey.substring(keyPrefix.length)
-          : null;
+      ? settingsKey.substring(keyPrefix.length)
+      : null;
 
   String get settingsKey => '$keyPrefix$fileName';
 }

@@ -81,9 +81,7 @@ class _TvSwitchRowState extends State<TvSwitchRow> {
                     ]
                   : null,
             ),
-            child: ExcludeFocus(
-              child: Row(children: widget.children),
-            ),
+            child: ExcludeFocus(child: Row(children: widget.children)),
           ),
         ),
       ),

@@ -61,10 +61,7 @@ class MobileMushafStorageSection extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            _Trailing(
-              state: state,
-              onDelete: () => _confirmDelete(context),
-            ),
+            _Trailing(state: state, onDelete: () => _confirmDelete(context)),
           ],
         );
       },
@@ -83,10 +80,15 @@ class _Trailing extends StatelessWidget {
     switch (state.status) {
       case PageImageDownloadStatus.complete:
         return OutlinedButton.icon(
-          icon: Icon(Icons.delete_outline_rounded,
-              size: 18, color: theme.colorScheme.error),
-          label: Text('حذف المصحف',
-              style: TextStyle(color: theme.colorScheme.error)),
+          icon: Icon(
+            Icons.delete_outline_rounded,
+            size: 18,
+            color: theme.colorScheme.error,
+          ),
+          label: Text(
+            'حذف المصحف',
+            style: TextStyle(color: theme.colorScheme.error),
+          ),
           style: OutlinedButton.styleFrom(
             side: BorderSide(
               color: theme.colorScheme.error.withValues(alpha: 0.5),

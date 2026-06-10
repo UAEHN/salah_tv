@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -81,7 +81,10 @@ class CountrySection extends StatelessWidget {
         countries: kCountries,
         onSelected: (countryKey) async {
           await settingsProv.updateSelectedCountry(countryKey);
-          var filtered = citiesForCountry(countryKey, bloc.state.availableCities);
+          var filtered = citiesForCountry(
+            countryKey,
+            bloc.state.availableCities,
+          );
           if (filtered.isEmpty) {
             final state = await bloc.stream
                 .firstWhere((s) => s.availableCities.isNotEmpty)

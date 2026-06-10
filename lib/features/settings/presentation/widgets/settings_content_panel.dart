@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
+import '../settings_provider.dart';
 import 'adhan_offsets_table.dart';
 import 'adhan_section.dart';
 import 'adhkar_section.dart';
+import 'after_prayer_adhkar_section.dart';
 import 'dark_mode_section.dart';
 import 'iqama_table.dart';
 import 'language_section.dart';
 import 'mosque_section.dart';
 import 'quran_section.dart';
+import 'screensaver_section.dart';
 import 'section_title.dart';
 import 'simple_sections.dart';
+import 'ticker_section.dart';
 import 'tv_location_section.dart';
 import '../../../feedback/presentation/widgets/tv_feedback_section.dart';
 
@@ -22,6 +27,9 @@ class SettingsContentPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    // Mosque mode hides the morning/evening adhkar options but keeps the
+    // verses-banner toggle reachable inside this same category.
+    final isMosque = context.watch<SettingsProvider>().settings.isMosqueMode;
     final slots = [
       _slot([const TvLocationSection()]),
       _slot([const QuranSection()]),
@@ -60,6 +68,23 @@ class SettingsContentPanel extends StatelessWidget {
       ]),
       _slot([const AdhkarSection()]),
       _slot([const TvFeedbackSection()]),
+      // id 9 — Features: verses ticker + after-prayer adhkar + (non-mosque)
+      // screensaver.
+      _slot([
+        SettingsSectionTitle(title: l.settingsTicker),
+        const SizedBox(height: 12),
+        const TickerSection(),
+        const SizedBox(height: 24),
+        SettingsSectionTitle(title: l.adhkarAfterPrayerTitle),
+        const SizedBox(height: 12),
+        const AfterPrayerAdhkarSection(),
+        if (!isMosque) ...[
+          const SizedBox(height: 24),
+          SettingsSectionTitle(title: l.settingsScreensaver),
+          const SizedBox(height: 12),
+          const ScreensaverSection(),
+        ],
+      ]),
     ];
 
     return IndexedStack(

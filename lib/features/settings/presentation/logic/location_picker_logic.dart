@@ -1,8 +1,18 @@
 import '../../../../core/city_translations.dart';
 import '../../../../core/country_name_resolver.dart';
+import '../../../../core/platform_config.dart';
 import '../../domain/i_world_city_repository.dart';
 import '../bloc/location_choice.dart';
 import '../bloc/location_picker_source.dart';
+
+/// World-catalogue countries surfaced on TV in addition to bundled DB
+/// countries. The TV picker is intentionally narrow — most TV users are in
+/// the GCC/Maghreb (already covered by the CSV schedules); we only add the
+/// few non-DB countries with the largest active TV user base. Expand this
+/// set when a new region is supported on TV.
+///
+/// Mobile is unrestricted — see [buildUnifiedCountries].
+const Set<String> kTvWorldCountryAllowlist = {'TR', 'FR'};
 
 class UnifiedCountry {
   final String key;
@@ -56,7 +66,16 @@ List<UnifiedCountry> buildUnifiedCountries(IWorldCityRepository? worldRepo) {
           source: LocationPickerSource.world,
         ),
       );
-  return [...dbEntries, ...worldEntries];
+  final all = [...dbEntries, ...worldEntries];
+  // Apply the TV allowlist centrally so every caller (settings picker,
+  // onboarding loader, …) gets the same narrowed list without each having
+  // to remember to filter.
+  if (kIsTV) {
+    return all
+        .where((c) => c.isInDb || kTvWorldCountryAllowlist.contains(c.key))
+        .toList();
+  }
+  return all;
 }
 
 List<UnifiedCountry> filterUnifiedCountries(

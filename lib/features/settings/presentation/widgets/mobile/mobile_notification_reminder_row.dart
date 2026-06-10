@@ -31,57 +31,62 @@ class MobileNotificationReminderRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = MobileColors.activePrimary(context);
-    return Column(children: [
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
-        child: Row(textDirection: TextDirection.rtl, children: [
-          Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              color: accent.withValues(alpha: isOn ? 0.18 : 0.08),
-              borderRadius: BorderRadius.circular(9),
-            ),
-            alignment: Alignment.center,
-            child: Icon(icon, color: accent, size: 16),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              label,
-              style: MobileTextStyles.bodyMd(context).copyWith(
-                color: MobileColors.onSurface(context),
-                fontSize: 14.5,
-                fontWeight: FontWeight.w700,
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
+          child: Row(
+            textDirection: TextDirection.rtl,
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: isOn ? 0.18 : 0.08),
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                alignment: Alignment.center,
+                child: Icon(icon, color: accent, size: 16),
               ),
-              textDirection: TextDirection.rtl,
-            ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  label,
+                  style: MobileTextStyles.bodyMd(context).copyWith(
+                    color: MobileColors.onSurface(context),
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  textDirection: TextDirection.rtl,
+                ),
+              ),
+              if (isOn) ...[
+                _InlineTimeChip(
+                  minuteOfDay: minuteOfDay,
+                  pickerTitle: pickerTitle,
+                  onPick: onPickTime,
+                ),
+                const SizedBox(width: 6),
+              ],
+              Transform.scale(
+                scale: 0.85,
+                child: Switch.adaptive(
+                  value: isOn,
+                  onChanged: onChanged,
+                  activeTrackColor: MobileColors.primaryContainer,
+                ),
+              ),
+            ],
           ),
-          if (isOn) ...[
-            _InlineTimeChip(
-              minuteOfDay: minuteOfDay,
-              pickerTitle: pickerTitle,
-              onPick: onPickTime,
-            ),
-            const SizedBox(width: 6),
-          ],
-          Transform.scale(
-            scale: 0.85,
-            child: Switch.adaptive(
-              value: isOn,
-              onChanged: onChanged,
-              activeTrackColor: MobileColors.primaryContainer,
-            ),
-          ),
-        ]),
-      ),
-      if (showDivider)
-        Divider(
-          height: 1,
-          thickness: 1,
-          color: MobileColors.border(context).withValues(alpha: 0.6),
         ),
-    ]);
+        if (showDivider)
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: MobileColors.border(context).withValues(alpha: 0.6),
+          ),
+      ],
+    );
   }
 }
 
@@ -98,10 +103,7 @@ class _InlineTimeChip extends StatelessWidget {
   Future<void> _open(BuildContext context) async {
     final picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(
-        hour: minuteOfDay ~/ 60,
-        minute: minuteOfDay % 60,
-      ),
+      initialTime: TimeOfDay(hour: minuteOfDay ~/ 60, minute: minuteOfDay % 60),
       helpText: pickerTitle,
     );
     if (picked != null) onPick(picked.hour * 60 + picked.minute);
@@ -124,19 +126,22 @@ class _InlineTimeChip extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: accent.withValues(alpha: 0.4)),
           ),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Icon(Icons.access_time_rounded, size: 13, color: accent),
-            const SizedBox(width: 5),
-            Text(
-              '$hh:$mm',
-              style: TextStyle(
-                color: accent,
-                fontSize: 12.5,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.3,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.access_time_rounded, size: 13, color: accent),
+              const SizedBox(width: 5),
+              Text(
+                '$hh:$mm',
+                style: TextStyle(
+                  color: accent,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.3,
+                ),
               ),
-            ),
-          ]),
+            ],
+          ),
         ),
       ),
     );

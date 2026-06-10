@@ -27,16 +27,19 @@ void ensureFocusedVisible(BuildContext context, {double topPadding = 100.0}) {
   double target = scrollOffset;
   if (widgetTop < topPadding) {
     // Widget is at or above the top edge — scroll up so the title fits above.
-    target = (scrollOffset + widgetTop - topPadding)
-        .clamp(0.0, position.maxScrollExtent);
+    target = (scrollOffset + widgetTop - topPadding).clamp(
+      0.0,
+      position.maxScrollExtent,
+    );
   } else if (widgetTop + widgetHeight + bottomPadding > viewportHeight) {
     // Widget bottom below viewport — scroll down to reveal it.
-    target = (scrollOffset +
-            widgetTop +
-            widgetHeight +
-            bottomPadding -
-            viewportHeight)
-        .clamp(0.0, position.maxScrollExtent);
+    target =
+        (scrollOffset +
+                widgetTop +
+                widgetHeight +
+                bottomPadding -
+                viewportHeight)
+            .clamp(0.0, position.maxScrollExtent);
   }
 
   if ((target - scrollOffset).abs() > 1.0) {

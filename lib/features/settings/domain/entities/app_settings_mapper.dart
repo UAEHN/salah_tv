@@ -30,6 +30,7 @@ extension AppSettingsMapper on AppSettings {
     'selectedLongitude': selectedLongitude,
     'calculationMethod': calculationMethod,
     'madhab': madhab,
+    'highLatitudeRule': highLatitudeRule,
     'isCalculatedLocation': isCalculatedLocation,
     'selectedTimeZoneId': selectedTimeZoneId,
     'utcOffsetHours': utcOffsetHours,
@@ -37,6 +38,9 @@ extension AppSettingsMapper on AppSettings {
     'adhanSound': adhanSound,
     'isAnalogClock': isAnalogClock,
     'isAdhkarEnabled': isAdhkarEnabled,
+    'isAfterPrayerAdhkarEnabled': isAfterPrayerAdhkarEnabled,
+    'isTickerEnabled': isTickerEnabled,
+    'isScreensaverEnabled': isScreensaverEnabled,
     'prayerNotificationEnabled': jsonEncode(prayerNotificationEnabled),
     'preAdhanReminderEnabled': jsonEncode(preAdhanReminderEnabled),
     'preAdhanReminderMinutes': preAdhanReminderMinutes,
@@ -61,14 +65,19 @@ extension AppSettingsMapper on AppSettings {
   };
 }
 
-
 AppSettings appSettingsFromMap(Map<String, dynamic> map) {
   final customAdhans = decodeCustomAdhans(map['customAdhans']);
   return AppSettings(
     themeColorKey: map['themeColorKey'] as String? ?? 'gold',
     use24HourFormat: map['use24HourFormat'] as bool? ?? false,
-    adhanMode: decodePrayerSoundMode(map['adhanMode'], legacyBool: map['playAdhan']),
-    iqamaMode: decodePrayerSoundMode(map['iqamaMode'], legacyBool: map['playIqama']),
+    adhanMode: decodePrayerSoundMode(
+      map['adhanMode'],
+      legacyBool: map['playAdhan'],
+    ),
+    iqamaMode: decodePrayerSoundMode(
+      map['iqamaMode'],
+      legacyBool: map['playIqama'],
+    ),
     isMosqueMode: map['isMosqueMode'] as bool? ?? false,
     isDarkMode: map['isDarkMode'] as bool? ?? false,
     themeMode: const ['system', 'light', 'dark'].contains(map['themeMode'])
@@ -121,8 +130,9 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     quranReciterServerUrl: validatedQuranUrl(
       map['quranReciterServerUrl'] as String? ?? '',
     ),
-    favoriteReciterServerUrls:
-        decodeStringList(map['favoriteReciterServerUrls']),
+    favoriteReciterServerUrls: decodeStringList(
+      map['favoriteReciterServerUrls'],
+    ),
     selectedCountry: map['selectedCountry'] as String? ?? 'uae',
     selectedCity: map['selectedCity'] as String? ?? 'Dubai',
     selectedLatitude: map['selectedLatitude'] as double?,
@@ -132,6 +142,15 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     madhab: const ['shafi', 'hanafi'].contains(map['madhab'])
         ? map['madhab'] as String
         : 'shafi',
+    highLatitudeRule:
+        const [
+          'auto',
+          'middle_of_the_night',
+          'seventh_of_the_night',
+          'twilight_angle',
+        ].contains(map['highLatitudeRule'])
+        ? map['highLatitudeRule'] as String
+        : 'auto',
     isCalculatedLocation: map['isCalculatedLocation'] as bool? ?? false,
     selectedTimeZoneId: map['selectedTimeZoneId'] as String?,
     utcOffsetHours: (map['utcOffsetHours'] as num?)?.toDouble(),
@@ -141,6 +160,10 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     adhanSound: validatedAdhanSound(map['adhanSound'] as String?, customAdhans),
     isAnalogClock: map['isAnalogClock'] as bool? ?? false,
     isAdhkarEnabled: map['isAdhkarEnabled'] as bool? ?? true,
+    isAfterPrayerAdhkarEnabled:
+        map['isAfterPrayerAdhkarEnabled'] as bool? ?? true,
+    isTickerEnabled: map['isTickerEnabled'] as bool? ?? false,
+    isScreensaverEnabled: map['isScreensaverEnabled'] as bool? ?? false,
     preAdhanReminderMinutes: map['preAdhanReminderMinutes'] as int? ?? 15,
     preIqamaReminderMinutes: map['preIqamaReminderMinutes'] as int? ?? 5,
     isMorningAdhkarNotificationEnabled:
@@ -151,22 +174,26 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
         (map['morningAdhkarMinuteOfDay'] as num?)?.toInt() ?? 420,
     eveningAdhkarMinuteOfDay:
         (map['eveningAdhkarMinuteOfDay'] as num?)?.toInt() ?? 1020,
-    isAlKahfReminderEnabled:
-        map['isAlKahfReminderEnabled'] as bool? ?? true,
+    isAlKahfReminderEnabled: map['isAlKahfReminderEnabled'] as bool? ?? true,
     alKahfReminderMinuteOfDay:
         (map['alKahfReminderMinuteOfDay'] as num?)?.toInt() ?? 390,
     isNotificationOnboardingDone:
         map['isNotificationOnboardingDone'] as bool? ?? false,
     customAdhans: customAdhans,
-    quranPlaybackMode:
-        decodePlaybackMode(map['quranPlaybackMode'], map['surahRepeatMode']),
+    quranPlaybackMode: decodePlaybackMode(
+      map['quranPlaybackMode'],
+      map['surahRepeatMode'],
+    ),
     selectedSurahNumber: (map['selectedSurahNumber'] as num?)?.toInt(),
     surahPlaylist: decodeSurahPlaylist(map['surahPlaylist']),
-    surahRepeatCount: (map['surahRepeatCount'] as num?)?.toInt() ??
+    surahRepeatCount:
+        (map['surahRepeatCount'] as num?)?.toInt() ??
         legacyRepeatCountFor(map['surahRepeatMode'], 1),
     playlistCycleCount: (map['playlistCycleCount'] as num?)?.toInt() ?? 1,
     continuousStartMode: decodeContinuousStartMode(map['continuousStartMode']),
-    lastPlayedSurah: ((map['lastPlayedSurah'] as num?)?.toInt() ?? 1)
-        .clamp(1, 114),
+    lastPlayedSurah: ((map['lastPlayedSurah'] as num?)?.toInt() ?? 1).clamp(
+      1,
+      114,
+    ),
   );
 }

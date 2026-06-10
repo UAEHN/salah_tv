@@ -17,11 +17,7 @@ class MobileOnboardingBackground extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFF0F1729),
-                Color(0xFF080C1A),
-                Color(0xFF04060D),
-              ],
+              colors: [Color(0xFF0F1729), Color(0xFF080C1A), Color(0xFF04060D)],
               stops: [0.0, 0.55, 1.0],
             ),
           ),

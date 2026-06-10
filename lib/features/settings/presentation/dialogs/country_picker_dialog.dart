@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../core/app_colors.dart';
@@ -69,13 +69,17 @@ class CountryPickerDialog extends StatelessWidget {
                         isEn ? c.englishName : c.arabicName,
                         style: TextStyle(
                           color: isSelected ? palette.primary : Colors.white,
-                          fontWeight:
-                              isSelected ? FontWeight.w700 : FontWeight.normal,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.normal,
                           fontSize: 18,
                         ),
                       ),
                       trailing: isSelected
-                          ? Icon(Icons.check_circle_rounded, color: palette.primary)
+                          ? Icon(
+                              Icons.check_circle_rounded,
+                              color: palette.primary,
+                            )
                           : null,
                       onTap: () {
                         onSelected(c.key);

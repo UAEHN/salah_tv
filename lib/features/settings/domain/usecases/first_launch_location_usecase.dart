@@ -12,11 +12,11 @@ class FirstLaunchLocationUseCase {
 
   FirstLaunchLocationUseCase(this._repo, this._detector);
 
-  Future<DetectedLocation?> call() async {
+  Future<DetectedLocation?> call({String? locale}) async {
     final isFirst = await _repo.isFirstLaunch();
     if (!isFirst) return null;
 
-    final result = await _detector.detectLocation();
+    final result = await _detector.detectLocation(locale: locale);
     return result.fold((_) => null, (loc) {
       // Mark launched only after successful detection so a transient GPS
       // failure doesn't permanently disable auto-detect on next launch.

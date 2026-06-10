@@ -30,6 +30,9 @@ class TvLocationCitiesList extends StatelessWidget {
     }
 
     return ListView.builder(
+      // 8 px scrollable padding so the first/last tile's focus halo (blur 14)
+      // doesn't get clipped by the parent Padding's top/bottom edges.
+      padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: choices.length,
       itemBuilder: (context, index) {
         final choice = choices[index];

@@ -100,8 +100,9 @@ class _AppUpdateTriggerState extends State<AppUpdateTrigger> {
     final prefs = await SharedPreferences.getInstance();
     final firstLaunchMs = prefs.getInt('rating_first_launch_ms');
     if (firstLaunchMs != null) {
-      final age = DateTime.now()
-          .difference(DateTime.fromMillisecondsSinceEpoch(firstLaunchMs));
+      final age = DateTime.now().difference(
+        DateTime.fromMillisecondsSinceEpoch(firstLaunchMs),
+      );
       if (age.inHours < 12) {
         await repo.markCurrentVersionSeen();
         if (!kDebugMode) return false;

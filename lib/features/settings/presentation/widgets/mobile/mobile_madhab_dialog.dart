@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/mobile_theme.dart';
@@ -63,51 +63,48 @@ class MobileMadhabDialog extends StatelessWidget {
   }
 
   Widget _buildHandle(BuildContext context) => Container(
-        width: 40,
-        height: 4,
-        decoration: BoxDecoration(
-          color: MobileColors.onSurfaceMuted(context).withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(2),
-        ),
-      );
+    width: 40,
+    height: 4,
+    decoration: BoxDecoration(
+      color: MobileColors.onSurfaceMuted(context).withValues(alpha: 0.2),
+      borderRadius: BorderRadius.circular(2),
+    ),
+  );
 
   Widget _buildHeader(BuildContext context, AppLocalizations l) => Text(
-        l.settingsMadhabLabel,
-        style: MobileTextStyles.titleMd(context).copyWith(
-          color: MobileColors.onSurface(context),
-          fontSize: 18,
-        ),
-      );
+    l.settingsMadhabLabel,
+    style: MobileTextStyles.titleMd(
+      context,
+    ).copyWith(color: MobileColors.onSurface(context), fontSize: 18),
+  );
 
   Widget _buildNote(BuildContext context, AppLocalizations l) => Text(
-        l.settingsMadhabAffectsAsrNote,
-        style: MobileTextStyles.bodyMd(context).copyWith(
-          color: MobileColors.onSurfaceMuted(context),
-          fontSize: 12,
-        ),
-        textDirection: TextDirection.rtl,
-        textAlign: TextAlign.center,
-      );
+    l.settingsMadhabAffectsAsrNote,
+    style: MobileTextStyles.bodyMd(
+      context,
+    ).copyWith(color: MobileColors.onSurfaceMuted(context), fontSize: 12),
+    textDirection: TextDirection.rtl,
+    textAlign: TextAlign.center,
+  );
 
   Widget _buildAsrNote(BuildContext context, AppLocalizations l) => Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.info_outline_rounded,
-              size: 14,
-              color: MobileColors.onSurfaceMuted(context),
-            ),
-            const SizedBox(width: 6),
-            Text(
-              l.settingsHanafiAsrLaterNote,
-              style: MobileTextStyles.bodyMd(context).copyWith(
-                color: MobileColors.onSurfaceMuted(context),
-                fontSize: 11,
-              ),
-            ),
-          ],
+    padding: const EdgeInsets.only(top: 12),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.info_outline_rounded,
+          size: 14,
+          color: MobileColors.onSurfaceMuted(context),
         ),
-      );
+        const SizedBox(width: 6),
+        Text(
+          l.settingsHanafiAsrLaterNote,
+          style: MobileTextStyles.bodyMd(
+            context,
+          ).copyWith(color: MobileColors.onSurfaceMuted(context), fontSize: 11),
+        ),
+      ],
+    ),
+  );
 }

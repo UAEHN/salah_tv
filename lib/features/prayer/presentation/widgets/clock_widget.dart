@@ -46,12 +46,12 @@ class _DigitalClock extends StatelessWidget {
   Widget build(BuildContext context) {
     final (use24h, isDark, isMosque) = context
         .select<SettingsProvider, (bool, bool, bool)>(
-      (p) => (
-        p.settings.use24HourFormat,
-        p.settings.isDarkMode,
-        p.settings.isMosqueMode,
-      ),
-    );
+          (p) => (
+            p.settings.use24HourFormat,
+            p.settings.isDarkMode,
+            p.settings.isMosqueMode,
+          ),
+        );
     final now = context.select((PrayerBloc b) => b.state.now);
     final screenH = MediaQuery.of(context).size.height;
     final tc = ThemeColors.of(isDark);
@@ -66,13 +66,13 @@ class _DigitalClock extends StatelessWidget {
     final mainSize = tiny
         ? screenH * 0.045
         : compact
-            ? screenH * (isMosque ? 0.12 : 0.10)
-            : screenH * (isMosque ? 0.20 : 0.18);
+        ? screenH * (isMosque ? 0.12 : 0.10)
+        : screenH * (isMosque ? 0.20 : 0.18);
     final secSize = tiny
         ? screenH * 0.03
         : compact
-            ? screenH * (isMosque ? 0.06 : 0.05)
-            : screenH * (isMosque ? 0.095 : 0.08);
+        ? screenH * (isMosque ? 0.06 : 0.05)
+        : screenH * (isMosque ? 0.095 : 0.08);
 
     // RepaintBoundary isolates the per-second text invalidation to this layer
     // so it never forces parents (info card, background gradients) to repaint.

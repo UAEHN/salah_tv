@@ -80,6 +80,17 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
+        <!-- Disable Impeller. The Impeller/Vulkan backend fails to recreate its
+             GPU surface after the display sleeps on some Mali-based TV boxes,
+             leaving the screen frozen on the last frame and the window without
+             focus → "Input dispatching timed out (No focused window)" ANR while
+             the Dart engine keeps running (adhan still fires). The OpenGL/Skia
+             backend recovers the surface reliably. Remove only after verifying
+             surface recreation on the affected Mali TV hardware. -->
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false" />
+
         <!-- Disable AD_ID collection: app has no ads, no ad targeting needed -->
         <meta-data
             android:name="google_analytics_adid_collection_enabled"
@@ -119,6 +130,28 @@
         <receiver
             android:name="com.ghasaq.app.notifications.receiver.AlarmReceiver"
             android:exported="false"/>
+
+        <!-- Firebase Cloud Messaging — server-pushed notifications.
+             Data-only payloads are handled in onMessageReceived in all app
+             states; tap routing reuses the local-alarm payload contract. -->
+        <service
+            android:name="com.ghasaq.app.notifications.fcm.AppFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <!-- Fallback channel used by FCM SDK if a server ever sends a pure
+             notification payload (without our data-only contract). The
+             channel must already exist; NotificationChannelsManager creates
+             it on engine init. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="general_push_v1"/>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher"/>
 
         <!-- Re-arms every persisted alarm after reboot / package replace. -->
         <receiver

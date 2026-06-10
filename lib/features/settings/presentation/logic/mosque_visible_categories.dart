@@ -1,13 +1,17 @@
 /// Pure selection rule: which settings categories are visible in the
 /// settings rail given the current mosque-mode flag.
 ///
-/// Indices map to the canonical category order in [SettingsScreen]:
+/// Indices are canonical category ids (not display order) used by
+/// [SettingsContentPanel]'s IndexedStack and the nav focus nodes:
 ///   0 Location, 1 Quran, 2 Adhan, 3 Adhan Offsets, 4 Iqama,
-///   5 Mosque, 6 Appearance, 7 Adhkar, 8 Feedback.
+///   5 Mosque, 6 Appearance, 7 Adhkar, 8 Feedback, 9 Features.
 ///
-/// Mosque mode hides categories that have no behavioural effect once the
-/// muezzin handles audio live: Quran (1), Adhan sounds (2), Adhkar (7).
-const int kSettingsCategoryCount = 9;
+/// Mosque mode hides categories with no behavioural effect once the muezzin
+/// handles audio live: Quran (1), Adhan sounds (2), and Adhkar (7) — whose only
+/// content (morning/evening adhkar) is itself mosque-hidden. The Features (9)
+/// category stays visible because it hosts the verses-banner toggle; its
+/// screensaver option is hidden inside the panel instead.
+const int kSettingsCategoryCount = 10;
 
 const List<int> _kHiddenInMosqueMode = [1, 2, 7];
 

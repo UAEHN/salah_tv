@@ -23,18 +23,18 @@ class MobileFeedbackContactField extends StatelessWidget {
   Widget build(BuildContext context) {
     final cardColor = MobileColors.cardColor(context);
     final hasError = errorText != null;
-    final borderColor =
-        hasError ? Colors.redAccent : MobileColors.border(context);
+    final borderColor = hasError
+        ? Colors.redAccent
+        : MobileColors.border(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: MobileTextStyles.bodyMd(context).copyWith(
-            color: MobileColors.onSurfaceMuted(context),
-            fontSize: 13,
-          ),
+          style: MobileTextStyles.bodyMd(
+            context,
+          ).copyWith(color: MobileColors.onSurfaceMuted(context), fontSize: 13),
         ),
         const SizedBox(height: 8),
         Container(
@@ -66,10 +66,9 @@ class MobileFeedbackContactField extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             errorText!,
-            style: MobileTextStyles.bodyMd(context).copyWith(
-              color: Colors.redAccent,
-              fontSize: 12,
-            ),
+            style: MobileTextStyles.bodyMd(
+              context,
+            ).copyWith(color: Colors.redAccent, fontSize: 12),
           ),
         ],
       ],

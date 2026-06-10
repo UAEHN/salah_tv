@@ -21,10 +21,8 @@ class QiblaCubit extends Cubit<QiblaState> {
     _isStarted = true;
     emit(QiblaLoading());
     _subscription = _repository.watchQibla().listen(
-      (either) => either.fold(
-        _handleFailure,
-        (data) => emit(QiblaActive(data)),
-      ),
+      (either) =>
+          either.fold(_handleFailure, (data) => emit(QiblaActive(data))),
     );
   }
 

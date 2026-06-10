@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -17,12 +17,16 @@ class QuranApiService implements IQuranApiRepository {
 
   static const _cacheExpiryMs = 24 * 60 * 60 * 1000; // 24 hours
 
-  static String _cacheKey(String language) => 'quran_api_reciters_cache_$language';
-  static String _cacheTsKey(String language) => 'quran_api_reciters_ts_$language';
+  static String _cacheKey(String language) =>
+      'quran_api_reciters_cache_$language';
+  static String _cacheTsKey(String language) =>
+      'quran_api_reciters_ts_$language';
 
   /// Returns reciters from cache first, then fetches fresh data from API.
   @override
-  Future<Either<Failure, List<QuranApiReciter>>> fetchReciters({String language = 'ar'}) async {
+  Future<Either<Failure, List<QuranApiReciter>>> fetchReciters({
+    String language = 'ar',
+  }) async {
     final cached = await _loadCache(language);
     if (cached != null) return Right(cached);
     return _fetchFromApi(language);
@@ -30,8 +34,9 @@ class QuranApiService implements IQuranApiRepository {
 
   /// Force refresh: ignores cache and fetches from API.
   @override
-  Future<Either<Failure, List<QuranApiReciter>>> refreshReciters({String language = 'ar'}) =>
-      _fetchFromApi(language);
+  Future<Either<Failure, List<QuranApiReciter>>> refreshReciters({
+    String language = 'ar',
+  }) => _fetchFromApi(language);
 
   Future<List<QuranApiReciter>?> _loadCache(String language) async {
     try {
@@ -51,7 +56,9 @@ class QuranApiService implements IQuranApiRepository {
     }
   }
 
-  Future<Either<Failure, List<QuranApiReciter>>> _fetchFromApi(String language) async {
+  Future<Either<Failure, List<QuranApiReciter>>> _fetchFromApi(
+    String language,
+  ) async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
         AppConfig.quranReciterApiUrl(language: language),
@@ -67,7 +74,10 @@ class QuranApiService implements IQuranApiRepository {
       try {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString(_cacheKey(language), jsonEncode(response.data));
-        await prefs.setInt(_cacheTsKey(language), DateTime.now().millisecondsSinceEpoch);
+        await prefs.setInt(
+          _cacheTsKey(language),
+          DateTime.now().millisecondsSinceEpoch,
+        );
       } catch (e) {
         debugPrint('[QuranApi] cache write failed: $e');
       }

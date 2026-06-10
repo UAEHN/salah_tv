@@ -34,21 +34,28 @@ Future<void> showMobileLocationDialog(BuildContext context) {
           cubit,
           LocationChoice.database(countryKey: c, cityName: city),
         ),
-        onSaveWorld: (c, city, lat, lng, method,
-                {String? timeZoneId, double? utcOffsetHours}) =>
-            _runSave(
-          context,
-          cubit,
-          LocationChoice.worldFromValues(
-            countryKey: c,
-            cityName: city,
-            latitude: lat,
-            longitude: lng,
-            calculationMethod: method,
-            timeZoneId: timeZoneId,
-            utcOffsetHours: utcOffsetHours,
-          ),
-        ),
+        onSaveWorld:
+            (
+              c,
+              city,
+              lat,
+              lng,
+              method, {
+              String? timeZoneId,
+              double? utcOffsetHours,
+            }) => _runSave(
+              context,
+              cubit,
+              LocationChoice.worldFromValues(
+                countryKey: c,
+                cityName: city,
+                latitude: lat,
+                longitude: lng,
+                calculationMethod: method,
+                timeZoneId: timeZoneId,
+                utcOffsetHours: utcOffsetHours,
+              ),
+            ),
       ),
     ),
   ).whenComplete(cubit.close);

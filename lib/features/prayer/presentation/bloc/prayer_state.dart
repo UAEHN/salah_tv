@@ -26,6 +26,9 @@ class PrayerState {
   final bool isCycleActive;
   final bool isPrePrayerAlert;
   final bool isInPostIqamaPrayer;
+  final bool isAfterPrayerAdhkarPlaying;
+  final bool isSessionAdhkarPlaying;
+  final String sessionAdhkarCategory;
   final bool isViewingToday;
   final bool isDateNavigationBusy;
   final bool isMultiCity;
@@ -55,6 +58,9 @@ class PrayerState {
     required this.isCycleActive,
     required this.isPrePrayerAlert,
     required this.isInPostIqamaPrayer,
+    required this.isAfterPrayerAdhkarPlaying,
+    required this.isSessionAdhkarPlaying,
+    required this.sessionAdhkarCategory,
     required this.isViewingToday,
     required this.isDateNavigationBusy,
     required this.isMultiCity,
@@ -92,6 +98,9 @@ class PrayerState {
     isCycleActive: e.isCycleActive,
     isPrePrayerAlert: e.isPrePrayerAlert,
     isInPostIqamaPrayer: e.isInPostIqamaPrayer,
+    isAfterPrayerAdhkarPlaying: e.isAfterPrayerAdhkarPlaying,
+    isSessionAdhkarPlaying: e.isSessionAdhkarPlaying,
+    sessionAdhkarCategory: e.sessionAdhkarCategory,
     isViewingToday: isViewingToday,
     isDateNavigationBusy: isDateNavigationBusy,
     isMultiCity: e.isMultiCity,
@@ -122,6 +131,9 @@ class PrayerState {
     isCycleActive: false,
     isPrePrayerAlert: false,
     isInPostIqamaPrayer: false,
+    isAfterPrayerAdhkarPlaying: false,
+    isSessionAdhkarPlaying: false,
+    sessionAdhkarCategory: '',
     isViewingToday: true,
     isDateNavigationBusy: false,
     isMultiCity: false,

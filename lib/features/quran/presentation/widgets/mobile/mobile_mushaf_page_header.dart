@@ -63,8 +63,7 @@ class MobileMushafPageHeader extends StatelessWidget {
                 onPressed: onOpenPageJump,
               ),
               IconButton(
-                icon:
-                    Icon(Icons.bookmark_add_rounded, color: palette.appBarFg),
+                icon: Icon(Icons.bookmark_add_rounded, color: palette.appBarFg),
                 tooltip: l.mushafSaveHere,
                 onPressed: onSaveBookmark,
               ),

@@ -79,13 +79,14 @@ class _TestButton extends StatelessWidget {
       child: ElevatedButton.icon(
         icon: isPending
             ? const SizedBox(
-                width: 18, height: 18,
+                width: 18,
+                height: 18,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.notifications_active),
-        label: Text(isPending
-            ? 'سيصل الإشعار خلال 15 ثانية...'
-            : 'اختبر الإشعارات الآن'),
+        label: Text(
+          isPending ? 'سيصل الإشعار خلال 15 ثانية...' : 'اختبر الإشعارات الآن',
+        ),
         onPressed: isPending ? null : () => _onPressed(context),
       ),
     );

@@ -8,8 +8,6 @@ class DeleteCustomAdhanUseCase {
   final ICustomAdhanRepository _repo;
   const DeleteCustomAdhanUseCase(this._repo);
 
-  Future<Either<Failure, Unit>> call(CustomAdhan adhan) => _repo.deleteFile(
-    fileName: adhan.fileName,
-    contentUri: adhan.contentUri,
-  );
+  Future<Either<Failure, Unit>> call(CustomAdhan adhan) =>
+      _repo.deleteFile(fileName: adhan.fileName, contentUri: adhan.contentUri);
 }

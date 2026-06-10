@@ -85,8 +85,7 @@ mixin QuranModesMixin on PrayerCycleBase, ContinuousModeMixin {
     }
     s.playlistCyclesCompleted++;
     final target = settings.playlistCycleCount;
-    if (target != kInfiniteRepeat &&
-        s.playlistCyclesCompleted >= target) {
+    if (target != kInfiniteRepeat && s.playlistCyclesCompleted >= target) {
       return null;
     }
     s.playlistCursor = 0;

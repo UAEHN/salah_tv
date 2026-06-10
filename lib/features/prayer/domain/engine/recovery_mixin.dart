@@ -19,14 +19,12 @@ mixin RecoveryMixin on PrayerCycleBase {
 
     // Adhan fully off (and not in mosque mode) — live triggers skip the
     // cycle entirely, so recovery has nothing to surface either.
-    if (settings.adhanMode == PrayerSoundMode.off &&
-        !settings.isMosqueMode) {
+    if (settings.adhanMode == PrayerSoundMode.off && !settings.isMosqueMode) {
       return;
     }
     // Iqama fully off (and not in mosque mode) — nothing to recover for the
     // iqama phase.
-    if (settings.iqamaMode == PrayerSoundMode.off &&
-        !settings.isMosqueMode) {
+    if (settings.iqamaMode == PrayerSoundMode.off && !settings.isMosqueMode) {
       return;
     }
 
@@ -41,6 +39,10 @@ mixin RecoveryMixin on PrayerCycleBase {
 
     if (remaining.inSeconds > 0) {
       // Still inside the iqama countdown window — show it
+      analytics?.logIqamaRecovered(
+        prayerKey: missed.key,
+        remainingSeconds: remaining.inSeconds,
+      );
       s.isIqamaCountdown = true;
       s.iqamaCountdown = remaining;
       s.iqamaPrayerKey = missed.key;
@@ -60,6 +62,13 @@ mixin RecoveryMixin on PrayerCycleBase {
       s.adhansToday,
     );
     s.adhansToday.addAll(result.newKeys);
-    return result.missed;
+    final m = result.missed;
+    if (m != null) {
+      final delta = s.now
+          .difference(calc.adjustedPrayerTime(m, settings.adhanOffsets))
+          .inMinutes;
+      analytics?.logMissedPrayerDetected(prayerKey: m.key, deltaMinutes: delta);
+    }
+    return m;
   }
 }

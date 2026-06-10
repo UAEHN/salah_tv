@@ -106,8 +106,8 @@ class MobileSettingsAppearanceSection extends StatelessWidget {
   }
 
   String _themeModeLabel(AppLocalizations l, String mode) => switch (mode) {
-        'system' => l.settingsSystemMode,
-        'dark' => l.settingsDarkMode,
-        _ => l.settingsLightMode,
-      };
+    'system' => l.settingsSystemMode,
+    'dark' => l.settingsDarkMode,
+    _ => l.settingsLightMode,
+  };
 }

@@ -43,10 +43,9 @@ class MobileFeedbackDirectContact extends StatelessWidget {
       children: [
         Text(
           title,
-          style: MobileTextStyles.bodyMd(context).copyWith(
-            color: MobileColors.onSurfaceMuted(context),
-            fontSize: 13,
-          ),
+          style: MobileTextStyles.bodyMd(
+            context,
+          ).copyWith(color: MobileColors.onSurfaceMuted(context), fontSize: 13),
         ),
         const SizedBox(height: 10),
         if (hasEmail)
@@ -68,8 +67,8 @@ class MobileFeedbackDirectContact extends StatelessWidget {
   }
 
   Future<String> _buildDiagnosticBody(BuildContext context) async {
-    final diagnostics =
-        await GetIt.I<IFeedbackDiagnosticsCollector>().collect();
+    final diagnostics = await GetIt.I<IFeedbackDiagnosticsCollector>()
+        .collect();
     if (!context.mounted) return '';
     final l = AppLocalizations.of(context);
     final settings = context.read<SettingsProvider>().settings;

@@ -63,6 +63,12 @@ List<SettingsCategoryDef> buildSettingsCategories(AppLocalizations l) {
       subtitle: l.settingsCategoryAdhkarSubtitle,
     ),
     (
+      id: 9,
+      icon: Icons.widgets_rounded,
+      title: l.settingsCategoryFeatures,
+      subtitle: l.settingsCategoryFeaturesSubtitle,
+    ),
+    (
       id: 8,
       icon: Icons.mark_chat_read_rounded,
       title: l.feedbackSection,

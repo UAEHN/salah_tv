@@ -38,9 +38,9 @@ class MobileMushafJuzTile extends StatelessWidget {
                   children: [
                     Text(
                       'الجزء ${digitsForLocale(context, juz.number)}',
-                      style: MobileTextStyles.bodyMd(context).copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: MobileTextStyles.bodyMd(
+                        context,
+                      ).copyWith(fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 2),
                     Text(

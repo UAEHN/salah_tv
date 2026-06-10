@@ -87,8 +87,9 @@ class _MobileMushafReaderScreenState extends State<MobileMushafReaderScreen> {
   Future<void> _saveWithToast() async {
     await _cubit.saveBookmark();
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(AppLocalizations.of(context).mushafBookmarkSaved)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppLocalizations.of(context).mushafBookmarkSaved)),
+    );
   }
 
   void _onPageChanged(int i) {
@@ -105,8 +106,11 @@ class _MobileMushafReaderScreenState extends State<MobileMushafReaderScreen> {
     if (!_controller.hasClients) return;
     final wanted = state.currentPage - 1;
     if (_controller.page?.round() == wanted) return;
-    _controller.animateToPage(wanted,
-        duration: const Duration(milliseconds: 320), curve: Curves.easeInOut);
+    _controller.animateToPage(
+      wanted,
+      duration: const Duration(milliseconds: 320),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -117,8 +121,9 @@ class _MobileMushafReaderScreenState extends State<MobileMushafReaderScreen> {
           listenWhen: (p, n) =>
               p.audioStatus != n.audioStatus &&
               n.audioStatus == MushafAudioStatus.error,
-          listener: (ctx, _) => ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-              content: Text(AppLocalizations.of(ctx).mushafAudioError))),
+          listener: (ctx, _) => ScaffoldMessenger.of(ctx).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(ctx).mushafAudioError)),
+          ),
         ),
         BlocListener<MushafReaderCubit, MushafReaderState>(
           listenWhen: (p, n) => p.currentPage != n.currentPage,

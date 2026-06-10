@@ -82,8 +82,9 @@ class MobileForceUpdateDialog extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     height: 1.5,
-                    color:
-                        MobileColors.onSurface(context).withValues(alpha: 0.75),
+                    color: MobileColors.onSurface(
+                      context,
+                    ).withValues(alpha: 0.75),
                   ),
                   textAlign: TextAlign.center,
                 ),

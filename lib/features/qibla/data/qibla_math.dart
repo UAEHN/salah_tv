@@ -11,7 +11,8 @@ double calculateQiblaBearing(double lat, double lng) {
   final latR = lat * math.pi / 180;
   final dLng = kaabaLngR - lng * math.pi / 180;
   final y = math.sin(dLng) * math.cos(kaabaLatR);
-  final x = math.cos(latR) * math.sin(kaabaLatR) -
+  final x =
+      math.cos(latR) * math.sin(kaabaLatR) -
       math.sin(latR) * math.cos(kaabaLatR) * math.cos(dLng);
   return (math.atan2(y, x) * 180 / math.pi + 360) % 360;
 }
@@ -25,7 +26,8 @@ double calculateDistanceKm(double lat, double lng) {
   final kaabaLngR = _kKaabaLng * math.pi / 180;
   final dLat = kaabaLatR - lat1;
   final dLng = kaabaLngR - lng1;
-  final a = math.pow(math.sin(dLat / 2), 2) +
+  final a =
+      math.pow(math.sin(dLat / 2), 2) +
       math.cos(lat1) * math.cos(kaabaLatR) * math.pow(math.sin(dLng / 2), 2);
   return r * 2 * math.asin(math.sqrt(a.toDouble()));
 }

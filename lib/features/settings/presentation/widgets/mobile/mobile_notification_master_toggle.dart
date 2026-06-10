@@ -32,7 +32,9 @@ class MobileNotificationMasterToggle extends StatelessWidget {
                 colors: [accent, accentSoft],
               )
             : null,
-        color: isOn ? null : MobileColors.cardColor(context).withValues(alpha: 0.55),
+        color: isOn
+            ? null
+            : MobileColors.cardColor(context).withValues(alpha: 0.55),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: isOn
@@ -54,7 +56,9 @@ class MobileNotificationMasterToggle extends StatelessWidget {
         children: [
           _HeroIcon(isOn: isOn),
           const SizedBox(width: 14),
-          Expanded(child: _HeroText(isOn: isOn, l: l)),
+          Expanded(
+            child: _HeroText(isOn: isOn, l: l),
+          ),
           Switch.adaptive(
             value: isOn,
             onChanged: onChanged,
@@ -112,12 +116,12 @@ class _HeroText extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          isOn ? l.settingsNotificationsEnabled : l.settingsNotificationsDisabled,
-          style: MobileTextStyles.headlineMd(context).copyWith(
-            color: titleColor,
-            fontSize: 16,
-            height: 1.15,
-          ),
+          isOn
+              ? l.settingsNotificationsEnabled
+              : l.settingsNotificationsDisabled,
+          style: MobileTextStyles.headlineMd(
+            context,
+          ).copyWith(color: titleColor, fontSize: 16, height: 1.15),
           textDirection: TextDirection.rtl,
         ),
         const SizedBox(height: 3),
@@ -125,11 +129,9 @@ class _HeroText extends StatelessWidget {
           isOn
               ? 'سيتم تشغيل صوت الأذان لكل صلاة'
               : 'لا يصدر صوت أذان عند دخول وقت الصلاة',
-          style: MobileTextStyles.bodyMd(context).copyWith(
-            color: subColor,
-            fontSize: 11.5,
-            height: 1.3,
-          ),
+          style: MobileTextStyles.bodyMd(
+            context,
+          ).copyWith(color: subColor, fontSize: 11.5, height: 1.3),
           textDirection: TextDirection.rtl,
         ),
       ],

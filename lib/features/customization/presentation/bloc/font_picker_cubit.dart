@@ -14,19 +14,18 @@ class FontPickerCubit extends Cubit<FontPickerState> {
     required GetAllQuranFontsUseCase getAll,
     required ApplyQuranFontUseCase apply,
     IAnalyticsService? analytics,
-  })  : _getAll = getAll,
-        _apply = apply,
-        _analytics = analytics,
-        super(const FontPickerInitial());
+  }) : _getAll = getAll,
+       _apply = apply,
+       _analytics = analytics,
+       super(const FontPickerInitial());
 
   Future<void> load(String currentFamily) async {
     emit(const FontPickerLoading());
     final result = await _getAll();
     result.fold(
       (failure) => emit(const FontPickerError('fontPickerLoadError')),
-      (fonts) => emit(
-        FontPickerLoaded(fonts: fonts, selectedFamily: currentFamily),
-      ),
+      (fonts) =>
+          emit(FontPickerLoaded(fonts: fonts, selectedFamily: currentFamily)),
     );
   }
 
@@ -42,7 +41,9 @@ class FontPickerCubit extends Cubit<FontPickerState> {
     final result = await _apply(family);
     result.fold(
       (failure) {
-        emit(current.copyWith(selectedFamily: previousFamily, isApplying: false));
+        emit(
+          current.copyWith(selectedFamily: previousFamily, isApplying: false),
+        );
       },
       (_) {
         _analytics?.logFontChanged(family);

@@ -32,9 +32,7 @@ class MobileHomeContent extends StatelessWidget {
           const SizedBox(height: 8),
           const MobileHeroCard(),
           const SizedBox(height: 12),
-          Expanded(
-            child: MobilePrayerList(is24HourFormat: is24HourFormat),
-          ),
+          Expanded(child: MobilePrayerList(is24HourFormat: is24HourFormat)),
           SizedBox(height: MediaQuery.of(context).padding.bottom + 104),
         ],
       ),

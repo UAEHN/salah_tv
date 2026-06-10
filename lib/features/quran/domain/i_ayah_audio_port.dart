@@ -13,8 +13,8 @@ class AyahPlaybackEvent {
 /// Per-ayah audio playback port.
 ///
 /// Isolated from `IAudioRepository` (TV adhan/iqama/quran-stream player)
-/// and `IAdhkarAudioPort` so completion events never bleed across feature
-/// boundaries — mirrors the [AdhkarAudioService] isolation pattern.
+/// so completion events never bleed across feature boundaries — mirrors the
+/// per-feature audio-port isolation pattern.
 abstract class IAyahAudioPort {
   Stream<AyahPlaybackEvent> get events;
 

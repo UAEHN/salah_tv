@@ -56,13 +56,12 @@ class CustomAdhanCubit extends Cubit<CustomAdhanState> {
     final trimmed = label.trim();
     final finalLabel = trimmed.isNotEmpty ? trimmed : _deriveLabel(file!.name);
     final result = await _import(path, finalLabel);
-    result.fold(
-      (failure) => emit(CustomAdhanError(failure.message)),
-      (custom) async {
-        await _settings.addCustomAdhan(custom);
-        emit(const CustomAdhanIdle());
-      },
-    );
+    result.fold((failure) => emit(CustomAdhanError(failure.message)), (
+      custom,
+    ) async {
+      await _settings.addCustomAdhan(custom);
+      emit(const CustomAdhanIdle());
+    });
   }
 
   Future<void> remove(String id) async {
@@ -72,7 +71,9 @@ class CustomAdhanCubit extends Cubit<CustomAdhanState> {
     if (entry == null) return;
     emit(const CustomAdhanBusy());
     final result = await _delete(entry);
-    result.fold((failure) => emit(CustomAdhanError(failure.message)), (_) async {
+    result.fold((failure) => emit(CustomAdhanError(failure.message)), (
+      _,
+    ) async {
       await _settings.removeCustomAdhan(id);
       emit(const CustomAdhanIdle());
     });

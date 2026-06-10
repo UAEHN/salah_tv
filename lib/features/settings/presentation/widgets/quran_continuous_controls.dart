@@ -103,21 +103,29 @@ class _StartChoice extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon,
-                color: isSelected ? palette.primary : tc.textMuted, size: 22),
+            Icon(
+              icon,
+              color: isSelected ? palette.primary : tc.textMuted,
+              size: 22,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: tc.textPrimary)),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: tc.textPrimary,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle,
-                      style: TextStyle(fontSize: 13, color: tc.textMuted)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 13, color: tc.textMuted),
+                  ),
                 ],
               ),
             ),

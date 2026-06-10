@@ -45,7 +45,8 @@ class MobileCustomAdhanSection extends StatelessWidget {
                   (a) => MobileCustomAdhanTile(
                     label: a.label,
                     isSelected: selectedKey == a.settingsKey,
-                    isPlaying: previewState is AdhanPreviewPlaying &&
+                    isPlaying:
+                        previewState is AdhanPreviewPlaying &&
                         previewState.soundKey == a.settingsKey,
                     onSelect: () => onSelect(a.settingsKey),
                     onPreview: () =>
@@ -61,9 +62,9 @@ class MobileCustomAdhanSection extends StatelessWidget {
         BlocConsumer<CustomAdhanCubit, CustomAdhanState>(
           listener: (ctx, state) {
             if (state is CustomAdhanError) {
-              ScaffoldMessenger.of(ctx).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
+              ScaffoldMessenger.of(
+                ctx,
+              ).showSnackBar(SnackBar(content: Text(state.message)));
               ctx.read<CustomAdhanCubit>().clearError();
             }
           },

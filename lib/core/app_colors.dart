@@ -4,24 +4,24 @@ import 'package:flutter/material.dart';
 // Warm parchment background — keeps the TV home screen distinctly off-white.
 // [kBgSurface] intentionally stays cool/neutral so prayer cards and InfoCard
 // keep their original look against the warm gradient.
-const Color kBgDeep      = Color(0xFFDDD3BD);  // gradient top (deeper sand)
-const Color kBgDark      = Color(0xFFEAE1CC);  // gradient bottom + scaffold
-const Color kBgSurface   = Color(0xFFF5F7FA);  // cards/info panels — unchanged
-const Color kBgGlass     = Color(0x14000000);
+const Color kBgDeep = Color(0xFFDDD3BD); // gradient top (deeper sand)
+const Color kBgDark = Color(0xFFEAE1CC); // gradient bottom + scaffold
+const Color kBgSurface = Color(0xFFF5F7FA); // cards/info panels — unchanged
+const Color kBgGlass = Color(0x14000000);
 const Color kBorderGlass = Color(0x1A000000);
-const Color kTextPrimary   = Color(0xFF1A1A2E);
+const Color kTextPrimary = Color(0xFF1A1A2E);
 const Color kTextSecondary = Color(0xFF4A4A6A);
-const Color kTextMuted     = Color(0xFF8A8AA0);
+const Color kTextMuted = Color(0xFF8A8AA0);
 
 // â”€â”€â”€ Dark theme base colors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const Color kDarkBgDeep      = Color(0xFF07101E);
-const Color kDarkBgMain      = Color(0xFF0C1528);
-const Color kDarkBgSurface   = Color(0xFF162035);
-const Color kDarkBgGlass     = Color(0x20FFFFFF);
+const Color kDarkBgDeep = Color(0xFF07101E);
+const Color kDarkBgMain = Color(0xFF0C1528);
+const Color kDarkBgSurface = Color(0xFF162035);
+const Color kDarkBgGlass = Color(0x20FFFFFF);
 const Color kDarkBorderGlass = Color(0x2AFFFFFF);
-const Color kDarkTextPrimary   = Color(0xFFF0F4FF);
+const Color kDarkTextPrimary = Color(0xFFF0F4FF);
 const Color kDarkTextSecondary = Color(0xFFB8C0D8);
-const Color kDarkTextMuted     = Color(0xFF6A7494);
+const Color kDarkTextMuted = Color(0xFF6A7494);
 
 // â”€â”€â”€ ThemeColors â€“ single source of truth for light/dark â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class ThemeColors {
@@ -48,17 +48,27 @@ class ThemeColors {
   });
 
   static const ThemeColors _light = ThemeColors._(
-    bgDeep: kBgDeep, bgMain: kBgDark, bgSurface: kBgSurface,
-    bgGlass: kBgGlass, borderGlass: kBorderGlass,
-    textPrimary: kTextPrimary, textSecondary: kTextSecondary,
-    textMuted: kTextMuted, isDark: false,
+    bgDeep: kBgDeep,
+    bgMain: kBgDark,
+    bgSurface: kBgSurface,
+    bgGlass: kBgGlass,
+    borderGlass: kBorderGlass,
+    textPrimary: kTextPrimary,
+    textSecondary: kTextSecondary,
+    textMuted: kTextMuted,
+    isDark: false,
   );
 
   static const ThemeColors _dark = ThemeColors._(
-    bgDeep: kDarkBgDeep, bgMain: kDarkBgMain, bgSurface: kDarkBgSurface,
-    bgGlass: kDarkBgGlass, borderGlass: kDarkBorderGlass,
-    textPrimary: kDarkTextPrimary, textSecondary: kDarkTextSecondary,
-    textMuted: kDarkTextMuted, isDark: true,
+    bgDeep: kDarkBgDeep,
+    bgMain: kDarkBgMain,
+    bgSurface: kDarkBgSurface,
+    bgGlass: kDarkBgGlass,
+    borderGlass: kDarkBorderGlass,
+    textPrimary: kDarkTextPrimary,
+    textSecondary: kDarkTextSecondary,
+    textMuted: kDarkTextMuted,
+    isDark: true,
   );
 
   static ThemeColors of(bool isDark) => isDark ? _dark : _light;
@@ -75,14 +85,19 @@ class ThemeColors {
     Color? glowColor,
   }) {
     return BoxDecoration(
-      color: (isDark ? Colors.white : Colors.black)
-          .withValues(alpha: opacity * (isDark ? 0.65 : 0.5)),
+      color: (isDark ? Colors.white : Colors.black).withValues(
+        alpha: opacity * (isDark ? 0.65 : 0.5),
+      ),
       borderRadius: BorderRadius.circular(borderRadius),
       border: Border.all(color: borderGlass, width: 1),
       boxShadow: glowColor != null
-          ? [BoxShadow(
-              color: glowColor.withValues(alpha: 0.15),
-              blurRadius: 20, spreadRadius: 2)]
+          ? [
+              BoxShadow(
+                color: glowColor.withValues(alpha: 0.15),
+                blurRadius: 20,
+                spreadRadius: 2,
+              ),
+            ]
           : null,
     );
   }
@@ -101,43 +116,43 @@ class AccentPalette {
   });
 
   LinearGradient get gradient => LinearGradient(
-        colors: [primary, secondary],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
+    colors: [primary, secondary],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 
   LinearGradient get horizontalGradient => LinearGradient(
-        colors: [primary, secondary],
-        begin: Alignment.centerLeft,
-        end: Alignment.centerRight,
-      );
+    colors: [primary, secondary],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+  );
 }
 
 const Map<String, AccentPalette> kThemePalettes = {
   'green': AccentPalette(
-    primary:   Color(0xFF10B981),
+    primary: Color(0xFF10B981),
     secondary: Color(0xFF059669),
-    glow:      Color(0x4010B981),
+    glow: Color(0x4010B981),
   ),
   'teal': AccentPalette(
-    primary:   Color(0xFF14B8A6),
+    primary: Color(0xFF14B8A6),
     secondary: Color(0xFF0D9488),
-    glow:      Color(0x4014B8A6),
+    glow: Color(0x4014B8A6),
   ),
   'gold': AccentPalette(
-    primary:   Color(0xFFD4A843),
+    primary: Color(0xFFD4A843),
     secondary: Color(0xFFB8922E),
-    glow:      Color(0x40D4A843),
+    glow: Color(0x40D4A843),
   ),
   'blue': AccentPalette(
-    primary:   Color(0xFF2980B9),
+    primary: Color(0xFF2980B9),
     secondary: Color(0xFF1A6B9C),
-    glow:      Color(0x402980B9),
+    glow: Color(0x402980B9),
   ),
   'purple': AccentPalette(
-    primary:   Color(0xFF7C3AED),
+    primary: Color(0xFF7C3AED),
     secondary: Color(0xFF6D28D9),
-    glow:      Color(0x407C3AED),
+    glow: Color(0x407C3AED),
   ),
 };
 
@@ -166,16 +181,19 @@ BoxDecoration glassDecoration({
     borderRadius: BorderRadius.circular(borderRadius),
     border: Border.all(color: kBorderGlass, width: 1),
     boxShadow: glowColor != null
-        ? [BoxShadow(
-            color: glowColor.withValues(alpha: 0.15),
-            blurRadius: 20, spreadRadius: 2)]
+        ? [
+            BoxShadow(
+              color: glowColor.withValues(alpha: 0.15),
+              blurRadius: 20,
+              spreadRadius: 2,
+            ),
+          ]
         : null,
   );
 }
 
 LinearGradient bgGradient() => const LinearGradient(
-      colors: [kBgDeep, kBgDark],
-      begin: Alignment.topCenter,
-      end: Alignment.bottomCenter,
-    );
-
+  colors: [kBgDeep, kBgDark],
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
+);

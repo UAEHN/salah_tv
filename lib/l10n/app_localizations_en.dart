@@ -309,6 +309,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adhkarEveningSession => 'Evening adhkar';
 
   @override
+  String get adhkarAfterPrayerTitle => 'After-Prayer Adhkar';
+
+  @override
+  String get settingsAfterPrayerAdhkarNote =>
+      'Shows a short set of adhkar and du\'a on screen a few minutes after each prayer, then Quran playback resumes. Turn it off to skip the after-prayer display.';
+
+  @override
+  String get settingsScreensaverPreview => 'Preview screensaver';
+
+  @override
+  String get settingsScreensaver => 'Screensaver';
+
+  @override
+  String get settingsScreensaverNote =>
+      'Shows verses, adhkar and the names of Allah when the remote is idle, and disappears instantly on any press or as a prayer approaches.';
+
+  @override
   String get tasbihEntrySummary => 'Tap to start your daily tasbih';
 
   @override
@@ -372,6 +389,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nextPrayerActiveLabel => 'Next prayer';
+
+  @override
+  String get nextPrayerShortLabel => 'Next';
 
   @override
   String countdownNextPrayer(Object prayerName) {
@@ -677,6 +697,57 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsNoMatchingCities => 'No matching cities';
 
   @override
+  String get settingsSearchOnline => 'Search online';
+
+  @override
+  String get settingsSearchOnlineHint => 'Type any city in the world';
+
+  @override
+  String get settingsSearchOnlinePrompt =>
+      'Type your city name to start searching';
+
+  @override
+  String get settingsSearchOnlineEmpty =>
+      'No results. Try another name or English.';
+
+  @override
+  String get settingsSearchOnlineError =>
+      'Couldn\'t reach the internet. Try later.';
+
+  @override
+  String get settingsSearchOnlineCta => 'Can\'t find your city? Search online';
+
+  @override
+  String get settingsPickCalculationMethod => 'Pick calculation method';
+
+  @override
+  String get settingsSuggestedForLocation => 'Suggested for your location';
+
+  @override
+  String get settingsOtherMethods => 'Other methods';
+
+  @override
+  String get settingsHighLatitudeMessage =>
+      'You are at a high latitude. We picked the twilight-angle rule for Fajr/Isha — it best matches most European mosques.';
+
+  @override
+  String get settingsExtremeLatitudeMessage =>
+      'This location is near the poles. Fajr/Isha on summer days are approximations — check your local mosque\'s schedule for accuracy.';
+
+  @override
+  String get settingsCalibrationPromptTitle => 'Match a local mosque?';
+
+  @override
+  String get settingsCalibrationPromptBody =>
+      'Your location is saved. If your mosque\'s times differ by a few minutes, you can fine-tune each prayer by ±minutes.';
+
+  @override
+  String get settingsCalibrationPromptYes => 'Yes, adjust now';
+
+  @override
+  String get settingsCalibrationPromptSkip => 'Later';
+
+  @override
   String get settingsSelectCountry => 'Select country';
 
   @override
@@ -741,6 +812,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsCategoryAdhkarSubtitle => 'Morning and evening adhkar';
 
   @override
+  String get settingsCategoryFeatures => 'Features';
+
+  @override
+  String get settingsCategoryFeaturesSubtitle =>
+      'Verses ticker and screensaver';
+
+  @override
   String get settingsFont => 'Font';
 
   @override
@@ -751,6 +829,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsClockType => 'Clock type';
+
+  @override
+  String get settingsTicker => 'Scrolling ticker';
+
+  @override
+  String get settingsTickerLabel =>
+      'Scrolling bar of verses & adhkar along the bottom';
 
   @override
   String get layoutModern => 'Modern';
@@ -1160,7 +1245,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calcMethodUoif => 'France (UOIF 15°)';
 
   @override
+  String get calcMethodUk => 'United Kingdom (London Central Mosque)';
+
+  @override
+  String get calcMethodGermany => 'Germany / Northern Europe (18°/17°)';
+
+  @override
+  String get calcMethodRussia => 'Russia / Eastern Europe (16°/15°)';
+
+  @override
   String get calcMethodJafari => 'Ja\'fari (16°/14°)';
+
+  @override
+  String get settingsHighLatitudeLabel => 'High-latitude adjustment';
+
+  @override
+  String get settingsHighLatitudeNote =>
+      'Northern European cities use different conventions for Fajr and Isha. Pick the one your local mosque follows.';
+
+  @override
+  String get settingsHighLatitudeAffectsNote =>
+      'Affects Fajr & Isha only, for cities above ~48° N';
+
+  @override
+  String get highLatRuleAuto => 'Automatic (recommended)';
+
+  @override
+  String get highLatRuleAutoSubtitle =>
+      'Apply middle-of-the-night automatically at high latitudes';
+
+  @override
+  String get highLatRuleMiddleOfNight => 'Middle of the night';
+
+  @override
+  String get highLatRuleMiddleOfNightSubtitle =>
+      'Fajr / Isha at the midpoint between Maghrib and sunrise';
+
+  @override
+  String get highLatRuleSeventhOfNight => 'One seventh of the night';
+
+  @override
+  String get highLatRuleSeventhOfNightSubtitle =>
+      'Fajr one seventh after Maghrib, Isha one seventh before Fajr';
+
+  @override
+  String get highLatRuleTwilightAngle => 'Twilight angle';
+
+  @override
+  String get highLatRuleTwilightAngleSubtitle =>
+      'Twilight angle reduced gradually as days lengthen';
 
   @override
   String get calculationMethodOfficialScheduleNote =>
@@ -1270,6 +1403,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingFinish => 'Get started';
+
+  @override
+  String get onboardingLocationTitle => 'Set your location';
+
+  @override
+  String get onboardingLocationSubtitle => 'Use GPS or search for your city';
+
+  @override
+  String get onboardingConfirmLocationTitle => 'Are you in:';
+
+  @override
+  String get onboardingConfirmAction => 'Confirm';
+
+  @override
+  String get onboardingChangeAction => 'Change';
+
+  @override
+  String get onboardingOrSearchManually => 'Or search manually';
 
   @override
   String get todayPrayerTimes => 'Today\'s prayer times';

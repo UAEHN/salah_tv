@@ -43,17 +43,17 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
     required IMushafPreferencesRepository prefsRepo,
     required HasSeenMushafIntroUseCase hasSeenIntro,
     required MarkMushafIntroSeenUseCase markIntroSeen,
-  })  : _textRepo = textRepo,
-        _getPage = getPage,
-        _getBookmark = getBookmark,
-        _saveBookmark = saveBookmark,
-        _playAyah = playAyah,
-        _stopAyah = stopAyah,
-        _audioPort = audioPort,
-        _prefsRepo = prefsRepo,
-        _hasSeenIntro = hasSeenIntro,
-        _markIntroSeen = markIntroSeen,
-        super(const MushafReaderState()) {
+  }) : _textRepo = textRepo,
+       _getPage = getPage,
+       _getBookmark = getBookmark,
+       _saveBookmark = saveBookmark,
+       _playAyah = playAyah,
+       _stopAyah = stopAyah,
+       _audioPort = audioPort,
+       _prefsRepo = prefsRepo,
+       _hasSeenIntro = hasSeenIntro,
+       _markIntroSeen = markIntroSeen,
+       super(const MushafReaderState()) {
     _audioSub = _audioPort.events.listen(onAudioEvent);
   }
 
@@ -90,15 +90,18 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
     final load = await _textRepo.ensureLoaded();
     if (load.isLeft()) {
       final msg = load.fold((f) => f.message, (_) => '');
-      return emit(state.copyWith(
-          loadStatus: MushafLoadStatus.error, loadError: msg));
+      return emit(
+        state.copyWith(loadStatus: MushafLoadStatus.error, loadError: msg),
+      );
     }
-    emit(state.copyWith(
-      loadStatus: MushafLoadStatus.ready,
-      bookmark: await _getBookmark(),
-      prefs: prefs,
-      hasSeenIntro: seenIntro,
-    ));
+    emit(
+      state.copyWith(
+        loadStatus: MushafLoadStatus.ready,
+        bookmark: await _getBookmark(),
+        prefs: prefs,
+        hasSeenIntro: seenIntro,
+      ),
+    );
   }
 
   Future<void> markIntroSeen() async {
@@ -106,12 +109,14 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
     await _markIntroSeen();
     emit(state.copyWith(hasSeenIntro: true));
   }
+
   Future<void> openReader({int? page, QuranBookmark? resume}) async {
     await init();
     if (state.loadStatus != MushafLoadStatus.ready) return;
     final target = resume?.page ?? page ?? state.bookmark?.page ?? 1;
     await goToPage(target.clamp(1, MushafPage.totalPages));
   }
+
   Future<void> goToPage(int pageNumber) async {
     final clamped = pageNumber.clamp(1, MushafPage.totalPages);
     (await _getPage(clamped)).fold(
@@ -122,11 +127,10 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
       },
     );
   }
-  Future<void> goToSurah(int surahNumber) async =>
-      (await _textRepo.pageOfSurah(surahNumber)).fold(
-        (f) async => emit(state.copyWith(loadError: f.message)),
-        goToPage,
-      );
+
+  Future<void> goToSurah(int surahNumber) async => (await _textRepo.pageOfSurah(
+    surahNumber,
+  )).fold((f) async => emit(state.copyWith(loadError: f.message)), goToPage);
 
   /// Briefly highlights [surah]:[ayah] on the current page — used by
   /// quick-link navigation (e.g. "آية الكرسي"). The overlay clears
@@ -140,14 +144,17 @@ class MushafReaderCubit extends Cubit<MushafReaderState>
       emit(state.copyWith(clearFlash: true));
     });
   }
+
   Future<void> tapAyah(int surah, int ayah) async {
     if (state.isAyahPlaying(surah, ayah)) return _audioPort.pause();
     if (state.isAyahPaused(surah, ayah)) return _audioPort.resume();
     await _playAyah(
-        surahNumber: surah,
-        ayahNumber: ayah,
-        reciterUrlSegment: resolveReciter(state.prefs.reciterId).urlSegment);
+      surahNumber: surah,
+      ayahNumber: ayah,
+      reciterUrlSegment: resolveReciter(state.prefs.reciterId).urlSegment,
+    );
   }
+
   Future<void> stopAudio() => _stopAyah();
   Future<void> onLeaveReader() async {
     cancelBookmarkAutoSave();

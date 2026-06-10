@@ -61,78 +61,78 @@ class _SettingsNavCardState extends State<SettingsNavCard> {
       child: GestureDetector(
         onTap: widget.onFocused,
         child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-        decoration: BoxDecoration(
-          gradient: _highlighted ? widget.palette.gradient : null,
-          color: _highlighted
-              ? null
-              : Colors.white.withValues(alpha: tc.isDark ? 0.06 : 0.35),
-          border: Border.all(
+          duration: const Duration(milliseconds: 180),
+          margin: const EdgeInsets.symmetric(vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          decoration: BoxDecoration(
+            gradient: _highlighted ? widget.palette.gradient : null,
             color: _highlighted
-                ? Colors.white.withValues(alpha: 0.55)
-                : Colors.white.withValues(alpha: tc.isDark ? 0.18 : 0.08),
-            width: _highlighted ? 1.5 : 1.0,
+                ? null
+                : Colors.white.withValues(alpha: tc.isDark ? 0.06 : 0.35),
+            border: Border.all(
+              color: _highlighted
+                  ? Colors.white.withValues(alpha: 0.55)
+                  : Colors.white.withValues(alpha: tc.isDark ? 0.18 : 0.08),
+              width: _highlighted ? 1.5 : 1.0,
+            ),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: _highlighted
+                ? [
+                    BoxShadow(
+                      color: widget.palette.glow,
+                      blurRadius: 20,
+                      spreadRadius: 2,
+                    ),
+                  ]
+                : null,
           ),
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: _highlighted
-              ? [
-                  BoxShadow(
-                    color: widget.palette.glow,
-                    blurRadius: 20,
-                    spreadRadius: 2,
-                  ),
-                ]
-              : null,
-        ),
-        child: Row(
-          children: [
-            Icon(
-              widget.icon,
-              color: _highlighted ? Colors.white : widget.palette.primary,
-              size: 26,
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    widget.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
-                      color: _highlighted ? Colors.white : tc.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    widget.subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: _highlighted
-                          ? Colors.white.withValues(alpha: 0.70)
-                          : tc.textMuted,
-                    ),
-                  ),
-                ],
+          child: Row(
+            children: [
+              Icon(
+                widget.icon,
+                color: _highlighted ? Colors.white : widget.palette.primary,
+                size: 26,
               ),
-            ),
-            const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: _highlighted ? Colors.white70 : Colors.white24,
-              size: 20,
-            ),
-          ],
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      widget.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: _highlighted ? Colors.white : tc.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      widget.subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: _highlighted
+                            ? Colors.white.withValues(alpha: 0.70)
+                            : tc.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: _highlighted ? Colors.white70 : Colors.white24,
+                size: 20,
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }

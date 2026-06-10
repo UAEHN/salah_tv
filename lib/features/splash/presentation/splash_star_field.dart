@@ -43,22 +43,24 @@ class _StarPainter extends CustomPainter {
 
   static List<_Meteor> _genMeteors(int n, int seed) {
     final r = Random(seed);
-    return List.generate(n, (_) => _Meteor(
-      sx: r.nextDouble() * 0.6 + 0.2,
-      sy: r.nextDouble() * 0.3,
-      angle: pi * 0.6 + r.nextDouble() * 0.3,
-      len: 0.08 + r.nextDouble() * 0.12,
-      start: r.nextDouble(),
-      dur: 0.04 + r.nextDouble() * 0.03,
-    ));
+    return List.generate(
+      n,
+      (_) => _Meteor(
+        sx: r.nextDouble() * 0.6 + 0.2,
+        sy: r.nextDouble() * 0.3,
+        angle: pi * 0.6 + r.nextDouble() * 0.3,
+        len: 0.08 + r.nextDouble() * 0.12,
+        start: r.nextDouble(),
+        dur: 0.04 + r.nextDouble() * 0.03,
+      ),
+    );
   }
 
   @override
   void paint(Canvas canvas, Size size) {
     // --- Stars ---
     for (final s in _stars) {
-      final a = ((sin(s.phase + t * pi * 2 * s.speed) + 1) / 2)
-          .clamp(0.1, 1.0);
+      final a = ((sin(s.phase + t * pi * 2 * s.speed) + 1) / 2).clamp(0.1, 1.0);
       final c = s.isGlow
           ? Color.fromRGBO(212, 168, 67, a * 0.6)
           : Color.fromRGBO(255, 255, 255, a * 0.7);
@@ -67,10 +69,16 @@ class _StarPainter extends CustomPainter {
       final r = s.radius * (s.isGlow ? 1.6 : 1.0);
       if (s.isGlow) {
         // Simulate glow with two extra low-opacity circles — no GPU blur needed
-        canvas.drawCircle(center, r * 2.5,
-            Paint()..color = Color.fromRGBO(212, 168, 67, a * 0.15));
-        canvas.drawCircle(center, r * 1.5,
-            Paint()..color = Color.fromRGBO(212, 168, 67, a * 0.30));
+        canvas.drawCircle(
+          center,
+          r * 2.5,
+          Paint()..color = Color.fromRGBO(212, 168, 67, a * 0.15),
+        );
+        canvas.drawCircle(
+          center,
+          r * 1.5,
+          Paint()..color = Color.fromRGBO(212, 168, 67, a * 0.30),
+        );
       }
       canvas.drawCircle(center, r, paint);
     }
@@ -103,15 +111,23 @@ class _Star {
   final double x, y, radius, phase, speed;
   final bool isGlow;
   const _Star({
-    required this.x, required this.y, required this.radius,
-    required this.phase, required this.speed, required this.isGlow,
+    required this.x,
+    required this.y,
+    required this.radius,
+    required this.phase,
+    required this.speed,
+    required this.isGlow,
   });
 }
 
 class _Meteor {
   final double sx, sy, angle, len, start, dur;
   const _Meteor({
-    required this.sx, required this.sy, required this.angle,
-    required this.len, required this.start, required this.dur,
+    required this.sx,
+    required this.sy,
+    required this.angle,
+    required this.len,
+    required this.start,
+    required this.dur,
   });
 }

@@ -80,7 +80,6 @@ class WhatsNewDialog extends StatelessWidget {
   }
 }
 
-
 class _ChangelogList extends StatelessWidget {
   const _ChangelogList({required this.changelog});
   final List<String> changelog;

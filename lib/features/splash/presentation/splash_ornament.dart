@@ -21,10 +21,7 @@ class SplashOrnament extends StatelessWidget {
             color: _accent,
             borderRadius: BorderRadius.circular(1),
             boxShadow: [
-              BoxShadow(
-                color: _accent.withValues(alpha: 0.55),
-                blurRadius: 8,
-              ),
+              BoxShadow(color: _accent.withValues(alpha: 0.55), blurRadius: 8),
             ],
           ),
           transform: Matrix4.rotationZ(0.785398),

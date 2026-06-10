@@ -42,10 +42,7 @@ class _TvRatingActionButtonState extends State<TvRatingActionButton> {
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: borderColor,
-            width: _isFocused ? 2.5 : 1.5,
-          ),
+          border: Border.all(color: borderColor, width: _isFocused ? 2.5 : 1.5),
           boxShadow: _isFocused
               ? [
                   BoxShadow(

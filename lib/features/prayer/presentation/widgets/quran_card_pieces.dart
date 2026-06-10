@@ -15,29 +15,31 @@ class _LiveDotState extends State<LiveDot> with SingleTickerProviderStateMixin {
   )..repeat(reverse: true);
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-        animation: _ctrl,
-        builder: (_, _) {
-          final t = _ctrl.value;
-          return Container(
-            width: 9,
-            height: 9,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: widget.color.withValues(alpha: 0.55 + 0.45 * t),
-              boxShadow: [
-                BoxShadow(
-                  color: widget.color.withValues(alpha: 0.55 * t),
-                  blurRadius: 6 * t,
-                  spreadRadius: 1.5 * t,
-                ),
-              ],
+    animation: _ctrl,
+    builder: (_, _) {
+      final t = _ctrl.value;
+      return Container(
+        width: 9,
+        height: 9,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: widget.color.withValues(alpha: 0.55 + 0.45 * t),
+          boxShadow: [
+            BoxShadow(
+              color: widget.color.withValues(alpha: 0.55 * t),
+              blurRadius: 6 * t,
+              spreadRadius: 1.5 * t,
             ),
-          );
-        },
+          ],
+        ),
       );
+    },
+  );
 }
-

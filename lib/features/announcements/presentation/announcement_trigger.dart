@@ -90,10 +90,7 @@ class _AnnouncementTriggerState extends State<AnnouncementTrigger> {
     }
   }
 
-  Future<void> _showTv(
-    IAnnouncementRepository repo,
-    Announcement a,
-  ) async {
+  Future<void> _showTv(IAnnouncementRepository repo, Announcement a) async {
     if (!mounted) return;
     await showDialog<void>(
       context: context,
@@ -106,10 +103,7 @@ class _AnnouncementTriggerState extends State<AnnouncementTrigger> {
     repo.markSeen(a.id);
   }
 
-  Future<void> _showMobile(
-    IAnnouncementRepository repo,
-    Announcement a,
-  ) async {
+  Future<void> _showMobile(IAnnouncementRepository repo, Announcement a) async {
     if (!mounted) return;
     await showDialog<void>(
       context: context,

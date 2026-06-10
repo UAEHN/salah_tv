@@ -24,7 +24,8 @@ abstract class _PermissionUseCase {
 
 class RequestPostNotifications extends _PermissionUseCase {
   const RequestPostNotifications(super.port);
-  Future<Either<Failure, Success>> call() => _run(port.requestPostNotifications);
+  Future<Either<Failure, Success>> call() =>
+      _run(port.requestPostNotifications);
 }
 
 class OpenExactAlarmSettings extends _PermissionUseCase {

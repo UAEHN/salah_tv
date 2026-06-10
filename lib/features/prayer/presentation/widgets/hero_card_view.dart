@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
 import '../../../settings/presentation/settings_provider.dart';
 import '../bloc/hero_card_logic.dart';
-import 'adhkar_hero_container.dart';
 import 'iqama_content.dart';
 import 'next_prayer_content.dart';
 
@@ -73,11 +72,6 @@ class HeroCardView extends StatelessWidget {
     switch (model.mode) {
       case HeroCardMode.iqama:
         return const IqamaContent(key: ValueKey('iqama'));
-      case HeroCardMode.adhkar:
-        return AdhkarHeroContainer(
-          key: ValueKey('adhkar_${model.session.name}'),
-          session: model.session,
-        );
       case HeroCardMode.nextPrayer:
         return const NextPrayerContent(key: ValueKey('next'));
     }

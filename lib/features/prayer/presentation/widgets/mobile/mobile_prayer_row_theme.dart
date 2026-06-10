@@ -20,9 +20,7 @@ BoxDecoration buildMobilePrayerActiveDecoration(
     color: fill,
     borderRadius: BorderRadius.circular(20),
     border: Border.all(
-      color: isDark
-          ? activeContainer.withValues(alpha: 0.35)
-          : activeContainer,
+      color: isDark ? activeContainer.withValues(alpha: 0.35) : activeContainer,
       width: 1.5,
     ),
     boxShadow: [

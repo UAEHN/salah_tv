@@ -70,18 +70,17 @@ Future<void> loadCityTranslations() async {
   );
 
   // Load DB country→cities list from the bundled JSON (replaces SQLite query).
-  final cityListsRaw =
-      await rootBundle.loadString('assets/db_city_lists.json');
-  final cityListsData =
-      (jsonDecode(cityListsRaw) as Map<String, dynamic>).map(
+  final cityListsRaw = await rootBundle.loadString('assets/db_city_lists.json');
+  final cityListsData = (jsonDecode(cityListsRaw) as Map<String, dynamic>).map(
     (k, v) => MapEntry(k, (v as List).cast<String>()),
   );
   registerDbCountries(cityListsData);
 
   final worldRaw = await rootBundle.loadString('assets/world_cities.json');
   final worldData = jsonDecode(worldRaw) as Map<String, dynamic>;
-  final worldCountryMap = (worldData['countries'] as Map<String, dynamic>)
-      .map((k, v) => MapEntry(k.toUpperCase(), v as String));
+  final worldCountryMap = (worldData['countries'] as Map<String, dynamic>).map(
+    (k, v) => MapEntry(k.toUpperCase(), v as String),
+  );
   final worldList = (worldData['cities'] as List).cast<Map<String, dynamic>>();
 
   final worldCountryArabicByKey = <String, String>{...worldCountryMap};

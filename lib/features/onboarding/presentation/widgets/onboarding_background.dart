@@ -5,6 +5,7 @@ import '../../../splash/presentation/splash_star_field.dart';
 
 const _bgTop = Color(0xFF050A18);
 const _bgBottom = Color(0xFF0F1B33);
+
 class OnboardingBackground extends StatelessWidget {
   final Animation<double> starsAnimation;
 

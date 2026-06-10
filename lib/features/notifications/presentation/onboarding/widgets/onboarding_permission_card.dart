@@ -59,9 +59,7 @@ class OnboardingPermissionCard extends StatelessWidget {
               Icon(
                 icon,
                 size: 22,
-                color: Colors.white.withValues(
-                  alpha: isGranted ? 0.55 : 0.85,
-                ),
+                color: Colors.white.withValues(alpha: isGranted ? 0.55 : 0.85),
               ),
               const SizedBox(width: 12),
               Expanded(

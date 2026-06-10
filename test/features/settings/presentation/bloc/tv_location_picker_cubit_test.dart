@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ghasaq/core/city_translations.dart';
+import 'package:ghasaq/core/platform_config.dart';
 import 'package:ghasaq/features/settings/domain/entities/world_city.dart';
 import 'package:ghasaq/features/settings/presentation/bloc/location_picker_source.dart';
 import 'package:ghasaq/features/settings/presentation/bloc/tv_location_picker_cubit.dart';
@@ -13,6 +15,11 @@ void main() {
 
   setUpAll(() async {
     await loadCityTranslations();
+    // `kIsTV` reads `PlatformConfig` from GetIt; the test environment
+    // never runs `initDependencies`, so register a benign instance.
+    if (!GetIt.I.isRegistered<PlatformConfig>()) {
+      GetIt.I.registerSingleton<PlatformConfig>(PlatformConfig());
+    }
   });
 
   FakeWorldCityRepository buildWorldRepo() {
@@ -44,7 +51,7 @@ void main() {
     test('loads merged countries with db and world entries', () async {
       final cubit = TvLocationPickerCubit(
         buildWorldRepo(),
-        currentCountry: 'UAE',
+        currentCountry: 'uae',
         currentCity: 'Dubai',
       );
 
@@ -52,7 +59,7 @@ void main() {
 
       expect(cubit.state.status, TvLocationPickerStatus.ready);
       expect(
-        cubit.state.countries.any((c) => c.key == 'UAE' && c.isInDb),
+        cubit.state.countries.any((c) => c.key == 'uae' && c.isInDb),
         isTrue,
       );
       expect(
@@ -64,14 +71,14 @@ void main() {
     test('shows db cities when a db country is selected', () async {
       final cubit = TvLocationPickerCubit(
         buildWorldRepo(),
-        currentCountry: 'UAE',
+        currentCountry: 'uae',
         currentCity: 'Dubai',
       );
       await cubit.load();
 
       cubit.selectCountry(
         const UnifiedCountry(
-          key: 'UAE',
+          key: 'uae',
           arabicName: 'الإمارات',
           englishName: 'United Arab Emirates',
           source: LocationPickerSource.db,

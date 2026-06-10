@@ -10,8 +10,9 @@ import 'package:flutter/services.dart';
 ///  - Cold-start taps (app launched by tap): native side stashes the
 ///    payload; Flutter pulls it via `consumePendingTapPayload` after the
 ///    splash → home transition so back-press lands on home, not splash.
-final ValueNotifier<String?> warmAdhkarPayloadNotifier =
-    ValueNotifier<String?>(null);
+final ValueNotifier<String?> warmAdhkarPayloadNotifier = ValueNotifier<String?>(
+  null,
+);
 
 const _channel = MethodChannel('ghasaq/notifications');
 
@@ -35,7 +36,9 @@ void initializeNotificationTapRouter() {
 /// running. Call once after splash → home navigation completes.
 Future<void> primeColdStartPayload() async {
   try {
-    final payload = await _channel.invokeMethod<String>('consumePendingTapPayload');
+    final payload = await _channel.invokeMethod<String>(
+      'consumePendingTapPayload',
+    );
     if (payload != null && payload.isNotEmpty) {
       _pendingColdStartPayload = payload;
     }

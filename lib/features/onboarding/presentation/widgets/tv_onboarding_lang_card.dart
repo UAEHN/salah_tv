@@ -62,14 +62,14 @@ class _TvOnboardingLangCardState extends State<TvOnboardingLangCard> {
             color: widget.isSelected
                 ? brandGold.withValues(alpha: 0.15)
                 : _isFocused
-                    ? Colors.white.withValues(alpha: 0.10)
-                    : Colors.white.withValues(alpha: 0.05),
+                ? Colors.white.withValues(alpha: 0.10)
+                : Colors.white.withValues(alpha: 0.05),
             border: Border.all(
               color: widget.isSelected
                   ? brandGold
                   : _isFocused
-                      ? Colors.white.withValues(alpha: 0.5)
-                      : Colors.white.withValues(alpha: 0.12),
+                  ? Colors.white.withValues(alpha: 0.5)
+                  : Colors.white.withValues(alpha: 0.12),
               width: 1.5,
             ),
             boxShadow: widget.isSelected

@@ -24,8 +24,9 @@ class ScheduleLogEntry {
       id: json['id'] as int,
       type: json['type'] as String,
       prayerKey: _nullable(json['prayerKey']),
-      scheduledFor:
-          DateTime.fromMillisecondsSinceEpoch(json['scheduledFor'] as int),
+      scheduledFor: DateTime.fromMillisecondsSinceEpoch(
+        json['scheduledFor'] as int,
+      ),
       firedAt: DateTime.fromMillisecondsSinceEpoch(json['firedAt'] as int),
       success: json['success'] as bool,
       error: _nullable(json['error']),

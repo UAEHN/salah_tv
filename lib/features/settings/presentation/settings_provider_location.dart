@@ -46,6 +46,9 @@ extension SettingsProviderLocation on SettingsProvider {
   Future<void> updateMadhab(String madhabKey) =>
       _update(_settings.copyWith(madhab: madhabKey));
 
+  Future<void> updateHighLatitudeRule(String ruleKey) =>
+      _update(_settings.copyWith(highLatitudeRule: ruleKey));
+
   Future<void> updateIqamaDelay(String prayerKey, int minutes) {
     final delays = Map<String, int>.from(_settings.iqamaDelays);
     delays[prayerKey] = minutes.clamp(0, 60);

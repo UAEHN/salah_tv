@@ -57,10 +57,15 @@ class WorldCityListView extends StatelessWidget {
       itemCount: cities.length,
       itemBuilder: (_, i) {
         final city = cities[i];
-        final isSelected = selectedCity?.name == city.name &&
+        final isSelected =
+            selectedCity?.name == city.name &&
             selectedCity?.countryKey == city.countryKey;
         return TvOnboardingListItem(
-          title: cityLabel(city.name, locale: locale, countryKey: city.countryKey),
+          title: cityLabel(
+            city.name,
+            locale: locale,
+            countryKey: city.countryKey,
+          ),
           isSelected: isSelected,
           onSelect: () => onSelect(city),
           autofocus: i == 0,

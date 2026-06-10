@@ -1,4 +1,4 @@
-﻿String adhanSoundLabel(String soundId) {
+String adhanSoundLabel(String soundId) {
   switch (soundId) {
     case 'ali_mulla':
       return 'Ali Mulla';

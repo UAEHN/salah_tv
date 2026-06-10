@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import '../../../settings/domain/entities/prayer_sound_mode.dart';
+import 'engine_telemetry_extension.dart';
 import 'prayer_cycle_base.dart';
 import 'quran_mixin.dart';
 import 'takbeerat_mixin.dart';
@@ -12,6 +13,19 @@ const Duration _kSilentIqamaWindow = Duration(seconds: 12);
 /// Auto-close window for the mosque-mode iqama takeover. Held longer so the
 /// congregation can read the announcement before the worshipping window opens.
 const Duration _kMosqueIqamaWindow = Duration(seconds: 30);
+
+/// Mosque-mode post-iqama prayer window — the after-prayer adhkar takeover
+/// begins exactly when it ends (the congregation has finished praying).
+const Duration _kMosquePrayerWindow = Duration(minutes: 10);
+
+/// Non-mosque delay from iqama end to the after-prayer adhkar takeover — a
+/// rough estimate of how long the prayer itself takes at home.
+const Duration _kAfterPrayerDelay = Duration(minutes: 10);
+
+/// Delay from iqama end to the morning/evening session adhkar takeover. 25 min
+/// clears the after-prayer takeover window (iqama+10..+15) by 10 min, so the
+/// two never overlap. The tick loop ([TickMixin.checkSessionAdhkar]) acts on it.
+const Duration _kSessionAdhkarDelay = Duration(minutes: 25);
 
 /// Handles the iqama countdown and iqama playback phase.
 /// Issue comments 1, 3, 4, 10 are preserved verbatim.
@@ -30,24 +44,30 @@ mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
   // resume immediately rather than waiting for the 4-minute fallback timer.
   Future<void> triggerIqama() async {
     s.isIqamaPlaying = true;
-    final isSilent = settings.isMosqueMode ||
-        settings.iqamaMode == PrayerSoundMode.silent;
+    s.iqamaTriggerTime = s.now;
+    final isSilent =
+        settings.isMosqueMode || settings.iqamaMode == PrayerSoundMode.silent;
     s.iqamaFallbackTimer?.cancel();
     final silentWindow = settings.isMosqueMode
         ? _kMosqueIqamaWindow
         : _kSilentIqamaWindow;
-    s.iqamaFallbackTimer = Timer(
-      isSilent ? silentWindow : const Duration(minutes: 4),
-      () {
-        if (s.isIqamaPlaying) stopIqama();
-      },
-    );
+    final window = isSilent ? silentWindow : const Duration(minutes: 4);
+    final prayerKey = s.iqamaPrayerKey;
+    s.iqamaFallbackTimer = Timer(window, () {
+      if (s.isIqamaPlaying) {
+        telIqamaFallback(prayerKey, window.inSeconds, settings.isMosqueMode);
+        s.iqamaWasNaturalCompletion = false;
+        stopIqama();
+      }
+    });
     notify();
     if (isSilent) return; // visual-only takeover, no audio
     final success = await audio.playIqama();
     if (!success && s.isIqamaPlaying) {
+      telIqamaFail(prayerKey);
       // Audio failed to start — clean up immediately
       s.iqamaFallbackTimer?.cancel();
+      s.iqamaWasNaturalCompletion = false;
       await stopIqama();
     }
   }
@@ -56,6 +76,8 @@ mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
   // Issue 4: entry guard prevents double-call from concurrent onComplete events.
   Future<void> stopIqama() async {
     if (!s.isIqamaPlaying) return;
+    telIqamaCompletedFromState(s);
+    s.iqamaWasNaturalCompletion = true; // reset for next cycle
     s.isIqamaPlaying = false;
     s.activeCyclePrayerKey = ''; // cycle fully done — release card highlight
     s.iqamaFallbackTimer?.cancel();
@@ -63,7 +85,28 @@ mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
     // Mosque mode: open the 10-minute post-iqama prayer window so the home
     // screen shows the silence-phone takeover during the actual prayer.
     if (settings.isMosqueMode) {
-      s.prayerInProgressEndsAt = s.now.add(const Duration(minutes: 10));
+      s.prayerInProgressEndsAt = s.now.add(_kMosquePrayerWindow);
+    }
+    // Schedule the after-prayer adhkar takeover (gated by the adhkar setting
+    // and its own dedicated toggle, so it can be turned off without disabling
+    // the morning/evening hero adhkar). Mosque: it begins right when the prayer
+    // window above ends. Non-mosque: after a rough prayer-duration delay. The
+    // tick loop starts/ends it.
+    if (settings.isAdhkarEnabled && settings.isAfterPrayerAdhkarEnabled) {
+      s.afterPrayerAdhkarStartsAt = s.now.add(
+        settings.isMosqueMode ? _kMosquePrayerWindow : _kAfterPrayerDelay,
+      );
+    }
+    // Schedule the morning/evening session adhkar takeover 25 min after iqama
+    // (after Fajr → morning, after Asr → evening), outside mosque mode only (the
+    // imam leads adhkar live). Independent of [isAfterPrayerAdhkarEnabled]; the
+    // 25-min delay clears the after-prayer window so the two never overlap.
+    if (settings.isAdhkarEnabled && !settings.isMosqueMode) {
+      final session = _sessionForCurrentPrayer();
+      if (session.isNotEmpty) {
+        s.sessionAdhkarCategory = session;
+        s.sessionAdhkarStartsAt = s.now.add(_kSessionAdhkarDelay);
+      }
     }
     // Resume Quran after iqama ends
     resumeQuranAfterAdhan();
@@ -71,4 +114,14 @@ mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
     notify();
   }
 
+  /// Which morning/evening adhkar session applies at iqama end, or '' if none.
+  /// After Fajr the next prayer is Dhuhr (before 10:00 → morning); after Asr the
+  /// next is Maghrib (still > 5 min away → evening). Other prayers → no session.
+  String _sessionForCurrentPrayer() {
+    if (s.nextPrayerKey == 'dhuhr' && s.now.hour < 10) return 'morning';
+    if (s.nextPrayerKey == 'maghrib' && s.countdown.inMinutes > 5) {
+      return 'evening';
+    }
+    return '';
+  }
 }

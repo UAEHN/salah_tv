@@ -8,8 +8,10 @@ List<Surah> filterSurahsByQuery(List<Surah> surahs, String query) {
   final q = normalizeArabicForSearch(query);
   if (q.isEmpty) return surahs;
   final asNumber = int.tryParse(query.trim());
-  return surahs.where((s) {
-    if (asNumber != null && s.number == asNumber) return true;
-    return normalizeArabicForSearch(s.nameAr).contains(q);
-  }).toList(growable: false);
+  return surahs
+      .where((s) {
+        if (asNumber != null && s.number == asNumber) return true;
+        return normalizeArabicForSearch(s.nameAr).contains(q);
+      })
+      .toList(growable: false);
 }

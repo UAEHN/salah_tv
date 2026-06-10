@@ -23,9 +23,7 @@ class MobileFeedbackSubmitButton extends StatelessWidget {
       child: Container(
         height: 54,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [primary, primaryContainer],
-          ),
+          gradient: LinearGradient(colors: [primary, primaryContainer]),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(

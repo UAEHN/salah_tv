@@ -17,10 +17,10 @@ class NotificationHealthState {
   });
 
   const NotificationHealthState.initial()
-      : health = NotificationHealth.empty,
-        isLoading = true,
-        isTestPending = false,
-        error = null;
+    : health = NotificationHealth.empty,
+      isLoading = true,
+      isTestPending = false,
+      error = null;
 
   NotificationHealthState copyWith({
     NotificationHealth? health,
@@ -28,11 +28,10 @@ class NotificationHealthState {
     bool? isTestPending,
     String? error,
     bool clearError = false,
-  }) =>
-      NotificationHealthState(
-        health: health ?? this.health,
-        isLoading: isLoading ?? this.isLoading,
-        isTestPending: isTestPending ?? this.isTestPending,
-        error: clearError ? null : (error ?? this.error),
-      );
+  }) => NotificationHealthState(
+    health: health ?? this.health,
+    isLoading: isLoading ?? this.isLoading,
+    isTestPending: isTestPending ?? this.isTestPending,
+    error: clearError ? null : (error ?? this.error),
+  );
 }

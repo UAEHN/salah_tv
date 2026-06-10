@@ -35,16 +35,19 @@ class QuranSingleSurahControls extends StatelessWidget {
           children: [
             Expanded(
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 decoration: tc.glass(opacity: 0.06, borderRadius: 10),
                 child: Text(
                   surah?.nameAr ?? l.settingsQuranNoSurahSelected,
                   style: TextStyle(
                     fontSize: 18,
                     color: surah != null ? tc.textPrimary : tc.textMuted,
-                    fontWeight:
-                        surah != null ? FontWeight.w600 : FontWeight.normal,
+                    fontWeight: surah != null
+                        ? FontWeight.w600
+                        : FontWeight.normal,
                   ),
                 ),
               ),
@@ -61,9 +64,10 @@ class QuranSingleSurahControls extends StatelessWidget {
               ),
               accent: palette.primary,
               filled: true,
-              child: Text(l.settingsQuranSelectSurah,
-                  style:
-                      const TextStyle(fontSize: 18, color: Colors.white)),
+              child: Text(
+                l.settingsQuranSelectSurah,
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
             ),
           ],
         ),

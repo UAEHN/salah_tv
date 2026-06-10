@@ -64,10 +64,7 @@ class _HomeWidgetBridgeState extends State<HomeWidgetBridge> {
     _refreshAndPublish(state, l).whenComplete(() => _refreshing = false);
   }
 
-  Future<void> _refreshAndPublish(
-    PrayerState state,
-    AppLocalizations l,
-  ) async {
+  Future<void> _refreshAndPublish(PrayerState state, AppLocalizations l) async {
     final List<DailyPrayerTimes> upcoming = await _getSchedule(
       from: state.now,
       days: _daysAhead,

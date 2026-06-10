@@ -36,13 +36,17 @@ class CompositePrayerRepository implements IPrayerTimesRepository {
     double lng,
     String methodKey, {
     String madhabKey = 'shafi',
+    String highLatitudeRuleKey = 'auto',
     String cityLabel = '',
     String? timeZoneId,
     double? utcOffsetHours,
   }) {
     _calcRepo.configureCalculatedMode(
-      lat, lng, methodKey,
+      lat,
+      lng,
+      methodKey,
       madhabKey: madhabKey,
+      highLatitudeRuleKey: highLatitudeRuleKey,
       cityLabel: cityLabel,
       timeZoneId: timeZoneId,
       utcOffsetHours: utcOffsetHours,

@@ -31,10 +31,7 @@ class QiblaCompassCenter extends StatelessWidget {
             height: 1.0,
             letterSpacing: -1,
           ),
-          child: Text(
-            '${angle.toInt()}°',
-            textDirection: TextDirection.ltr,
-          ),
+          child: Text('${angle.toInt()}°', textDirection: TextDirection.ltr),
         ),
         const SizedBox(height: 8),
         Container(

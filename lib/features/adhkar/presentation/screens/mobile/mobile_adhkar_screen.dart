@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
@@ -23,14 +23,14 @@ class MobileAdhkarScreen extends StatelessWidget {
           child: BlocBuilder<AdhkarReaderCubit, AdhkarReaderState>(
             builder: (context, state) => switch (state) {
               AdhkarReaderCategories(:final categories) => Column(
-                  children: [
-                    _TopBar(title: l.navAdhkar),
-                    const MobileTasbihEntryCard(),
-                    Expanded(
-                      child: MobileAdhkarCategoryGrid(categories: categories),
-                    ),
-                  ],
-                ),
+                children: [
+                  _TopBar(title: l.navAdhkar),
+                  const MobileTasbihEntryCard(),
+                  Expanded(
+                    child: MobileAdhkarCategoryGrid(categories: categories),
+                  ),
+                ],
+              ),
               AdhkarReaderReading() => const MobileAdhkarReaderScreen(),
               AdhkarReaderCompleted() => const MobileAdhkarReaderScreen(),
               _ => const Center(child: CircularProgressIndicator()),

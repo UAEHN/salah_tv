@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../../features/analytics/domain/i_analytics_service.dart';
 import '../../features/audio/data/audio_service.dart';
 import '../../features/audio/data/noop_prayer_audio_port.dart';
 import '../../features/audio/data/noop_takbeerat_audio_port.dart';
@@ -30,8 +31,9 @@ import '../platform_config.dart';
 
 Future<void> registerPrayerServices(
   AppSettings settings,
-  PlatformConfig platformConfig,
-) async {
+  PlatformConfig platformConfig, {
+  required bool isFirstLaunch,
+}) async {
   // ── Open prayer_cache.db ─────────────────────────────────────────────────
   final cacheDb = await PrayerCacheDbInitializer().openOrCreate();
 
@@ -42,13 +44,21 @@ Future<void> registerPrayerServices(
 
   // ── Build use cases ──────────────────────────────────────────────────────
   final queries = PrayerCacheDbQueries();
-  final downloader = PrayerCityDownloader();
+  final downloader = PrayerCityDownloader(
+    analytics: getIt<IAnalyticsService>(),
+  );
   final writer = PrayerCacheDbWriter();
   final downloadUseCase = DownloadCityUseCase(
-    cacheDb, queries, downloader, writer,
+    cacheDb,
+    queries,
+    downloader,
+    writer,
   );
   final checkUpdateUseCase = CheckCityUpdateUseCase(
-    cacheDb, queries, downloader, downloadUseCase,
+    cacheDb,
+    queries,
+    downloader,
+    downloadUseCase,
   );
 
   // ── Register in DI ───────────────────────────────────────────────────────
@@ -56,58 +66,70 @@ Future<void> registerPrayerServices(
   getIt.registerSingleton<DownloadCityUseCase>(downloadUseCase);
   getIt.registerSingleton<IPrayerTimesRepository>(compositeRepo);
 
+  // First launch: the city is still the bundled default ('Dubai'), not the
+  // user's choice — skip pre-loading/downloading it. Onboarding configures the
+  // repo with the chosen city on completion, so the prayer-data pipeline never
+  // runs for a city the user never picked.
   // ── Configure initial mode ───────────────────────────────────────────────
-  if (_isCalculated(settings)) {
-    calcRepo.configureCalculatedMode(
-      settings.selectedLatitude!,
-      settings.selectedLongitude!,
-      settings.calculationMethod,
-      madhabKey: settings.madhab,
-      cityLabel: settings.selectedCity,
-      timeZoneId: settings.selectedTimeZoneId,
-      utcOffsetHours: settings.utcOffsetHours,
-    );
-    // compositeRepo defaults to calculated mode
-  } else {
-    final countryKey = settings.selectedCountry.toLowerCase();
-    final isCached = await queries.isCityCached(
-      cacheDb, countryKey, settings.selectedCity, DateTime.now().year,
-    );
-    if (isCached) {
-      await downloadedRepo.loadCity(countryKey, settings.selectedCity);
-      compositeRepo.configureDatabaseMode();
-      // Background hash check — silent on any failure
-      unawaited(checkUpdateUseCase(
-        countryKey: countryKey,
-        cityName: settings.selectedCity,
-      ));
+  if (!isFirstLaunch) {
+    if (_isCalculated(settings)) {
+      calcRepo.configureCalculatedMode(
+        settings.selectedLatitude!,
+        settings.selectedLongitude!,
+        settings.calculationMethod,
+        madhabKey: settings.madhab,
+        highLatitudeRuleKey: settings.highLatitudeRule,
+        cityLabel: settings.selectedCity,
+        timeZoneId: settings.selectedTimeZoneId,
+        utcOffsetHours: settings.utcOffsetHours,
+      );
+      // compositeRepo defaults to calculated mode
     } else {
-      // City not cached → download now under the splash screen (~14 KB, fast).
-      final result = await downloadUseCase(
-        countryKey: countryKey,
-        cityName: settings.selectedCity,
-        cancelToken: CancellationToken(),
+      final countryKey = settings.selectedCountry.toLowerCase();
+      final isCached = await queries.isCityCached(
+        cacheDb,
+        countryKey,
+        settings.selectedCity,
+        DateTime.now().year,
       );
-      await result.fold(
-        (_) async {
-          // Download failed — fall back to last successfully cached city if
-          // available, so the user sees correct times rather than (0°,0°) garbage.
-          final fallback = await queries.getLastCachedCity(cacheDb);
-          if (fallback != null) {
-            await downloadedRepo.loadCity(
-              fallback.countryKey,
-              fallback.cityName,
-            );
+      if (isCached) {
+        await downloadedRepo.loadCity(countryKey, settings.selectedCity);
+        compositeRepo.configureDatabaseMode();
+        // Background hash check — silent on any failure
+        unawaited(
+          checkUpdateUseCase(
+            countryKey: countryKey,
+            cityName: settings.selectedCity,
+          ),
+        );
+      } else {
+        // City not cached → download now under the splash screen (~14 KB, fast).
+        final result = await downloadUseCase(
+          countryKey: countryKey,
+          cityName: settings.selectedCity,
+          cancelToken: CancellationToken(),
+        );
+        await result.fold(
+          (_) async {
+            // Download failed — fall back to last successfully cached city if
+            // available, so the user sees correct times rather than (0°,0°) garbage.
+            final fallback = await queries.getLastCachedCity(cacheDb);
+            if (fallback != null) {
+              await downloadedRepo.loadCity(
+                fallback.countryKey,
+                fallback.cityName,
+              );
+              compositeRepo.configureDatabaseMode();
+            }
+            // No fallback → composite stays in uninitialized calculated mode
+            // (first-ever launch with no internet — unavoidable).
+          },
+          (_) async {
+            await downloadedRepo.loadCity(countryKey, settings.selectedCity);
             compositeRepo.configureDatabaseMode();
-          }
-          // No fallback → composite stays in uninitialized calculated mode
-          // (first-ever launch with no internet — unavoidable).
-        },
-        (_) async {
-          await downloadedRepo.loadCity(countryKey, settings.selectedCity);
-          compositeRepo.configureDatabaseMode();
-        },
-      );
+          },
+        );
+      }
     }
   }
 
@@ -134,9 +156,7 @@ Future<void> registerPrayerServices(
   // Owns its own AudioPlayer so it never collides with the adhan pipeline
   // or the Quran stream.
   getIt.registerSingleton<ITakbeeratAudioPort>(
-    platformConfig.isTV
-        ? TakbeeratAudioService()
-        : NoOpTakbeeratAudioPort(),
+    platformConfig.isTV ? TakbeeratAudioService() : NoOpTakbeeratAudioPort(),
   );
 }
 

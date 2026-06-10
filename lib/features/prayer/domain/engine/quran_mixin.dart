@@ -1,4 +1,5 @@
 import 'continuous_mode_mixin.dart';
+import 'engine_telemetry_extension.dart';
 import 'prayer_cycle_base.dart';
 import 'quran_modes_mixin.dart';
 
@@ -59,6 +60,7 @@ mixin QuranMixin on PrayerCycleBase, ContinuousModeMixin, QuranModesMixin {
     if (s.isQuranPausedByUser) return;
     if (s.isQuranPlaying && !s.isQuranPausedForAdhan) {
       s.isQuranPausedForAdhan = true;
+      telQuranPausedForCycle('adhan_trigger');
       audio.pauseQuranPlayer();
     }
   }
@@ -70,6 +72,7 @@ mixin QuranMixin on PrayerCycleBase, ContinuousModeMixin, QuranModesMixin {
     if (s.isQuranPausedForAdhan) {
       s.isQuranPausedForAdhan = false;
       if (s.isQuranPausedByUser) return;
+      telQuranResumedAfterCycle();
       audio.resumeOrRestartQuranPlayer(settings.quranReciterServerUrl);
     }
   }
@@ -83,5 +86,4 @@ mixin QuranMixin on PrayerCycleBase, ContinuousModeMixin, QuranModesMixin {
     }
     notify();
   }
-
 }

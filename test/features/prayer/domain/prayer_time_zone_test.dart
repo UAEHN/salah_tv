@@ -14,10 +14,7 @@ void main() {
     test('converts device time to target city offset', () {
       final emiratesNow = DateTime.utc(2026, 4, 13, 8, 0);
 
-      final algeriaNow = PrayerTimeZone.resolve(
-        emiratesNow,
-        utcOffsetHours: 1,
-      );
+      final algeriaNow = PrayerTimeZone.resolve(emiratesNow, utcOffsetHours: 1);
 
       expect(algeriaNow, DateTime(2026, 4, 13, 9, 0));
     });

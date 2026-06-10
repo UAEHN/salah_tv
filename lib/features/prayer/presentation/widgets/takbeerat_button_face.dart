@@ -27,11 +27,11 @@ class TakbeeratButtonFace extends StatelessWidget {
     final borderAlpha = isPlaying ? 0.85 : 0.55;
     final innerColor = isPlaying
         ? (isDarkMode
-            ? Colors.black.withValues(alpha: 0.55)
-            : Colors.white.withValues(alpha: 0.75))
+              ? Colors.black.withValues(alpha: 0.55)
+              : Colors.white.withValues(alpha: 0.75))
         : (isDarkMode
-            ? Colors.white.withValues(alpha: 0.10)
-            : Colors.black.withValues(alpha: 0.07));
+              ? Colors.white.withValues(alpha: 0.10)
+              : Colors.black.withValues(alpha: 0.07));
     final textColor = isDarkMode
         ? Colors.white.withValues(alpha: isPlaying ? 1 : 0.92)
         : kTextPrimary.withValues(alpha: isPlaying ? 1 : 0.88);

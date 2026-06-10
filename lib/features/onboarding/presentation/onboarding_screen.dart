@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../prayer/presentation/bloc/prayer_bloc.dart';
+import '../../prayer/presentation/bloc/prayer_event.dart';
 import 'onboarding_cubit.dart';
-import 'pages/onboarding_city_page.dart';
-import 'pages/onboarding_country_page.dart';
 import 'pages/onboarding_language_page.dart';
+import 'pages/onboarding_location_page.dart';
 import 'widgets/mobile_onboarding_background.dart';
 import 'widgets/onboarding_progress_bar.dart';
 
@@ -48,6 +49,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           prev.completionError != curr.completionError,
       listener: (context, state) {
         if (state.isComplete) {
+          // Onboarding committed city/country: now safe to spin up the prayer
+          // cycle engine (1Hz tick, adhan trigger). main.dart skipped the
+          // initial PrayerStarted when the city was empty.
+          context.read<PrayerBloc>().add(const PrayerStarted());
           Navigator.of(context).pushReplacementNamed('/');
           return;
         }
@@ -102,8 +107,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     return (child, animation) {
       final keyValue = (child.key as ValueKey<int>?)?.value ?? -1;
       final isForward = keyValue == currentStep;
-      final beginOffset =
-          isForward ? const Offset(0.06, 0) : const Offset(-0.06, 0);
+      final beginOffset = isForward
+          ? const Offset(0.06, 0)
+          : const Offset(-0.06, 0);
       return SlideTransition(
         position: Tween(begin: beginOffset, end: Offset.zero).animate(
           CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
@@ -116,13 +122,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   Widget _pageForStep(int step) {
     switch (step) {
       case 1:
-        return OnboardingCountryPage(
+        return OnboardingLocationPage(
           key: const ValueKey(1),
-          entranceAnimation: _entranceController,
-        );
-      case 2:
-        return OnboardingCityPage(
-          key: const ValueKey(2),
           entranceAnimation: _entranceController,
         );
       default:

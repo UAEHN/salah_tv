@@ -78,9 +78,9 @@ class _ContinueCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     '${l.mushafSurahPrefix} $surahName • ${l.mushafAyahWord} $ayahLabel',
-                    style: MobileTextStyles.bodyMd(context).copyWith(
-                      color: surface.foregroundMuted,
-                    ),
+                    style: MobileTextStyles.bodyMd(
+                      context,
+                    ).copyWith(color: surface.foregroundMuted),
                     textAlign: TextAlign.start,
                   ),
                 ],
@@ -108,10 +108,9 @@ class _PageBadge extends StatelessWidget {
       children: [
         Text(
           AppLocalizations.of(context).mushafPageWord,
-          style: MobileTextStyles.labelSm(context).copyWith(
-            fontSize: 10,
-            color: surface.foregroundMuted,
-          ),
+          style: MobileTextStyles.labelSm(
+            context,
+          ).copyWith(fontSize: 10, color: surface.foregroundMuted),
         ),
         const SizedBox(height: 2),
         Text(

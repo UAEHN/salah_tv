@@ -77,8 +77,11 @@ class QuranReciterRow extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.person_search_rounded,
-                  color: Colors.white, size: 20),
+              const Icon(
+                Icons.person_search_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 l.settingsChangeReciter,

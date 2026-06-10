@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import '../../../core/adhan_sounds.dart';
 import '../../settings/domain/entities/custom_adhan.dart';
 import '../../settings/domain/i_custom_adhan_repository.dart';
 import '../domain/i_audio_repository.dart';
 import '../../prayer/domain/i_prayer_audio_port.dart';
+import '../../prayer/domain/entities/audio_output_state.dart';
 import 'announcement_service.dart';
 import 'audio_service_quran_mixin.dart';
 import 'bell_player.dart';
@@ -35,7 +37,7 @@ class AudioService
   final QuranAudioService _quranService = QuranAudioService();
 
   AudioService({ICustomAdhanRepository? customAdhans})
-      : _customAdhans = customAdhans {
+    : _customAdhans = customAdhans {
     _player.onPlayerComplete.listen((_) {
       _isPlaying = false;
       _onCompleteController.add(null);
@@ -45,9 +47,7 @@ class AudioService
     // initiate the stop, treat it as a completion so the state machine
     // advances immediately instead of freezing for 4 minutes.
     _player.onPlayerStateChanged.listen((state) {
-      if (state == PlayerState.stopped &&
-          _isPlaying &&
-          !_isAppInitiatedStop) {
+      if (state == PlayerState.stopped && _isPlaying && !_isAppInitiatedStop) {
         _isPlaying = false;
         _onCompleteController.add(null);
       }
@@ -93,6 +93,29 @@ class AudioService
   Future<bool> playAdhan({String soundKey = 'default'}) =>
       _playMain(() => _resolveAdhanSource(soundKey), 'playAdhan');
 
+  // Same channel PlatformConfig uses; AudioService keeps its own reference so
+  // it stays decoupled from startup wiring.
+  static const _platform = MethodChannel('ghasaq/platform');
+
+  @override
+  Future<AudioOutputState?> readAudioOutputState() async {
+    try {
+      final map = await _platform.invokeMapMethod<String, dynamic>(
+        'getAudioState',
+      );
+      if (map == null) return null;
+      return AudioOutputState(
+        volume: (map['volume'] as int?) ?? 0,
+        maxVolume: (map['maxVolume'] as int?) ?? 0,
+        muted: (map['muted'] as bool?) ?? false,
+      );
+    } on MissingPluginException {
+      return null; // older build without the native handler
+    } on PlatformException {
+      return null;
+    }
+  }
+
   @override
   Future<bool> playDua() =>
       _playMain(() async => AssetSource('audio/dua.mp3'), 'playDua');
@@ -129,8 +152,7 @@ class AudioService
   }
 
   @override
-  Future<void> playPrayerAnnouncement(String prayerKey) =>
-      _announcement.play(prayerKey);
+  Future<void> playPrayerAnnouncement(String key) => _announcement.play(key);
 
   @override
   Future<void> playPreAlertBell() => _bell.play();

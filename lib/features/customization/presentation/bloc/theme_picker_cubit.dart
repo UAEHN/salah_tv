@@ -14,10 +14,10 @@ class ThemePickerCubit extends Cubit<ThemePickerState> {
     required GetAllThemePalettesUseCase getAll,
     required ApplyThemePaletteUseCase apply,
     IAnalyticsService? analytics,
-  })  : _getAll = getAll,
-        _apply = apply,
-        _analytics = analytics,
-        super(const ThemePickerInitial());
+  }) : _getAll = getAll,
+       _apply = apply,
+       _analytics = analytics,
+       super(const ThemePickerInitial());
 
   Future<void> load(String currentSelectedId) async {
     emit(const ThemePickerLoading());
@@ -25,10 +25,7 @@ class ThemePickerCubit extends Cubit<ThemePickerState> {
     result.fold(
       (failure) => emit(const ThemePickerError('themePickerLoadError')),
       (palettes) => emit(
-        ThemePickerLoaded(
-          palettes: palettes,
-          selectedId: currentSelectedId,
-        ),
+        ThemePickerLoaded(palettes: palettes, selectedId: currentSelectedId),
       ),
     );
   }

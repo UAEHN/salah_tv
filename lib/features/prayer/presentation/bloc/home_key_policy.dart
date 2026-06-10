@@ -68,11 +68,10 @@ HomeKeyIntent decideHomeKeyIntent(HomeKeyInput input) {
   // reachable via D-pad. Right is added because in the RTL UI users
   // intuitively try the horizontal direction too. Left is reserved for
   // escaping out of the buttons (handled by the button widgets themselves).
-  final isFocusEntryKey = input.key == HomeRemoteKey.arrowDown ||
+  final isFocusEntryKey =
+      input.key == HomeRemoteKey.arrowDown ||
       input.key == HomeRemoteKey.arrowRight;
-  if (isFocusEntryKey &&
-      !input.isCycleMediaLocked &&
-      !input.isIqamaCountdown) {
+  if (isFocusEntryKey && !input.isCycleMediaLocked && !input.isIqamaCountdown) {
     if (input.isQuranEnabled && input.hasQuranReciter) {
       return HomeKeyIntent.focusQuran;
     }

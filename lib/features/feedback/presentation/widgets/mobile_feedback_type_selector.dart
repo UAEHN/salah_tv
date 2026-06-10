@@ -72,9 +72,7 @@ class _MobileFeedbackTypeChip extends StatelessWidget {
               : cardColor.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isSelected
-                ? primary
-                : MobileColors.border(context),
+            color: isSelected ? primary : MobileColors.border(context),
             width: isSelected ? 1.5 : 1,
           ),
         ),

@@ -18,8 +18,7 @@ class NotificationHealth {
     required this.scheduleLog,
   });
 
-  bool get allGreen =>
-      postNotifications && exactAlarm && batteryUnrestricted;
+  bool get allGreen => postNotifications && exactAlarm && batteryUnrestricted;
 
   static const empty = NotificationHealth(
     postNotifications: false,

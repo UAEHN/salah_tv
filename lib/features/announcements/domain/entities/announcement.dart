@@ -47,8 +47,7 @@ class Announcement {
   String localizedTitle(String localeCode) =>
       _pick(localeCode, titleAr, titleEn);
 
-  String localizedBody(String localeCode) =>
-      _pick(localeCode, bodyAr, bodyEn);
+  String localizedBody(String localeCode) => _pick(localeCode, bodyAr, bodyEn);
 
   String localizedCtaLabel(String localeCode) =>
       _pick(localeCode, ctaLabelAr, ctaLabelEn);

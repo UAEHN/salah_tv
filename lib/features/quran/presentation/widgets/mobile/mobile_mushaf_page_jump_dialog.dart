@@ -38,8 +38,9 @@ class _MobileMushafPageJumpDialogState
     final raw = _controller.text.trim();
     final n = int.tryParse(raw);
     if (n == null || n < 1 || n > MushafPage.totalPages) {
-      setState(() =>
-          _error = AppLocalizations.of(context).mushafJumpDialogError);
+      setState(
+        () => _error = AppLocalizations.of(context).mushafJumpDialogError,
+      );
       return;
     }
     Navigator.of(context).pop(n);
@@ -75,10 +76,7 @@ class _MobileMushafPageJumpDialogState
           onPressed: () => Navigator.of(context).pop(),
           child: Text(l.commonCancel),
         ),
-        FilledButton(
-          onPressed: _submit,
-          child: Text(l.mushafJumpDialogGo),
-        ),
+        FilledButton(onPressed: _submit, child: Text(l.mushafJumpDialogGo)),
       ],
     );
   }

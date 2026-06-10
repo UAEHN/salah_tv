@@ -309,6 +309,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adhkarEveningSession => 'أذكار المساء';
 
   @override
+  String get adhkarAfterPrayerTitle => 'أذكار بعد الصلاة';
+
+  @override
+  String get settingsAfterPrayerAdhkarNote =>
+      'تُعرض أذكار ودعاء قصير على الشاشة بعد كل صلاة بدقائق، ثم يعود تشغيل القرآن. أوقفه إذا أردت ألّا تظهر بعد الصلاة.';
+
+  @override
+  String get settingsScreensaverPreview => 'معاينة شاشة التوقّف';
+
+  @override
+  String get settingsScreensaver => 'شاشة التوقّف';
+
+  @override
+  String get settingsScreensaverNote =>
+      'تعرض آيات وأذكار وأسماء الله الحسنى عند عدم استخدام الريموت، وتختفي فوراً عند أي ضغطة أو قرب الصلاة.';
+
+  @override
   String get tasbihEntrySummary => 'ابدأ التسبيح اليومي';
 
   @override
@@ -371,6 +388,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get nextPrayerActiveLabel => 'الصلاة القادمة';
+
+  @override
+  String get nextPrayerShortLabel => 'القادمة';
 
   @override
   String countdownNextPrayer(Object prayerName) {
@@ -676,6 +696,56 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsNoMatchingCities => 'لا توجد مدن مطابقة';
 
   @override
+  String get settingsSearchOnline => 'ابحث في الإنترنت';
+
+  @override
+  String get settingsSearchOnlineHint => 'اكتب اسم أي مدينة في العالم';
+
+  @override
+  String get settingsSearchOnlinePrompt => 'اكتب اسم مدينتك لبدء البحث';
+
+  @override
+  String get settingsSearchOnlineEmpty =>
+      'لم نجد نتائج. جرّب اسماً آخر أو الإنجليزية.';
+
+  @override
+  String get settingsSearchOnlineError =>
+      'تعذّر الاتصال بالإنترنت. حاول لاحقاً.';
+
+  @override
+  String get settingsSearchOnlineCta => 'لم تجد مدينتك؟ ابحث في الإنترنت';
+
+  @override
+  String get settingsPickCalculationMethod => 'اختر طريقة الحساب';
+
+  @override
+  String get settingsSuggestedForLocation => 'موصى بها لموقعك';
+
+  @override
+  String get settingsOtherMethods => 'طرق أخرى';
+
+  @override
+  String get settingsHighLatitudeMessage =>
+      'أنت في منطقة عالية خط العرض. اخترنا قاعدة (زاوية الشفق) للفجر والعشاء — هذه الطريقة الأنسب لمعظم المساجد الأوروبية.';
+
+  @override
+  String get settingsExtremeLatitudeMessage =>
+      'هذه منطقة قريبة من القطب. أوقات الفجر والعشاء في أيام الصيف ستكون تقديرية — تابع جدول مسجدك المحلي للأدق.';
+
+  @override
+  String get settingsCalibrationPromptTitle => 'هل تريد مطابقة مسجد محلي؟';
+
+  @override
+  String get settingsCalibrationPromptBody =>
+      'تم حفظ موقعك بنجاح. إن كانت أوقات مسجدك تختلف بدقائق قليلة، يمكنك ضبط ±دقائق لكل صلاة لمطابقته تماماً.';
+
+  @override
+  String get settingsCalibrationPromptYes => 'نعم، اضبط الآن';
+
+  @override
+  String get settingsCalibrationPromptSkip => 'لاحقاً';
+
+  @override
   String get settingsSelectCountry => 'اختر الدولة';
 
   @override
@@ -740,6 +810,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsCategoryAdhkarSubtitle => 'أذكار الصباح والمساء';
 
   @override
+  String get settingsCategoryFeatures => 'المميزات';
+
+  @override
+  String get settingsCategoryFeaturesSubtitle => 'شريط الآيات وشاشة التوقّف';
+
+  @override
   String get settingsFont => 'الخط';
 
   @override
@@ -750,6 +826,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsClockType => 'نوع الساعة';
+
+  @override
+  String get settingsTicker => 'الشريط المتحرّك';
+
+  @override
+  String get settingsTickerLabel => 'شريط متحرّك أسفل الشاشة يعرض آيات وأذكار';
 
   @override
   String get layoutModern => 'حديث';
@@ -1157,7 +1239,55 @@ class AppLocalizationsAr extends AppLocalizations {
   String get calcMethodUoif => 'فرنسا (UOIF 15°)';
 
   @override
+  String get calcMethodUk => 'المملكة المتحدة (لندن سنترال موسك)';
+
+  @override
+  String get calcMethodGermany => 'ألمانيا / شمال أوروبا (18°/17°)';
+
+  @override
+  String get calcMethodRussia => 'روسيا / شرق أوروبا (16°/15°)';
+
+  @override
   String get calcMethodJafari => 'الجعفري (16°/14°)';
+
+  @override
+  String get settingsHighLatitudeLabel => 'ضبط خطوط العرض العالية';
+
+  @override
+  String get settingsHighLatitudeNote =>
+      'في الدول الأوروبية تختلف طرق حساب الفجر والعشاء عند المدن الشمالية. اختر الطريقة التي يعتمدها مسجدك المحلي.';
+
+  @override
+  String get settingsHighLatitudeAffectsNote =>
+      'تؤثر فقط على الفجر والعشاء في المدن فوق ~48° شمالاً';
+
+  @override
+  String get highLatRuleAuto => 'تلقائي (مُوصى به)';
+
+  @override
+  String get highLatRuleAutoSubtitle =>
+      'تطبيق منتصف الليل تلقائياً عند خطوط العرض العالية';
+
+  @override
+  String get highLatRuleMiddleOfNight => 'منتصف الليل';
+
+  @override
+  String get highLatRuleMiddleOfNightSubtitle =>
+      'الفجر والعشاء في منتصف الليل بين المغرب والشروق';
+
+  @override
+  String get highLatRuleSeventhOfNight => 'سُبع الليل';
+
+  @override
+  String get highLatRuleSeventhOfNightSubtitle =>
+      'الفجر بعد سُبع الليل من المغرب، والعشاء قبله بسُبع';
+
+  @override
+  String get highLatRuleTwilightAngle => 'زاوية الشفق';
+
+  @override
+  String get highLatRuleTwilightAngleSubtitle =>
+      'تخفيف زاوية الشفق تدريجياً مع طول النهار';
 
   @override
   String get calculationMethodOfficialScheduleNote =>
@@ -1266,6 +1396,24 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onboardingFinish => 'ابدأ';
+
+  @override
+  String get onboardingLocationTitle => 'حدد موقعك';
+
+  @override
+  String get onboardingLocationSubtitle => 'استخدم GPS أو ابحث عن مدينتك';
+
+  @override
+  String get onboardingConfirmLocationTitle => 'هل أنت في:';
+
+  @override
+  String get onboardingConfirmAction => 'تأكيد';
+
+  @override
+  String get onboardingChangeAction => 'تغيير';
+
+  @override
+  String get onboardingOrSearchManually => 'أو ابحث يدوياً';
 
   @override
   String get todayPrayerTimes => 'أوقات الصلاة اليوم';

@@ -36,16 +36,13 @@ class MobileQiblaStatusView extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               subtitle,
-              style: MobileTextStyles.bodyMd(context).copyWith(
-                color: MobileColors.onSurfaceMuted(context),
-              ),
+              style: MobileTextStyles.bodyMd(
+                context,
+              ).copyWith(color: MobileColors.onSurfaceMuted(context)),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            FilledButton(
-              onPressed: onAction,
-              child: Text(actionLabel),
-            ),
+            FilledButton(onPressed: onAction, child: Text(actionLabel)),
           ],
         ),
       ),

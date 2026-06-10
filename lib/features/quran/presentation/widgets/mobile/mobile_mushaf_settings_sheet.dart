@@ -49,8 +49,7 @@ class MobileMushafSettingsSheet extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: MobileColors.cardColor(context),
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           padding: EdgeInsets.only(bottom: viewInset),
           child: SingleChildScrollView(
@@ -68,7 +67,9 @@ class MobileMushafSettingsSheet extends StatelessWidget {
                 const SizedBox(height: 18),
                 MobileMushafThemeSection(theme: state.readingTheme),
                 const SizedBox(height: 18),
-                MobileMushafContinuousSection(enabled: state.continuousPlayback),
+                MobileMushafContinuousSection(
+                  enabled: state.continuousPlayback,
+                ),
                 const SizedBox(height: 18),
                 MobileMushafReciterSection(reciterId: state.prefs.reciterId),
                 const SizedBox(height: 18),

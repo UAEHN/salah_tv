@@ -57,9 +57,9 @@ class MobilePrayerList extends StatelessWidget {
                   )
                 : Text(
                     l.noPrayerDataForDate,
-                    style: MobileTextStyles.bodyMd(context).copyWith(
-                      color: MobileColors.onSurfaceMuted(context),
-                    ),
+                    style: MobileTextStyles.bodyMd(
+                      context,
+                    ).copyWith(color: MobileColors.onSurfaceMuted(context)),
                     textDirection: TextDirection.rtl,
                   ),
           );

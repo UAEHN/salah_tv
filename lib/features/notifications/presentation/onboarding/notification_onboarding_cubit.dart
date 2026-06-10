@@ -30,14 +30,14 @@ class NotificationOnboardingCubit extends Cubit<NotificationOnboardingState> {
     required OpenOemAutostart openOem,
     required RunNotificationTest runTest,
     required INotificationOnboardingFlagPort flag,
-  })  : _getHealth = getHealth,
-        _requestNotifications = requestNotifications,
-        _openExactAlarm = openExactAlarm,
-        _openBattery = openBattery,
-        _openOem = openOem,
-        _runTest = runTest,
-        _flag = flag,
-        super(const NotificationOnboardingState.initial());
+  }) : _getHealth = getHealth,
+       _requestNotifications = requestNotifications,
+       _openExactAlarm = openExactAlarm,
+       _openBattery = openBattery,
+       _openOem = openOem,
+       _runTest = runTest,
+       _flag = flag,
+       super(const NotificationOnboardingState.initial());
 
   Future<void> start() => _refresh();
 

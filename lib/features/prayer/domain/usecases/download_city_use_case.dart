@@ -34,30 +34,29 @@ class DownloadCityUseCase implements IDownloadCityUseCase {
 
       final result = await _downloader.fetchCity(countryKey, slug, cancelToken);
 
-      return await result.fold(
-        (failure) async => Left(failure),
-        (payload) async {
-          if (cachedHash == payload.hash) {
-            return const Right(Success());
-          }
-
-          if (cancelToken.isCancelled) return const Left(CancelledFailure());
-
-          try {
-            await _writer.writeCityRows(_db, cityId, payload.rows, cancelToken);
-          } on CancellationException {
-            return const Left(CancelledFailure());
-          }
-
-          await _queries.markCityCached(
-            _db,
-            cityId,
-            DateTime.now().year,
-            payload.hash,
-          );
+      return await result.fold((failure) async => Left(failure), (
+        payload,
+      ) async {
+        if (cachedHash == payload.hash) {
           return const Right(Success());
-        },
-      );
+        }
+
+        if (cancelToken.isCancelled) return const Left(CancelledFailure());
+
+        try {
+          await _writer.writeCityRows(_db, cityId, payload.rows, cancelToken);
+        } on CancellationException {
+          return const Left(CancelledFailure());
+        }
+
+        await _queries.markCityCached(
+          _db,
+          cityId,
+          DateTime.now().year,
+          payload.hash,
+        );
+        return const Right(Success());
+      });
     } on CancellationException {
       return const Left(CancelledFailure());
     } catch (e) {

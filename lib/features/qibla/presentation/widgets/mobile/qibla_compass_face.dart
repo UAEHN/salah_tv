@@ -15,9 +15,7 @@ BoxDecoration qiblaFaceDecoration(BuildContext context, bool aligned) {
   final isDark = MobileColors.isDark(context);
   final accent = MobileColors.activePrimary(context);
   final gradient = isDark
-      ? const RadialGradient(
-          colors: [Color(0xFF131D36), Color(0xFF0A1226)],
-        )
+      ? const RadialGradient(colors: [Color(0xFF131D36), Color(0xFF0A1226)])
       : RadialGradient(
           colors: [
             Colors.white,
@@ -41,8 +39,8 @@ BoxDecoration qiblaFaceDecoration(BuildContext context, bool aligned) {
         color: aligned
             ? accent.withValues(alpha: isDark ? 0.35 : 0.22)
             : (isDark
-                ? Colors.black.withValues(alpha: 0.45)
-                : accent.withValues(alpha: 0.10)),
+                  ? Colors.black.withValues(alpha: 0.45)
+                  : accent.withValues(alpha: 0.10)),
         blurRadius: aligned ? 36 : 26,
         spreadRadius: aligned ? 4 : 2,
         offset: const Offset(0, 12),

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/mobile_theme.dart';
@@ -21,10 +21,7 @@ class MobileTasbihEntryCard extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           color: color.withValues(alpha: 0.10),
-          border: Border.all(
-            color: color.withValues(alpha: 0.28),
-            width: 1,
-          ),
+          border: Border.all(color: color.withValues(alpha: 0.28), width: 1),
         ),
         child: Row(
           children: [
@@ -45,10 +42,9 @@ class MobileTasbihEntryCard extends StatelessWidget {
                 children: [
                   Text(
                     l.navTasbih,
-                    style: MobileTextStyles.bodyMd(context).copyWith(
-                      color: color,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: MobileTextStyles.bodyMd(
+                      context,
+                    ).copyWith(color: color, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 2),
                   Text(

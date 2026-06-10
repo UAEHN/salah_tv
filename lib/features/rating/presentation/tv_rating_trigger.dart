@@ -57,7 +57,8 @@ class _TvRatingTriggerState extends State<TvRatingTrigger> {
     // Re-check mosque mode on every state — the user may toggle it on after
     // the initial eligibility check has already passed and we are subscribed.
     if (context.read<SettingsProvider>().settings.isMosqueMode) return;
-    final isCalmMoment = !state.isCycleActive &&
+    final isCalmMoment =
+        !state.isCycleActive &&
         state.todayPrayers != null &&
         state.countdown.inMinutes >= 5;
     if (!isCalmMoment) return;

@@ -22,17 +22,21 @@ mixin MushafAudioFlowMixin on Cubit<MushafReaderState> {
   void onAudioEvent(AyahPlaybackEvent ev) {
     switch (ev.status) {
       case AyahAudioStatus.loading:
-        emit(state.copyWith(
-          audioStatus: MushafAudioStatus.loading,
-          playingSurah: ev.surahNumber,
-          playingAyah: ev.ayahNumber,
-        ));
+        emit(
+          state.copyWith(
+            audioStatus: MushafAudioStatus.loading,
+            playingSurah: ev.surahNumber,
+            playingAyah: ev.ayahNumber,
+          ),
+        );
       case AyahAudioStatus.playing:
-        emit(state.copyWith(
-          audioStatus: MushafAudioStatus.playing,
-          playingSurah: ev.surahNumber,
-          playingAyah: ev.ayahNumber,
-        ));
+        emit(
+          state.copyWith(
+            audioStatus: MushafAudioStatus.playing,
+            playingSurah: ev.surahNumber,
+            playingAyah: ev.ayahNumber,
+          ),
+        );
       case AyahAudioStatus.paused:
         emit(state.copyWith(audioStatus: MushafAudioStatus.paused));
       case AyahAudioStatus.completed:
@@ -40,10 +44,12 @@ mixin MushafAudioFlowMixin on Cubit<MushafReaderState> {
       case AyahAudioStatus.idle:
         _emitIdle();
       case AyahAudioStatus.error:
-        emit(state.copyWith(
-          audioStatus: MushafAudioStatus.error,
-          clearPlaying: true,
-        ));
+        emit(
+          state.copyWith(
+            audioStatus: MushafAudioStatus.error,
+            clearPlaying: true,
+          ),
+        );
     }
   }
 
@@ -68,8 +74,7 @@ mixin MushafAudioFlowMixin on Cubit<MushafReaderState> {
     );
   }
 
-  void _emitIdle() => emit(state.copyWith(
-        audioStatus: MushafAudioStatus.idle,
-        clearPlaying: true,
-      ));
+  void _emitIdle() => emit(
+    state.copyWith(audioStatus: MushafAudioStatus.idle, clearPlaying: true),
+  );
 }

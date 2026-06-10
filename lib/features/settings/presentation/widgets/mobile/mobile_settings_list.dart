@@ -10,6 +10,8 @@ import '../../screens/mobile_notification_settings_screen.dart';
 import '../../screens/mobile_prayer_offsets_screen.dart';
 import '../../settings_provider.dart';
 import 'mobile_calculation_method_tile.dart';
+import 'mobile_high_latitude_rule_dialog.dart';
+import 'mobile_high_latitude_rule_tile.dart';
 import 'mobile_location_dialog_launcher.dart';
 import 'mobile_madhab_dialog.dart';
 import 'mobile_settings_appearance_section.dart';
@@ -88,6 +90,21 @@ class MobileSettingsList extends StatelessWidget {
                   ),
                 ),
               ),
+              if (s.isCalculatedLocation) ...[
+                const SizedBox(height: 10),
+                MobileHighLatitudeRuleTile(
+                  currentRule: s.highLatitudeRule,
+                  onTap: () => showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (_) => MobileHighLatitudeRuleDialog(
+                      currentRule: s.highLatitudeRule,
+                      onSave: sp.updateHighLatitudeRule,
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 10),
               MobileSettingsTile(
                 icon: Icons.tune_rounded,
@@ -119,7 +136,8 @@ class MobileSettingsList extends StatelessWidget {
               MobileSettingsTile(
                 icon: Icons.shield_outlined,
                 title: l.settingsPrivacyPolicy,
-                onTap: () => PlatformLauncher.openUrl(AppConfig.privacyPolicyUrl),
+                onTap: () =>
+                    PlatformLauncher.openUrl(AppConfig.privacyPolicyUrl),
               ),
             ],
           ),

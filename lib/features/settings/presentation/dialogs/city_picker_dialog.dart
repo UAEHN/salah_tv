@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../core/app_colors.dart';
@@ -35,7 +35,11 @@ class CityPickerDialog extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.location_on_rounded, color: palette.primary, size: 26),
+                  Icon(
+                    Icons.location_on_rounded,
+                    color: palette.primary,
+                    size: 26,
+                  ),
                   const SizedBox(width: 12),
                   Text(
                     l.settingsSelectCity,
@@ -67,13 +71,17 @@ class CityPickerDialog extends StatelessWidget {
                         cityLabel(city, locale: l.localeName),
                         style: TextStyle(
                           color: isSelected ? palette.primary : Colors.white,
-                          fontWeight:
-                              isSelected ? FontWeight.w700 : FontWeight.normal,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.normal,
                           fontSize: 18,
                         ),
                       ),
                       trailing: isSelected
-                          ? Icon(Icons.check_circle_rounded, color: palette.primary)
+                          ? Icon(
+                              Icons.check_circle_rounded,
+                              color: palette.primary,
+                            )
                           : null,
                       onTap: () {
                         onSelected(city);

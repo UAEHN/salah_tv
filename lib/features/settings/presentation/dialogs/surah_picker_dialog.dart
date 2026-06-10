@@ -46,16 +46,24 @@ class _SurahPickerDialogState extends State<SurahPickerDialog> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                Icon(Icons.menu_book_rounded,
-                    color: widget.palette.primary, size: 26),
-                const SizedBox(width: 12),
-                Text(l.surahPickerTitle,
+              Row(
+                children: [
+                  Icon(
+                    Icons.menu_book_rounded,
+                    color: widget.palette.primary,
+                    size: 26,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    l.surahPickerTitle,
                     style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white)),
-              ]),
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 12),
               TvSearchBar(
                 hintText: l.searchSurahHint,
@@ -66,8 +74,11 @@ class _SurahPickerDialogState extends State<SurahPickerDialog> {
               Expanded(
                 child: list.isEmpty
                     ? Center(
-                        child: Text(l.searchNoResults,
-                            style: const TextStyle(color: Colors.white54)))
+                        child: Text(
+                          l.searchNoResults,
+                          style: const TextStyle(color: Colors.white54),
+                        ),
+                      )
                     : ListView.separated(
                         itemCount: list.length,
                         separatorBuilder: (_, _) =>
@@ -76,32 +87,43 @@ class _SurahPickerDialogState extends State<SurahPickerDialog> {
                           final surah = list[i];
                           final isSelected =
                               surah.number == widget.selectedSurahNumber;
+                          // Initial focus lands on the first row so DPad-Down
+                          // navigates the list immediately instead of opening
+                          // the on-screen keyboard via the search field.
                           return TvFocusableListTile(
-                            autofocus: isSelected && _query.isEmpty,
+                            autofocus: i == 0 && _query.isEmpty,
                             accent: widget.palette.primary,
                             leading: SizedBox(
                               width: 40,
-                              child: Text('${surah.number}',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: isSelected
-                                          ? widget.palette.primary
-                                          : Colors.white38,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16)),
-                            ),
-                            title: Text(surah.nameAr,
+                              child: Text(
+                                '${surah.number}',
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    color: isSelected
-                                        ? widget.palette.primary
-                                        : Colors.white,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w700
-                                        : FontWeight.normal,
-                                    fontSize: 18)),
+                                  color: isSelected
+                                      ? widget.palette.primary
+                                      : Colors.white38,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            title: Text(
+                              surah.nameAr,
+                              style: TextStyle(
+                                color: isSelected
+                                    ? widget.palette.primary
+                                    : Colors.white,
+                                fontWeight: isSelected
+                                    ? FontWeight.w700
+                                    : FontWeight.normal,
+                                fontSize: 18,
+                              ),
+                            ),
                             trailing: isSelected
-                                ? Icon(Icons.check_circle_rounded,
-                                    color: widget.palette.primary)
+                                ? Icon(
+                                    Icons.check_circle_rounded,
+                                    color: widget.palette.primary,
+                                  )
                                 : null,
                             onTap: () {
                               widget.onSelected(surah.number);

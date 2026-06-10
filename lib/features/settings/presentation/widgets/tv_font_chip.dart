@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
@@ -67,16 +67,21 @@ class _TvFontChipState extends State<TvFontChip> {
                 color: _isFocused
                     ? Colors.white
                     : widget.isSelected
-                        ? widget.palette.primary
-                        : widget.palette.primary.withValues(alpha: 0.30),
-                width: _isFocused ? 3.0 : widget.isSelected ? 2.0 : 1.5,
+                    ? widget.palette.primary
+                    : widget.palette.primary.withValues(alpha: 0.30),
+                width: _isFocused
+                    ? 3.0
+                    : widget.isSelected
+                    ? 2.0
+                    : 1.5,
               ),
               borderRadius: BorderRadius.circular(14),
               boxShadow: isActive
                   ? [
                       BoxShadow(
-                        color: widget.palette.glow
-                            .withValues(alpha: _isFocused ? 0.75 : 0.40),
+                        color: widget.palette.glow.withValues(
+                          alpha: _isFocused ? 0.75 : 0.40,
+                        ),
                         blurRadius: _isFocused ? 22 : 16,
                         spreadRadius: _isFocused ? 4 : 2,
                       ),

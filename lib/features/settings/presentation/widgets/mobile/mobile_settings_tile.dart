@@ -69,8 +69,9 @@ class _MobileSettingsTileState extends State<MobileSettingsTile> {
             const SizedBox(width: 8),
             Icon(
               Icons.chevron_left_rounded,
-              color:
-                  MobileColors.onSurfaceMuted(context).withValues(alpha: 0.55),
+              color: MobileColors.onSurfaceMuted(
+                context,
+              ).withValues(alpha: 0.55),
               size: 22,
             ),
           ],

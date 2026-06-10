@@ -47,21 +47,22 @@ class MobileLocationOptionTile extends StatelessWidget {
               children: [
                 _LeadingDot(isSelected: isSelected, accent: accent),
                 const SizedBox(width: 12),
-                Expanded(child: _Texts(
-                  title: title,
-                  subtitle: subtitle,
-                  isSelected: isSelected,
-                  accent: accent,
-                )),
+                Expanded(
+                  child: _Texts(
+                    title: title,
+                    subtitle: subtitle,
+                    isSelected: isSelected,
+                    accent: accent,
+                  ),
+                ),
                 const SizedBox(width: 8),
                 Icon(
-                  isSelected
-                      ? Icons.check_rounded
-                      : Icons.chevron_left_rounded,
+                  isSelected ? Icons.check_rounded : Icons.chevron_left_rounded,
                   color: isSelected
                       ? accent
-                      : MobileColors.onSurfaceMuted(context)
-                          .withValues(alpha: 0.55),
+                      : MobileColors.onSurfaceMuted(
+                          context,
+                        ).withValues(alpha: 0.55),
                   size: isSelected ? 20 : 22,
                 ),
               ],

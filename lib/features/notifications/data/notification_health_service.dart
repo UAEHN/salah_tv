@@ -46,9 +46,9 @@ class NotificationHealthService implements INotificationHealthPort {
         autostartAvailable: oem['autostartAvailable'] as bool? ?? false,
       ),
       scheduleLog: List.unmodifiable(
-        logRaw
-            .cast<Map>()
-            .map((e) => ScheduleLogEntry.fromJson(e.cast<String, dynamic>())),
+        logRaw.cast<Map>().map(
+          (e) => ScheduleLogEntry.fromJson(e.cast<String, dynamic>()),
+        ),
       ),
     );
   }

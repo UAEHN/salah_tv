@@ -42,13 +42,12 @@ class _LogTile extends StatelessWidget {
     return ListTile(
       dense: true,
       leading: Icon(icon, color: color, size: 20),
-      title: Text('${entry.type}${entry.prayerKey != null ? ' · ${entry.prayerKey}' : ''}'),
+      title: Text(
+        '${entry.type}${entry.prayerKey != null ? ' · ${entry.prayerKey}' : ''}',
+      ),
       subtitle: Text(
-        entry.success
-            ? time
-            : '$time · ${entry.error ?? 'failed'}',
+        entry.success ? time : '$time · ${entry.error ?? 'failed'}',
       ),
     );
   }
-
 }

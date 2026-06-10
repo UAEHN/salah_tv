@@ -59,19 +59,26 @@ class ReciterErrorView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     return Center(
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        const Icon(Icons.wifi_off_rounded, color: Colors.white54, size: 48),
-        const SizedBox(height: 12),
-        Text(l.settingsFailedToLoadReciters,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.wifi_off_rounded, color: Colors.white54, size: 48),
+          const SizedBox(height: 12),
+          Text(
+            l.settingsFailedToLoadReciters,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white54, fontSize: 17)),
-        const SizedBox(height: 16),
-        TextButton(
-          onPressed: onRetry,
-          child: Text(l.commonRetry,
-              style: TextStyle(color: palette.primary, fontSize: 16)),
-        ),
-      ]),
+            style: const TextStyle(color: Colors.white54, fontSize: 17),
+          ),
+          const SizedBox(height: 16),
+          TextButton(
+            onPressed: onRetry,
+            child: Text(
+              l.commonRetry,
+              style: TextStyle(color: palette.primary, fontSize: 16),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -85,12 +92,17 @@ class ReciterLoadingView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     return Center(
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        CircularProgressIndicator(color: palette.primary),
-        const SizedBox(height: 16),
-        Text(l.settingsLoadingReciters,
-            style: const TextStyle(color: Colors.white60, fontSize: 16)),
-      ]),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(color: palette.primary),
+          const SizedBox(height: 16),
+          Text(
+            l.settingsLoadingReciters,
+            style: const TextStyle(color: Colors.white60, fontSize: 16),
+          ),
+        ],
+      ),
     );
   }
 }

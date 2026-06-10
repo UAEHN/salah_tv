@@ -10,10 +10,10 @@ import 'package:sqflite/sqflite.dart';
 /// (crash-safe: the app re-downloads cleanly on next launch).
 class PrayerCacheDbInitializer {
   static const _dbFileName = 'prayer_cache.db';
-  static const _dbVersion  = 1;
+  static const _dbVersion = 1;
 
   Future<Database> openOrCreate() async {
-    final dir  = await getDatabasesPath();
+    final dir = await getDatabasesPath();
     final path = p.join(dir, _dbFileName);
     return openDatabase(path, version: _dbVersion, onCreate: _createSchema);
   }

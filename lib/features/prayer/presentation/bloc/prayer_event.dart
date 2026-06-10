@@ -66,6 +66,13 @@ class PrayerDateReset extends PrayerEvent {
   const PrayerDateReset();
 }
 
+/// Intention: the session adhkar audio playlist finished one pass, so the
+/// takeover can close and Quran resume. Dispatched by the session screen when
+/// its cubit completes.
+class PrayerSessionAdhkarStopped extends PrayerEvent {
+  const PrayerSessionAdhkarStopped();
+}
+
 /// Internal: dispatched by the engine's notify callback on every tick.
 /// Do not dispatch externally.
 class PrayerEngineRefreshed extends PrayerEvent {

@@ -8,8 +8,10 @@ import 'core/navigation/app_route_builder.dart';
 import 'core/platform_config.dart';
 import 'core/widgets/mobile/mobile_shell.dart';
 import 'features/analytics/domain/i_analytics_service.dart';
+import 'features/push_notifications/domain/i_install_id_provider.dart';
 import 'features/adhkar/domain/entities/adhkar_session.dart';
 import 'features/adhkar/presentation/screens/adhkar_screen.dart';
+import 'features/screensaver/presentation/screens/tv/screensaver_screen.dart';
 import 'features/feedback/domain/i_feedback_diagnostics_collector.dart';
 import 'features/feedback/domain/usecases/submit_feedback_usecase.dart';
 import 'features/customization/data/mobile_theme_palettes.dart';
@@ -181,6 +183,13 @@ class GhasaqApp extends StatelessWidget {
               settings: routeSettings,
               page: AdhkarScreen(initialSession: session),
             );
+          case '/screensaver_preview':
+            // Temporary preview route for the ambient screensaver so it can be
+            // reviewed from TV settings before the idle-trigger wiring lands.
+            return buildAppRoute(
+              settings: routeSettings,
+              page: Scaffold(body: ScreensaverScreen(palette: palette)),
+            );
           case '/qibla':
             return buildAppRoute(
               settings: routeSettings,
@@ -247,6 +256,7 @@ class GhasaqApp extends StatelessWidget {
                   getIt<IFeedbackDiagnosticsCollector>(),
                   analytics: getIt<IAnalyticsService>(),
                   rating: getIt<IRatingService>(),
+                  installIdProvider: getIt<IInstallIdProvider>(),
                 ),
                 child: const MobileFeedbackScreen(),
               ),
@@ -264,7 +274,9 @@ class GhasaqApp extends StatelessWidget {
                     apply: getIt<ApplyThemePaletteUseCase>(param1: adapter),
                     analytics: getIt<IAnalyticsService>(),
                   );
-                  cubit.load(ctx.read<SettingsProvider>().settings.themeColorKey);
+                  cubit.load(
+                    ctx.read<SettingsProvider>().settings.themeColorKey,
+                  );
                   return cubit;
                 },
                 child: const MobileThemePickerScreen(),

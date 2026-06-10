@@ -1,12 +1,17 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/city_translations.dart';
+import '../../../../../core/country_name_resolver.dart';
 import '../../../../../injection.dart';
+import '../../../data/online_result_to_detected_location.dart';
+import '../../../domain/entities/online_geocoding_result.dart';
 import '../../../domain/entities/world_city.dart';
+import '../../../domain/i_online_geocoding_repository.dart';
 import '../../../domain/i_world_city_repository.dart';
+import '../../bloc/online_geocoding_cubit.dart';
 import 'mobile_location_dialog_body.dart';
 import 'mobile_location_dialog_callbacks.dart';
 import 'mobile_location_search_utils.dart';
@@ -35,12 +40,14 @@ class _MobileLocationDialogState extends State<MobileLocationDialog> {
   late final TextEditingController _searchController;
   Timer? _debounce;
   late final LocationDialogCallbacks _callbacks;
+  late final OnlineGeocodingCubit _onlineCubit;
 
   IWorldCityRepository? _worldRepo;
   List<UnifiedCountry> _allCountries = [];
   late List<UnifiedCountry> _filteredCountries;
   List<String> _filteredDbCities = [];
   List<WorldCity> _filteredWorldCities = [];
+  OnlineGeocodingState _onlineState = OnlineGeocodingState.idle;
 
   @override
   void initState() {
@@ -55,6 +62,10 @@ class _MobileLocationDialogState extends State<MobileLocationDialog> {
       contextGetter: () => context,
       isMounted: () => mounted,
     );
+    _onlineCubit = OnlineGeocodingCubit(getIt<IOnlineGeocodingRepository>());
+    _onlineCubit.stream.listen((state) {
+      if (mounted) setState(() => _onlineState = state);
+    });
     _loadWorldCities();
   }
 
@@ -75,6 +86,7 @@ class _MobileLocationDialogState extends State<MobileLocationDialog> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _onlineCubit.close();
     _searchController.dispose();
     super.dispose();
   }
@@ -84,12 +96,33 @@ class _MobileLocationDialogState extends State<MobileLocationDialog> {
     _debounce = Timer(const Duration(milliseconds: 300), () {
       if (!mounted) return;
       setState(() => _filter(query));
+      _maybeRunOnlineSearch(query);
     });
+  }
+
+  /// Runs Nominatim search at every picker level. When a country is selected
+  /// we bias results to that country's ISO so users can find any town inside
+  /// it that's missing from the bundled DB/world catalog. Disabled only when
+  /// the host screen has no `onSaveWorld` callback (no way to persist).
+  void _maybeRunOnlineSearch(String query) {
+    if (widget.onSaveWorld == null) {
+      _onlineCubit.clear();
+      return;
+    }
+    _onlineCubit.searchDebounced(query, countryCode: _selectedCountryIsoBias());
+  }
+
+  String? _selectedCountryIsoBias() {
+    final k = _selectedCountryKey;
+    if (k == null) return null;
+    // DB countries use slug keys ("uae"); world entries already use ISO ("DE").
+    return _isSelectedCountryDb ? isoForDbCountryKey(k) : k;
   }
 
   void _onClear() {
     _resetSearch();
     setState(() => _filter(''));
+    _onlineCubit.clear();
   }
 
   void _resetSearch() {
@@ -99,6 +132,7 @@ class _MobileLocationDialogState extends State<MobileLocationDialog> {
 
   void _showCountries() {
     _resetSearch();
+    _onlineCubit.clear();
     setState(() {
       _selectedCountryKey = null;
       _filteredDbCities = [];
@@ -109,8 +143,7 @@ class _MobileLocationDialogState extends State<MobileLocationDialog> {
 
   void _selectCountry(String key) {
     _resetSearch();
-    // Drop keyboard so the city list isn't covered when the user lands on
-    // the next screen. They can re-focus the field to search cities.
+    _onlineCubit.clear();
     FocusManager.instance.primaryFocus?.unfocus();
     final isDb = isDbCountry(key);
     setState(() {
@@ -138,6 +171,17 @@ class _MobileLocationDialogState extends State<MobileLocationDialog> {
     }
   }
 
+  Future<void> _selectOnlineResult(OnlineGeocodingResult r) async {
+    // Unified pipeline: same matchers GPS uses (LocationCountryMatcher →
+    // LocationCityMatcher → nearest world city fallback) so search picks and
+    // GPS detections produce identical DetectedLocation for the same place.
+    final detected = await detectedLocationFromOnlineResult(
+      r,
+      worldRepo: _worldRepo,
+    );
+    await _callbacks.onLocationDetected(detected);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
@@ -151,7 +195,7 @@ class _MobileLocationDialogState extends State<MobileLocationDialog> {
         : null;
     final title = k != null
         ? ((isEn ? matched?.englishName : matched?.arabicName) ??
-            countryLabel(k, locale: l.localeName))
+              countryLabel(k, locale: l.localeName))
         : l.settingsSelectCountry;
 
     return MobileLocationDialogBody(
@@ -164,6 +208,7 @@ class _MobileLocationDialogState extends State<MobileLocationDialog> {
       filteredCountries: _filteredCountries,
       filteredDbCities: _filteredDbCities,
       filteredWorldCities: _filteredWorldCities,
+      onlineState: _onlineState,
       onQueryChanged: _onQueryChanged,
       onClear: _onClear,
       onShowCountries: _showCountries,
@@ -171,6 +216,7 @@ class _MobileLocationDialogState extends State<MobileLocationDialog> {
       onSelectDbCity: _callbacks.selectDbCity,
       onSelectWorldCity: _callbacks.selectWorldCity,
       onLocationDetected: _callbacks.onLocationDetected,
+      onSelectOnline: _selectOnlineResult,
     );
   }
 }

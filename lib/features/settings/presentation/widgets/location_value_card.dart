@@ -120,9 +120,7 @@ class _LocationValueCardState extends State<LocationValueCard> {
                 ),
                 Icon(
                   Icons.chevron_left_rounded,
-                  color: _isFocused
-                      ? widget.accent
-                      : widget.tc.textMuted,
+                  color: _isFocused ? widget.accent : widget.tc.textMuted,
                   size: 30,
                 ),
               ],

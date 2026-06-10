@@ -15,15 +15,15 @@ import '../../features/app_update/domain/i_app_version_info_port.dart';
 import '../../features/app_update/domain/i_remote_version_repository.dart';
 import '../../features/app_update/domain/usecases/check_for_update_usecase.dart';
 import '../../features/adhkar/data/adhkar_audio_service.dart';
-import '../../features/adhkar/data/adhkar_json_repository.dart';
 import '../../features/adhkar/data/adhkar_text_repository.dart';
+import '../../features/adhkar/data/session_adhkar_repository.dart';
 import '../../features/adhkar/domain/i_adhkar_audio_port.dart';
-import '../../features/adhkar/domain/i_adhkar_state_repository.dart';
 import '../../features/adhkar/domain/i_adhkar_text_repository.dart';
-import '../../features/analytics/data/firebase_analytics_service.dart';
+import '../../features/adhkar/domain/i_session_adhkar_repository.dart';
 import '../../features/rating/data/rating_service.dart';
 import '../../features/rating/domain/i_rating_service.dart';
-import '../../features/analytics/domain/i_analytics_service.dart';
+import '../../features/screensaver/data/screensaver_repository.dart';
+import '../../features/screensaver/domain/i_screensaver_repository.dart';
 import '../../features/notifications/data/native_notification_engine.dart';
 import '../../features/notifications/data/notification_health_service.dart';
 import '../../features/notifications/domain/i_notification_health_port.dart';
@@ -36,6 +36,9 @@ import '../../features/notifications/presentation/cubit/notification_health_cubi
 import '../../features/notifications/presentation/onboarding/notification_onboarding_cubit.dart';
 import '../../features/qibla/data/qibla_repository.dart';
 import '../../features/qibla/domain/i_qibla_repository.dart';
+import '../../features/remote_config/data/firebase_remote_config_repository.dart';
+import '../../features/remote_config/domain/entities/feature_flags.dart';
+import '../../features/remote_config/domain/i_remote_config_repository.dart';
 import '../../features/takbeerat/data/datasources/takbeerat_remote_config_data_source.dart';
 import '../../features/takbeerat/data/hijri_date_provider.dart';
 import '../../features/takbeerat/data/takbeerat_config_repository.dart';
@@ -53,6 +56,7 @@ import '../../features/settings/domain/i_custom_adhan_repository.dart';
 import '../../features/settings/domain/usecases/delete_custom_adhan_usecase.dart';
 import '../../features/settings/domain/usecases/import_custom_adhan_usecase.dart';
 import '../../features/settings/domain/i_location_detector.dart';
+import '../../features/settings/domain/i_online_geocoding_repository.dart';
 import '../../features/settings/domain/i_world_city_repository.dart';
 import '../../features/settings/presentation/bloc/adhan_preview_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -70,21 +74,30 @@ import '../../injection.dart';
 import '../platform_config.dart';
 import 'startup_customization.dart';
 import 'startup_dynamic_content.dart';
+import 'startup_push_notifications.dart';
 import 'startup_quran.dart';
 import 'startup_today.dart';
 
 Future<void> registerFeatureServices(PlatformConfig platformConfig) async {
-  await _registerAnalytics(platformConfig);
-  await _registerAdhkarCore();
+  // Text adhkar repo feeds both platforms: the mobile counting reader and the
+  // TV adhkar takeovers (after-prayer + morning/evening session). Cheap (one
+  // bundled JSON), so register it unconditionally rather than mobile-only.
+  await _registerAdhkarReader();
+  await _registerSessionAdhkar();
   _registerQuranAndQibla();
+  await _registerScreensaver();
   _registerSharedLocationCatalog();
+  // Must be registered before the RC-driven features below so they can
+  // migrate from raw FirebaseRemoteConfig.instance access to the shared
+  // repository when they are next touched.
+  await _registerRemoteConfig();
   _registerAppUpdate();
   _registerAnnouncements();
   _registerTakbeerat();
   _registerRating(); // shared: used by TvRatingTrigger (TV) and RatingTrigger (mobile)
   _registerFeedback();
+  registerPushNotifications(platformConfig);
   if (!platformConfig.isTV) {
-    await _registerAdhkarReader();
     await _registerMobileOnly();
     _registerHomeWidget();
     registerCustomization();
@@ -93,6 +106,11 @@ Future<void> registerFeatureServices(PlatformConfig platformConfig) async {
     // Fire-and-forget refresh of the remote occasions manifest. Repo falls
     // back to cache → bundled asset, so this never blocks boot or fails.
     unawaited(primeDynamicContent());
+    // Fire-and-forget: refreshes FCM token + re-subscribes to default topics
+    // if the user already granted permission, then writes the device profile
+    // to Firestore (push_profiles/{installId}) so Cloud Functions can target
+    // by language / country / timezone. No-op if permission is not granted.
+    unawaited(primePushNotifications(platformConfig));
   }
 }
 
@@ -111,13 +129,26 @@ void _registerHomeWidget() {
   );
 }
 
+Future<void> _registerRemoteConfig() async {
+  // The boot-time `_primeRemoteConfig` in `startup_firebase.dart` has already
+  // fetched+activated values, so this repo only adds the change-stream,
+  // Phase-1 defaults, and the hourly background refresh loop on top.
+  final rcRepo = FirebaseRemoteConfigRepository();
+  await rcRepo.initialize();
+  getIt.registerSingleton<IRemoteConfigRepository>(rcRepo);
+  // FeatureFlags is a thin lazy view — getters resolve against the repo on
+  // every call so hourly background refreshes are reflected without
+  // re-instantiating this object.
+  getIt.registerLazySingleton<FeatureFlags>(
+    () => FeatureFlags(getIt<IRemoteConfigRepository>()),
+  );
+}
+
 void _registerAppUpdate() {
   getIt.registerLazySingleton<IAppUpdateRepository>(
     () => AppUpdateRepository(),
   );
-  getIt.registerLazySingleton<InAppUpdateService>(
-    () => InAppUpdateService(),
-  );
+  getIt.registerLazySingleton<InAppUpdateService>(() => InAppUpdateService());
   // Remote-Config-driven update gating (forced + optional updates).
   getIt.registerLazySingleton<IAppVersionInfoPort>(() => PackageInfoService());
   getIt.registerLazySingleton<RemoteConfigDataSource>(
@@ -183,12 +214,10 @@ void _registerFeedback() {
   );
 }
 
-Future<void> _registerAdhkarCore() async {
-  final adhkarRepo = AdhkarJsonRepository();
-  await adhkarRepo.initialize();
-  getIt.registerSingleton<AdhkarJsonRepository>(adhkarRepo);
-  getIt.registerSingleton<IAdhkarStateRepository>(adhkarRepo);
-  getIt.registerSingleton<IAdhkarAudioPort>(AdhkarAudioService());
+Future<void> _registerScreensaver() async {
+  final repo = ScreensaverRepository();
+  await repo.initialize();
+  getIt.registerSingleton<IScreensaverRepository>(repo);
 }
 
 void _registerQuranAndQibla() {
@@ -210,10 +239,13 @@ Future<void> _registerAdhkarReader() async {
   getIt.registerSingleton<IAdhkarTextRepository>(adhkarTextRepo);
 }
 
-Future<void> _registerAnalytics(PlatformConfig platformConfig) async {
-  final analyticsService = FirebaseAnalyticsService();
-  await analyticsService.initialize(isTV: platformConfig.isTV);
-  getIt.registerSingleton<IAnalyticsService>(analyticsService);
+/// Morning/evening session adhkar (TV takeover): the audio catalog from
+/// `assets/audio/adhkar.json` plus a dedicated, isolated audio player.
+Future<void> _registerSessionAdhkar() async {
+  final sessionRepo = SessionAdhkarRepository();
+  await sessionRepo.initialize();
+  getIt.registerSingleton<ISessionAdhkarRepository>(sessionRepo);
+  getIt.registerSingleton<IAdhkarAudioPort>(AdhkarAudioService());
 }
 
 Future<void> _registerMobileOnly() async {
@@ -221,7 +253,9 @@ Future<void> _registerMobileOnly() async {
   // running in Kotlin. Replaces flutter_local_notifications. The interface
   // [IPrayerNotificationPort] stays unchanged so the prayer cycle engine and
   // its mixins keep working without modification.
-  final notifService = NativeNotificationEngine(getIt<IPrayerTimesRepository>());
+  final notifService = NativeNotificationEngine(
+    getIt<IPrayerTimesRepository>(),
+  );
   await notifService.initialize();
   getIt.registerSingleton<IPrayerNotificationPort>(notifService);
   getIt.registerSingleton<NativeNotificationEngine>(notifService);
@@ -268,9 +302,10 @@ Future<void> _registerMobileOnly() async {
   // can supply the adapter built from SettingsProvider via widget context —
   // keeps this startup file free of settings/presentation imports.
   getIt.registerFactoryParam<
-      NotificationOnboardingCubit,
-      INotificationOnboardingFlagPort,
-      void>(
+    NotificationOnboardingCubit,
+    INotificationOnboardingFlagPort,
+    void
+  >(
     (flag, _) => NotificationOnboardingCubit(
       getHealth: getIt<GetNotificationHealth>(),
       requestNotifications: getIt<RequestPostNotifications>(),
@@ -295,7 +330,9 @@ Future<void> _registerMobileOnly() async {
     () => DeleteCustomAdhanUseCase(getIt<ICustomAdhanRepository>()),
   );
   getIt.registerLazySingleton<ILocationDetector>(
-    () =>
-        GpsLocationDetector(worldCityRepository: getIt<IWorldCityRepository>()),
+    () => GpsLocationDetector(
+      worldCityRepository: getIt<IWorldCityRepository>(),
+      onlineGeocodingRepository: getIt<IOnlineGeocodingRepository>(),
+    ),
   );
 }

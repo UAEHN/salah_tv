@@ -17,6 +17,14 @@ class CountdownWidget extends StatelessWidget {
     final screenH = MediaQuery.of(context).size.height;
     final screenW = MediaQuery.of(context).size.width;
 
+    // Pre-blended solid tint instead of a two-stop semi-transparent gradient
+    // (which choked the TV GPU on cheaper devices — see §7). Same visual
+    // weight as the old gradient midpoint, ~16% palette primary over surface.
+    final hintFill = Color.alphaBlend(
+      palette.primary.withValues(alpha: 0.16),
+      tc.bgSurface,
+    );
+
     return Container(
       width: screenW,
       padding: EdgeInsets.symmetric(
@@ -24,14 +32,7 @@ class CountdownWidget extends StatelessWidget {
         vertical: screenH * 0.015,
       ),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            palette.primary.withValues(alpha: 0.2),
-            palette.secondary.withValues(alpha: 0.12),
-          ],
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-        ),
+        color: hintFill,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: palette.primary.withValues(alpha: 0.3),

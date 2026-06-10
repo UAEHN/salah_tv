@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +15,14 @@ const _kCategoryIcons = <String, IconData>{
   'alarm': Icons.alarm_rounded,
   'auto_stories': Icons.auto_stories_rounded,
 };
+
+const _kCategorySvgAssets = <String, String>{
+  'mosque': 'assets/praying.svg',
+  'bedtime': 'assets/night-sleeping-icon.svg',
+  'alarm': 'assets/noun-wake-up-136790.svg',
+};
+
+const _kCategorySvgSizes = <String, double>{'mosque': 32, 'alarm': 32};
 
 class MobileAdhkarCategoryCard extends StatelessWidget {
   final AdhkarCategory category;
@@ -31,6 +40,7 @@ class MobileAdhkarCategoryCard extends StatelessWidget {
     final locale = context.select<SettingsProvider, String>(
       (p) => p.settings.locale,
     );
+    final svgAsset = _kCategorySvgAssets[category.icon];
     final icon = _kCategoryIcons[category.icon] ?? Icons.auto_stories_rounded;
 
     return GestureDetector(
@@ -53,7 +63,18 @@ class MobileAdhkarCategoryCard extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(icon, color: Colors.white, size: 24),
+              alignment: Alignment.center,
+              child: svgAsset != null
+                  ? SvgPicture.asset(
+                      svgAsset,
+                      width: _kCategorySvgSizes[category.icon] ?? 24,
+                      height: _kCategorySvgSizes[category.icon] ?? 24,
+                      colorFilter: const ColorFilter.mode(
+                        Colors.white,
+                        BlendMode.srcIn,
+                      ),
+                    )
+                  : Icon(icon, color: Colors.white, size: 24),
             ),
             const SizedBox(height: 10),
             Text(

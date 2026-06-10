@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/mobile_theme.dart';
@@ -62,10 +62,9 @@ class _MobilePreAdhanDurationDialogState
             const SizedBox(height: 24),
             Text(
               widget.title,
-              style: MobileTextStyles.titleMd(context).copyWith(
-                color: MobileColors.onSurface(context),
-                fontSize: 18,
-              ),
+              style: MobileTextStyles.titleMd(
+                context,
+              ).copyWith(color: MobileColors.onSurface(context), fontSize: 18),
             ),
             const SizedBox(height: 24),
             ..._options.map(
@@ -109,10 +108,9 @@ class _MobilePreAdhanDurationDialogState
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     child: Text(
                       l.commonSave,
-                      style: MobileTextStyles.titleMd(context).copyWith(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
+                      style: MobileTextStyles.titleMd(
+                        context,
+                      ).copyWith(color: Colors.white, fontSize: 16),
                     ),
                   ),
                 ),

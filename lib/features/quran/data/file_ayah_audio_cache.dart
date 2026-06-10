@@ -70,6 +70,8 @@ class FileAyahAudioCache implements IAyahAudioCache {
   Future<void> _safeDelete(File f) async {
     try {
       if (await f.exists()) await f.delete();
-    } catch (_) {/* ignore */}
+    } catch (_) {
+      /* ignore */
+    }
   }
 }

@@ -91,8 +91,10 @@ class _PanelButton extends StatelessWidget {
         children: [
           Icon(icon, size: 20, color: Colors.white),
           const SizedBox(width: 8),
-          Text(label,
-              style: const TextStyle(fontSize: 16, color: Colors.white)),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 16, color: Colors.white),
+          ),
         ],
       ),
     );

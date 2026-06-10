@@ -109,8 +109,27 @@ abstract class AppConfig {
   /// Empty array → feature has no playable content even if enabled.
   static const String rcKeyTakbeeratRecitersJson = 'takbeerat_reciters_json';
 
-  static const _prayerDataBase =
-      'https://uaehn.github.io/salah_tv/prayer_data';
+  // ─── Nominatim (OpenStreetMap) — global city search ────────────────────────
+  /// Free, key-less geocoding for any place worldwide. Solves the «my city
+  /// isn't in the bundled catalog» churn problem (especially for European
+  /// users). Bundled `world_cities.json` results are preferred when present;
+  /// Nominatim is the worldwide fallback.
+  static const String nominatimSearchUrl =
+      'https://nominatim.openstreetmap.org/search';
+
+  /// Reverse-geocoding endpoint (lat/lng → place). Used by GPS auto-detect
+  /// to translate coordinates into a city name, giving the same Nominatim
+  /// quality as manual search instead of the native geocoder which often
+  /// returns nothing for small towns.
+  static const String nominatimReverseUrl =
+      'https://nominatim.openstreetmap.org/reverse';
+
+  /// Required by Nominatim usage policy — identifies the app and reachable
+  /// contact. Must be a stable, app-specific value (not a browser UA).
+  static const String nominatimUserAgent =
+      'salah_tv/1.0 (boodeuae0909@gmail.com)';
+
+  static const _prayerDataBase = 'https://uaehn.github.io/salah_tv/prayer_data';
 
   /// Base URL for dynamic content (occasions manifest, future banners…).
   /// Same GitHub-Pages bucket as prayer data but a different folder so the

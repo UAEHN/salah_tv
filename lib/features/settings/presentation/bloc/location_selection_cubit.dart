@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/calculation_method_info.dart';
 import '../../../../features/prayer/data/composite_prayer_repository.dart';
 import '../../../../features/prayer/domain/cancellation_token.dart';
 import '../../../../features/prayer/domain/usecases/i_download_city_use_case.dart';
@@ -46,8 +47,8 @@ class LocationSelectionCubit extends Cubit<LocationSelectionState> {
     this._settingsProvider,
     IDownloadCityUseCase downloadCityUseCase,
     this._compositeRepo,
-  )   : _downloadCityUseCase = downloadCityUseCase,
-        super(LocationSelectionState.idle);
+  ) : _downloadCityUseCase = downloadCityUseCase,
+      super(LocationSelectionState.idle);
 
   final SettingsProvider _settingsProvider;
   final IDownloadCityUseCase _downloadCityUseCase;
@@ -78,10 +79,12 @@ class LocationSelectionCubit extends Cubit<LocationSelectionState> {
     final token = CancellationToken();
     _cancelToken = token;
 
-    emit(state.copyWith(
-      status: LocationSelectionStatus.saving,
-      downloadStatus: CityDownloadStatus.downloading,
-    ));
+    emit(
+      state.copyWith(
+        status: LocationSelectionStatus.saving,
+        downloadStatus: CityDownloadStatus.downloading,
+      ),
+    );
 
     final result = await _downloadCityUseCase(
       countryKey: choice.countryKey,
@@ -94,16 +97,20 @@ class LocationSelectionCubit extends Cubit<LocationSelectionState> {
     await result.fold(
       (failure) async {
         if (failure is CancelledFailure) {
-          emit(state.copyWith(
-            status: LocationSelectionStatus.idle,
-            downloadStatus: CityDownloadStatus.idle,
-          ));
+          emit(
+            state.copyWith(
+              status: LocationSelectionStatus.idle,
+              downloadStatus: CityDownloadStatus.idle,
+            ),
+          );
         } else {
-          emit(state.copyWith(
-            status: LocationSelectionStatus.failed,
-            downloadStatus: CityDownloadStatus.failed,
-            downloadError: 'تعذّر تحميل بيانات المدينة',
-          ));
+          emit(
+            state.copyWith(
+              status: LocationSelectionStatus.failed,
+              downloadStatus: CityDownloadStatus.failed,
+              downloadError: 'تعذّر تحميل بيانات المدينة',
+            ),
+          );
         }
       },
       (_) async {
@@ -119,10 +126,12 @@ class LocationSelectionCubit extends Cubit<LocationSelectionState> {
           choice.cityName,
         );
         if (!isClosed) {
-          emit(state.copyWith(
-            status: LocationSelectionStatus.saved,
-            downloadStatus: CityDownloadStatus.ready,
-          ));
+          emit(
+            state.copyWith(
+              status: LocationSelectionStatus.saved,
+              downloadStatus: CityDownloadStatus.ready,
+            ),
+          );
         }
       },
     );
@@ -131,19 +140,29 @@ class LocationSelectionCubit extends Cubit<LocationSelectionState> {
   Future<void> _saveWorldCity(LocationChoice choice) async {
     emit(state.copyWith(status: LocationSelectionStatus.saving));
     try {
+      // Prefer the country-level convention (uk / germany / russia / france
+      // / turkiye / north_america / …) over the per-city `m` field in
+      // world_cities.json, which is mostly a coarse MWL default. The country
+      // mapping is hand-curated and matches what major local mosques publish.
+      final method = defaultMethodForCountryIso(choice.countryKey);
+      final resolvedMethod = method == 'muslim_world_league'
+          ? choice.calculationMethod!
+          : method;
       await _settingsProvider.updateWorldLocation(
         choice.countryKey,
         choice.cityName,
         choice.latitude!,
         choice.longitude!,
-        choice.calculationMethod!,
+        resolvedMethod,
         timeZoneId: choice.timeZoneId,
         utcOffsetHours: choice.utcOffsetHours,
       );
-      emit(state.copyWith(
-        status: LocationSelectionStatus.saved,
-        downloadStatus: CityDownloadStatus.idle,
-      ));
+      emit(
+        state.copyWith(
+          status: LocationSelectionStatus.saved,
+          downloadStatus: CityDownloadStatus.idle,
+        ),
+      );
     } catch (_) {
       emit(state.copyWith(status: LocationSelectionStatus.failed));
     }

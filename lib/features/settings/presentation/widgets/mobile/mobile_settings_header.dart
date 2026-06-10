@@ -46,9 +46,9 @@ class _BackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: MobileColors.cardColor(context).withValues(
-        alpha: MobileColors.isDark(context) ? 0.5 : 0.85,
-      ),
+      color: MobileColors.cardColor(
+        context,
+      ).withValues(alpha: MobileColors.isDark(context) ? 0.5 : 0.85),
       shape: const CircleBorder(),
       child: InkWell(
         customBorder: const CircleBorder(),

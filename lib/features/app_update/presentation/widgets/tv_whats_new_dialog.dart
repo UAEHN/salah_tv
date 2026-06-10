@@ -30,9 +30,7 @@ class TvWhatsNewDialog extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF0D1B2A).withValues(alpha: 0.97),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.12),
-          ),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.5),
@@ -77,7 +75,6 @@ class TvWhatsNewDialog extends StatelessWidget {
     );
   }
 }
-
 
 // ─── Changelog list ───────────────────────────────────────────────────────────
 

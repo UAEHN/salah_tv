@@ -74,10 +74,7 @@ class TvForceUpdateDialog extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 28),
-                TvOpenStoreButton(
-                  storeUrl: storeUrl,
-                  label: 'تحديث',
-                ),
+                TvOpenStoreButton(storeUrl: storeUrl, label: 'تحديث'),
               ],
             ),
           ),

@@ -119,21 +119,21 @@ class _Header extends StatelessWidget {
   const _Header({required this.title, required this.subtitle});
   @override
   Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: MobileTextStyles.headlineMd(context),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: MobileTextStyles.bodyMd(context).copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      );
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Text(
+        title,
+        textAlign: TextAlign.center,
+        style: MobileTextStyles.headlineMd(context),
+      ),
+      const SizedBox(height: 6),
+      Text(
+        subtitle,
+        textAlign: TextAlign.center,
+        style: MobileTextStyles.bodyMd(
+          context,
+        ).copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+      ),
+    ],
+  );
 }

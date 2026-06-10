@@ -38,7 +38,8 @@ class CalmMomentWaiter {
 
   void _evaluate(PrayerState state) {
     if (_fired || !isStillActive()) return;
-    final isCalm = !state.isCycleActive &&
+    final isCalm =
+        !state.isCycleActive &&
         state.todayPrayers != null &&
         state.countdown.inMinutes >= 5;
     if (!isCalm) return;

@@ -74,9 +74,7 @@ class _MobileMushafAyahHighlightState extends State<MobileMushafAyahHighlight> {
   Widget build(BuildContext context) {
     if (_glyphs.isEmpty) return const SizedBox.shrink();
     return IgnorePointer(
-      child: CustomPaint(
-        painter: _HighlightPainter(_glyphs, widget.color),
-      ),
+      child: CustomPaint(painter: _HighlightPainter(_glyphs, widget.color)),
     );
   }
 }

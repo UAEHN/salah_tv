@@ -14,8 +14,8 @@ String buildFeedbackContactMessage({
   _section(buffer, '📱 الجهاز والتطبيق', [
     'الإصدار: ${diagnostics['appVersion'] ?? '-'}',
     'الجهاز: ${diagnostics['deviceType'] == 'tv' ? 'تلفاز' : 'هاتف'} '
-        '— ${diagnostics['os'] ?? '-'} ${diagnostics['osVersion'] ?? ''}'
-            .trim(),
+            '— ${diagnostics['os'] ?? '-'} ${diagnostics['osVersion'] ?? ''}'
+        .trim(),
     'لغة التطبيق: ${settings.locale}',
     'لغة النظام: ${diagnostics['deviceLocale'] ?? '-'}',
     'الوقت المحلي: ${diagnostics['deviceLocalTime'] ?? '-'}',
@@ -24,9 +24,7 @@ String buildFeedbackContactMessage({
 
   _section(buffer, '📍 الموقع', [
     'المدينة: ${settings.selectedCity} — ${settings.selectedCountry}',
-    'مصدر الموقع: ${settings.isCalculatedLocation
-        ? 'محسوب من GPS'
-        : 'من قاعدة بيانات التطبيق'}',
+    'مصدر الموقع: ${settings.isCalculatedLocation ? 'محسوب من GPS' : 'من قاعدة بيانات التطبيق'}',
     if (settings.selectedLatitude != null && settings.selectedLongitude != null)
       'الإحداثيات: ${settings.selectedLatitude!.toStringAsFixed(4)}, '
           '${settings.selectedLongitude!.toStringAsFixed(4)}',

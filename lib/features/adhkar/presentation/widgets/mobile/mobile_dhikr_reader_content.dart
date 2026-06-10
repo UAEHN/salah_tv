@@ -34,7 +34,9 @@ class MobileDhikrReaderContent extends StatelessWidget {
         ),
         if (isEnglish && dhikr.transliteration.isNotEmpty) ...[
           const SizedBox(height: 16),
-          Divider(color: MobileColors.activePrimary(context).withValues(alpha: 0.15)),
+          Divider(
+            color: MobileColors.activePrimary(context).withValues(alpha: 0.15),
+          ),
           const SizedBox(height: 12),
           Text(
             dhikr.transliteration,
@@ -53,7 +55,9 @@ class MobileDhikrReaderContent extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: MobileColors.activePrimary(context).withValues(alpha: 0.08),
+              color: MobileColors.activePrimary(
+                context,
+              ).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -96,10 +100,9 @@ class MobileDhikrReaderContent extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             dhikr.sourceEn,
-            style: MobileTextStyles.labelSm(context).copyWith(
-              fontFamily: 'Rubik',
-              fontSize: 11,
-            ),
+            style: MobileTextStyles.labelSm(
+              context,
+            ).copyWith(fontFamily: 'Rubik', fontSize: 11),
             textAlign: TextAlign.center,
           ),
         ],

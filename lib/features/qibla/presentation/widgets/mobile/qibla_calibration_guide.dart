@@ -91,11 +91,7 @@ class _Figure8IconState extends State<_Figure8Icon>
   Widget build(BuildContext context) {
     return RotationTransition(
       turns: _ctrl,
-      child: const Icon(
-        Icons.screen_rotation_rounded,
-        color: _warn,
-        size: 26,
-      ),
+      child: const Icon(Icons.screen_rotation_rounded, color: _warn, size: 26),
     );
   }
 }

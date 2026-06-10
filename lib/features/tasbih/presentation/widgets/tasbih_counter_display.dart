@@ -23,7 +23,10 @@ class TasbihCounterDisplay extends StatelessWidget {
     final accent = isCompleted
         ? const Color(0xFF4CAF50)
         : MobileColors.activePrimary(context);
-    final size = (MediaQuery.of(context).size.height * 0.26).clamp(150.0, 240.0);
+    final size = (MediaQuery.of(context).size.height * 0.26).clamp(
+      150.0,
+      240.0,
+    );
 
     return GestureDetector(
       onTap: onTap,

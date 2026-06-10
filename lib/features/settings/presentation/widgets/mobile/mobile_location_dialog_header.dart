@@ -29,8 +29,9 @@ class MobileLocationDialogHeader extends StatelessWidget {
             width: 44,
             height: 4,
             decoration: BoxDecoration(
-              color: MobileColors.onSurfaceMuted(context)
-                  .withValues(alpha: 0.25),
+              color: MobileColors.onSurfaceMuted(
+                context,
+              ).withValues(alpha: 0.25),
               borderRadius: BorderRadius.circular(99),
             ),
           ),
@@ -39,10 +40,7 @@ class MobileLocationDialogHeader extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
           child: Row(
             children: [
-              _CircleButton(
-                icon: Icons.close_rounded,
-                onTap: onClose,
-              ),
+              _CircleButton(icon: Icons.close_rounded, onTap: onClose),
               Expanded(
                 child: Text(
                   title,

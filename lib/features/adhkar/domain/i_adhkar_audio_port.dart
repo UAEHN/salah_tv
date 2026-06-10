@@ -5,7 +5,7 @@ abstract class IAdhkarAudioPort {
   /// Fires once when the current dhikr audio file finishes naturally.
   Stream<void> get onComplete;
 
-  /// Plays the audio at [url]. Network failure is silently swallowed —
+  /// Plays the audio asset at [url]. Failure is silently swallowed —
   /// the caller must start a fallback timer if this does not trigger [onComplete].
   Future<void> play(String url);
 

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -11,8 +11,9 @@ class SettingsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final palette =
-        getThemePalette(context.watch<SettingsProvider>().settings.themeColorKey);
+    final palette = getThemePalette(
+      context.watch<SettingsProvider>().settings.themeColorKey,
+    );
 
     return Container(
       width: double.infinity,

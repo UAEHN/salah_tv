@@ -8,10 +8,7 @@ import '../../logic/surah_label_resolver.dart';
 /// Bottom sheet shown on long-press of the verse tile.
 /// Renders the full Arabic text without bento truncation, plus the surah
 /// reference and a close affordance.
-Future<void> showVerseDetailsSheet(
-  BuildContext context,
-  DailyVerse verse,
-) {
+Future<void> showVerseDetailsSheet(BuildContext context, DailyVerse verse) {
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: Colors.transparent,
@@ -78,12 +75,11 @@ class _VerseSheet extends StatelessWidget {
               child: Text(
                 verse.textAr,
                 style: TextStyle(
-                  fontFamily:
-                      Theme.of(context).textTheme.bodyMedium?.fontFamily,
+                  fontFamily: 'AmiriQuran',
                   fontSize: 24,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w400,
                   color: MobileColors.onSurface(context),
-                  height: 2.1,
+                  height: 2.2,
                 ),
                 textAlign: TextAlign.center,
               ),

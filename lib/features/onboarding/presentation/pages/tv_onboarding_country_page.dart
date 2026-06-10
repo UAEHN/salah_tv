@@ -9,10 +9,7 @@ import '../widgets/tv_onboarding_search_field.dart';
 
 /// Step 1 of TV onboarding: pick a country from a scrollable list.
 class TvOnboardingCountryPage extends StatefulWidget {
-  const TvOnboardingCountryPage({
-    super.key,
-    required this.entranceAnimation,
-  });
+  const TvOnboardingCountryPage({super.key, required this.entranceAnimation});
 
   final Animation<double> entranceAnimation;
 
@@ -110,4 +107,3 @@ class _TvOnboardingCountryPageState extends State<TvOnboardingCountryPage> {
     );
   }
 }
-

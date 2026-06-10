@@ -58,8 +58,10 @@ class _MobileMushafScreenState extends State<MobileMushafScreen> {
     if (_query.isEmpty) return kSurahs;
     final q = _query.toLowerCase();
     return kSurahs
-        .where((s) =>
-            s.nameAr.contains(_query) || s.nameEn.toLowerCase().contains(q))
+        .where(
+          (s) =>
+              s.nameAr.contains(_query) || s.nameEn.toLowerCase().contains(q),
+        )
         .toList();
   }
 
@@ -110,11 +112,11 @@ class _MobileMushafScreenState extends State<MobileMushafScreen> {
   }
 
   MaterialPageRoute _readerRoute(MushafReaderCubit cubit) => MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: cubit,
-          child: const MobileMushafReaderScreen(),
-        ),
-      );
+    builder: (_) => BlocProvider.value(
+      value: cubit,
+      child: const MobileMushafReaderScreen(),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +135,8 @@ class _MobileMushafScreenState extends State<MobileMushafScreen> {
                     builder: (_, state) {
                       if (state.loadStatus == MushafLoadStatus.error) {
                         return MobileMushafErrorView(
-                          message: state.loadError ??
+                          message:
+                              state.loadError ??
                               AppLocalizations.of(context).mushafLoadError,
                           onRetry: () =>
                               context.read<MushafReaderCubit>().init(),

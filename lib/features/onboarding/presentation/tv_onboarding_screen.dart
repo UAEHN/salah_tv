@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../prayer/presentation/bloc/prayer_bloc.dart';
+import '../../prayer/presentation/bloc/prayer_event.dart';
 import 'onboarding_cubit.dart';
 import 'pages/tv_onboarding_city_page.dart';
 import 'pages/tv_onboarding_country_page.dart';
@@ -58,6 +60,10 @@ class _TvOnboardingScreenState extends State<TvOnboardingScreen>
           prev.completionError != curr.completionError,
       listener: (context, state) {
         if (state.isComplete) {
+          // Onboarding committed city/country: now safe to spin up the prayer
+          // cycle engine (1Hz tick, adhan trigger). main.dart skipped the
+          // initial PrayerStarted when the city was empty.
+          context.read<PrayerBloc>().add(const PrayerStarted());
           Navigator.of(context).pushReplacementNamed('/');
           return;
         }

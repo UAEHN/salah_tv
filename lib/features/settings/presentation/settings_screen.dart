@@ -30,8 +30,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _selectedIndex = widget.initialIndex;
   }
 
-  late final List<FocusNode> _navFocusNodes =
-      List.generate(kSettingsCategoryCount, (_) => FocusNode());
+  late final List<FocusNode> _navFocusNodes = List.generate(
+    kSettingsCategoryCount,
+    (_) => FocusNode(),
+  );
 
   final _contentScopeNode = FocusScopeNode(debugLabel: 'settings_content');
 
@@ -117,10 +119,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             skipTraversal: true,
                             onKeyEvent: (_, event) =>
                                 handleSettingsContentKeyEvent(
-                              _navFocusNodes,
-                              effectiveIndex,
-                              event,
-                            ),
+                                  _navFocusNodes,
+                                  effectiveIndex,
+                                  event,
+                                ),
                             child: FocusScope(
                               node: _contentScopeNode,
                               child: SettingsContentPanel(

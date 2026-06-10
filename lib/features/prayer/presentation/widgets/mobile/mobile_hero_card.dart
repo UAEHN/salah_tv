@@ -86,10 +86,8 @@ class _MobileHeroDateSection extends StatelessWidget {
       isBusy: isBusy,
       onPrevious: () =>
           context.read<PrayerBloc>().add(const PrayerDateChanged(-1)),
-      onNext: () =>
-          context.read<PrayerBloc>().add(const PrayerDateChanged(1)),
-      onReset: () =>
-          context.read<PrayerBloc>().add(const PrayerDateReset()),
+      onNext: () => context.read<PrayerBloc>().add(const PrayerDateChanged(1)),
+      onReset: () => context.read<PrayerBloc>().add(const PrayerDateReset()),
     );
   }
 }

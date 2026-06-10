@@ -15,10 +15,7 @@ class MosqueSilencePhoneScreen extends StatelessWidget {
 
   final AccentPalette palette;
 
-  const MosqueSilencePhoneScreen({
-    required this.palette,
-    super.key,
-  });
+  const MosqueSilencePhoneScreen({required this.palette, super.key});
 
   @override
   Widget build(BuildContext context) {

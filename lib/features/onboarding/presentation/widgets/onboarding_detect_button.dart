@@ -26,20 +26,19 @@ class _OnboardingDetectButtonState extends State<OnboardingDetectButton> {
   Future<void> _detect() async {
     setState(() => _isLoading = true);
     final useCase = DetectLocationUseCase(getIt<ILocationDetector>());
-    final result = await useCase();
-    if (!mounted) return;
-    result.fold(
-      (failure) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(failure.message, textAlign: TextAlign.center),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      },
-      (location) async => widget.onDetected(location),
+    final result = await useCase(
+      locale: AppLocalizations.of(context).localeName,
     );
+    if (!mounted) return;
+    result.fold((failure) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(failure.message, textAlign: TextAlign.center),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }, (location) async => widget.onDetected(location));
   }
 
   @override

@@ -55,10 +55,9 @@ class MobileFontPickerScreen extends StatelessWidget {
   Widget _buildBody(BuildContext context, FontPickerState state) {
     return switch (state) {
       FontPickerInitial() || FontPickerLoading() => const Center(
-          child: CircularProgressIndicator(strokeWidth: 2.4),
-        ),
-      FontPickerError(:final messageKey) =>
-        _ErrorView(messageKey: messageKey),
+        child: CircularProgressIndicator(strokeWidth: 2.4),
+      ),
+      FontPickerError(:final messageKey) => _ErrorView(messageKey: messageKey),
       FontPickerLoaded(
         :final fonts,
         :final selectedFamily,

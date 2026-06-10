@@ -87,10 +87,9 @@ class _Header extends StatelessWidget {
           const SizedBox(width: 48),
           Text(
             title,
-            style: MobileTextStyles.titleMd(context).copyWith(
-              color: MobileColors.onSurface(context),
-              fontSize: 22,
-            ),
+            style: MobileTextStyles.titleMd(
+              context,
+            ).copyWith(color: MobileColors.onSurface(context), fontSize: 22),
             textDirection: TextDirection.rtl,
           ),
           IconButton(

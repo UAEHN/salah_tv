@@ -24,10 +24,7 @@ class TasbihTopBar extends StatelessWidget {
             color: color,
           ),
           const Spacer(),
-          Text(
-            l.navTasbih,
-            style: MobileTextStyles.headlineMd(context),
-          ),
+          Text(l.navTasbih, style: MobileTextStyles.headlineMd(context)),
           const Spacer(),
           IconButton(
             icon: const Icon(Icons.refresh_rounded, size: 22),

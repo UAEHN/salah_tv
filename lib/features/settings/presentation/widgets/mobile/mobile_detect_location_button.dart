@@ -27,20 +27,19 @@ class _MobileDetectLocationButtonState
   Future<void> _detect() async {
     setState(() => _isLoading = true);
     final useCase = DetectLocationUseCase(getIt<ILocationDetector>());
-    final result = await useCase();
-    if (!mounted) return;
-    result.fold(
-      (failure) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(failure.message, textAlign: TextAlign.center),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      },
-      (location) async => widget.onDetected(location),
+    final result = await useCase(
+      locale: AppLocalizations.of(context).localeName,
     );
+    if (!mounted) return;
+    result.fold((failure) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(failure.message, textAlign: TextAlign.center),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }, (location) async => widget.onDetected(location));
   }
 
   @override
@@ -78,10 +77,7 @@ class _MobileDetectLocationButtonState
             backgroundColor: accent.withValues(alpha: 0.08),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
-              side: BorderSide(
-                color: accent.withValues(alpha: 0.35),
-                width: 1,
-              ),
+              side: BorderSide(color: accent.withValues(alpha: 0.35), width: 1),
             ),
           ),
         ),

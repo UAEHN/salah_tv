@@ -53,12 +53,17 @@ class HeroArcPainter extends CustomPainter {
     final tipX = center.dx + radius * math.cos(tipAngle);
     final tipY = center.dy + radius * math.sin(tipAngle);
     final tip = Offset(tipX, tipY);
-    canvas.drawCircle(tip, strokeWidth * 1.8,
-        Paint()..color = endColor.withValues(alpha: 0.10));
-    canvas.drawCircle(tip, strokeWidth * 1.1,
-        Paint()..color = endColor.withValues(alpha: 0.30));
-    canvas.drawCircle(tip, strokeWidth * 0.7,
-        Paint()..color = endColor);
+    canvas.drawCircle(
+      tip,
+      strokeWidth * 1.8,
+      Paint()..color = endColor.withValues(alpha: 0.10),
+    );
+    canvas.drawCircle(
+      tip,
+      strokeWidth * 1.1,
+      Paint()..color = endColor.withValues(alpha: 0.30),
+    );
+    canvas.drawCircle(tip, strokeWidth * 0.7, Paint()..color = endColor);
   }
 
   @override

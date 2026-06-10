@@ -11,9 +11,9 @@ class TakbeeratVisibilityState {
   });
 
   factory TakbeeratVisibilityState.hidden() => TakbeeratVisibilityState(
-        visibility: EidVisibility.hidden(),
-        reciters: const [],
-      );
+    visibility: EidVisibility.hidden(),
+    reciters: const [],
+  );
 
   final EidVisibility visibility;
   final List<TakbeeratReciter> reciters;

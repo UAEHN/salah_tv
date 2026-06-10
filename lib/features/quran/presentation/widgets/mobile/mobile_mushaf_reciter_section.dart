@@ -68,7 +68,8 @@ class _ReciterRow extends StatelessWidget {
             Expanded(
               child: Text(
                 reciter.localizedName(
-                    Localizations.localeOf(context).languageCode),
+                  Localizations.localeOf(context).languageCode,
+                ),
                 style: MobileTextStyles.headlineMd(context).copyWith(
                   fontSize: 15,
                   fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,

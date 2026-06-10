@@ -3,7 +3,7 @@ import 'dart:async';
 import '../entities/daily_prayer_times.dart';
 
 /// Mutable state bag for [PrayerCycleEngine].
-/// All 23 engine state fields live here, accessible to every mixin via [s].
+/// All engine state fields live here, accessible to every mixin via [s].
 class PrayerCycleState {
   // ── Tick timer ──────────────────────────────────────────────────────────
   Timer? timer;
@@ -31,6 +31,10 @@ class PrayerCycleState {
   bool isDuaPlaying = false;
   Timer? duaFallbackTimer;
 
+  /// Phase 1C.2: anchors dua_completed.duration_seconds. Set when dua
+  /// playback begins, consumed and cleared by stopDua.
+  DateTime? duaTriggerTime;
+
   // ── Iqama countdown & playback ───────────────────────────────────────────
   bool isIqamaCountdown = false;
   Duration iqamaCountdown = Duration.zero;
@@ -38,11 +42,39 @@ class PrayerCycleState {
   bool isIqamaPlaying = false;
   Timer? iqamaFallbackTimer;
 
+  // Telemetry-only fields (Phase 1B). [iqamaTriggerTime] anchors the
+  // iqama_completed.duration_seconds metric. [iqamaWasNaturalCompletion]
+  // distinguishes audio-onComplete (true) from fallback-timer / play-failure
+  // (false). Reset by stopIqama after emitting the event.
+  DateTime? iqamaTriggerTime;
+  bool iqamaWasNaturalCompletion = true;
+
   // ── Mosque-mode post-iqama prayer window ─────────────────────────────────
   // Set when iqama ends in mosque mode; while [now] is before this timestamp
   // the home screen shows the silence-phone takeover. Cleared by tick when
   // expired.
   DateTime? prayerInProgressEndsAt;
+
+  // ── After-prayer adhkar takeover ─────────────────────────────────────────
+  // Scheduled at iqama end when [isAdhkarEnabled]: the home screen shows a
+  // rotating «أذكار بعد الصلاة» takeover from [afterPrayerAdhkarStartsAt] until
+  // [afterPrayerAdhkarEndsAt], then Quran resumes. Transient (in-memory) like
+  // the window above, and cleared together on cycle reset.
+  DateTime? afterPrayerAdhkarStartsAt;
+  DateTime? afterPrayerAdhkarEndsAt;
+  bool isAfterPrayerAdhkarPlaying = false;
+
+  // ── Morning/evening session adhkar takeover ──────────────────────────────
+  // Scheduled 25 min after the «أذكار بعد الصلاة» takeover first appears, only
+  // after Fajr (→ morning) or Asr (→ evening) and outside mosque mode. The home
+  // screen shows a rotating full-screen adhkar takeover from
+  // [sessionAdhkarStartsAt] for one display window ([sessionAdhkarEndsAt]), then
+  // Quran resumes. Transient (in-memory) like the after-prayer fields above;
+  // cleared together on cycle reset.
+  DateTime? sessionAdhkarStartsAt;
+  DateTime? sessionAdhkarEndsAt;
+  bool isSessionAdhkarPlaying = false;
+  String sessionAdhkarCategory = ''; // 'morning' | 'evening' | ''
 
   // ── Quran background audio ───────────────────────────────────────────────
   /// Whether the user has Quran "on" (wants it to play).
@@ -87,6 +119,27 @@ class PrayerCycleState {
   // ── Pre-alert dedup sets ─────────────────────────────────────────────────
   final Set<String> preAlertBellPlayed = {};
   final Set<String> preAnnouncementPlayed = {};
+
+  // ── Phase 1C.1 diagnostic state ──────────────────────────────────────────
+  /// Dedup set so prayer_overdue_no_trigger fires at most once per prayer.
+  /// Cleared together with [adhansToday] on day change / city change.
+  final Set<String> overdueReported = {};
+
+  /// Dedup set so adhan_skipped fires at most once per (prayer, reason).
+  /// Cleared together with [adhansToday] on day change / city change.
+  final Set<String> skippedReported = {};
+
+  /// Last time tick_heartbeat was emitted. Throttles the event to ~1/min.
+  DateTime? lastHeartbeatAt;
+
+  /// First tick at which [todayPrayers] was observed null in the current
+  /// gap. Null while data is present. Drives prayer_data_missing reporting.
+  DateTime? prayerDataMissingSince;
+  DateTime? prayerDataMissingReportedAt;
+
+  /// Phase 1C.3: dedup set keyed by `<phase>_<startMs>` so cycle_stuck
+  /// fires at most once per individual stuck phase.
+  final Set<String> stuckReported = {};
 
   // ── Derived state ────────────────────────────────────────────────────────
   bool get isCycleActive =>

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 const _accent = Color(0xFFE6B450);
 
-/// Minimal three-step indicator for the onboarding flow.
+/// Minimal two-step indicator for the onboarding flow (language → location).
 /// Just a thin track with numbered nodes that fill in as the user
 /// progresses. No animation noise, no text labels — the page title already
 /// tells the user where they are.
 class OnboardingProgressBar extends StatelessWidget {
-  final int currentStep; // 0, 1, 2
+  final int currentStep; // 0, 1
 
   const OnboardingProgressBar({super.key, required this.currentStep});
 
@@ -17,10 +17,9 @@ class OnboardingProgressBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 28),
       child: Row(
         children: [
-          for (int i = 0; i < 3; i++) ...[
+          for (int i = 0; i < 2; i++) ...[
             _StepNode(index: i, currentStep: currentStep),
-            if (i < 2)
-              Expanded(child: _Connector(isFilled: currentStep > i)),
+            if (i < 1) Expanded(child: _Connector(isFilled: currentStep > i)),
           ],
         ],
       ),

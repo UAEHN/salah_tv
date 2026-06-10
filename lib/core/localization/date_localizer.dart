@@ -1,4 +1,4 @@
-﻿import 'package:hijri/hijri_calendar.dart';
+import 'package:hijri/hijri_calendar.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 String localizedWeekdayName(AppLocalizations l, int weekday) {

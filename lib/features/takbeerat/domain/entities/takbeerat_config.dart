@@ -45,13 +45,13 @@ class TakbeeratConfig {
   /// Safe baseline used when Remote Config is unreachable or malformed.
   /// Keeps the feature invisible — never accidentally enabled.
   factory TakbeeratConfig.disabled() => const TakbeeratConfig(
-        isFeatureEnabled: false,
-        hasForceHide: false,
-        hasForceShow: false,
-        fitrStartOffsetDays: 1,
-        fitrEndOffsetDays: 0,
-        adhaStartOffsetDays: 2,
-        adhaEndOffsetDays: 3,
-        reciters: <TakbeeratReciter>[],
-      );
+    isFeatureEnabled: false,
+    hasForceHide: false,
+    hasForceShow: false,
+    fitrStartOffsetDays: 1,
+    fitrEndOffsetDays: 0,
+    adhaStartOffsetDays: 2,
+    adhaEndOffsetDays: 3,
+    reciters: <TakbeeratReciter>[],
+  );
 }

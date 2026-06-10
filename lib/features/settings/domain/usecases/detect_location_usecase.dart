@@ -9,6 +9,6 @@ class DetectLocationUseCase {
 
   DetectLocationUseCase(this._detector);
 
-  Future<Either<Failure, DetectedLocation>> call() =>
-      _detector.detectLocation();
+  Future<Either<Failure, DetectedLocation>> call({String? locale}) =>
+      _detector.detectLocation(locale: locale);
 }

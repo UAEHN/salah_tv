@@ -22,11 +22,23 @@ class MobileMushafThemeSection extends StatelessWidget {
         const SizedBox(height: 10),
         Row(
           children: [
-            _Swatch(t: ReadingTheme.paper, label: l.mushafThemePaper, current: theme),
+            _Swatch(
+              t: ReadingTheme.paper,
+              label: l.mushafThemePaper,
+              current: theme,
+            ),
             const SizedBox(width: 10),
-            _Swatch(t: ReadingTheme.sepia, label: l.mushafThemeSepia, current: theme),
+            _Swatch(
+              t: ReadingTheme.sepia,
+              label: l.mushafThemeSepia,
+              current: theme,
+            ),
             const SizedBox(width: 10),
-            _Swatch(t: ReadingTheme.night, label: l.mushafThemeNight, current: theme),
+            _Swatch(
+              t: ReadingTheme.night,
+              label: l.mushafThemeNight,
+              current: theme,
+            ),
           ],
         ),
       ],

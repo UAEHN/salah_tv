@@ -22,6 +22,7 @@ abstract class IPrayerTimesRepository {
     double lng,
     String methodKey, {
     String madhabKey = 'shafi',
+    String highLatitudeRuleKey = 'auto',
     String cityLabel = '',
     String? timeZoneId,
     double? utcOffsetHours,

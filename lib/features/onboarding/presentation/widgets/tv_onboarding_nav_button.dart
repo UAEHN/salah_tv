@@ -64,14 +64,12 @@ class _TvOnboardingNavButtonState extends State<TvOnboardingNavButton> {
             color: isActive && !_isFocused
                 ? brandGold.withValues(alpha: 0.15)
                 : !isActive
-                    ? Colors.white.withValues(alpha: 0.05)
-                    : null,
+                ? Colors.white.withValues(alpha: 0.05)
+                : null,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: isActive
-                  ? (_isFocused
-                      ? brandGold
-                      : brandGold.withValues(alpha: 0.5))
+                  ? (_isFocused ? brandGold : brandGold.withValues(alpha: 0.5))
                   : Colors.white.withValues(alpha: 0.15),
             ),
             boxShadow: _isFocused && isActive
@@ -101,9 +99,7 @@ class _TvOnboardingNavButtonState extends State<TvOnboardingNavButton> {
                         widget.icon,
                         size: 18,
                         color: isActive
-                            ? (_isFocused
-                                ? Colors.white
-                                : brandGold)
+                            ? (_isFocused ? Colors.white : brandGold)
                             : Colors.white.withValues(alpha: 0.3),
                       ),
                       const SizedBox(width: 8),
@@ -114,9 +110,7 @@ class _TvOnboardingNavButtonState extends State<TvOnboardingNavButton> {
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: isActive
-                            ? (_isFocused
-                                ? Colors.white
-                                : brandGold)
+                            ? (_isFocused ? Colors.white : brandGold)
                             : Colors.white.withValues(alpha: 0.3),
                       ),
                     ),

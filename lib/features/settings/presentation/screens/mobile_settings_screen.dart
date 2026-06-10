@@ -18,8 +18,10 @@ class MobileSettingsScreen extends StatelessWidget {
     final scaledMq = isRubik
         ? mq
         : mq.copyWith(
-            textScaler: mq.textScaler
-                .clamp(minScaleFactor: 1.15, maxScaleFactor: 1.3),
+            textScaler: mq.textScaler.clamp(
+              minScaleFactor: 1.15,
+              maxScaleFactor: 1.3,
+            ),
           );
 
     return MediaQuery(

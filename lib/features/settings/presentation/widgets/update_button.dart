@@ -27,7 +27,7 @@ class _SettingsUpdateButtonState extends State<SettingsUpdateButton> {
   Future<void> _launchPlayStore() async {
     final Uri marketUri = Uri.parse(AppConfig.playStoreMarketUrl);
     final Uri webUri = Uri.parse(AppConfig.playStoreUrl);
-    
+
     try {
       if (await canLaunchUrl(marketUri)) {
         await launchUrl(marketUri, mode: LaunchMode.externalApplication);
@@ -42,7 +42,7 @@ class _SettingsUpdateButtonState extends State<SettingsUpdateButton> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    
+
     return Focus(
       onFocusChange: (f) {
         setState(() => _isFocused = f);
@@ -64,7 +64,9 @@ class _SettingsUpdateButtonState extends State<SettingsUpdateButton> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           decoration: BoxDecoration(
-            color: _isFocused ? widget.palette.primary : widget.palette.primary.withValues(alpha: 0.12),
+            color: _isFocused
+                ? widget.palette.primary
+                : widget.palette.primary.withValues(alpha: 0.12),
             border: Border.all(
               color: _isFocused
                   ? Colors.white.withValues(alpha: 0.55)

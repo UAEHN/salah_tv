@@ -1,6 +1,6 @@
 name: ghasaq
 description: "غسق — مواقيت الصلاة لأجهزة Android TV"
-version: 1.0.8+16
+version: 1.0.9+18
 publish_to: none
 
 environment:
@@ -59,6 +59,11 @@ dependencies:
   cloud_firestore: ^5.6.0
   firebase_analytics: ^11.4.0
   firebase_remote_config: ^5.4.0
+  firebase_crashlytics: ^4.3.0
+  # Push notifications (mobile only). TV uses NoOpPushNotificationsRepository.
+  # Server-pushed messages route through the native AppFirebaseMessagingService
+  # which delegates to NotificationDispatcher — same builder the alarm engine uses.
+  firebase_messaging: ^15.2.0
 
   # Reads installed app version (versionCode / build number) at runtime.
   package_info_plus: ^8.1.0
@@ -140,6 +145,7 @@ flutter:
     - assets/audio/adhkar.json
     - assets/audio/dua/
     - assets/adhkar/adhkar_text.json
+    - assets/screensaver/screensaver_content.json
     - assets/db_city_lists.json
     - assets/world_cities.json
     - assets/db_countries.json
@@ -150,6 +156,10 @@ flutter:
     - assets/occasions/occasions_default.json
     # Tinted Tasbih icon used by Today bento + Adhkar entry card.
     - assets/tasbih.svg
+    # Adhkar category icons (after-prayer / sleep / wakeup), tinted white.
+    - assets/praying.svg
+    - assets/night-sleeping-icon.svg
+    - assets/noun-wake-up-136790.svg
     # Kaaba image used by the Qibla compass marker + center label.
     - assets/kaaba.png
   fonts:

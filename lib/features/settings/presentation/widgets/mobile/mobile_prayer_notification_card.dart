@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/mobile_theme.dart';
@@ -130,10 +130,9 @@ class _PrayerHeader extends StatelessWidget {
         const SizedBox(width: 10),
         Text(
           prayerName,
-          style: MobileTextStyles.headlineMd(context).copyWith(
-            color: MobileColors.onSurface(context),
-            fontSize: 17,
-          ),
+          style: MobileTextStyles.headlineMd(
+            context,
+          ).copyWith(color: MobileColors.onSurface(context), fontSize: 17),
         ),
       ],
     );

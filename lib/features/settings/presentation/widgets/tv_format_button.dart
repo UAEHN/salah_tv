@@ -73,14 +73,14 @@ class _TvFormatButtonState extends State<TvFormatButton> {
                       ),
                     ]
                   : widget.isSelected
-                      ? [
-                          BoxShadow(
-                            color: widget.palette.glow.withValues(alpha: 0.40),
-                            blurRadius: 12,
-                            spreadRadius: 2,
-                          ),
-                        ]
-                      : null,
+                  ? [
+                      BoxShadow(
+                        color: widget.palette.glow.withValues(alpha: 0.40),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                      ),
+                    ]
+                  : null,
             ),
             child: Text(
               widget.label,

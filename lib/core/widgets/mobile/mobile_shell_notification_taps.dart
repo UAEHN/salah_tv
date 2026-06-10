@@ -55,6 +55,7 @@ VoidCallback registerWarmNotificationPayloadListener({
     }
     if (_isAlKahfPayload(payload)) onAlKahf();
   }
+
   warmAdhkarPayloadNotifier.addListener(listener);
   return () => warmAdhkarPayloadNotifier.removeListener(listener);
 }

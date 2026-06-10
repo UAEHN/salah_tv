@@ -28,10 +28,7 @@ class MobileDhikrCard extends StatelessWidget {
             child: Center(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                child: _TextBody(
-                  dhikr: dhikr,
-                  isEnglish: isEnglish,
-                ),
+                child: _TextBody(dhikr: dhikr, isEnglish: isEnglish),
               ),
             ),
           ),
@@ -107,10 +104,9 @@ class _VirtueBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final badgeColor = MobileColors.primary.withValues(alpha: 0.08);
-    final style = MobileTextStyles.labelSm(context).copyWith(
-      color: MobileColors.primary,
-      fontWeight: FontWeight.w600,
-    );
+    final style = MobileTextStyles.labelSm(
+      context,
+    ).copyWith(color: MobileColors.primary, fontWeight: FontWeight.w600);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -161,11 +157,7 @@ class _SourceLabel extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          dhikr.source,
-          style: style,
-          textDirection: TextDirection.rtl,
-        ),
+        Text(dhikr.source, style: style, textDirection: TextDirection.rtl),
         const SizedBox(height: 2),
         Text(
           dhikr.sourceEn,

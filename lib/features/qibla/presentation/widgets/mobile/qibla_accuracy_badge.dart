@@ -55,8 +55,8 @@ class QiblaAccuracyBadge extends StatelessWidget {
   }
 
   Color _colorFor(QiblaAccuracy acc) => switch (acc) {
-        QiblaAccuracy.high => const Color(0xFF22A06B),
-        QiblaAccuracy.medium => const Color(0xFFCB8A2A),
-        QiblaAccuracy.low => const Color(0xFFD9534F),
-      };
+    QiblaAccuracy.high => const Color(0xFF22A06B),
+    QiblaAccuracy.medium => const Color(0xFFCB8A2A),
+    QiblaAccuracy.low => const Color(0xFFD9534F),
+  };
 }

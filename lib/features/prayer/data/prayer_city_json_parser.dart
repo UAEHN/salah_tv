@@ -24,9 +24,9 @@ CityJsonPayload parseCityJson(String body) {
     throw const FormatException('Missing required fields: v, hash, or rows');
   }
 
-  final hash    = json['hash'] as String;
+  final hash = json['hash'] as String;
   final rawRows = json['rows'] as List<dynamic>;
-  final rows    = <List<int>>[];
+  final rows = <List<int>>[];
 
   for (final raw in rawRows) {
     final row = (raw as List<dynamic>).cast<int>();

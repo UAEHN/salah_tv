@@ -1,3 +1,5 @@
+import 'entities/audio_output_state.dart';
+
 /// Resolver consulted after each Quran surah finishes. Returns the next surah
 /// number (1..114) to play, or null to stop. Null resolver = default rolling.
 typedef NextSurahResolver = int? Function(int currentSurahNumber);
@@ -12,6 +14,12 @@ abstract class IPrayerAudioPort {
   Future<bool> playAdhan({String soundKey = 'default'});
   Future<bool> playDua();
   Future<bool> playIqama();
+
+  /// Reads the current media-output state so the engine can flag a played-but-
+  /// inaudible adhan (muted / zero volume). Returns null when the platform
+  /// can't report it (e.g. the mobile no-op port, where sound is carried by
+  /// native notifications instead).
+  Future<AudioOutputState?> readAudioOutputState();
   Future<void> playPreAlertBell();
   Future<void> playPrayerAnnouncement(String prayerKey);
   Future<void> stop();

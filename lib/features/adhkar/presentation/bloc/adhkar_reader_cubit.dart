@@ -10,8 +10,7 @@ class AdhkarReaderCubit extends Cubit<AdhkarReaderState> {
   final IAdhkarTextRepository _repository;
   Timer? _autoAdvanceTimer;
 
-  AdhkarReaderCubit(this._repository)
-      : super(const AdhkarReaderInitial());
+  AdhkarReaderCubit(this._repository) : super(const AdhkarReaderInitial());
 
   void loadCategories() {
     final categories = _repository.getCategories();
@@ -26,12 +25,14 @@ class AdhkarReaderCubit extends Cubit<AdhkarReaderState> {
       for (var i = 0; i < adhkar.length; i++) i: adhkar[i].count,
     });
 
-    emit(AdhkarReaderReading(
-      category: category,
-      adhkar: adhkar,
-      currentIndex: 0,
-      remainingCounts: counts,
-    ));
+    emit(
+      AdhkarReaderReading(
+        category: category,
+        adhkar: adhkar,
+        currentIndex: 0,
+        remainingCounts: counts,
+      ),
+    );
   }
 
   void decrementCount() {

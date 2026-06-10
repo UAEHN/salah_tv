@@ -21,6 +21,7 @@ class FirestoreFeedbackRepository implements IFeedbackRepository {
         'platform': entry.platform,
         'contact': entry.contact,
         'diagnostics': entry.diagnostics,
+        'device_id': entry.deviceId,
         'createdAt': FieldValue.serverTimestamp(),
       });
       _sendTelegramNotification(entry);

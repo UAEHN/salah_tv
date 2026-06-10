@@ -1,5 +1,6 @@
 import 'dart:async';
 import '../../prayer/domain/i_prayer_audio_port.dart';
+import '../../prayer/domain/entities/audio_output_state.dart';
 
 /// Mobile-only no-op implementation of [IPrayerAudioPort].
 /// Prayer-cycle audio (adhan, dua, iqama) is suppressed on mobile because
@@ -32,6 +33,9 @@ class NoOpPrayerAudioPort implements IPrayerAudioPort {
     _fireComplete();
     return true;
   }
+
+  @override
+  Future<AudioOutputState?> readAudioOutputState() async => null;
 
   @override
   Future<void> playPreAlertBell() async {}

@@ -49,9 +49,9 @@ class MobileMushafPlayingBar extends StatelessWidget {
             Expanded(
               child: Text(
                 _labelFor(l: l, status: status, surah: name, ayah: ayah),
-                style: MobileTextStyles.bodyMd(context).copyWith(
-                  color: palette.text.withValues(alpha: 0.9),
-                ),
+                style: MobileTextStyles.bodyMd(
+                  context,
+                ).copyWith(color: palette.text.withValues(alpha: 0.9)),
                 overflow: TextOverflow.ellipsis,
               ),
             ),

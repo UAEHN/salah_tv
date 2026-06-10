@@ -32,6 +32,7 @@ extension AppSettingsCopyWith on AppSettings {
     double? selectedLongitude,
     String? calculationMethod,
     String? madhab,
+    String? highLatitudeRule,
     bool? isCalculatedLocation,
     String? selectedTimeZoneId,
     bool clearSelectedTimeZoneId = false,
@@ -42,6 +43,9 @@ extension AppSettingsCopyWith on AppSettings {
     List<CustomAdhan>? customAdhans,
     bool? isAnalogClock,
     bool? isAdhkarEnabled,
+    bool? isAfterPrayerAdhkarEnabled,
+    bool? isTickerEnabled,
+    bool? isScreensaverEnabled,
     Map<String, bool>? prayerNotificationEnabled,
     Map<String, bool>? preAdhanReminderEnabled,
     int? preAdhanReminderMinutes,
@@ -103,6 +107,7 @@ extension AppSettingsCopyWith on AppSettings {
       selectedLongitude: selectedLongitude ?? this.selectedLongitude,
       calculationMethod: calculationMethod ?? this.calculationMethod,
       madhab: madhab ?? this.madhab,
+      highLatitudeRule: highLatitudeRule ?? this.highLatitudeRule,
       isCalculatedLocation: isCalculatedLocation ?? this.isCalculatedLocation,
       selectedTimeZoneId: clearSelectedTimeZoneId
           ? null
@@ -115,13 +120,19 @@ extension AppSettingsCopyWith on AppSettings {
       customAdhans: List.unmodifiable(customAdhans ?? this.customAdhans),
       isAnalogClock: isAnalogClock ?? this.isAnalogClock,
       isAdhkarEnabled: isAdhkarEnabled ?? this.isAdhkarEnabled,
+      isAfterPrayerAdhkarEnabled:
+          isAfterPrayerAdhkarEnabled ?? this.isAfterPrayerAdhkarEnabled,
+      isTickerEnabled: isTickerEnabled ?? this.isTickerEnabled,
+      isScreensaverEnabled: isScreensaverEnabled ?? this.isScreensaverEnabled,
       preAdhanReminderMinutes:
           preAdhanReminderMinutes ?? this.preAdhanReminderMinutes,
       preIqamaReminderMinutes:
           preIqamaReminderMinutes ?? this.preIqamaReminderMinutes,
-      isMorningAdhkarNotificationEnabled: isMorningAdhkarNotificationEnabled ??
+      isMorningAdhkarNotificationEnabled:
+          isMorningAdhkarNotificationEnabled ??
           this.isMorningAdhkarNotificationEnabled,
-      isEveningAdhkarNotificationEnabled: isEveningAdhkarNotificationEnabled ??
+      isEveningAdhkarNotificationEnabled:
+          isEveningAdhkarNotificationEnabled ??
           this.isEveningAdhkarNotificationEnabled,
       morningAdhkarMinuteOfDay:
           morningAdhkarMinuteOfDay ?? this.morningAdhkarMinuteOfDay,
@@ -154,6 +165,7 @@ extension AppSettingsCopyWith on AppSettings {
       selectedLongitude == other.selectedLongitude &&
       calculationMethod == other.calculationMethod &&
       madhab == other.madhab &&
+      highLatitudeRule == other.highLatitudeRule &&
       isCalculatedLocation == other.isCalculatedLocation &&
       selectedTimeZoneId == other.selectedTimeZoneId &&
       utcOffsetHours == other.utcOffsetHours &&
@@ -164,6 +176,7 @@ extension AppSettingsCopyWith on AppSettings {
       isQuranEnabled == other.isQuranEnabled &&
       quranReciterServerUrl == other.quranReciterServerUrl &&
       isAdhkarEnabled == other.isAdhkarEnabled &&
+      isAfterPrayerAdhkarEnabled == other.isAfterPrayerAdhkarEnabled &&
       iqamaDelays.toString() == other.iqamaDelays.toString() &&
       adhanOffsets.toString() == other.adhanOffsets.toString() &&
       prayerNotificationEnabled.toString() ==

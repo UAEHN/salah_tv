@@ -42,12 +42,18 @@ class _TvSearchBarState extends State<TvSearchBar> {
   }
 
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {
-    // Hand DPAD-down off to next focusable widget so the user can jump
-    // straight to the first list row without typing first.
-    if (event is KeyDownEvent &&
-        event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      node.nextFocus();
-      return KeyEventResult.handled;
+    // Forward DPAD-Down/Up to focus traversal. Without this, the TextField
+    // swallows arrow keys for caret movement (and on Android TV may open the
+    // on-screen keyboard) instead of moving focus to the list above/below.
+    if (event is KeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        node.nextFocus();
+        return KeyEventResult.handled;
+      }
+      if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        node.previousFocus();
+        return KeyEventResult.handled;
+      }
     }
     return KeyEventResult.ignored;
   }
@@ -84,8 +90,10 @@ class _TvSearchBarState extends State<TvSearchBar> {
                 ),
           filled: true,
           fillColor: Colors.white.withValues(alpha: 0.05),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 10,
+          ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: Colors.white12),

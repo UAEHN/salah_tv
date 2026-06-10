@@ -46,7 +46,9 @@ class _Chip extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(19),
             border: Border.all(
-              color: MobileColors.onSurfaceFaint(context).withValues(alpha: 0.4),
+              color: MobileColors.onSurfaceFaint(
+                context,
+              ).withValues(alpha: 0.4),
             ),
           ),
           child: Center(

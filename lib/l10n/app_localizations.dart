@@ -686,6 +686,36 @@ abstract class AppLocalizations {
   /// **'أذكار المساء'**
   String get adhkarEveningSession;
 
+  /// No description provided for @adhkarAfterPrayerTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أذكار بعد الصلاة'**
+  String get adhkarAfterPrayerTitle;
+
+  /// No description provided for @settingsAfterPrayerAdhkarNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'تُعرض أذكار ودعاء قصير على الشاشة بعد كل صلاة بدقائق، ثم يعود تشغيل القرآن. أوقفه إذا أردت ألّا تظهر بعد الصلاة.'**
+  String get settingsAfterPrayerAdhkarNote;
+
+  /// No description provided for @settingsScreensaverPreview.
+  ///
+  /// In ar, this message translates to:
+  /// **'معاينة شاشة التوقّف'**
+  String get settingsScreensaverPreview;
+
+  /// No description provided for @settingsScreensaver.
+  ///
+  /// In ar, this message translates to:
+  /// **'شاشة التوقّف'**
+  String get settingsScreensaver;
+
+  /// No description provided for @settingsScreensaverNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعرض آيات وأذكار وأسماء الله الحسنى عند عدم استخدام الريموت، وتختفي فوراً عند أي ضغطة أو قرب الصلاة.'**
+  String get settingsScreensaverNote;
+
   /// No description provided for @tasbihEntrySummary.
   ///
   /// In ar, this message translates to:
@@ -811,6 +841,12 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'الصلاة القادمة'**
   String get nextPrayerActiveLabel;
+
+  /// No description provided for @nextPrayerShortLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'القادمة'**
+  String get nextPrayerShortLabel;
 
   /// No description provided for @countdownNextPrayer.
   ///
@@ -1364,6 +1400,96 @@ abstract class AppLocalizations {
   /// **'لا توجد مدن مطابقة'**
   String get settingsNoMatchingCities;
 
+  /// No description provided for @settingsSearchOnline.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث في الإنترنت'**
+  String get settingsSearchOnline;
+
+  /// No description provided for @settingsSearchOnlineHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب اسم أي مدينة في العالم'**
+  String get settingsSearchOnlineHint;
+
+  /// No description provided for @settingsSearchOnlinePrompt.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب اسم مدينتك لبدء البحث'**
+  String get settingsSearchOnlinePrompt;
+
+  /// No description provided for @settingsSearchOnlineEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم نجد نتائج. جرّب اسماً آخر أو الإنجليزية.'**
+  String get settingsSearchOnlineEmpty;
+
+  /// No description provided for @settingsSearchOnlineError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر الاتصال بالإنترنت. حاول لاحقاً.'**
+  String get settingsSearchOnlineError;
+
+  /// No description provided for @settingsSearchOnlineCta.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تجد مدينتك؟ ابحث في الإنترنت'**
+  String get settingsSearchOnlineCta;
+
+  /// No description provided for @settingsPickCalculationMethod.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر طريقة الحساب'**
+  String get settingsPickCalculationMethod;
+
+  /// No description provided for @settingsSuggestedForLocation.
+  ///
+  /// In ar, this message translates to:
+  /// **'موصى بها لموقعك'**
+  String get settingsSuggestedForLocation;
+
+  /// No description provided for @settingsOtherMethods.
+  ///
+  /// In ar, this message translates to:
+  /// **'طرق أخرى'**
+  String get settingsOtherMethods;
+
+  /// No description provided for @settingsHighLatitudeMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنت في منطقة عالية خط العرض. اخترنا قاعدة (زاوية الشفق) للفجر والعشاء — هذه الطريقة الأنسب لمعظم المساجد الأوروبية.'**
+  String get settingsHighLatitudeMessage;
+
+  /// No description provided for @settingsExtremeLatitudeMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذه منطقة قريبة من القطب. أوقات الفجر والعشاء في أيام الصيف ستكون تقديرية — تابع جدول مسجدك المحلي للأدق.'**
+  String get settingsExtremeLatitudeMessage;
+
+  /// No description provided for @settingsCalibrationPromptTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل تريد مطابقة مسجد محلي؟'**
+  String get settingsCalibrationPromptTitle;
+
+  /// No description provided for @settingsCalibrationPromptBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ موقعك بنجاح. إن كانت أوقات مسجدك تختلف بدقائق قليلة، يمكنك ضبط ±دقائق لكل صلاة لمطابقته تماماً.'**
+  String get settingsCalibrationPromptBody;
+
+  /// No description provided for @settingsCalibrationPromptYes.
+  ///
+  /// In ar, this message translates to:
+  /// **'نعم، اضبط الآن'**
+  String get settingsCalibrationPromptYes;
+
+  /// No description provided for @settingsCalibrationPromptSkip.
+  ///
+  /// In ar, this message translates to:
+  /// **'لاحقاً'**
+  String get settingsCalibrationPromptSkip;
+
   /// No description provided for @settingsSelectCountry.
   ///
   /// In ar, this message translates to:
@@ -1490,6 +1616,18 @@ abstract class AppLocalizations {
   /// **'أذكار الصباح والمساء'**
   String get settingsCategoryAdhkarSubtitle;
 
+  /// No description provided for @settingsCategoryFeatures.
+  ///
+  /// In ar, this message translates to:
+  /// **'المميزات'**
+  String get settingsCategoryFeatures;
+
+  /// No description provided for @settingsCategoryFeaturesSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'شريط الآيات وشاشة التوقّف'**
+  String get settingsCategoryFeaturesSubtitle;
+
   /// No description provided for @settingsFont.
   ///
   /// In ar, this message translates to:
@@ -1513,6 +1651,18 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'نوع الساعة'**
   String get settingsClockType;
+
+  /// No description provided for @settingsTicker.
+  ///
+  /// In ar, this message translates to:
+  /// **'الشريط المتحرّك'**
+  String get settingsTicker;
+
+  /// No description provided for @settingsTickerLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'شريط متحرّك أسفل الشاشة يعرض آيات وأذكار'**
+  String get settingsTickerLabel;
 
   /// No description provided for @layoutModern.
   ///
@@ -2306,11 +2456,95 @@ abstract class AppLocalizations {
   /// **'فرنسا (UOIF 15°)'**
   String get calcMethodUoif;
 
+  /// No description provided for @calcMethodUk.
+  ///
+  /// In ar, this message translates to:
+  /// **'المملكة المتحدة (لندن سنترال موسك)'**
+  String get calcMethodUk;
+
+  /// No description provided for @calcMethodGermany.
+  ///
+  /// In ar, this message translates to:
+  /// **'ألمانيا / شمال أوروبا (18°/17°)'**
+  String get calcMethodGermany;
+
+  /// No description provided for @calcMethodRussia.
+  ///
+  /// In ar, this message translates to:
+  /// **'روسيا / شرق أوروبا (16°/15°)'**
+  String get calcMethodRussia;
+
   /// No description provided for @calcMethodJafari.
   ///
   /// In ar, this message translates to:
   /// **'الجعفري (16°/14°)'**
   String get calcMethodJafari;
+
+  /// No description provided for @settingsHighLatitudeLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضبط خطوط العرض العالية'**
+  String get settingsHighLatitudeLabel;
+
+  /// No description provided for @settingsHighLatitudeNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'في الدول الأوروبية تختلف طرق حساب الفجر والعشاء عند المدن الشمالية. اختر الطريقة التي يعتمدها مسجدك المحلي.'**
+  String get settingsHighLatitudeNote;
+
+  /// No description provided for @settingsHighLatitudeAffectsNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'تؤثر فقط على الفجر والعشاء في المدن فوق ~48° شمالاً'**
+  String get settingsHighLatitudeAffectsNote;
+
+  /// No description provided for @highLatRuleAuto.
+  ///
+  /// In ar, this message translates to:
+  /// **'تلقائي (مُوصى به)'**
+  String get highLatRuleAuto;
+
+  /// No description provided for @highLatRuleAutoSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تطبيق منتصف الليل تلقائياً عند خطوط العرض العالية'**
+  String get highLatRuleAutoSubtitle;
+
+  /// No description provided for @highLatRuleMiddleOfNight.
+  ///
+  /// In ar, this message translates to:
+  /// **'منتصف الليل'**
+  String get highLatRuleMiddleOfNight;
+
+  /// No description provided for @highLatRuleMiddleOfNightSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفجر والعشاء في منتصف الليل بين المغرب والشروق'**
+  String get highLatRuleMiddleOfNightSubtitle;
+
+  /// No description provided for @highLatRuleSeventhOfNight.
+  ///
+  /// In ar, this message translates to:
+  /// **'سُبع الليل'**
+  String get highLatRuleSeventhOfNight;
+
+  /// No description provided for @highLatRuleSeventhOfNightSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفجر بعد سُبع الليل من المغرب، والعشاء قبله بسُبع'**
+  String get highLatRuleSeventhOfNightSubtitle;
+
+  /// No description provided for @highLatRuleTwilightAngle.
+  ///
+  /// In ar, this message translates to:
+  /// **'زاوية الشفق'**
+  String get highLatRuleTwilightAngle;
+
+  /// No description provided for @highLatRuleTwilightAngleSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تخفيف زاوية الشفق تدريجياً مع طول النهار'**
+  String get highLatRuleTwilightAngleSubtitle;
 
   /// No description provided for @calculationMethodOfficialScheduleNote.
   ///
@@ -2515,6 +2749,42 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'ابدأ'**
   String get onboardingFinish;
+
+  /// No description provided for @onboardingLocationTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدد موقعك'**
+  String get onboardingLocationTitle;
+
+  /// No description provided for @onboardingLocationSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدم GPS أو ابحث عن مدينتك'**
+  String get onboardingLocationSubtitle;
+
+  /// No description provided for @onboardingConfirmLocationTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل أنت في:'**
+  String get onboardingConfirmLocationTitle;
+
+  /// No description provided for @onboardingConfirmAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد'**
+  String get onboardingConfirmAction;
+
+  /// No description provided for @onboardingChangeAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير'**
+  String get onboardingChangeAction;
+
+  /// No description provided for @onboardingOrSearchManually.
+  ///
+  /// In ar, this message translates to:
+  /// **'أو ابحث يدوياً'**
+  String get onboardingOrSearchManually;
 
   /// No description provided for @todayPrayerTimes.
   ///

@@ -30,48 +30,48 @@ class MobileAdhkarReaderBottomBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-      padding: const EdgeInsets.fromLTRB(32, 32, 32, 20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [bg.withValues(alpha: 0), bg, bg],
-          stops: const [0.0, 0.45, 1.0],
+        padding: const EdgeInsets.fromLTRB(32, 32, 32, 20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [bg.withValues(alpha: 0), bg, bg],
+            stops: const [0.0, 0.45, 1.0],
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+              onPressed: state.isFirst ? null : cubit.previous,
+              icon: Icon(
+                prevIcon,
+                size: 34,
+                color: state.isFirst
+                    ? MobileColors.onSurfaceFaint(context)
+                    : MobileColors.primary,
+              ),
+            ),
+            MobileDhikrCounter(
+              remaining: state.currentRemaining,
+              total: state.currentDhikr.count,
+              isCompleted: state.isCurrentCompleted,
+              onTap: cubit.decrementCount,
+            ),
+            IconButton(
+              onPressed: state.isLast ? null : cubit.next,
+              icon: Icon(
+                nextIcon,
+                size: 34,
+                color: state.isLast
+                    ? MobileColors.onSurfaceFaint(context)
+                    : MobileColors.primary,
+              ),
+            ),
+          ],
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          IconButton(
-            onPressed: state.isFirst ? null : cubit.previous,
-            icon: Icon(
-              prevIcon,
-              size: 34,
-              color: state.isFirst
-                  ? MobileColors.onSurfaceFaint(context)
-                  : MobileColors.primary,
-            ),
-          ),
-          MobileDhikrCounter(
-            remaining: state.currentRemaining,
-            total: state.currentDhikr.count,
-            isCompleted: state.isCurrentCompleted,
-            onTap: cubit.decrementCount,
-          ),
-          IconButton(
-            onPressed: state.isLast ? null : cubit.next,
-            icon: Icon(
-              nextIcon,
-              size: 34,
-              color: state.isLast
-                  ? MobileColors.onSurfaceFaint(context)
-                  : MobileColors.primary,
-            ),
-          ),
-        ],
-      ),
-    ),
     );
   }
 }

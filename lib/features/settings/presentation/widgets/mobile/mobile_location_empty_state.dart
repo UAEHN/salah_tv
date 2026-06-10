@@ -17,8 +17,9 @@ class MobileLocationEmptyState extends StatelessWidget {
             height: 56,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: MobileColors.onSurfaceMuted(context)
-                  .withValues(alpha: 0.08),
+              color: MobileColors.onSurfaceMuted(
+                context,
+              ).withValues(alpha: 0.08),
             ),
             alignment: Alignment.center,
             child: Icon(
@@ -31,10 +32,9 @@ class MobileLocationEmptyState extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: MobileTextStyles.bodyMd(context).copyWith(
-              fontSize: 13.5,
-              fontWeight: FontWeight.w500,
-            ),
+            style: MobileTextStyles.bodyMd(
+              context,
+            ).copyWith(fontSize: 13.5, fontWeight: FontWeight.w500),
           ),
         ],
       ),

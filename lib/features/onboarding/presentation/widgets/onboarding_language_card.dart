@@ -29,8 +29,11 @@ class OnboardingLanguageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final slideAnim =
         Tween<Offset>(begin: const Offset(0, 0.10), end: Offset.zero).animate(
-      CurvedAnimation(parent: entranceAnimation, curve: Curves.easeOutCubic),
-    );
+          CurvedAnimation(
+            parent: entranceAnimation,
+            curve: Curves.easeOutCubic,
+          ),
+        );
     final fadeAnim = CurvedAnimation(
       parent: entranceAnimation,
       curve: Curves.easeOut,

@@ -47,8 +47,7 @@ class MobileHeroCountdown extends StatelessWidget {
         ? l.ongoingNow
         : l.countdownNextPrayer(nextPrayerName);
 
-    final countdownDuration =
-        isIqamaCountdown ? iqamaCountdown : countdown;
+    final countdownDuration = isIqamaCountdown ? iqamaCountdown : countdown;
     final displayText = isCycleActive && !isIqamaCountdown
         ? iqamaPrayerName
         : formatCountdown(countdownDuration);

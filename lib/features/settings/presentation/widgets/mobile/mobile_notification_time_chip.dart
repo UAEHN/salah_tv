@@ -33,8 +33,7 @@ class MobileNotificationTimeChip extends StatelessWidget {
             onTap: () => _open(context),
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: MobileColors.primaryContainer.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
@@ -71,8 +70,7 @@ class MobileNotificationTimeChip extends StatelessWidget {
   Future<void> _open(BuildContext context) async {
     final picked = await showTimePicker(
       context: context,
-      initialTime:
-          TimeOfDay(hour: minuteOfDay ~/ 60, minute: minuteOfDay % 60),
+      initialTime: TimeOfDay(hour: minuteOfDay ~/ 60, minute: minuteOfDay % 60),
       helpText: pickerTitle,
     );
     if (picked != null) onPick(picked.hour * 60 + picked.minute);

@@ -21,10 +21,9 @@ class MobileMushafLandingHeader extends StatelessWidget {
           Text(
             AppLocalizations.of(context).mushafLandingTitle,
             textAlign: TextAlign.center,
-            style: MobileTextStyles.titleMd(context).copyWith(
-              fontSize: 26,
-              fontWeight: FontWeight.w800,
-            ),
+            style: MobileTextStyles.titleMd(
+              context,
+            ).copyWith(fontSize: 26, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
           Container(

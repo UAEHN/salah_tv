@@ -9,8 +9,8 @@ class TasbihBloc extends Bloc<TasbihEvent, TasbihState> {
   final IAnalyticsService? _analytics;
 
   TasbihBloc({IAnalyticsService? analytics})
-      : _analytics = analytics,
-        super(const TasbihState()) {
+    : _analytics = analytics,
+      super(const TasbihState()) {
     on<TasbihTapped>(_onTapped);
     on<TasbihReset>(_onReset);
     on<TasbihPresetChanged>(_onPresetChanged);
@@ -31,10 +31,7 @@ class TasbihBloc extends Bloc<TasbihEvent, TasbihState> {
     emit(state.withCount(state.presetIndex, 0));
   }
 
-  void _onPresetChanged(
-    TasbihPresetChanged event,
-    Emitter<TasbihState> emit,
-  ) {
+  void _onPresetChanged(TasbihPresetChanged event, Emitter<TasbihState> emit) {
     emit(state.copyWith(presetIndex: event.presetIndex));
   }
 }

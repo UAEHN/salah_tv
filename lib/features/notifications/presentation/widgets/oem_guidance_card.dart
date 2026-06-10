@@ -48,5 +48,4 @@ class OemGuidanceCard extends StatelessWidget {
       ),
     );
   }
-
 }

@@ -30,19 +30,25 @@ class MobileBottomNav extends StatelessWidget {
     // Order is chosen so Prayer (mosque icon) lands in the visual center
     // — the most-used surface deserves the focal slot.
     final items = [
-      (icon: Icons.explore_outlined,     label: l.navQibla,    index: 1, route: '/qibla'),
-      (icon: Icons.auto_stories_rounded, label: l.navAdhkar,   index: 3, route: '/adhkar'),
-      (icon: Icons.mosque_rounded,       label: l.navPrayer,   index: 2, route: '/'),
-      (icon: Icons.menu_book_rounded,    label: l.navMushaf,   index: 4, route: '/'),
-      (icon: Icons.home_rounded,         label: l.navToday,    index: 5, route: '/'),
+      (
+        icon: Icons.explore_outlined,
+        label: l.navQibla,
+        index: 1,
+        route: '/qibla',
+      ),
+      (
+        icon: Icons.auto_stories_rounded,
+        label: l.navAdhkar,
+        index: 3,
+        route: '/adhkar',
+      ),
+      (icon: Icons.mosque_rounded, label: l.navPrayer, index: 2, route: '/'),
+      (icon: Icons.menu_book_rounded, label: l.navMushaf, index: 4, route: '/'),
+      (icon: Icons.home_rounded, label: l.navToday, index: 5, route: '/'),
     ];
 
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: bottomInset + 6,
-        left: 24,
-        right: 24,
-      ),
+      padding: EdgeInsets.only(bottom: bottomInset + 6, left: 24, right: 24),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(30),
         child: BackdropFilter(
@@ -53,8 +59,9 @@ class MobileBottomNav extends StatelessWidget {
               color: (isDark ? const Color(0xFF1A1B2E) : Colors.white)
                   .withValues(alpha: isDark ? 0.55 : 0.72),
               border: Border.all(
-                color: (isDark ? Colors.white : Colors.black)
-                    .withValues(alpha: isDark ? 0.08 : 0.05),
+                color: (isDark ? Colors.white : Colors.black).withValues(
+                  alpha: isDark ? 0.08 : 0.05,
+                ),
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(30),
