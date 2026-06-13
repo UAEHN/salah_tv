@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'assets/csv/**'
+      - 'assets/db_countries.json'
+      - 'tool/csv_to_json.dart'
   workflow_dispatch:
 
 permissions:

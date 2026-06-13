@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 import 'country_name_resolver.dart';
+import 'remote_city_catalog.dart';
 
 // ── Country definitions ──────────────────────────────────────────────────────
 
@@ -127,6 +128,40 @@ void registerDbCountries(Map<String, List<String>> countryToCities) {
   });
   _countries = List.unmodifiable(list);
   _dbCountryKeys = Set.unmodifiable(_countries.map((c) => c.key).toSet());
+}
+
+/// Merges a remotely-published [catalog] over the bundled city lists so newly
+/// published cities appear in the picker without an APK update.
+///
+/// ADDITIVE and safe by design:
+/// - Never removes a bundled city (a bad publish can't wipe the catalog).
+/// - Fills a *missing* Arabic name only — never overrides curated bundled ones.
+/// - Registers countries the catalog introduces with their labels.
+/// City lists are re-sorted by English name to match bundled ordering.
+void mergeRemoteCatalog(RemoteCityCatalog catalog) {
+  final byKey = <String, List<String>>{
+    for (final c in _countries) c.key: [...c.cities],
+  };
+  final labels = <String, _CountryLabel>{..._countryLabels};
+  final arabic = <String, String>{..._cityArabic};
+
+  for (final country in catalog.countries) {
+    final key = country.key.toLowerCase();
+    final list = byKey.putIfAbsent(key, () => <String>[]);
+    labels.putIfAbsent(
+      key,
+      () => _CountryLabel(country.arabicName, country.englishName),
+    );
+    for (final city in country.cities) {
+      if (!list.contains(city.englishName)) list.add(city.englishName);
+      arabic.putIfAbsent(city.englishName, () => city.arabicName);
+    }
+    list.sort();
+  }
+
+  _countryLabels = Map.unmodifiable(labels);
+  _cityArabic = arabic;
+  registerDbCountries(byKey);
 }
 
 // ── Public API ───────────────────────────────────────────────────────────────

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import 'city_translations.dart';
 import 'health/heartbeat_service.dart';
+import 'startup/startup_city_catalog.dart';
 import '../features/analytics/domain/i_analytics_service.dart';
 import '../features/push_notifications/domain/i_install_id_provider.dart';
 import '../features/settings/domain/entities/app_settings.dart';
@@ -20,6 +21,9 @@ import '../injection.dart';
 Future<AppSettings> initDependencies() async {
   configureDependencies();
   await loadCityTranslations();
+  // Merge the cached remote city catalog over the bundled lists (no network).
+  // Lets cities published since the last APK appear in the picker immediately.
+  await applyCachedCityCatalog();
   final platformConfig = await bootstrapPlatform();
   final settingsRepo = registerSettingsRepository();
   final settings = await loadInitialSettings(settingsRepo);
@@ -35,6 +39,10 @@ Future<AppSettings> initDependencies() async {
   );
   await registerFeatureServices(platformConfig);
   await _attachAnalyticsDeviceId();
+
+  // Fire-and-forget: refresh the remote city catalog for next launch (and this
+  // session if a picker opens later). Both platforms — never blocks boot.
+  unawaited(primeCityCatalog());
 
   // Heartbeat: always-on for TV (operational telemetry).
   // In debug builds we also enable it on mobile / phone emulators so the

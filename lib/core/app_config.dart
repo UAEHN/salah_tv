@@ -141,6 +141,12 @@ abstract class AppConfig {
 
   static String prayerManifestUrl() => '$_prayerDataBase/manifest.json';
 
+  /// Remote city picker catalog (country labels + city names, Arabic + English).
+  /// Lets newly-published cities appear in the picker without shipping an APK.
+  /// App falls back to cache → bundled assets (db_city_lists/db_countries) on
+  /// failure. Published alongside prayer data by tool/csv_to_json.dart.
+  static String prayerCatalogUrl() => '$_prayerDataBase/catalog.json';
+
   /// Remote catalog of Hijri occasions (id, hijri date, localized labels,
   /// optional icon/banner/CTA, version targeting). Replaces the bundled
   /// catalog as the source of truth so new occasions can be added without
