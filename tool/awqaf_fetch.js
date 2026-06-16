@@ -8,15 +8,19 @@
  *   4. Paste this entire script and press Enter
  *   5. A CSV file will download automatically
  *
- * OUTPUT FILE: uae_awqaf_YYYY_m3_m6.csv  (or whatever months you configure)
- * Then run:  dart run tool/csv_to_sqlite.dart
+ * OUTPUT FILE: uae_awqaf_2026_2027.csv  (full 2026 + Jan–Jun 2027; see JOBS below)
+ * Then: send the downloaded CSV back here to merge + run dart run tool/csv_to_json.dart
  */
 
 (async () => {
   // ── Config ────────────────────────────────────────────────────────────────
-  const YEAR   = 2026;
-  const MONTHS = [3, 4, 5, 6];   // Change as needed (1–12)
-  const BASE   = 'https://mobileappapi.awqaf.gov.ae/APIS/v3/prayer-time';
+  // Each job is [year, [months...]]: full 2026 refresh + Jan–Jun 2027
+  // (Jun 2027 is the last month the source publishes).
+  const JOBS = [
+    [2026, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]],
+    [2027, [1, 2, 3, 4, 5, 6]],
+  ];
+  const BASE = 'https://mobileappapi.awqaf.gov.ae/APIS/v3/prayer-time';
 
   // City definitions: [DB name, emirateId, cityId]
   const CITIES = [
@@ -80,37 +84,40 @@
     return m ? `${m[1]}:${m[2]}` : null;
   }
   function parseDate(iso) {
+    // ISO yyyy-MM-dd to match the existing assets/csv/uae_prayer_times_2026.csv format.
     const m = (iso || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
-    return m ? `${m[3]}/${m[2]}/${m[1]}` : null;
+    return m ? `${m[1]}-${m[2]}-${m[3]}` : null;
   }
 
   const rows = ['City,Date,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Isha'];
   const errors = [];
 
   for (const [name, emirId, cityId] of CITIES) {
-    for (const month of MONTHS) {
-      const url = `${BASE}/prayertimes/${YEAR}/${month}/${emirId}/${cityId}`;
-      try {
-        const r = await fetch(url, { headers });
-        if (!r.ok) { errors.push(`${name}/m${month}: ${r.status}`); continue; }
-        const data = await r.json();
-        let count = 0;
-        for (const d of (data.prayerData || [])) {
-          const date    = parseDate(d.gDate);
-          const fajr    = parseTime(d.fajr);
-          const sunrise = parseTime(d.shurooq);
-          const dhuhr   = parseTime(d.zuhr);
-          const asr     = parseTime(d.asr);
-          const maghrib = parseTime(d.maghrib);
-          const isha    = parseTime(d.isha);
-          if (date && fajr && sunrise && dhuhr && asr && maghrib && isha) {
-            rows.push(`${name},${date},${fajr},${sunrise},${dhuhr},${asr},${maghrib},${isha}`);
-            count++;
+    for (const [year, months] of JOBS) {
+      for (const month of months) {
+        const url = `${BASE}/prayertimes/${year}/${month}/${emirId}/${cityId}`;
+        try {
+          const r = await fetch(url, { headers });
+          if (!r.ok) { errors.push(`${name}/${year}-m${month}: ${r.status}`); continue; }
+          const data = await r.json();
+          let count = 0;
+          for (const d of (data.prayerData || [])) {
+            const date    = parseDate(d.gDate);
+            const fajr    = parseTime(d.fajr);
+            const sunrise = parseTime(d.shurooq);
+            const dhuhr   = parseTime(d.zuhr);
+            const asr     = parseTime(d.asr);
+            const maghrib = parseTime(d.maghrib);
+            const isha    = parseTime(d.isha);
+            if (date && fajr && sunrise && dhuhr && asr && maghrib && isha) {
+              rows.push(`${name},${date},${fajr},${sunrise},${dhuhr},${asr},${maghrib},${isha}`);
+              count++;
+            }
           }
+          console.log(`[awqaf_fetch] ${name} ${year}-${String(month).padStart(2, '0')}: ${count} days`);
+        } catch (e) {
+          errors.push(`${name}/${year}-m${month}: ${e.message}`);
         }
-        console.log(`[awqaf_fetch] ${name} month ${month}: ${count} days`);
-      } catch (e) {
-        errors.push(`${name}/m${month}: ${e.message}`);
       }
     }
   }
@@ -119,7 +126,8 @@
 
   // ── Step 3: Download CSV ──────────────────────────────────────────────────
   const csv = rows.join('\n') + '\n';
-  const filename = `uae_awqaf_${YEAR}_m${MONTHS[0]}_m${MONTHS[MONTHS.length-1]}.csv`;
+  const first = JOBS[0], last = JOBS[JOBS.length - 1];
+  const filename = `uae_awqaf_${first[0]}_${last[0]}.csv`;
 
   const blob = new Blob([csv], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
@@ -129,5 +137,5 @@
   setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
 
   console.log(`[awqaf_fetch] ✅ Done! ${rows.length - 1} rows → ${filename}`);
-  console.log('[awqaf_fetch] Next: copy to assets/csv/ then run: dart run tool/csv_to_sqlite.dart');
+  console.log('[awqaf_fetch] Next: send this CSV to Claude to merge into assets/csv/uae_prayer_times_2026.csv, then it runs: dart run tool/csv_to_json.dart');
 })();
