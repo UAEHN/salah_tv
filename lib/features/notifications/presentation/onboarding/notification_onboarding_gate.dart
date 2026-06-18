@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -50,6 +52,11 @@ class _NotificationOnboardingGateState
 
   @override
   Widget build(BuildContext context) {
+    // The notification onboarding flow and the health banner are Android-only
+    // concerns — they drive the native Kotlin engine's permission/exact-alarm/
+    // battery setup, which has no iOS counterpart yet. On iOS skip straight to
+    // the app so the user is never stuck on a gate that can never be satisfied.
+    if (!Platform.isAndroid) return widget.child;
     final flag = _flag;
     if (flag == null) return const SizedBox.shrink();
     if (flag.isOnboardingDone) {
