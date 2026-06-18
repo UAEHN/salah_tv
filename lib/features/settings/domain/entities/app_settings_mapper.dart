@@ -127,12 +127,12 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
         : 'ar',
     isQuranEnabled: map['isQuranEnabled'] as bool? ?? false,
     quranReciterName: map['quranReciterName'] as String? ?? '',
-    quranReciterServerUrl: validatedQuranUrl(
-      map['quranReciterServerUrl'] as String? ?? '',
+    quranReciterServerUrl: migrateToHafsReciterUrl(
+      validatedQuranUrl(map['quranReciterServerUrl'] as String? ?? ''),
     ),
     favoriteReciterServerUrls: decodeStringList(
       map['favoriteReciterServerUrls'],
-    ),
+    ).map(migrateToHafsReciterUrl).toSet().toList(growable: false),
     selectedCountry: map['selectedCountry'] as String? ?? 'uae',
     selectedCity: map['selectedCity'] as String? ?? 'Dubai',
     selectedLatitude: map['selectedLatitude'] as double?,

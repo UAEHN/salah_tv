@@ -100,13 +100,7 @@ class QuranApiService implements IQuranApiRepository {
 
     for (final r in reciters) {
       final moshafs = r['moshaf'] as List? ?? [];
-      String? serverUrl;
-      for (final m in moshafs) {
-        if ((m['surah_total'] as int?) == 114) {
-          serverUrl = m['server'] as String?;
-          break;
-        }
-      }
+      final serverUrl = pickServerUrl(moshafs);
       if (serverUrl == null || serverUrl.isEmpty) continue;
 
       result.add(
@@ -119,5 +113,26 @@ class QuranApiService implements IQuranApiRepository {
     }
 
     return result;
+  }
+
+  /// Selects the complete (114-surah) recitation server for a reciter.
+  ///
+  /// Some reciters publish several complete moshafs that differ by *style*
+  /// (e.g. «المصحف المجود», «المصحف المعلم») while only one is the plain
+  /// Hafs ʿan ʿAsim murattal the app expects. mp3quran does not order these
+  /// consistently — for Maher Al-Muaiqly and El-Minshawi the styled moshaf
+  /// now comes first — so we prefer the moshaf whose name names the Hafs
+  /// riwaya and fall back to the first complete moshaf when none is labelled.
+  @visibleForTesting
+  static String? pickServerUrl(List moshafs) {
+    String? firstComplete;
+    for (final m in moshafs) {
+      if ((m['surah_total'] as int?) != 114) continue;
+      final server = m['server'] as String?;
+      if (server == null || server.isEmpty) continue;
+      firstComplete ??= server;
+      if ((m['name'] as String? ?? '').contains('حفص')) return server;
+    }
+    return firstComplete;
   }
 }

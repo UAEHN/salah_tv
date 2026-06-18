@@ -18,6 +18,25 @@ String validatedQuranUrl(String url) {
   return url;
 }
 
+/// mp3quran publishes styled recitations (Mujawwad / Muʿallim) under a
+/// sub-folder of the reciter's base folder, while the plain Hafs ʿan ʿAsim
+/// murattal lives at the base. Older installs may have saved such a styled URL
+/// as their selected/favourite reciter — e.g. Maher Al-Muaiqly «المجود» or
+/// El-Minshawi «المعلم». This rewrites those back to the Hafs base folder so
+/// upgrading users keep the reciter without re-picking. Idempotent and a no-op
+/// for any other URL.
+const _styledMoshafSegments = ['Almusshaf-Al-Mojawwad', 'Almusshaf-Al-Mo-lim'];
+
+String migrateToHafsReciterUrl(String url) {
+  for (final seg in _styledMoshafSegments) {
+    final suffix = '/$seg/';
+    if (url.endsWith(suffix)) {
+      return '${url.substring(0, url.length - suffix.length)}/';
+    }
+  }
+  return url;
+}
+
 Map<String, bool> decodeBoolMap(dynamic raw, Map<String, bool> fallback) {
   if (raw == null) return fallback;
   try {
