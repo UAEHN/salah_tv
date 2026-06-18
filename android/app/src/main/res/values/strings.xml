@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Ghasaq</string>
     <string name="prayer_widget_label">غسق — مواقيت الصلاة</string>
     <string name="prayer_widget_description">عرض الصلاة القادمة والوقت المتبقي على شاشة البدء.</string>
     <string name="widget_remaining_for">باقي على صلاة</string>
