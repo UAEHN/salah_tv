@@ -212,9 +212,13 @@ public class GhasaqNotificationsPlugin: NSObject, FlutterPlugin,
     UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
   }
 
-  /// Phase 1: default sound. Phase 2 swaps in a short (<=30s) bundled adhan
-  /// clip via `UNNotificationSound(named:)`.
-  private func adhanSound() -> UNNotificationSound { .default }
+  /// Short (<=30s) bundled adhan clip — `adhan.wav` ships in the app bundle
+  /// (Copy Bundle Resources). iOS cannot play the full adhan in the
+  /// background, so this opening segment is the notification sound for all
+  /// adhan alerts (adhan2 / custom uploads are not bundled on iOS yet).
+  private func adhanSound() -> UNNotificationSound {
+    UNNotificationSound(named: UNNotificationSoundName("adhan.wav"))
+  }
 
   // MARK: - Foreground presentation & taps
 
