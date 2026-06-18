@@ -10,18 +10,23 @@ import '../../domain/i_adhkar_audio_port.dart';
 /// Quran. Owns audio only; the engine decides when the takeover appears.
 class SessionAdhkarCubit extends Cubit<SessionAdhkarState> {
   final IAdhkarAudioPort _audio;
+
+  /// Mosque mode: show the adhkar but play no audio (the imam leads them live).
+  /// Each dhikr then dwells on a timer instead of advancing on audio completion.
+  final bool _silent;
   StreamSubscription<void>? _completeSub; // cancelled in close()
   Timer? _fallbackTimer; // cancelled in close()
 
-  SessionAdhkarCubit(this._audio)
-    : super(const SessionAdhkarState(index: 0, adhkar: []));
+  SessionAdhkarCubit(this._audio, {bool silent = false})
+    : _silent = silent,
+      super(const SessionAdhkarState(index: 0, adhkar: []));
 
   void start(List<Dhikr> adhkar) {
     if (adhkar.isEmpty) {
       emit(const SessionAdhkarState(index: 0, adhkar: [], isCompleted: true));
       return;
     }
-    _completeSub = _audio.onComplete.listen((_) => advance());
+    if (!_silent) _completeSub = _audio.onComplete.listen((_) => advance());
     emit(SessionAdhkarState(index: 0, adhkar: adhkar));
     _playOrTimer(0);
   }
@@ -41,12 +46,12 @@ class SessionAdhkarCubit extends Cubit<SessionAdhkarState> {
   void _playOrTimer(int index) {
     _fallbackTimer?.cancel();
     final url = state.adhkar[index].audioUrl;
-    if (url != null && url.isNotEmpty) {
+    if (!_silent && url != null && url.isNotEmpty) {
       _audio.play(url);
       // Safety net if onComplete never fires (decode error / unsupported file).
       _fallbackTimer = Timer(const Duration(minutes: 2), advance);
     } else {
-      // No audio for this dhikr — dwell briefly, then move on.
+      // Silent (mosque mode) or no audio for this dhikr — dwell, then move on.
       _fallbackTimer = Timer(const Duration(seconds: 20), advance);
     }
   }

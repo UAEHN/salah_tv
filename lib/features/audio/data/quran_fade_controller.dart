@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
+import 'package:just_audio/just_audio.dart';
 
 /// Smooth volume ramp helper for [QuranAudioService].
 /// Cancels any in-flight ramp before starting a new one so a fade-out kicked

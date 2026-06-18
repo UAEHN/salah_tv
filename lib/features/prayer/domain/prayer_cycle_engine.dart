@@ -133,6 +133,16 @@ class PrayerCycleEngine extends PrayerCycleBase
   /// Category of the active session takeover ('morning' | 'evening' | '').
   String get sessionAdhkarCategory => s.sessionAdhkarCategory;
 
+  /// True while any post-prayer adhkar takeover is pending OR on screen — the
+  /// after-prayer dua and the morning/evening session, including the gap between
+  /// them. The idle screensaver stays off for the whole sequence so it never
+  /// interrupts the adhkar.
+  bool get isAdhkarSequenceActive =>
+      s.afterPrayerAdhkarStartsAt != null ||
+      s.isAfterPrayerAdhkarPlaying ||
+      s.sessionAdhkarStartsAt != null ||
+      s.isSessionAdhkarPlaying;
+
   bool get isMultiCity => repo.isMultiCity;
   List<String> get availableCities => repo.availableCities;
 

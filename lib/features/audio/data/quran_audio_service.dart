@@ -1,13 +1,20 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
+import 'package:just_audio/just_audio.dart';
 
 import '../../prayer/domain/i_prayer_audio_port.dart' show NextSurahResolver;
 import 'quran_fade_controller.dart';
 
 /// Background Quran streaming from the mp3quran.net CDN. Default mode is
 /// continuous (1→2→…→114→1); a [NextSurahResolver] overrides for repeat/playlist.
+///
+/// Uses `just_audio` (ExoPlayer/media3 on Android) rather than `audioplayers`
+/// for one reason: ExoPlayer prepares AND tears down the network source on
+/// background threads, so stop()/setUrl never block the UI thread. The old
+/// MediaPlayer path called `reset()` on the main thread, which waited on the
+/// HTTPS connection's `disconnect()` and froze the app (ANR) whenever the CDN
+/// stalled mid-stream.
 class QuranAudioService {
   final AudioPlayer _quranPlayer = AudioPlayer();
   final StreamController<int> _surahCompletedCtrl =
@@ -17,8 +24,10 @@ class QuranAudioService {
   DateTime? _quranPausedAt; // Issue 7: tracks when Quran was paused
   NextSurahResolver? _nextSurahResolver;
   late final QuranFadeController _fade = QuranFadeController(_quranPlayer);
-  // Guards onPlayerComplete against re-entrant double-fire on Android TV.
+  // Guards completion against re-entrant double-fire on Android TV.
   bool _isTransitioning = false;
+  // Network load guard: a hung CDN must never stall the prayer cycle.
+  static const _loadTimeout = Duration(seconds: 20);
 
   int get quranSurahIndex => _quranSurahIndex;
   int? get currentSurahNumber =>
@@ -28,7 +37,10 @@ class QuranAudioService {
       _nextSurahResolver = resolver;
 
   QuranAudioService() {
-    _quranPlayer.onPlayerComplete.listen((_) {
+    // just_audio signals end-of-track via ProcessingState.completed (the
+    // equivalent of audioplayers' onPlayerComplete).
+    _quranPlayer.processingStateStream.listen((state) {
+      if (state != ProcessingState.completed) return;
       if (_quranServerUrl.isEmpty || _isTransitioning) return;
       final completedSurahNumber = _quranSurahIndex + 1;
       _surahCompletedCtrl.add(completedSurahNumber);
@@ -61,11 +73,12 @@ class QuranAudioService {
     try {
       final surahNum = (_quranSurahIndex + 1).toString().padLeft(3, '0');
       final url = '$_quranServerUrl$surahNum.mp3';
-      // Explicit stop releases the previous MediaSource on native ExoPlayer.
       await _quranPlayer.stop();
-      await _quranPlayer.setReleaseMode(ReleaseMode.release);
       await _fade.applyImmediate(0.0);
-      await _quranPlayer.play(UrlSource(url));
+      // setUrl loads on a background thread; timeout guards a hung CDN load.
+      await _quranPlayer.setUrl(url).timeout(_loadTimeout);
+      // play() resolves only when playback ends, so it must not be awaited.
+      unawaited(_quranPlayer.play());
       unawaited(_fade.rampTo(1.0));
     } catch (e) {
       debugPrint('[QuranAudio] _playCurrentSurah failed: $e');
@@ -101,11 +114,13 @@ class QuranAudioService {
     final longPause =
         pausedAt != null && DateTime.now().difference(pausedAt).inSeconds > 60;
     if (longPause) return restartQuranCurrentSurah(serverUrl);
-    try {
-      await _quranPlayer.resume();
-    } catch (e) {
-      debugPrint('[QuranAudio] resume after pause failed: $e');
-    }
+    // play() resolves only at end-of-track, so start it without awaiting and
+    // route any failure to the log instead of an unhandled future error.
+    unawaited(
+      _quranPlayer.play().catchError(
+        (Object e) => debugPrint('[QuranAudio] resume after pause failed: $e'),
+      ),
+    );
   }
 
   Future<void> restartQuranCurrentSurah(String serverUrl) async {
@@ -118,11 +133,12 @@ class QuranAudioService {
   }
 
   Future<void> resumeQuranPlayer() async {
-    try {
-      await _quranPlayer.resume();
-    } catch (e) {
-      debugPrint('[QuranAudio] resumeQuranPlayer failed: $e');
-    }
+    // play() resolves only at end-of-track — start without awaiting.
+    unawaited(
+      _quranPlayer.play().catchError(
+        (Object e) => debugPrint('[QuranAudio] resumeQuranPlayer failed: $e'),
+      ),
+    );
   }
 
   Future<void> stopQuranPlayer() async {

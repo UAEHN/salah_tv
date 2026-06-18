@@ -20,6 +20,8 @@ enum HomeKeyIntent {
   stopAdhan,
   stopDua,
   stopIqama,
+  skipAfterPrayerAdhkar,
+  skipSessionAdhkar,
   openSettings,
 }
 
@@ -29,6 +31,11 @@ class HomeKeyInput {
   final bool isDuaPlaying;
   final bool isIqamaPlaying;
   final bool isIqamaCountdown;
+
+  /// True while the after-prayer / morning-evening adhkar takeover is on screen,
+  /// so the select key skips it instead of opening settings.
+  final bool isAfterPrayerAdhkar;
+  final bool isSessionAdhkar;
   final bool isQuranEnabled;
   final bool hasQuranReciter;
 
@@ -42,6 +49,8 @@ class HomeKeyInput {
     required this.isDuaPlaying,
     required this.isIqamaPlaying,
     required this.isIqamaCountdown,
+    required this.isAfterPrayerAdhkar,
+    required this.isSessionAdhkar,
     required this.isQuranEnabled,
     required this.hasQuranReciter,
     required this.canToggleTakbeerat,
@@ -56,6 +65,22 @@ HomeKeyIntent decideHomeKeyIntent(HomeKeyInput input) {
       input.key == HomeRemoteKey.mediaPlayPause ||
       input.key == HomeRemoteKey.mediaPlay ||
       input.key == HomeRemoteKey.mediaPause;
+
+  final isSelectKey =
+      input.key == HomeRemoteKey.select ||
+      input.key == HomeRemoteKey.enter ||
+      input.key == HomeRemoteKey.contextMenu;
+
+  // Adhkar takeover on screen: select / media keys skip it; every other key is
+  // swallowed so a stray press never toggles Quran or opens settings behind it.
+  if (input.isAfterPrayerAdhkar || input.isSessionAdhkar) {
+    if (isSelectKey || isMediaKey) {
+      return input.isAfterPrayerAdhkar
+          ? HomeKeyIntent.skipAfterPrayerAdhkar
+          : HomeKeyIntent.skipSessionAdhkar;
+    }
+    return HomeKeyIntent.ignored;
+  }
 
   if (isMediaKey) {
     return input.isCycleMediaLocked
@@ -79,11 +104,6 @@ HomeKeyIntent decideHomeKeyIntent(HomeKeyInput input) {
       return HomeKeyIntent.focusTakbeerat;
     }
   }
-
-  final isSelectKey =
-      input.key == HomeRemoteKey.select ||
-      input.key == HomeRemoteKey.enter ||
-      input.key == HomeRemoteKey.contextMenu;
 
   if (!isSelectKey) return HomeKeyIntent.ignored;
 

@@ -2,9 +2,9 @@
 
 Source: yearprayer.aspx (one GET = one full Hijri year for one city).
 Each city's coordinates come from tool/uq_saudi_cities.json (see uq_harvest_cities.py).
-Which cities to ship + their English CSV names come from tool/uq_city_map.json:
+Which cities to ship come from tool/uq_city_map.json — { EnglishCsvName: srcArabicForCoords }:
 
-    { "مكة المكرمة": "Mecca", "الرياض": "Riyadh", ... }   # Arabic site name -> English CSV name
+    { "Mecca": "مكة المكرمة", "Riyadh": "الرياض", ... }   # English CSV name -> Arabic key for coords
 
 For each city it fetches the Hijri years that cover the wanted Gregorian range,
 converts the 12-hour times to 24-hour, maps each row's Gregorian date, filters to

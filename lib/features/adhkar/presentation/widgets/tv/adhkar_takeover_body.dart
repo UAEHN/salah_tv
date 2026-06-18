@@ -67,7 +67,7 @@ class AdhkarTakeoverBody extends StatelessWidget {
           if (dhikrText.isNotEmpty)
             Center(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(90, 72, 90, 72),
+                padding: const EdgeInsets.fromLTRB(56, 64, 56, 64),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -92,36 +92,45 @@ class AdhkarTakeoverBody extends StatelessWidget {
                     const SizedBox(height: 28),
                     // Fixed-height stage so the pinned title never shifts as
                     // dhikr of different lengths fade in and out — only the
-                    // dhikr text moves, keeping the motion calm.
+                    // dhikr text moves, keeping the motion calm. [LayoutBuilder]
+                    // gives the real available width (no MediaQuery guesswork),
+                    // and the font steps down with length so a long dhikr fills
+                    // the width and stays readable instead of one tiny block.
                     SizedBox(
                       height: screenH * 0.55,
-                      child: Center(
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 500),
-                          child: FittedBox(
-                            key: ValueKey(switchKey),
-                            fit: BoxFit.scaleDown,
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 1400),
-                              child: Text(
-                                dhikrText,
-                                textAlign: TextAlign.center,
-                                textDirection: TextDirection.rtl,
-                                // AmiriQuran is a Naskh face designed for full
-                                // tashkeel — diacritics sit correctly above the
-                                // letters instead of crowding in like the bold
-                                // UI font. Regular only, so no synthetic bold.
-                                style: TextStyle(
-                                  fontFamily: 'AmiriQuran',
-                                  fontSize: 64,
-                                  fontWeight: FontWeight.w400,
-                                  color: tc.textPrimary,
-                                  height: 1.9,
+                      child: LayoutBuilder(
+                        builder: (context, c) {
+                          return Center(
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 500),
+                              child: FittedBox(
+                                key: ValueKey(switchKey),
+                                fit: BoxFit.scaleDown,
+                                child: SizedBox(
+                                  width: c.maxWidth,
+                                  child: Text(
+                                    dhikrText,
+                                    textAlign: TextAlign.center,
+                                    textDirection: TextDirection.rtl,
+                                    // AmiriQuran is a Naskh face designed for
+                                    // full tashkeel — diacritics sit correctly
+                                    // above the letters instead of crowding in
+                                    // like the bold UI font. Regular only.
+                                    style: TextStyle(
+                                      fontFamily: 'AmiriQuran',
+                                      fontSize: _fontForLength(
+                                        dhikrText.length,
+                                      ),
+                                      fontWeight: FontWeight.w400,
+                                      color: tc.textPrimary,
+                                      height: 1.7,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     ),
                   ],
@@ -143,6 +152,16 @@ class AdhkarTakeoverBody extends StatelessWidget {
       decoration: BoxDecoration(gradient: palette.gradient),
     ),
   );
+}
+
+/// Step the dhikr font down as the text grows so a long supplication fills the
+/// width and stays within the stage height, while short adhkar render large.
+/// [FittedBox] above still scales as a final safety net for anything extreme.
+double _fontForLength(int length) {
+  if (length <= 80) return 66;
+  if (length <= 140) return 56;
+  if (length <= 220) return 48;
+  return 40;
 }
 
 /// Drops the trailing sentence period from a dhikr so it doesn't render as a

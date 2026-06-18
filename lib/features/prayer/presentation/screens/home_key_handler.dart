@@ -15,6 +15,8 @@ KeyEventResult handleHomeKey(
   required bool isDuaPlaying,
   required bool isIqamaPlaying,
   required bool isIqamaCountdown,
+  required bool isAfterPrayerAdhkar,
+  required bool isSessionAdhkar,
   required FocusNode quranFocusNode,
   required FocusNode takbeeratFocusNode,
   required String takbeeratReciterUrl,
@@ -28,6 +30,8 @@ KeyEventResult handleHomeKey(
       isDuaPlaying: isDuaPlaying,
       isIqamaPlaying: isIqamaPlaying,
       isIqamaCountdown: isIqamaCountdown,
+      isAfterPrayerAdhkar: isAfterPrayerAdhkar,
+      isSessionAdhkar: isSessionAdhkar,
       isQuranEnabled: settings.isQuranEnabled,
       hasQuranReciter: settings.hasQuranReciter,
       canToggleTakbeerat: takbeeratReciterUrl.isNotEmpty,
@@ -54,6 +58,12 @@ KeyEventResult handleHomeKey(
       return KeyEventResult.handled;
     case HomeKeyIntent.stopIqama:
       context.read<PrayerBloc>().add(const PrayerIqamaStopped());
+      return KeyEventResult.handled;
+    case HomeKeyIntent.skipAfterPrayerAdhkar:
+      context.read<PrayerBloc>().add(const PrayerAfterPrayerAdhkarStopped());
+      return KeyEventResult.handled;
+    case HomeKeyIntent.skipSessionAdhkar:
+      context.read<PrayerBloc>().add(const PrayerSessionAdhkarStopped());
       return KeyEventResult.handled;
     case HomeKeyIntent.openSettings:
       Navigator.pushNamed(context, '/settings');

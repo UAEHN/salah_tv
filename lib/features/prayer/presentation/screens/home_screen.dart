@@ -129,6 +129,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final sessionAdhkarCategory = context.select(
       (PrayerBloc b) => b.state.sessionAdhkarCategory,
     );
+    // True while the post-prayer adhkar sequence is pending OR on screen (the
+    // after-prayer dua, the gap, and the morning/evening session). Keeps the
+    // idle screensaver off so it never interrupts the adhkar.
+    final isAdhkarSequenceActive = context.select(
+      (PrayerBloc b) => b.state.isAdhkarSequenceActive,
+    );
     // Reciter URL from the hoisted takbeerat cubit — empty when the Eid
     // card isn't visible or no reciter is configured remotely, which
     // automatically disables the Arrow Up shortcut in [handleHomeKey].
@@ -152,7 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
         !isIqamaCountdown &&
         !isSilencePhoneWindow &&
         !isAfterPrayerAdhkar &&
-        !isSessionAdhkar;
+        !isSessionAdhkar &&
+        !isAdhkarSequenceActive;
     final showScreensaver =
         isScreensaverOn && _idleReached && isFarFromPrayer && noCycleTakeover;
     _screensaverVisible = showScreensaver;
@@ -186,6 +193,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 isDuaPlaying: isDuaPlaying,
                 isIqamaPlaying: isIqamaPlaying,
                 isIqamaCountdown: isIqamaCountdown,
+                isAfterPrayerAdhkar: isAfterPrayerAdhkar,
+                isSessionAdhkar: isSessionAdhkar,
                 quranFocusNode: _quranFocusNode,
                 takbeeratFocusNode: _takbeeratFocusNode,
                 takbeeratReciterUrl: takbeeratReciterUrl,
@@ -233,6 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ? SessionAdhkarScreen(
                     palette: palette,
                     categoryId: sessionAdhkarCategory,
+                    silent: isMosqueMode,
                     onCompleted: () => context.read<PrayerBloc>().add(
                       const PrayerSessionAdhkarStopped(),
                     ),

@@ -191,6 +191,14 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
   /// clears the after-prayer window, so the two never overlap.
   void checkSessionAdhkar() {
     final startAt = s.sessionAdhkarStartsAt;
+    // Mosque mode never shows the session-adhkar takeover (the imam leads it
+    // live). Drop a schedule that survived a mosque-mode toggle made during the
+    // post-iqama gap. A session already on screen is left to end normally so its
+    // window still resumes Quran.
+    if (startAt != null && settings.isMosqueMode) {
+      s.sessionAdhkarStartsAt = null;
+      return;
+    }
     if (startAt != null &&
         !s.now.isBefore(startAt) &&
         !s.isSessionAdhkarPlaying &&
@@ -207,6 +215,16 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
       s.sessionAdhkarCategory = '';
       resumeQuranAfterAdhan();
     }
+  }
+
+  /// Ends the after-prayer adhkar takeover early (TV remote skip), resuming
+  /// Quran. No-op if it isn't currently showing.
+  void stopAfterPrayerAdhkar() {
+    if (!s.isAfterPrayerAdhkarPlaying) return;
+    s.isAfterPrayerAdhkarPlaying = false;
+    s.afterPrayerAdhkarEndsAt = null;
+    resumeQuranAfterAdhan();
+    notify();
   }
 
   /// Ends the session adhkar takeover early when its audio playlist finishes

@@ -1,6 +1,6 @@
 name: ghasaq
 description: "غسق — مواقيت الصلاة لأجهزة Android TV"
-version: 1.0.9+18
+version: 1.0.10+19
 publish_to: none
 
 environment:
@@ -110,6 +110,7 @@ dependencies:
   # single asset and we apply a ColorFilter at runtime so it picks up
   # the active theme's accent colour.
   flutter_svg: ^2.0.10+1
+  just_audio: ^0.10.5
 
 
 dev_dependencies:

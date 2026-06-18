@@ -56,6 +56,7 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     on<PrayerDateChanged>(_onDateChanged);
     on<PrayerDateReset>(_onDateReset);
     on<PrayerSessionAdhkarStopped>(_onSessionAdhkarStopped);
+    on<PrayerAfterPrayerAdhkarStopped>(_onAfterPrayerAdhkarStopped);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -172,6 +173,11 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     PrayerSessionAdhkarStopped _,
     Emitter<PrayerState> emit,
   ) => _runSync(_engine.stopSessionAdhkar, emit);
+
+  void _onAfterPrayerAdhkarStopped(
+    PrayerAfterPrayerAdhkarStopped _,
+    Emitter<PrayerState> emit,
+  ) => _runSync(_engine.stopAfterPrayerAdhkar, emit);
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {

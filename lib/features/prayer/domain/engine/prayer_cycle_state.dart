@@ -65,12 +65,13 @@ class PrayerCycleState {
   bool isAfterPrayerAdhkarPlaying = false;
 
   // ── Morning/evening session adhkar takeover ──────────────────────────────
-  // Scheduled 25 min after the «أذكار بعد الصلاة» takeover first appears, only
-  // after Fajr (→ morning) or Asr (→ evening) and outside mosque mode. The home
-  // screen shows a rotating full-screen adhkar takeover from
-  // [sessionAdhkarStartsAt] for one display window ([sessionAdhkarEndsAt]), then
-  // Quran resumes. Transient (in-memory) like the after-prayer fields above;
-  // cleared together on cycle reset.
+  // Scheduled ~20 min after the prayer (iqama end + a fixed delay), only after
+  // Fajr (→ morning) or Asr (→ evening). INDEPENDENT of the «دعاء بعد الصلاة»
+  // takeover, so disabling that never affects it. Shown in mosque mode too, but
+  // the screen mutes its audio there. The home screen shows a full-screen adhkar
+  // takeover from [sessionAdhkarStartsAt] for one display window
+  // ([sessionAdhkarEndsAt]), then Quran resumes. Transient (in-memory) like the
+  // after-prayer fields above; cleared together on cycle reset.
   DateTime? sessionAdhkarStartsAt;
   DateTime? sessionAdhkarEndsAt;
   bool isSessionAdhkarPlaying = false;

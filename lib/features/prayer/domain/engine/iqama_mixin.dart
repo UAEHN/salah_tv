@@ -22,10 +22,12 @@ const Duration _kMosquePrayerWindow = Duration(minutes: 10);
 /// rough estimate of how long the prayer itself takes at home.
 const Duration _kAfterPrayerDelay = Duration(minutes: 10);
 
-/// Delay from iqama end to the morning/evening session adhkar takeover. 25 min
-/// clears the after-prayer takeover window (iqama+10..+15) by 10 min, so the
-/// two never overlap. The tick loop ([TickMixin.checkSessionAdhkar]) acts on it.
-const Duration _kSessionAdhkarDelay = Duration(minutes: 25);
+/// Delay from iqama end to the morning/evening session adhkar takeover (~20 min
+/// after the prayer itself). Kept INDEPENDENT of the after-prayer dua — which the
+/// user can disable — so the session always appears regardless. Still well clear
+/// of the after-prayer window (iqama+10..+15) so the two never overlap when both
+/// are on. The tick loop ([TickMixin.checkSessionAdhkar]) acts on the time.
+const Duration _kSessionAdhkarDelay = Duration(minutes: 30);
 
 /// Handles the iqama countdown and iqama playback phase.
 /// Issue comments 1, 3, 4, 10 are preserved verbatim.
@@ -89,18 +91,19 @@ mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
     }
     // Schedule the after-prayer adhkar takeover (gated by the adhkar setting
     // and its own dedicated toggle, so it can be turned off without disabling
-    // the morning/evening hero adhkar). Mosque: it begins right when the prayer
-    // window above ends. Non-mosque: after a rough prayer-duration delay. The
-    // tick loop starts/ends it.
+    // the morning/evening session adhkar). Mosque: it begins right when the
+    // prayer window above ends. Non-mosque: after a rough prayer-duration delay.
+    // The tick loop starts/ends it.
     if (settings.isAdhkarEnabled && settings.isAfterPrayerAdhkarEnabled) {
       s.afterPrayerAdhkarStartsAt = s.now.add(
         settings.isMosqueMode ? _kMosquePrayerWindow : _kAfterPrayerDelay,
       );
     }
-    // Schedule the morning/evening session adhkar takeover 25 min after iqama
-    // (after Fajr → morning, after Asr → evening), outside mosque mode only (the
-    // imam leads adhkar live). Independent of [isAfterPrayerAdhkarEnabled]; the
-    // 25-min delay clears the after-prayer window so the two never overlap.
+    // Schedule the morning/evening session adhkar takeover ~20 min after the
+    // prayer (after Fajr → morning, after Asr → evening). INDEPENDENT of the
+    // after-prayer dua — it fires on its own iqama-relative delay so disabling
+    // the after-prayer dua never affects it. Never scheduled in mosque mode:
+    // the imam leads adhkar live, so the takeover must not appear there.
     if (settings.isAdhkarEnabled && !settings.isMosqueMode) {
       final session = _sessionForCurrentPrayer();
       if (session.isNotEmpty) {

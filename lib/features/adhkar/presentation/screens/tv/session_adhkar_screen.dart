@@ -12,16 +12,21 @@ import '../../widgets/tv/adhkar_takeover_body.dart';
 
 /// Full-screen morning/evening session-adhkar takeover. Like the after-prayer
 /// takeover visually, but audio-driven: it plays each dhikr's audio and advances
-/// on completion. When the whole list finishes one pass it fires [onCompleted]
-/// so the prayer engine resumes Quran. Self-provides its cubit + data so callers
-/// only render `SessionAdhkarScreen(palette:, categoryId:, onCompleted:)`.
+/// on completion. In mosque mode ([silent]) it shows the same adhkar without
+/// audio, advancing on a dwell timer. When the list finishes one pass it fires
+/// [onCompleted] so the prayer engine resumes Quran. Self-provides its cubit +
+/// data so callers only render `SessionAdhkarScreen(palette:, categoryId:, ...)`.
 class SessionAdhkarScreen extends StatelessWidget {
   final AccentPalette palette;
 
   /// 'morning' | 'evening' — chosen by the engine from the just-finished prayer.
   final String categoryId;
 
-  /// Fired once when the audio playlist completes one full pass.
+  /// Mosque mode: render the adhkar but play no audio. The list then advances on
+  /// a dwell timer and completes (resuming the home view) without sound.
+  final bool silent;
+
+  /// Fired once when the playlist completes one full pass.
   final VoidCallback onCompleted;
 
   const SessionAdhkarScreen({
@@ -29,6 +34,7 @@ class SessionAdhkarScreen extends StatelessWidget {
     required this.palette,
     required this.categoryId,
     required this.onCompleted,
+    this.silent = false,
   });
 
   @override
@@ -48,7 +54,8 @@ class SessionAdhkarScreen extends StatelessWidget {
 
     return BlocProvider(
       create: (_) =>
-          SessionAdhkarCubit(GetIt.I<IAdhkarAudioPort>())..start(adhkar),
+          SessionAdhkarCubit(GetIt.I<IAdhkarAudioPort>(), silent: silent)
+            ..start(adhkar),
       child: BlocListener<SessionAdhkarCubit, SessionAdhkarState>(
         listenWhen: (prev, curr) => !prev.isCompleted && curr.isCompleted,
         listener: (_, _) => onCompleted(),

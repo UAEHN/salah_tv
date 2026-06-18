@@ -68,9 +68,15 @@ class PrayerDateReset extends PrayerEvent {
 
 /// Intention: the session adhkar audio playlist finished one pass, so the
 /// takeover can close and Quran resume. Dispatched by the session screen when
-/// its cubit completes.
+/// its cubit completes, and by the TV remote skip.
 class PrayerSessionAdhkarStopped extends PrayerEvent {
   const PrayerSessionAdhkarStopped();
+}
+
+/// Intention: skip the after-prayer adhkar takeover from the TV remote, closing
+/// it early and resuming Quran.
+class PrayerAfterPrayerAdhkarStopped extends PrayerEvent {
+  const PrayerAfterPrayerAdhkarStopped();
 }
 
 /// Internal: dispatched by the engine's notify callback on every tick.

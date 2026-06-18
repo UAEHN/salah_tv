@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -37,6 +38,10 @@ class _HomeTickerBarState extends State<HomeTickerBar> {
   @override
   void initState() {
     super.initState();
+    // Start at a random item so returning to the home view (after a screensaver
+    // or adhkar takeover removed/remounted this bar) doesn't always replay the
+    // rotation from the first item. Advance stays sequential from there.
+    _index = Random().nextInt(kTickerItems.length);
     _timer = Timer.periodic(_interval, (_) {
       if (!mounted) return;
       setState(() => _index = (_index + 1) % kTickerItems.length);
