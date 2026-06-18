@@ -10,6 +10,7 @@ import '../../settings_provider.dart';
 import 'mobile_adhan_sound_dialog.dart';
 import 'mobile_adhkar_notification_section.dart';
 import 'mobile_al_kahf_notification_section.dart';
+import 'mobile_notification_health_tile.dart';
 import 'mobile_notification_master_toggle.dart';
 import 'mobile_notification_settings_header.dart';
 import 'mobile_prayer_notification_list.dart';
@@ -45,13 +46,10 @@ class MobileNotificationSettingsList extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              // 2. Diagnostic shortcut.
-              MobileSettingsTile(
-                icon: Icons.health_and_safety_outlined,
-                title: 'صحة الإشعارات',
-                subtitle: 'تشخيص ومعالجة مشاكل وصول الإشعارات',
-                onTap: () => _openHealthScreen(context),
-              ),
+              // 2. Diagnostic shortcut — shows a warning state when a
+              //    notification permission is missing (replaces the old
+              //    sticky home-screen banner).
+              const MobileNotificationHealthTile(),
 
               // 3. Daily reminders (independent of master adhan toggle).
               const SizedBox(height: 22),
@@ -142,9 +140,5 @@ class MobileNotificationSettingsList extends StatelessWidget {
             : (min) => sp.updatePreIqamaReminderMinutes(min),
       ),
     );
-  }
-
-  void _openHealthScreen(BuildContext context) {
-    Navigator.of(context).pushNamed('/notification_health');
   }
 }

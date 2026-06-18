@@ -27,9 +27,12 @@ class OnboardingActionBar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (canTest) _TestLink(isTesting: isTesting, onTap: onTest),
-        if (!canContinue) const _BlockedHint(),
+        // Notifications are optional: never block the user here. When not yet
+        // granted we show a soft, skippable hint instead of disabling the
+        // button — they can enable later from Settings › صحة الإشعارات.
+        if (!canContinue) const _SkipHint(),
         const SizedBox(height: 6),
-        _PrimaryButton(enabled: canContinue, onTap: onContinue),
+        _PrimaryButton(enabled: true, onTap: onContinue),
       ],
     );
   }
@@ -118,15 +121,15 @@ class _TestLink extends StatelessWidget {
   }
 }
 
-class _BlockedHint extends StatelessWidget {
-  const _BlockedHint();
+class _SkipHint extends StatelessWidget {
+  const _SkipHint();
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Text(
-        'فعّل الخطوة الأولى أولاً.',
+        'يمكنك تفعيل الإشعارات لاحقاً من الإعدادات.',
         textAlign: TextAlign.center,
         style: TextStyle(
           color: Colors.white.withValues(alpha: 0.45),

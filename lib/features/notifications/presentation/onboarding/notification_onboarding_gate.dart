@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../injection.dart';
 import '../../../settings/presentation/settings_provider.dart';
 import '../../domain/i_notification_onboarding_flag_port.dart';
-import '../widgets/notification_health_banner.dart';
 import 'notification_onboarding_cubit.dart';
 import 'notification_onboarding_screen.dart';
 
@@ -60,7 +59,10 @@ class _NotificationOnboardingGateState
     final flag = _flag;
     if (flag == null) return const SizedBox.shrink();
     if (flag.isOnboardingDone) {
-      return NotificationHealthBanner(child: widget.child);
+      // No sticky home banner — notification health is surfaced (with a
+      // warning state) in Settings › صحة الإشعارات instead, so a skipped/
+      // revoked permission never nags from the top of the home screen.
+      return widget.child;
     }
     return BlocProvider<NotificationOnboardingCubit>(
       create: (_) => getIt<NotificationOnboardingCubit>(param1: flag),
