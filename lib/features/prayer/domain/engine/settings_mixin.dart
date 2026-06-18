@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import '../../../settings/domain/entities/app_settings.dart';
+import '../../../settings/domain/entities/app_settings_notification_fields.dart';
 import '../prayer_time_calculator.dart' as calc;
 import 'engine_telemetry_extension.dart';
 import 'prayer_cycle_base.dart';
@@ -31,7 +32,7 @@ mixin SettingsMixin
     final oldMethod = settings.calculationMethod;
     final oldMadhab = settings.madhab;
     final oldHighLatRule = settings.highLatitudeRule;
-    final oldAdhanSound = settings.adhanSound;
+    final oldSettings = settings;
     final oldMode = settings.quranPlaybackMode;
     final oldSurah = settings.selectedSurahNumber;
     final oldPlaylist = settings.surahPlaylist.toString();
@@ -75,11 +76,12 @@ mixin SettingsMixin
       }
     } else {
       updateNextPrayer();
-      // Re-schedule notifications when the adhan sound changes: Android
-      // binds sound at schedule time to a specific channel, so an already-
-      // scheduled notification keeps its old sound until cancelled and
-      // re-scheduled with the new channel/URI.
-      if (newSettings.adhanSound != oldAdhanSound && s.todayPrayers != null) {
+      // Re-schedule when any field shaping prayer/iqama notifications changes
+      // (adhan sound, master toggle, per-prayer or pre-adhan/pre-iqama
+      // options). Without this, a toggled reminder wouldn't take effect until
+      // the next day-load (loadToday) — i.e. the next app launch.
+      if (!newSettings.notificationFieldsEqual(oldSettings) &&
+          s.todayPrayers != null) {
         final tomorrowKey = calc.dateKey(
           DateTime(s.now.year, s.now.month, s.now.day + 1),
         );
