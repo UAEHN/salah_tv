@@ -10,15 +10,26 @@ class TvOnboardingSearchField extends StatelessWidget {
     required this.controller,
     required this.hint,
     required this.onChanged,
+    this.autofocus = false,
   });
 
   final TextEditingController controller;
   final String hint;
   final ValueChanged<String> onChanged;
+  final bool autofocus;
 
   @override
   Widget build(BuildContext context) {
+    // canRequestFocus:false + skipTraversal makes this wrapper a pure key
+    // interceptor, NOT a focus stop. Without it, D-pad traversal halted on this
+    // invisible wrapper node instead of the TextField's own editable node, so on
+    // TV the user could never reach or type in the search box. Now DPad-Up from
+    // the first list row lands on the TextField (cursor + gold focused border +
+    // on-screen keyboard); key events still bubble up here so DPad-Down/Up keep
+    // forwarding to focus traversal (search ↔ list). Mirrors TvLocationSearchField.
     return Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
       onKeyEvent: (node, event) {
         if (event is KeyDownEvent) {
           if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
@@ -33,6 +44,7 @@ class TvOnboardingSearchField extends StatelessWidget {
       },
       child: TextField(
         controller: controller,
+        autofocus: autofocus,
         onChanged: onChanged,
         textInputAction: TextInputAction.next,
         onSubmitted: (_) => FocusScope.of(context).nextFocus(),
