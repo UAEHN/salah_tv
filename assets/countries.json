@@ -1,0 +1,535 @@
+{
+  "_comment": "SINGLE SOURCE OF TRUTH for all country translations (ar + en) and the ISO-2 <-> DB-key mapping. Keyed by ISO-3166 alpha-2. 'dbKey' is the lowercase prayer-data country key for countries with bundled/downloaded schedules, or null for calculated-only countries. Do NOT duplicate country names in db_countries.json or world_cities.json — those files hold city translations only.",
+  "countries": {
+    "AE": {
+      "dbKey": "uae",
+      "ar": "الإمارات",
+      "en": "United Arab Emirates"
+    },
+    "AF": {
+      "dbKey": null,
+      "ar": "أفغانستان",
+      "en": "Afghanistan"
+    },
+    "AL": {
+      "dbKey": null,
+      "ar": "ألبانيا",
+      "en": "Albania"
+    },
+    "AR": {
+      "dbKey": null,
+      "ar": "الأرجنتين",
+      "en": "Argentina"
+    },
+    "AT": {
+      "dbKey": null,
+      "ar": "النمسا",
+      "en": "Austria"
+    },
+    "AU": {
+      "dbKey": null,
+      "ar": "أستراليا",
+      "en": "Australia"
+    },
+    "AZ": {
+      "dbKey": null,
+      "ar": "أذربيجان",
+      "en": "Azerbaijan"
+    },
+    "BA": {
+      "dbKey": null,
+      "ar": "البوسنة والهرسك",
+      "en": "Bosnia and Herzegovina"
+    },
+    "BD": {
+      "dbKey": null,
+      "ar": "بنغلاديش",
+      "en": "Bangladesh"
+    },
+    "BE": {
+      "dbKey": null,
+      "ar": "بلجيكا",
+      "en": "Belgium"
+    },
+    "BG": {
+      "dbKey": null,
+      "ar": "بلغاريا",
+      "en": "Bulgaria"
+    },
+    "BH": {
+      "dbKey": "bahrain",
+      "ar": "البحرين",
+      "en": "Bahrain"
+    },
+    "BN": {
+      "dbKey": null,
+      "ar": "بروناي",
+      "en": "Brunei"
+    },
+    "BR": {
+      "dbKey": null,
+      "ar": "البرازيل",
+      "en": "Brazil"
+    },
+    "BY": {
+      "dbKey": null,
+      "ar": "بيلاروسيا",
+      "en": "Belarus"
+    },
+    "CA": {
+      "dbKey": null,
+      "ar": "كندا",
+      "en": "Canada"
+    },
+    "CH": {
+      "dbKey": null,
+      "ar": "سويسرا",
+      "en": "Switzerland"
+    },
+    "CL": {
+      "dbKey": null,
+      "ar": "تشيلي",
+      "en": "Chile"
+    },
+    "CN": {
+      "dbKey": null,
+      "ar": "الصين",
+      "en": "China"
+    },
+    "CO": {
+      "dbKey": null,
+      "ar": "كولومبيا",
+      "en": "Colombia"
+    },
+    "CY": {
+      "dbKey": null,
+      "ar": "قبرص",
+      "en": "Cyprus"
+    },
+    "CZ": {
+      "dbKey": null,
+      "ar": "التشيك",
+      "en": "Czechia"
+    },
+    "DE": {
+      "dbKey": null,
+      "ar": "ألمانيا",
+      "en": "Germany"
+    },
+    "DJ": {
+      "dbKey": null,
+      "ar": "جيبوتي",
+      "en": "Djibouti"
+    },
+    "DK": {
+      "dbKey": null,
+      "ar": "الدنمارك",
+      "en": "Denmark"
+    },
+    "DZ": {
+      "dbKey": "algeria",
+      "ar": "الجزائر",
+      "en": "Algeria"
+    },
+    "EE": {
+      "dbKey": null,
+      "ar": "إستونيا",
+      "en": "Estonia"
+    },
+    "EG": {
+      "dbKey": "egypt",
+      "ar": "مصر",
+      "en": "Egypt"
+    },
+    "ES": {
+      "dbKey": null,
+      "ar": "إسبانيا",
+      "en": "Spain"
+    },
+    "ET": {
+      "dbKey": null,
+      "ar": "إثيوبيا",
+      "en": "Ethiopia"
+    },
+    "FI": {
+      "dbKey": null,
+      "ar": "فنلندا",
+      "en": "Finland"
+    },
+    "FR": {
+      "dbKey": null,
+      "ar": "فرنسا",
+      "en": "France"
+    },
+    "GE": {
+      "dbKey": null,
+      "ar": "جورجيا",
+      "en": "Georgia"
+    },
+    "GH": {
+      "dbKey": null,
+      "ar": "غانا",
+      "en": "Ghana"
+    },
+    "GR": {
+      "dbKey": null,
+      "ar": "اليونان",
+      "en": "Greece"
+    },
+    "GY": {
+      "dbKey": null,
+      "ar": "غيانا",
+      "en": "Guyana"
+    },
+    "HR": {
+      "dbKey": null,
+      "ar": "كرواتيا",
+      "en": "Croatia"
+    },
+    "HU": {
+      "dbKey": null,
+      "ar": "المجر",
+      "en": "Hungary"
+    },
+    "ID": {
+      "dbKey": null,
+      "ar": "إندونيسيا",
+      "en": "Indonesia"
+    },
+    "IE": {
+      "dbKey": null,
+      "ar": "أيرلندا",
+      "en": "Ireland"
+    },
+    "IN": {
+      "dbKey": null,
+      "ar": "الهند",
+      "en": "India"
+    },
+    "IQ": {
+      "dbKey": "iraq",
+      "ar": "العراق",
+      "en": "Iraq"
+    },
+    "IR": {
+      "dbKey": null,
+      "ar": "إيران",
+      "en": "Iran"
+    },
+    "IT": {
+      "dbKey": null,
+      "ar": "إيطاليا",
+      "en": "Italy"
+    },
+    "JO": {
+      "dbKey": "jordan",
+      "ar": "الأردن",
+      "en": "Jordan"
+    },
+    "JP": {
+      "dbKey": null,
+      "ar": "اليابان",
+      "en": "Japan"
+    },
+    "KE": {
+      "dbKey": null,
+      "ar": "كينيا",
+      "en": "Kenya"
+    },
+    "KG": {
+      "dbKey": null,
+      "ar": "قيرغيزستان",
+      "en": "Kyrgyzstan"
+    },
+    "KM": {
+      "dbKey": null,
+      "ar": "جزر القمر",
+      "en": "Comoros"
+    },
+    "KR": {
+      "dbKey": null,
+      "ar": "كوريا الجنوبية",
+      "en": "South Korea"
+    },
+    "KW": {
+      "dbKey": "kuwait",
+      "ar": "الكويت",
+      "en": "Kuwait"
+    },
+    "KZ": {
+      "dbKey": null,
+      "ar": "كازاخستان",
+      "en": "Kazakhstan"
+    },
+    "LB": {
+      "dbKey": "lebanon",
+      "ar": "لبنان",
+      "en": "Lebanon"
+    },
+    "LT": {
+      "dbKey": null,
+      "ar": "ليتوانيا",
+      "en": "Lithuania"
+    },
+    "LV": {
+      "dbKey": null,
+      "ar": "لاتفيا",
+      "en": "Latvia"
+    },
+    "LY": {
+      "dbKey": "libya",
+      "ar": "ليبيا",
+      "en": "Libya"
+    },
+    "MA": {
+      "dbKey": "morocco",
+      "ar": "المغرب",
+      "en": "Morocco"
+    },
+    "MD": {
+      "dbKey": null,
+      "ar": "مولدوفا",
+      "en": "Moldova"
+    },
+    "ME": {
+      "dbKey": null,
+      "ar": "الجبل الأسود",
+      "en": "Montenegro"
+    },
+    "MK": {
+      "dbKey": null,
+      "ar": "مقدونيا الشمالية",
+      "en": "North Macedonia"
+    },
+    "ML": {
+      "dbKey": null,
+      "ar": "مالي",
+      "en": "Mali"
+    },
+    "MR": {
+      "dbKey": null,
+      "ar": "موريتانيا",
+      "en": "Mauritania"
+    },
+    "MV": {
+      "dbKey": null,
+      "ar": "المالديف",
+      "en": "Maldives"
+    },
+    "MX": {
+      "dbKey": null,
+      "ar": "المكسيك",
+      "en": "Mexico"
+    },
+    "MY": {
+      "dbKey": "malaysia",
+      "ar": "ماليزيا",
+      "en": "Malaysia"
+    },
+    "NE": {
+      "dbKey": null,
+      "ar": "النيجر",
+      "en": "Niger"
+    },
+    "NG": {
+      "dbKey": null,
+      "ar": "نيجيريا",
+      "en": "Nigeria"
+    },
+    "NL": {
+      "dbKey": null,
+      "ar": "هولندا",
+      "en": "Netherlands"
+    },
+    "NO": {
+      "dbKey": null,
+      "ar": "النرويج",
+      "en": "Norway"
+    },
+    "NZ": {
+      "dbKey": null,
+      "ar": "نيوزيلندا",
+      "en": "New Zealand"
+    },
+    "OM": {
+      "dbKey": "oman",
+      "ar": "عُمان",
+      "en": "Oman"
+    },
+    "PE": {
+      "dbKey": null,
+      "ar": "بيرو",
+      "en": "Peru"
+    },
+    "PH": {
+      "dbKey": null,
+      "ar": "الفلبين",
+      "en": "Philippines"
+    },
+    "PK": {
+      "dbKey": null,
+      "ar": "باكستان",
+      "en": "Pakistan"
+    },
+    "PL": {
+      "dbKey": null,
+      "ar": "بولندا",
+      "en": "Poland"
+    },
+    "PS": {
+      "dbKey": "palestine",
+      "ar": "فلسطين",
+      "en": "Palestine"
+    },
+    "PT": {
+      "dbKey": null,
+      "ar": "البرتغال",
+      "en": "Portugal"
+    },
+    "QA": {
+      "dbKey": "qatar",
+      "ar": "قطر",
+      "en": "Qatar"
+    },
+    "RO": {
+      "dbKey": null,
+      "ar": "رومانيا",
+      "en": "Romania"
+    },
+    "RS": {
+      "dbKey": null,
+      "ar": "صربيا",
+      "en": "Serbia"
+    },
+    "RU": {
+      "dbKey": null,
+      "ar": "روسيا",
+      "en": "Russia"
+    },
+    "SA": {
+      "dbKey": "saudi",
+      "ar": "السعودية",
+      "en": "Saudi Arabia"
+    },
+    "SD": {
+      "dbKey": null,
+      "ar": "السودان",
+      "en": "Sudan"
+    },
+    "SE": {
+      "dbKey": null,
+      "ar": "السويد",
+      "en": "Sweden"
+    },
+    "SG": {
+      "dbKey": "singapore",
+      "ar": "سنغافورة",
+      "en": "Singapore"
+    },
+    "SI": {
+      "dbKey": null,
+      "ar": "سلوفينيا",
+      "en": "Slovenia"
+    },
+    "SK": {
+      "dbKey": null,
+      "ar": "سلوفاكيا",
+      "en": "Slovakia"
+    },
+    "SN": {
+      "dbKey": null,
+      "ar": "السنغال",
+      "en": "Senegal"
+    },
+    "SO": {
+      "dbKey": null,
+      "ar": "الصومال",
+      "en": "Somalia"
+    },
+    "SR": {
+      "dbKey": null,
+      "ar": "سورينام",
+      "en": "Suriname"
+    },
+    "SY": {
+      "dbKey": "syria",
+      "ar": "سوريا",
+      "en": "Syria"
+    },
+    "TD": {
+      "dbKey": null,
+      "ar": "تشاد",
+      "en": "Chad"
+    },
+    "TH": {
+      "dbKey": null,
+      "ar": "تايلاند",
+      "en": "Thailand"
+    },
+    "TJ": {
+      "dbKey": null,
+      "ar": "طاجيكستان",
+      "en": "Tajikistan"
+    },
+    "TM": {
+      "dbKey": null,
+      "ar": "تركمانستان",
+      "en": "Turkmenistan"
+    },
+    "TN": {
+      "dbKey": "tunisia",
+      "ar": "تونس",
+      "en": "Tunisia"
+    },
+    "TR": {
+      "dbKey": null,
+      "ar": "تركيا",
+      "en": "Turkey"
+    },
+    "TT": {
+      "dbKey": null,
+      "ar": "ترينيداد وتوباغو",
+      "en": "Trinidad and Tobago"
+    },
+    "TZ": {
+      "dbKey": null,
+      "ar": "تنزانيا",
+      "en": "Tanzania"
+    },
+    "UA": {
+      "dbKey": null,
+      "ar": "أوكرانيا",
+      "en": "Ukraine"
+    },
+    "UK": {
+      "dbKey": null,
+      "ar": "بريطانيا",
+      "en": "United Kingdom"
+    },
+    "US": {
+      "dbKey": null,
+      "ar": "الولايات المتحدة",
+      "en": "United States"
+    },
+    "UZ": {
+      "dbKey": null,
+      "ar": "أوزبكستان",
+      "en": "Uzbekistan"
+    },
+    "XK": {
+      "dbKey": null,
+      "ar": "كوسوفو",
+      "en": "Kosovo"
+    },
+    "YE": {
+      "dbKey": "yemen",
+      "ar": "اليمن",
+      "en": "Yemen"
+    },
+    "ZA": {
+      "dbKey": null,
+      "ar": "جنوب أفريقيا",
+      "en": "South Africa"
+    }
+  }
+}

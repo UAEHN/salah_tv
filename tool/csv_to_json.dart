@@ -153,34 +153,40 @@ Future<void> main() async {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-/// Country labels + Arabic city names read from assets/db_countries.json.
+/// Country labels come from assets/countries.json (single source of truth,
+/// keyed by ISO-2 with a `dbKey`); Arabic city names from assets/db_countries.json.
 /// Used only to enrich catalog.json; missing entries fall back to the key/name.
 class _Translations {
-  final Map<String, String> countryArabic; // countryKey → عربي
-  final Map<String, String> countryEnglish; // countryKey → English
+  final Map<String, String> countryArabic; // dbKey → عربي
+  final Map<String, String> countryEnglish; // dbKey → English
   final Map<String, String> cityArabic; // English city name → عربي
   const _Translations(this.countryArabic, this.countryEnglish, this.cityArabic);
 }
 
 _Translations _loadTranslations() {
-  final file = File('assets/db_countries.json');
-  if (!file.existsSync()) {
-    return const _Translations({}, {}, {});
-  }
-  final data = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
-
   final countryArabic = <String, String>{};
   final countryEnglish = <String, String>{};
-  (data['countries'] as Map<String, dynamic>?)?.forEach((k, v) {
-    final m = v as Map<String, dynamic>;
-    countryArabic[k.toLowerCase()] = (m['ar'] as String?) ?? k;
-    countryEnglish[k.toLowerCase()] = (m['en'] as String?) ?? k;
-  });
+  final countriesFile = File('assets/countries.json');
+  if (countriesFile.existsSync()) {
+    final cdata =
+        jsonDecode(countriesFile.readAsStringSync()) as Map<String, dynamic>;
+    (cdata['countries'] as Map<String, dynamic>?)?.forEach((iso, v) {
+      final m = v as Map<String, dynamic>;
+      final dbKey = (m['dbKey'] as String?)?.toLowerCase();
+      if (dbKey == null) return;
+      countryArabic[dbKey] = (m['ar'] as String?) ?? dbKey;
+      countryEnglish[dbKey] = (m['en'] as String?) ?? dbKey;
+    });
+  }
 
   final cityArabic = <String, String>{};
-  (data['cities'] as Map<String, dynamic>?)?.forEach((k, v) {
-    cityArabic[k] = v as String;
-  });
+  final file = File('assets/db_countries.json');
+  if (file.existsSync()) {
+    final data = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+    (data['cities'] as Map<String, dynamic>?)?.forEach((k, v) {
+      cityArabic[k] = v as String;
+    });
+  }
 
   return _Translations(countryArabic, countryEnglish, cityArabic);
 }

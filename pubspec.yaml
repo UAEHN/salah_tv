@@ -1,6 +1,6 @@
 name: ghasaq
 description: "غسق — مواقيت الصلاة لأجهزة Android TV"
-version: 1.0.10+19
+version: 1.0.10+20
 publish_to: none
 
 environment:
@@ -116,6 +116,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  fake_async: ^1.3.1
   flutter_lints: ^6.0.0
   build_runner: ^2.12.2
   injectable_generator: ^2.12.1
@@ -150,6 +151,7 @@ flutter:
     - assets/db_city_lists.json
     - assets/world_cities.json
     - assets/db_countries.json
+    - assets/countries.json
     - assets/animations/
     - assets/quran/
     # Bundled fallback for the remote occasions catalog. Shipped with the

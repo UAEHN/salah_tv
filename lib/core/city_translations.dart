@@ -20,8 +20,10 @@ class CountryInfo {
   });
 }
 
-// ── Translations (from assets/db_countries.json — small dictionary only) ─────
-// Country + city *lists* come from the SQLite DB; this file maps keys → labels.
+// ── Translations ─────────────────────────────────────────────────────────────
+// Country labels come from assets/countries.json (single source of truth);
+// city Arabic names come from assets/db_countries.json `cities`. Country + city
+// *lists* come from db_city_lists.json; this file maps keys → labels.
 
 class _CountryLabel {
   final String ar;
@@ -53,19 +55,45 @@ bool _loaded = false;
 Future<void> loadCityTranslations() async {
   if (_loaded) return;
 
+  // ── Unified country catalogue (single source of truth) ──────────────────
+  // assets/countries.json: ISO-2 → { dbKey, ar, en }. Feeds every country
+  // label consumer (DB labels, world labels, and the ISO tables in
+  // country_name_resolver). No country name is duplicated in db_countries.json
+  // or world_cities.json anymore — those hold city translations only.
+  final countriesRaw = await rootBundle.loadString('assets/countries.json');
+  final countriesData = jsonDecode(countriesRaw) as Map<String, dynamic>;
+  final countryEntries = countriesData['countries'] as Map<String, dynamic>;
+
+  final countryLabels = <String, _CountryLabel>{};
+  final worldCountryArabicByKey = <String, String>{};
+  final worldCountryKeyByArabic = <String, String>{};
+  final englishByIso = <String, String>{};
+  final dbKeyByIso = <String, String>{};
+  countryEntries.forEach((iso, v) {
+    final m = v as Map<String, dynamic>;
+    final upperIso = iso.toUpperCase();
+    final ar = m['ar'] as String;
+    final en = m['en'] as String;
+    final dbKey = (m['dbKey'] as String?)?.toLowerCase();
+    worldCountryArabicByKey[upperIso] = ar;
+    worldCountryKeyByArabic[ar] = upperIso;
+    englishByIso[upperIso] = en;
+    if (dbKey != null) {
+      countryLabels[dbKey] = _CountryLabel(ar, en);
+      dbKeyByIso[upperIso] = dbKey;
+    }
+  });
+  _countryLabels = countryLabels;
+  _worldCountryArabicByKey = worldCountryArabicByKey;
+  _worldCountryKeyByArabic = worldCountryKeyByArabic;
+  registerCountryTranslations(
+    englishByIso: englishByIso,
+    dbKeyByIso: dbKeyByIso,
+  );
+
+  // ── City Arabic names (English city name → عربي) ─────────────────────────
   final raw = await rootBundle.loadString('assets/db_countries.json');
   final data = jsonDecode(raw) as Map<String, dynamic>;
-
-  final countryMap = <String, _CountryLabel>{};
-  (data['countries'] as Map<String, dynamic>).forEach((k, v) {
-    final m = v as Map<String, dynamic>;
-    countryMap[k.toLowerCase()] = _CountryLabel(
-      m['ar'] as String,
-      (m['en'] as String?) ?? k,
-    );
-  });
-  _countryLabels = countryMap;
-
   _cityArabic = (data['cities'] as Map<String, dynamic>).map(
     (k, v) => MapEntry(k, v as String),
   );
@@ -77,17 +105,11 @@ Future<void> loadCityTranslations() async {
   );
   registerDbCountries(cityListsData);
 
+  // ── Per-city Arabic/English for world cities (world_cities.json cities) ──
   final worldRaw = await rootBundle.loadString('assets/world_cities.json');
   final worldData = jsonDecode(worldRaw) as Map<String, dynamic>;
-  final worldCountryMap = (worldData['countries'] as Map<String, dynamic>).map(
-    (k, v) => MapEntry(k.toUpperCase(), v as String),
-  );
   final worldList = (worldData['cities'] as List).cast<Map<String, dynamic>>();
 
-  final worldCountryArabicByKey = <String, String>{...worldCountryMap};
-  final worldCountryKeyByArabic = <String, String>{
-    for (final e in worldCountryMap.entries) e.value: e.key,
-  };
   final worldCityArabicByKey = <String, String>{};
   final worldCityEnglishByArabicKey = <String, String>{};
   for (final city in worldList) {
@@ -99,8 +121,6 @@ Future<void> loadCityTranslations() async {
     worldCityEnglishByArabicKey[_worldCityMapKey(countryKey, arabicName)] =
         englishName;
   }
-  _worldCountryArabicByKey = worldCountryArabicByKey;
-  _worldCountryKeyByArabic = worldCountryKeyByArabic;
   _worldCityArabicByKey = worldCityArabicByKey;
   _worldCityEnglishByArabicKey = worldCityEnglishByArabicKey;
 

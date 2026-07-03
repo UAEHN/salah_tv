@@ -14,13 +14,17 @@ class WorldCityJsonRepository implements IWorldCityRepository {
     if (_cities != null) return;
     final raw = await rootBundle.loadString('assets/world_cities.json');
     final data = jsonDecode(raw) as Map<String, dynamic>;
-    // Schema: { "countries": { "<key>": "<arabicName>" },
-    //           "cities":    [ { n, a, c, lat, lng, m, tz, alt? }, ... ] }
-    // Country Arabic lives on the country map (not per-city) to avoid
-    // duplicating the same country name across every city.
-    final countryArabic = (data['countries'] as Map<String, dynamic>).map(
-      (k, v) => MapEntry(k, v as String),
-    );
+    // Schema: { "cities": [ { n, a, c, lat, lng, m, tz, alt? }, ... ] }
+    // Country Arabic names come from the unified assets/countries.json (single
+    // source of truth, keyed by ISO-2) — never duplicated per city or here.
+    final countriesRaw = await rootBundle.loadString('assets/countries.json');
+    final countriesData = jsonDecode(countriesRaw) as Map<String, dynamic>;
+    final countryArabic = <String, String>{};
+    (countriesData['countries'] as Map<String, dynamic>).forEach((iso, v) {
+      countryArabic[iso.toUpperCase()] =
+          (v as Map<String, dynamic>)['ar'] as String;
+    });
+
     final list = (data['cities'] as List).cast<Map<String, dynamic>>();
 
     _cities = list
@@ -29,7 +33,9 @@ class WorldCityJsonRepository implements IWorldCityRepository {
             name: e['n'] as String,
             arabicName: e['a'] as String,
             countryKey: e['c'] as String,
-            countryArabic: countryArabic[e['c']] ?? e['c'] as String,
+            countryArabic:
+                countryArabic[(e['c'] as String).toUpperCase()] ??
+                e['c'] as String,
             latitude: (e['lat'] as num).toDouble(),
             longitude: (e['lng'] as num).toDouble(),
             calculationMethod: e['m'] as String,
@@ -39,8 +45,16 @@ class WorldCityJsonRepository implements IWorldCityRepository {
         )
         .toList();
 
-    final countryList = countryArabic.entries
-        .map((e) => WorldCountry(key: e.key, arabicName: e.value))
+    // Surface only countries that actually have cities (preserves prior
+    // behaviour), labelled from the unified catalogue.
+    final presentIsos = <String>{
+      for (final c in _cities!) c.countryKey.toUpperCase(),
+    };
+    final countryList = presentIsos
+        .map(
+          (iso) =>
+              WorldCountry(key: iso, arabicName: countryArabic[iso] ?? iso),
+        )
         .toList();
     countryList.sort((a, b) => a.arabicName.compareTo(b.arabicName));
     _countries = countryList;
