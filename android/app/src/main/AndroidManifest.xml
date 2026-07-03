@@ -29,6 +29,9 @@
     <!-- Required to request battery optimization exemption via system dialog -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <!-- TV adhan safety net: if media volume is zero, raise it to a small
+         audible level before in-app adhan/iqama playback. -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <!-- Custom adhan import via SAF file picker (Android 13+). Below Android 13
          the SAF picker doesn't require any permission. -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
@@ -37,6 +40,15 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28"/>
+    <!-- TV-only custom adhan/iqama import: the D-pad browser lists audio via
+         MediaStore (READ_MEDIA_AUDIO above on 13+; READ_EXTERNAL_STORAGE below).
+         This is the Play-compliant minimum scope — NOT MANAGE_EXTERNAL_STORAGE,
+         which Play restricts to file-manager/backup/antivirus apps. Un-indexed
+         files (e.g. a freshly-mounted USB) are reachable via the SAF system
+         picker fallback, which needs no permission. -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"/>
     <!-- Explicitly remove AD_ID permission injected by Firebase/Google SDKs -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID"
         tools:node="remove"/>

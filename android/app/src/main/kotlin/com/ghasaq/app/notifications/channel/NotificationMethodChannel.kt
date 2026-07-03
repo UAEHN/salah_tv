@@ -6,8 +6,10 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import com.ghasaq.app.notifications.engine.PrayerAlarmEngine
+import com.ghasaq.app.notifications.builder.NotificationChannelsManager
 import com.ghasaq.app.notifications.oem.OemKillerHelper
 import com.ghasaq.app.notifications.permissions.PermissionGate
+import com.ghasaq.app.notifications.store.NativeDiagnostics
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -76,6 +78,8 @@ class NotificationMethodChannel(
                         perms.forEach { (k, v) -> put(k, v) }
                         put("scheduleLog", engine.readScheduleLog())
                         put("oem", OemKillerHelper.snapshot(context))
+                        put("channels", NotificationChannelsManager(context).snapshot())
+                        put("nativeDiagnostics", NativeDiagnostics(context).toJsonArray())
                     }
                     result.success(payload.toString())
                 }

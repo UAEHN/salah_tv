@@ -16,8 +16,10 @@ import '../../../features/prayer/presentation/screens/mobile_home_screen.dart';
 import '../../../features/qibla/domain/i_qibla_repository.dart';
 import '../../../features/qibla/presentation/bloc/qibla_cubit.dart';
 import '../../../features/qibla/presentation/screens/mobile/mobile_qibla_screen.dart';
+import '../../../features/quran/presentation/bloc/khatma_cubit.dart';
 import '../../../features/quran/presentation/bloc/mushaf_reader_cubit.dart';
 import '../../../features/quran/presentation/bloc/page_image_download_cubit.dart';
+import '../../../features/quran/presentation/screens/mobile/mobile_khatma_screen.dart';
 import '../../../features/quran/presentation/screens/mobile/mobile_mushaf_reader_screen.dart';
 import '../../../features/quran/presentation/screens/mobile/mobile_mushaf_screen.dart';
 import '../../../features/quran/presentation/widgets/mobile/mobile_quran_offline_choice_sheet.dart';
@@ -66,6 +68,13 @@ class MobileShell extends StatefulWidget {
     await state._openMushafReader(targetSurah: targetSurah);
   }
 
+  /// Pushes the Khatma (reading-plan) screen with the hoisted cubit.
+  static Future<void> openKhatma(BuildContext context) async {
+    final state = context.findAncestorStateOfType<_MobileShellState>();
+    if (state == null) return;
+    await state._openKhatma();
+  }
+
   @override
   State<MobileShell> createState() => _MobileShellState();
 }
@@ -86,6 +95,7 @@ class _MobileShellState extends State<MobileShell> with WidgetsBindingObserver {
   late final QiblaCubit _qiblaCubit;
   late final TodayCubit _todayCubit;
   late final MushafReaderCubit _mushafCubit;
+  late final KhatmaCubit _khatmaCubit;
   VoidCallback? _detachWarmAdhkar;
 
   @override
@@ -105,6 +115,7 @@ class _MobileShellState extends State<MobileShell> with WidgetsBindingObserver {
     // renders without paying the 1.6MB Quran-JSON cost at startup. The full
     // [MushafReaderCubit.init] runs lazily when the reader is opened.
     unawaited(_mushafCubit.loadBookmarkOnly());
+    _khatmaCubit = GetIt.I<KhatmaCubit>()..load();
     consumeColdStartNotificationPayload(
       isMounted: () => mounted,
       onAdhkar: _openAdhkarSession,
@@ -140,6 +151,20 @@ class _MobileShellState extends State<MobileShell> with WidgetsBindingObserver {
         builder: (_) => BlocProvider.value(
           value: _mushafCubit,
           child: const MobileMushafReaderScreen(),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openKhatma() async {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: _khatmaCubit),
+            BlocProvider.value(value: _mushafCubit),
+          ],
+          child: const MobileKhatmaScreen(),
         ),
       ),
     );
@@ -234,6 +259,7 @@ class _MobileShellState extends State<MobileShell> with WidgetsBindingObserver {
     _qiblaCubit.close();
     _todayCubit.close();
     _mushafCubit.close();
+    _khatmaCubit.close();
     super.dispose();
   }
 
@@ -264,6 +290,7 @@ class _MobileShellState extends State<MobileShell> with WidgetsBindingObserver {
                   providers: [
                     BlocProvider.value(value: _qiblaCubit),
                     BlocProvider.value(value: _mushafCubit),
+                    BlocProvider.value(value: _khatmaCubit),
                   ],
                   child: IndexedStack(
                     index: _currentIndex,

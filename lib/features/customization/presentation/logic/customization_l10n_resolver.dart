@@ -5,8 +5,8 @@ import 'package:ghasaq/l10n/app_localizations.dart';
 /// without touching presentation files.
 String resolveThemeLabel(AppLocalizations l, String labelKey) {
   switch (labelKey) {
-    case 'themeGreen':
-      return l.themeGreen;
+    case 'themeRed':
+      return l.themeRed;
     case 'themeTeal':
       return l.themeTeal;
     case 'themeGold':
@@ -71,11 +71,11 @@ String resolveErrorMessage(AppLocalizations l, String key) {
 }
 
 /// Map a stored theme color key (`AppSettings.themeColorKey`) to its
-/// localization label key. Returns `'themeGreen'` for unknown keys to mirror
+/// localization label key. Returns `'themeGold'` for unknown keys to mirror
 /// the `getMobileThemePalette` fallback.
 String themeKeyToLabelKey(String themeKey) {
   const map = <String, String>{
-    'green': 'themeGreen',
+    'red': 'themeRed',
     'teal': 'themeTeal',
     'gold': 'themeGold',
     'blue': 'themeBlue',
@@ -83,7 +83,7 @@ String themeKeyToLabelKey(String themeKey) {
     'desert_dawn': 'themeCoral',
     'paradise_sea': 'themeAzure',
   };
-  return map[themeKey] ?? 'themeGreen';
+  return map[themeKey] ?? 'themeGold';
 }
 
 /// Map a stored font family (`AppSettings.fontFamily`) to its localization

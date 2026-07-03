@@ -25,20 +25,19 @@ void main() {
     test('returned list is unmodifiable', () async {
       final result = await repo.getAll();
       result.fold((_) => fail('expected Right'), (fonts) {
-        expect(
-          () => fonts.add(fonts.first),
-          throwsA(isA<UnsupportedError>()),
-        );
+        expect(() => fonts.add(fonts.first), throwsA(isA<UnsupportedError>()));
       });
     });
 
-    test('default Kufi family is present (matches AppSettings default)',
-        () async {
-      final result = await repo.getAll();
-      result.fold((_) => fail('expected Right'), (fonts) {
-        expect(fonts.any((f) => f.id == 'Kufi'), isTrue);
-      });
-    });
+    test(
+      'default Kufi family is present (matches AppSettings default)',
+      () async {
+        final result = await repo.getAll();
+        result.fold((_) => fail('expected Right'), (fonts) {
+          expect(fonts.any((f) => f.id == 'Kufi'), isTrue);
+        });
+      },
+    );
 
     test('every font carries non-empty labelKey', () async {
       final result = await repo.getAll();

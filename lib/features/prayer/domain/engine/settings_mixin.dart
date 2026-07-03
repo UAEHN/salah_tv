@@ -113,8 +113,9 @@ mixin SettingsMixin
       final newDelay = settings.iqamaDelays[s.activeCyclePrayerKey] ?? 0;
       if (newDelay != s.currentIqamaDelayMin) {
         s.currentIqamaDelayMin = newDelay;
-        final elapsed = s.now.difference(s.adhanTriggerTime!);
-        final remaining = Duration(minutes: newDelay) - elapsed;
+        final dueAt = s.adhanTriggerTime!.add(Duration(minutes: newDelay));
+        s.iqamaDueAt = dueAt;
+        final remaining = dueAt.difference(s.now);
         if (remaining.inSeconds > 0) {
           s.iqamaCountdown = remaining;
         } else {
@@ -153,6 +154,7 @@ mixin SettingsMixin
     s.now = currentTime();
     s.adhansToday.clear();
     s.isIqamaCountdown = false;
+    s.iqamaDueAt = null;
     loadToday();
     notify();
   }

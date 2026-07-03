@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -8,6 +9,9 @@ import 'package:provider/provider.dart';
 
 import 'app.dart';
 import 'core/app_startup.dart';
+import 'core/diagnostics/app_diagnostics.dart';
+import 'core/diagnostics/diagnostic_level.dart' as diag;
+import 'core/health/heartbeat_service.dart';
 import 'features/analytics/domain/i_analytics_service.dart';
 import 'features/feedback/domain/i_feedback_repository.dart';
 import 'features/feedback/domain/usecases/submit_feedback_usecase.dart';
@@ -18,6 +22,7 @@ import 'features/prayer/domain/i_prayer_audio_port.dart';
 import 'features/prayer/domain/i_takbeerat_audio_port.dart';
 import 'features/notifications/domain/i_prayer_notification_port.dart';
 import 'features/prayer/domain/i_prayer_times_repository.dart';
+import 'features/prayer/domain/i_session_adhkar_log_port.dart';
 import 'features/prayer/presentation/bloc/prayer_bloc.dart';
 import 'features/prayer/presentation/bloc/prayer_event.dart';
 import 'features/quran/domain/entities/quran_playback_mode.dart';
@@ -43,12 +48,22 @@ void main() async {
       // Same flag the splash uses to route to onboarding. Keeps the prayer
       // engine dormant until onboarding commits a real city.
       final isFirstLaunch = await getIt<ISettingsRepository>().isFirstLaunch();
-      FlutterError.onError =
-          FirebaseCrashlytics.instance.recordFlutterFatalError;
+      FlutterError.onError = (details) {
+        _recordFlutterError(details);
+      };
       PlatformDispatcher.instance.onError = (error, stack) {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        _recordFatal('platform_dispatcher_error', error, stack);
         return true;
       };
+      Isolate.current.addErrorListener(
+        RawReceivePort((pair) {
+          final data = pair as List<dynamic>;
+          final error = data.first;
+          final stack = StackTrace.fromString(data.last.toString());
+          _recordFatal('isolate_uncaught_error', error, stack);
+        }).sendPort,
+      );
       runApp(_buildApp(settings, isFirstLaunch));
     },
     (error, stack) {
@@ -56,8 +71,62 @@ void main() async {
       try {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       } catch (_) {}
+      _recordFatal('zone_uncaught_error', error, stack);
     },
   );
+}
+
+void _recordFlutterError(FlutterErrorDetails details) {
+  final error = details.exception;
+  final stack = details.stack ?? StackTrace.current;
+  if (_isNonFatalFlutterLayoutError(details)) {
+    try {
+      unawaited(
+        FirebaseCrashlytics.instance.recordFlutterError(details, fatal: false),
+      );
+    } catch (_) {}
+    _recordDiagnostic(
+      diag.DiagnosticLevel.error,
+      'flutter_non_fatal_layout_error',
+      error,
+      stack,
+    );
+    return;
+  }
+
+  FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+  _recordFatal('flutter_error', error, stack);
+}
+
+bool _isNonFatalFlutterLayoutError(FlutterErrorDetails details) {
+  final text = details.exceptionAsString();
+  return text.contains('RenderBox was not laid out') ||
+      text.contains('RenderFlex overflowed') ||
+      details.library == 'rendering library';
+}
+
+void _recordFatal(String name, Object error, StackTrace stack) {
+  _recordDiagnostic(diag.DiagnosticLevel.fatal, name, error, stack);
+}
+
+void _recordDiagnostic(
+  diag.DiagnosticLevel level,
+  String name,
+  Object error,
+  StackTrace stack,
+) {
+  try {
+    if (!getIt.isRegistered<AppDiagnostics>()) return;
+    unawaited(
+      getIt<AppDiagnostics>().record(
+        level,
+        name,
+        error: error,
+        stack: stack,
+        forceUpload: true,
+      ),
+    );
+  } catch (_) {}
 }
 
 Widget _buildApp(AppSettings settings, bool isFirstLaunch) {
@@ -103,7 +172,13 @@ Widget _buildApp(AppSettings settings, bool isFirstLaunch) {
             notifications: getIt.isRegistered<IPrayerNotificationPort>()
                 ? getIt<IPrayerNotificationPort>()
                 : null,
+            sessionAdhkarLog: getIt.isRegistered<ISessionAdhkarLogPort>()
+                ? getIt<ISessionAdhkarLogPort>()
+                : null,
             analytics: getIt<IAnalyticsService>(),
+            diagnostics: getIt.isRegistered<AppDiagnostics>()
+                ? getIt<AppDiagnostics>()
+                : null,
             onCurrentSurahChanged: (surah) {
               final sp = context.read<SettingsProvider>();
               if (sp.settings.quranPlaybackMode ==
@@ -112,6 +187,26 @@ Widget _buildApp(AppSettings settings, bool isFirstLaunch) {
               }
             },
           );
+          if (getIt.isRegistered<HeartbeatService>()) {
+            getIt<HeartbeatService>().snapshotProvider = () {
+              final s = bloc.state;
+              final liveSettings = context.read<SettingsProvider>().settings;
+              return {
+                'selected_city': liveSettings.selectedCity,
+                'selected_country': liveSettings.selectedCountry,
+                'next_prayer_key': s.nextPrayerKey,
+                'countdown_seconds': s.countdown.inSeconds,
+                'has_prayer_data': s.todayPrayers != null,
+                'is_cycle_active': s.isCycleActive,
+                'is_adhan_playing': s.isAdhanPlaying,
+                'is_iqama_countdown': s.isIqamaCountdown,
+                'is_iqama_playing': s.isIqamaPlaying,
+                'is_dua_playing': s.isDuaPlaying,
+                'active_cycle_prayer': s.activeCyclePrayerKey,
+                if (s.lastTickError != null) 'last_tick_error': s.lastTickError,
+              };
+            };
+          }
           // Don't start the 1Hz tick / audio engine on first launch. The
           // bundled default city ('Dubai') is non-empty, so an isEmpty check
           // alone is NOT enough — gate on the first-launch flag so the
@@ -159,6 +254,17 @@ class _SettingsBridgeWrapperState extends State<_SettingsBridgeWrapper> {
       return;
     }
     _prev = next;
+    if (getIt.isRegistered<AppDiagnostics>()) {
+      unawaited(
+        getIt<AppDiagnostics>().setContext({
+          'selected_country': next.selectedCountry,
+          'selected_city': next.selectedCity,
+          'adhan_mode': next.adhanMode.name,
+          'iqama_mode': next.iqamaMode.name,
+          'is_mosque_mode': next.isMosqueMode,
+        }),
+      );
+    }
     context.read<PrayerBloc>().add(PrayerSettingsUpdated(next));
   }
 

@@ -25,6 +25,9 @@ class AdhanPreviewService implements IAdhanPreviewPort {
   }
 
   Future<Source> _resolveSource(String soundKey) async {
+    if (soundKey == kIqamaDefaultPreviewKey) {
+      return AssetSource(kIqamaDefaultAsset);
+    }
     final fileName = CustomAdhan.extractFileName(soundKey);
     final repo = _customAdhans;
     if (fileName != null && repo != null) {

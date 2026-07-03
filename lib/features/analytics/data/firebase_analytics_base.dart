@@ -9,6 +9,11 @@ import '../domain/i_analytics_service.dart';
 abstract class FirebaseAnalyticsBase implements IAnalyticsService {
   late final FirebaseAnalytics analytics;
   late final FirebaseAnalyticsObserver _observer;
+  final String _sessionId = DateTime.now().microsecondsSinceEpoch.toRadixString(
+    36,
+  );
+  String? _installationId;
+  String? _userId;
 
   @override
   Future<void> initialize({required bool isTV}) async {
@@ -26,7 +31,17 @@ abstract class FirebaseAnalyticsBase implements IAnalyticsService {
     // trim defensively. Failure must never break startup (§8 CLAUDE.md).
     try {
       final value = deviceId.length > 36 ? deviceId.substring(0, 36) : deviceId;
+      _installationId = value;
       await analytics.setUserProperty(name: 'device_id', value: value);
+      await analytics.setUserProperty(name: 'installation_id', value: value);
+    } catch (_) {}
+  }
+
+  @override
+  Future<void> setUserId(String userId) async {
+    try {
+      _userId = userId.length > 36 ? userId.substring(0, 36) : userId;
+      await analytics.setUserId(id: _userId);
     } catch (_) {}
   }
 
@@ -37,7 +52,19 @@ abstract class FirebaseAnalyticsBase implements IAnalyticsService {
     // §8 CLAUDE.md: telemetry failure must never crash the caller. Firebase
     // SDK already swallows network errors but we belt-and-brace here.
     try {
-      analytics.logEvent(name: name, parameters: params);
+      final eventParams = <String, Object>{'session_id': _sessionId};
+      final installationId = _installationId;
+      final userId = _userId;
+      if (installationId != null) {
+        eventParams['installation_id'] = installationId;
+      }
+      if (userId != null) {
+        eventParams['user_id'] = userId;
+      }
+      if (params != null) {
+        eventParams.addAll(params);
+      }
+      analytics.logEvent(name: name, parameters: eventParams);
     } catch (_) {}
   }
 }

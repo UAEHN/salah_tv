@@ -5,7 +5,7 @@ import 'package:ghasaq/features/customization/presentation/logic/customization_l
 void main() {
   group('themeKeyToLabelKey', () {
     test('maps every legacy key', () {
-      expect(themeKeyToLabelKey('green'), 'themeGreen');
+      expect(themeKeyToLabelKey('red'), 'themeRed');
       expect(themeKeyToLabelKey('teal'), 'themeTeal');
       expect(themeKeyToLabelKey('gold'), 'themeGold');
       expect(themeKeyToLabelKey('blue'), 'themeBlue');
@@ -17,9 +17,9 @@ void main() {
       expect(themeKeyToLabelKey('paradise_sea'), 'themeAzure');
     });
 
-    test('falls back to themeGreen on unknown key', () {
-      expect(themeKeyToLabelKey('unknown'), 'themeGreen');
-      expect(themeKeyToLabelKey(''), 'themeGreen');
+    test('falls back to themeGold on unknown key', () {
+      expect(themeKeyToLabelKey('unknown'), 'themeGold');
+      expect(themeKeyToLabelKey(''), 'themeGold');
     });
   });
 

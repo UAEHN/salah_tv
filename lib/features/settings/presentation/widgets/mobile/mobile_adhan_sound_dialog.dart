@@ -9,6 +9,7 @@ import '../../bloc/adhan_preview_cubit.dart';
 import '../../settings_provider.dart';
 import 'mobile_adhan_sound_tile.dart';
 import 'mobile_custom_adhan_section.dart';
+import 'mobile_sound_dialog_save_button.dart';
 
 class MobileAdhanSoundDialog extends StatefulWidget {
   final String currentSound;
@@ -92,7 +93,7 @@ class _MobileAdhanSoundDialogState extends State<MobileAdhanSoundDialog> {
               onSelect: (key) => setState(() => _selectedSound = key),
             ),
             const SizedBox(height: 32),
-            _SaveButton(
+            MobileSoundDialogSaveButton(
               onSave: () {
                 widget.onSave(_selectedSound);
                 Navigator.pop(context);
@@ -100,51 +101,6 @@ class _MobileAdhanSoundDialogState extends State<MobileAdhanSoundDialog> {
               label: l.commonSaveChanges,
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SaveButton extends StatelessWidget {
-  final VoidCallback onSave;
-  final String label;
-
-  const _SaveButton({required this.onSave, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: onSave,
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ).copyWith(elevation: WidgetStateProperty.all(0)),
-        child: Ink(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.centerRight,
-              end: Alignment.centerLeft,
-              colors: [MobileColors.primary, MobileColors.primaryContainer],
-            ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Text(
-              label,
-              style: MobileTextStyles.titleMd(
-                context,
-              ).copyWith(color: Colors.white, fontSize: 16),
-            ),
-          ),
         ),
       ),
     );

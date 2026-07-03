@@ -3,7 +3,9 @@ package com.ghasaq.app.notifications.scheduler
 import android.content.Context
 import android.util.Log
 import com.ghasaq.app.notifications.builder.NotificationChannelsManager
+import com.ghasaq.app.notifications.store.NativeDiagnostics
 import com.ghasaq.app.notifications.store.NotificationStore
+import org.json.JSONObject
 
 /**
  * Single entry-point that re-arms every persisted notification with
@@ -21,17 +23,29 @@ object RebuildCoordinator {
 
     fun rebuildAll(context: Context): Int {
         return try {
+            val diag = NativeDiagnostics(context)
             NotificationChannelsManager(context).ensureAll()
             val store = NotificationStore(context)
             val notifications = store.readAll()
-            if (notifications.isEmpty()) return 0
+            if (notifications.isEmpty()) {
+                diag.record("WARNING", "alarm_rebuild_empty_store")
+                return 0
+            }
             val scheduler = AlarmScheduler(context)
             scheduler.cancelAll(notifications.map { it.id })
             scheduler.scheduleAll(notifications)
             val now = System.currentTimeMillis()
-            notifications.count { it.triggerAtMillis > now }
+            val count = notifications.count { it.triggerAtMillis > now }
+            diag.record("INFO", "alarm_rebuild_finished", JSONObject().apply {
+                put("stored", notifications.size)
+                put("future", count)
+            })
+            count
         } catch (e: Exception) {
             Log.e(TAG, "rebuild failed", e)
+            NativeDiagnostics(context).record("ERROR", "alarm_rebuild_failed", JSONObject().apply {
+                put("error", e.message)
+            })
             0
         }
     }

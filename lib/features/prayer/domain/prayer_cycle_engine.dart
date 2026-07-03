@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import '../../../core/diagnostics/app_diagnostics.dart';
 import '../../analytics/domain/i_analytics_service.dart';
 import 'entities/daily_prayer_times.dart';
 import 'i_prayer_audio_port.dart';
 import 'i_takbeerat_audio_port.dart';
 import '../../notifications/domain/i_prayer_notification_port.dart';
 import 'i_prayer_times_repository.dart';
+import 'i_session_adhkar_log_port.dart';
 import '../../settings/domain/entities/app_settings.dart';
 import 'prayer_time_zone.dart';
 import 'engine/engine_telemetry_extension.dart';
@@ -55,13 +57,21 @@ class PrayerCycleEngine extends PrayerCycleBase
   final IPrayerNotificationPort? notifications;
 
   @override
+  final ISessionAdhkarLogPort? sessionAdhkarLog;
+
+  @override
   final IAnalyticsService? analytics;
+
+  @override
+  final AppDiagnostics? diagnostics;
 
   @override
   final void Function() notify;
 
   StreamSubscription<void>? _completionSub;
   StreamSubscription<int>? _quranCompletionSub;
+  StreamSubscription<void>? _quranErrorSub;
+  StreamSubscription<bool>? _quranLoadingSub;
 
   PrayerCycleEngine(
     this.repo,
@@ -70,7 +80,9 @@ class PrayerCycleEngine extends PrayerCycleBase
     AppSettings initialSettings,
     this.notify, {
     this.notifications,
+    this.sessionAdhkarLog,
     this.analytics,
+    this.diagnostics,
   }) : settings = initialSettings {
     // Issue 2: stored subscription; Issue 4: entry guards in each stop method
     // prevent re-entrant / double-fire from onComplete
@@ -84,7 +96,22 @@ class PrayerCycleEngine extends PrayerCycleBase
       }
     });
     _quranCompletionSub = audio.onQuranSurahCompleted.listen(onSurahCompleted);
+    _quranErrorSub = audio.onQuranError.listen((_) => markQuranError());
+    _quranLoadingSub = audio.onQuranLoading.listen(setQuranLoading);
   }
+
+  /// True while the transient Quran network-error banner should be shown.
+  bool get hasQuranError => s.quranErrorAt != null;
+
+  /// True while the active Quran is loading/buffering (slow network) and the
+  /// user actually has it playing (not paused for adhan or by the user).
+  bool get isQuranLoading => s.isQuranLoading && isQuranPlaying;
+
+  /// Most recent [tick]/[loadToday] fault summary (`Type: msg` + first stack
+  /// frame), or null if none. Surfaced on screen in test builds for diagnosis.
+  String? get lastTickError => s.lastTickError;
+
+  String? get lastPrayerAlertError => s.lastPrayerAlertError;
 
   // ── Public getters (delegated to PrayerCycleState) ───────────────────────
   DateTime get now => s.now;
@@ -161,11 +188,15 @@ class PrayerCycleEngine extends PrayerCycleBase
     s.now = currentTime(); // sync before recovery check
     repo.setActiveCity(settings.selectedCity);
     loadToday();
+    // Restore today's "already shown" log so the catch-up below survives a full
+    // restart. Async, but completes well inside the catch-up's 1-min delay.
+    unawaited(hydrateSessionAdhkarShown());
     s.timer?.cancel();
     s.timer = Timer.periodic(const Duration(seconds: 1), tick);
     s.needsIqamaRecovery = true;
     if (s.todayPrayers != null) {
       recoverIqamaState(); // catch up if prayer was missed during absence
+      recoverSessionAdhkar(); // show morning/evening adhkar missed while closed
       s.needsIqamaRecovery = false;
     }
     notify();
@@ -190,8 +221,12 @@ class PrayerCycleEngine extends PrayerCycleBase
     // timezone changes that shift DateTime.now() to a different calendar day.
     if (s.now.day != s.lastLoadedDay) {
       s.adhansToday.clear();
+      s.sessionAdhkarShownToday.clear();
       loadToday();
     }
+    // Re-hydrate today's "already shown" log (handles a restart that resumed
+    // straight into an adhkar window without a fresh start()).
+    unawaited(hydrateSessionAdhkarShown());
     // If adhan or dua started while the app was in the background, the audio
     // may have played partially or not at all (Android suspends the isolate).
     // Clear these phases so recoverIqamaState() can recompute the correct
@@ -204,6 +239,7 @@ class PrayerCycleEngine extends PrayerCycleBase
       unawaited(audio.stop());
     }
     recoverIqamaState();
+    recoverSessionAdhkar(); // show morning/evening adhkar missed while closed
     if (s.isQuranPlaying &&
         !s.isQuranPausedForAdhan &&
         !s.isQuranPausedByUser) {
@@ -215,6 +251,8 @@ class PrayerCycleEngine extends PrayerCycleBase
   void dispose() {
     _completionSub?.cancel(); // Issue 2: cancel to prevent subscription leak
     _quranCompletionSub?.cancel();
+    _quranErrorSub?.cancel();
+    _quranLoadingSub?.cancel();
     s.timer?.cancel();
     s.adhanFallbackTimer?.cancel();
     s.duaFallbackTimer?.cancel();

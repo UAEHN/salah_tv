@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 import 'city_translations.dart';
+import 'diagnostics/app_diagnostics.dart';
+import 'diagnostics/diagnostic_level.dart' as diag;
 import 'health/heartbeat_service.dart';
 import 'startup/startup_city_catalog.dart';
 import '../features/analytics/domain/i_analytics_service.dart';
@@ -31,6 +33,7 @@ Future<AppSettings> initDependencies() async {
   // data pipeline must not pre-load/download the bundled default city.
   final isFirstLaunch = await settingsRepo.isFirstLaunch();
   await initializeFirebase();
+  await _registerDiagnostics(platformConfig.isTV, settings);
   await initializeAnalytics(isTV: platformConfig.isTV);
   await registerPrayerServices(
     settings,
@@ -56,6 +59,30 @@ Future<AppSettings> initDependencies() async {
   return settings;
 }
 
+Future<void> _registerDiagnostics(bool isTV, AppSettings settings) async {
+  final diagnostics = AppDiagnostics();
+  await diagnostics.initialize(platform: isTV ? 'tv' : 'mobile');
+  await diagnostics.setContext({
+    'selected_country': settings.selectedCountry,
+    'selected_city': settings.selectedCity,
+    'adhan_mode': settings.adhanMode.name,
+    'iqama_mode': settings.iqamaMode.name,
+    'is_mosque_mode': settings.isMosqueMode,
+  });
+  getIt.registerSingleton<AppDiagnostics>(diagnostics);
+  unawaited(
+    diagnostics.record(
+      diag.DiagnosticLevel.info,
+      'app_startup_dependencies_ready',
+      fields: {
+        'platform': isTV ? 'tv' : 'mobile',
+        'country': settings.selectedCountry,
+        'city': settings.selectedCity,
+      },
+    ),
+  );
+}
+
 /// Resolves the stable install id (same value the heartbeat uses) and tags
 /// analytics events with it as a `device_id` user property. Runs after
 /// feature registration so [IInstallIdProvider] is available. Best-effort —
@@ -63,10 +90,12 @@ Future<AppSettings> initDependencies() async {
 Future<void> _attachAnalyticsDeviceId() async {
   try {
     final id = await getIt<IInstallIdProvider>().getOrCreate();
-    await id.fold(
-      (_) async {},
-      (value) => getIt<IAnalyticsService>().setDeviceId(value),
-    );
+    await id.fold((_) async {}, (value) async {
+      await getIt<IAnalyticsService>().setDeviceId(value);
+      if (getIt.isRegistered<AppDiagnostics>()) {
+        await getIt<AppDiagnostics>().setDeviceId(value);
+      }
+    });
   } catch (_) {}
 }
 

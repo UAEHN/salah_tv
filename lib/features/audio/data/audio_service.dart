@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import '../../../core/diagnostics/app_diagnostics.dart';
+import '../../../core/diagnostics/diagnostic_level.dart' as diag;
 import '../../../core/adhan_sounds.dart';
 import '../../settings/domain/entities/custom_adhan.dart';
 import '../../settings/domain/i_custom_adhan_repository.dart';
@@ -35,11 +37,16 @@ class AudioService
   final BellPlayer _bell = BellPlayer();
   final AnnouncementService _announcement = AnnouncementService();
   final QuranAudioService _quranService = QuranAudioService();
+  final AppDiagnostics? _diagnostics;
 
-  AudioService({ICustomAdhanRepository? customAdhans})
-    : _customAdhans = customAdhans {
+  AudioService({
+    ICustomAdhanRepository? customAdhans,
+    AppDiagnostics? diagnostics,
+  }) : _customAdhans = customAdhans,
+       _diagnostics = diagnostics {
     _player.onPlayerComplete.listen((_) {
       _isPlaying = false;
+      _diag(diag.DiagnosticLevel.info, 'audio_player_completed');
       _onCompleteController.add(null);
     });
     // Issue 5: external interruption detection. If the player reaches
@@ -49,6 +56,7 @@ class AudioService
     _player.onPlayerStateChanged.listen((state) {
       if (state == PlayerState.stopped && _isPlaying && !_isAppInitiatedStop) {
         _isPlaying = false;
+        _diag(diag.DiagnosticLevel.warning, 'audio_player_external_stop');
         _onCompleteController.add(null);
       }
     });
@@ -71,31 +79,112 @@ class AudioService
     Future<Source> Function() resolveSource,
     String label,
   ) async {
-    try {
-      _isAppInitiatedStop = true;
-      await _player.stop();
-      _isAppInitiatedStop = false;
-      // ReleaseMode.release frees decoder/buffer resources between prayers.
-      await _player.setReleaseMode(ReleaseMode.release);
-      _isPlaying = true;
-      final source = await resolveSource();
-      await _player.play(source);
-      return true;
-    } catch (e) {
-      debugPrint('[Audio] $label failed: $e');
-      _isPlaying = false;
-      _isAppInitiatedStop = false;
-      return false;
+    for (var attempt = 1; attempt <= 2; attempt++) {
+      try {
+        _diag(
+          diag.DiagnosticLevel.info,
+          'audio_play_attempt',
+          fields: {'label': label, 'attempt': attempt},
+        );
+        _isAppInitiatedStop = true;
+        await _player.stop();
+        _isAppInitiatedStop = false;
+        // ReleaseMode.release frees decoder/buffer resources between prayers.
+        await _player.setReleaseMode(ReleaseMode.release);
+        _isPlaying = true;
+        final source = await resolveSource();
+        await _ensureMediaAudible(label);
+        await _player.play(source, volume: 1.0, mode: PlayerMode.mediaPlayer);
+        _diag(
+          diag.DiagnosticLevel.info,
+          'audio_play_started',
+          fields: {
+            'label': label,
+            'attempt': attempt,
+            'source_type': source.runtimeType.toString(),
+          },
+        );
+        return true;
+      } catch (e) {
+        debugPrint('[Audio] $label attempt $attempt failed: $e');
+        _diag(
+          attempt == 1
+              ? diag.DiagnosticLevel.warning
+              : diag.DiagnosticLevel.error,
+          attempt == 1 ? 'audio_play_retry' : 'audio_play_failed',
+          fields: {
+            'label': label,
+            'attempt': attempt,
+            'error_type': e.runtimeType.toString(),
+          },
+          error: e,
+          forceUpload: attempt == 2,
+        );
+        _isPlaying = false;
+        _isAppInitiatedStop = false;
+        if (attempt == 1) {
+          await Future<void>.delayed(const Duration(milliseconds: 250));
+        }
+      }
     }
+    return false;
   }
 
   @override
-  Future<bool> playAdhan({String soundKey = 'default'}) =>
-      _playMain(() => _resolveAdhanSource(soundKey), 'playAdhan');
+  Future<bool> playAdhan({String soundKey = 'default'}) async {
+    final success = await _playMain(
+      () => _resolveAdhanSource(soundKey),
+      'playAdhan',
+    );
+    if (success || soundKey == 'default') return success;
+    _diag(
+      diag.DiagnosticLevel.warning,
+      'adhan_audio_fallback_to_default',
+      fields: {'failed_sound_key': soundKey},
+      forceUpload: true,
+    );
+    return _playMain(
+      () async => AssetSource('audio/adhan.mp3'),
+      'playAdhanFallback',
+    );
+  }
 
   // Same channel PlatformConfig uses; AudioService keeps its own reference so
   // it stays decoupled from startup wiring.
   static const _platform = MethodChannel('ghasaq/platform');
+
+  Future<void> _ensureMediaAudible(String label) async {
+    try {
+      final map = await _platform.invokeMapMethod<String, dynamic>(
+        'ensureMediaAudible',
+      );
+      if (map == null) return;
+      final before = (map['beforeVolume'] as int?) ?? -1;
+      final after = (map['afterVolume'] as int?) ?? -1;
+      final wasMuted = (map['wasMuted'] as bool?) ?? false;
+      if (wasMuted || before <= 0) {
+        _diag(
+          diag.DiagnosticLevel.warning,
+          'audio_volume_auto_raised',
+          fields: {
+            'label': label,
+            'before_volume': before,
+            'after_volume': after,
+            'max_volume': (map['maxVolume'] as int?) ?? -1,
+          },
+          forceUpload: true,
+        );
+      }
+    } on MissingPluginException {
+      _diag(diag.DiagnosticLevel.warning, 'audio_volume_guard_missing_plugin');
+    } on PlatformException catch (e) {
+      _diag(
+        diag.DiagnosticLevel.warning,
+        'audio_volume_guard_failed',
+        fields: {'label': label, 'code': e.code, 'message': e.message},
+      );
+    }
+  }
 
   @override
   Future<AudioOutputState?> readAudioOutputState() async {
@@ -110,8 +199,14 @@ class AudioService
         muted: (map['muted'] as bool?) ?? false,
       );
     } on MissingPluginException {
+      _diag(diag.DiagnosticLevel.warning, 'audio_state_missing_plugin');
       return null; // older build without the native handler
-    } on PlatformException {
+    } on PlatformException catch (e) {
+      _diag(
+        diag.DiagnosticLevel.warning,
+        'audio_state_platform_error',
+        fields: {'code': e.code, 'message': e.message},
+      );
       return null;
     }
   }
@@ -130,11 +225,29 @@ class AudioService
     if (fileName != null && repo != null) {
       final result = await repo.absolutePathOf(fileName);
       final path = result.fold((_) => null, (p) => p);
-      if (path != null) return DeviceFileSource(path);
+      if (path != null) {
+        _diag(
+          diag.DiagnosticLevel.info,
+          'audio_source_resolved',
+          fields: {'sound_key': soundKey, 'source': 'custom_file'},
+        );
+        return DeviceFileSource(path);
+      }
+      _diag(
+        diag.DiagnosticLevel.error,
+        'custom_audio_source_missing',
+        fields: {'sound_key': soundKey, 'file_name': fileName},
+        forceUpload: true,
+      );
     }
     final asset = kAdhanSounds
         .firstWhere((s) => s.key == soundKey, orElse: () => kAdhanSounds.first)
         .asset;
+    _diag(
+      diag.DiagnosticLevel.info,
+      'audio_source_resolved',
+      fields: {'sound_key': soundKey, 'source': 'asset', 'asset': asset},
+    );
     return AssetSource(asset);
   }
 
@@ -147,8 +260,34 @@ class AudioService
       await _player.setReleaseMode(ReleaseMode.release);
     } catch (e) {
       debugPrint('[Audio] stop failed: $e');
+      _diag(
+        diag.DiagnosticLevel.error,
+        'audio_stop_failed',
+        fields: {'error_type': e.runtimeType.toString()},
+        error: e,
+        forceUpload: true,
+      );
     }
     _isAppInitiatedStop = false;
+  }
+
+  void _diag(
+    diag.DiagnosticLevel level,
+    String name, {
+    Map<String, Object?> fields = const {},
+    Object? error,
+    bool forceUpload = false,
+  }) {
+    unawaited(
+      _diagnostics?.record(
+            level,
+            name,
+            fields: fields,
+            error: error,
+            forceUpload: forceUpload,
+          ) ??
+          Future<void>.value(),
+    );
   }
 
   @override

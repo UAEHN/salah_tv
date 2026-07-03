@@ -14,11 +14,15 @@ class MobileCustomAdhanSection extends StatelessWidget {
   final String selectedKey;
   final ValueChanged<String> onSelect;
 
+  /// Routes import/delete/rename to the iqama list and swaps the section title.
+  final bool isIqama;
+
   const MobileCustomAdhanSection({
     super.key,
     required this.adhans,
     required this.selectedKey,
     required this.onSelect,
+    this.isIqama = false,
   });
 
   @override
@@ -30,7 +34,7 @@ class MobileCustomAdhanSection extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
-            l.settingsCustomAdhansTitle,
+            isIqama ? l.settingsCustomIqamasTitle : l.settingsCustomAdhansTitle,
             style: MobileTextStyles.bodyMd(context).copyWith(
               color: MobileColors.onSurfaceMuted(context),
               fontWeight: FontWeight.w600,
@@ -73,7 +77,10 @@ class MobileCustomAdhanSection extends StatelessWidget {
             return OutlinedButton.icon(
               onPressed: busy
                   ? null
-                  : () => ctx.read<CustomAdhanCubit>().pickAndImport(''),
+                  : () => ctx.read<CustomAdhanCubit>().pickAndImport(
+                      '',
+                      isIqama: isIqama,
+                    ),
               icon: busy
                   ? const SizedBox(
                       width: 16,
@@ -95,7 +102,8 @@ class MobileCustomAdhanSection extends StatelessWidget {
       context: context,
       builder: (_) => MobileCustomAdhanRenameDialog(
         initialLabel: a.label,
-        onSave: (newLabel) => cubit.rename(a.id, newLabel),
+        onSave: (newLabel) =>
+            cubit.renameSound(a.id, newLabel, isIqama: isIqama),
       ),
     );
   }
@@ -116,7 +124,7 @@ class MobileCustomAdhanSection extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              cubit.remove(a.id);
+              cubit.removeSound(a.id, isIqama: isIqama);
               Navigator.pop(dCtx);
             },
             child: Text(l.commonDelete),

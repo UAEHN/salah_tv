@@ -5,7 +5,9 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.ghasaq.app.notifications.scheduler.RebuildCoordinator
+import com.ghasaq.app.notifications.store.NativeDiagnostics
 import com.ghasaq.app.notifications.store.NotificationStore
+import org.json.JSONObject
 
 /**
  * WorkManager periodic worker — second line of defence (after AlarmManager).
@@ -25,14 +27,24 @@ class DailyRefreshWorker(
         return try {
             val ctx = applicationContext
             val store = NotificationStore(ctx)
+            val diag = NativeDiagnostics(ctx)
             val lastRefresh = store.lastRefreshMillis()
             val rebuilt = RebuildCoordinator.rebuildAll(ctx)
+            diag.record("INFO", "workmanager_refresh_finished", JSONObject().apply {
+                put("rebuilt", rebuilt)
+                put("lastRefreshAgeMs", System.currentTimeMillis() - lastRefresh)
+            })
             Log.i(TAG, "rebuilt=$rebuilt lastRefreshAgeMs=${
                 System.currentTimeMillis() - lastRefresh
             }")
             Result.success()
         } catch (e: Exception) {
             Log.e(TAG, "worker failed", e)
+            NativeDiagnostics(applicationContext).record(
+                "ERROR",
+                "workmanager_refresh_failed",
+                JSONObject().apply { put("error", e.message) },
+            )
             Result.retry()
         }
     }

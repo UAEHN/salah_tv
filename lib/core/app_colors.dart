@@ -129,10 +129,10 @@ class AccentPalette {
 }
 
 const Map<String, AccentPalette> kThemePalettes = {
-  'green': AccentPalette(
-    primary: Color(0xFF10B981),
-    secondary: Color(0xFF059669),
-    glow: Color(0x4010B981),
+  'red': AccentPalette(
+    primary: Color(0xFFE11D48), // vivid ruby-rose — elegant, premium on dark TV
+    secondary: Color(0xFF9F1239), // deep garnet for a rich jewel gradient
+    glow: Color(0x40E11D48),
   ),
   'teal': AccentPalette(
     primary: Color(0xFF14B8A6),
@@ -157,7 +157,7 @@ const Map<String, AccentPalette> kThemePalettes = {
 };
 
 const Map<String, String> kThemeLabels = {
-  'green': 'Emerald',
+  'red': 'Ruby',
   'teal': 'Turquoise',
   'gold': 'Gold',
   'blue': 'Blue',
@@ -165,10 +165,10 @@ const Map<String, String> kThemeLabels = {
 };
 
 Color getThemeColor(String key) =>
-    kThemePalettes[key]?.primary ?? kThemePalettes['green']!.primary;
+    kThemePalettes[key]?.primary ?? kThemePalettes['gold']!.primary;
 
 AccentPalette getThemePalette(String key) =>
-    kThemePalettes[key] ?? kThemePalettes['green']!;
+    kThemePalettes[key] ?? kThemePalettes['gold']!;
 
 // â”€â”€â”€ Legacy helpers (backward compatibility) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 BoxDecoration glassDecoration({

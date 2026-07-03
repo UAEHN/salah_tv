@@ -16,8 +16,9 @@ import org.json.JSONObject
  */
 class NotificationStore(context: Context) {
 
+    private val appContext = context.applicationContext
     private val prefs: SharedPreferences =
-        context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        appContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
     fun writeAll(notifications: List<ScheduledNotification>) {
         val arr = JSONArray()
@@ -36,6 +37,10 @@ class NotificationStore(context: Context) {
                 ScheduledNotification.fromJson(arr.getJSONObject(it))
             }
         } catch (e: Exception) {
+            NativeDiagnostics(appContext).record("ERROR", "notification_store_corrupt", JSONObject().apply {
+                put("error", e.message)
+                put("bytes", raw.length)
+            })
             emptyList()
         }
     }

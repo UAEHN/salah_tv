@@ -1214,6 +1214,108 @@ abstract class AppLocalizations {
   /// **'إضافة من الجهاز'**
   String get settingsAddCustomAdhan;
 
+  /// No description provided for @settingsIqamaSoundLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'صوت الإقامة'**
+  String get settingsIqamaSoundLabel;
+
+  /// No description provided for @settingsChooseIqamaSound.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر صوت الإقامة'**
+  String get settingsChooseIqamaSound;
+
+  /// No description provided for @settingsIqamaDefaultSound.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإقامة الافتراضية'**
+  String get settingsIqamaDefaultSound;
+
+  /// No description provided for @settingsCustomIqamasTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أصوات إقامة مخصّصة'**
+  String get settingsCustomIqamasTitle;
+
+  /// No description provided for @settingsChangeIqama.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير الإقامة'**
+  String get settingsChangeIqama;
+
+  /// No description provided for @iqamaDefaultSound.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإقامة الافتراضية'**
+  String get iqamaDefaultSound;
+
+  /// No description provided for @browserTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر ملف الصوت'**
+  String get browserTitle;
+
+  /// No description provided for @browserUp.
+  ///
+  /// In ar, this message translates to:
+  /// **'للأعلى'**
+  String get browserUp;
+
+  /// No description provided for @browserEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد ملفات صوت هنا'**
+  String get browserEmpty;
+
+  /// No description provided for @browserError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر فتح المجلد'**
+  String get browserError;
+
+  /// No description provided for @browserPermissionTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'السماح بالوصول للتخزين'**
+  String get browserPermissionTitle;
+
+  /// No description provided for @browserPermissionBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسمح بقراءة الملفات الصوتية لعرضها هنا، أو استخدم منتقي النظام في الأسفل لاختيار ملف من الفلاش.'**
+  String get browserPermissionBody;
+
+  /// No description provided for @browserGrant.
+  ///
+  /// In ar, this message translates to:
+  /// **'السماح بالوصول'**
+  String get browserGrant;
+
+  /// No description provided for @browserRetry.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحقّقت، أعد المحاولة'**
+  String get browserRetry;
+
+  /// No description provided for @browserSystemPicker.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصفّح بمنتقي النظام'**
+  String get browserSystemPicker;
+
+  /// No description provided for @quranNetworkError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر تشغيل القرآن — تحقّق من اتصال الإنترنت'**
+  String get quranNetworkError;
+
+  /// No description provided for @quranLoading.
+  ///
+  /// In ar, this message translates to:
+  /// **'جارٍ تحميل القرآن…'**
+  String get quranLoading;
+
   /// No description provided for @settingsRenameAdhan.
   ///
   /// In ar, this message translates to:
@@ -1661,7 +1763,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsTickerLabel.
   ///
   /// In ar, this message translates to:
-  /// **'شريط متحرّك أسفل الشاشة يعرض آيات وأذكار'**
+  /// **'شريط الآيات والأذكار'**
   String get settingsTickerLabel;
 
   /// No description provided for @layoutModern.
@@ -1718,11 +1820,11 @@ abstract class AppLocalizations {
   /// **'Inter'**
   String get fontInter;
 
-  /// No description provided for @themeGreen.
+  /// No description provided for @themeRed.
   ///
   /// In ar, this message translates to:
-  /// **'زمردي'**
-  String get themeGreen;
+  /// **'ياقوتي'**
+  String get themeRed;
 
   /// No description provided for @themeTeal.
   ///
@@ -1973,7 +2075,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsAdhkarScheduleNote.
   ///
   /// In ar, this message translates to:
-  /// **'أذكار الصباح: تظهر بعد الفجر حتى الساعة 10:00 صباحاً. أذكار المساء: تظهر بعد العصر وتنتهي قبل أذان المغرب بـ 5 دقائق. تظهر مرة واحدة في اليوم، وتُوقف مؤقتاً أثناء الأذان والإقامة.'**
+  /// **'تظهر أذكار الصباح بعد الفجر، وأذكار المساء بعد العصر.'**
   String get settingsAdhkarScheduleNote;
 
   /// No description provided for @settingsNoCitySelected.
@@ -2029,6 +2131,30 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'كل القراء'**
   String get reciterAllSection;
+
+  /// No description provided for @reciterDefaultMoshaf.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتراضي'**
+  String get reciterDefaultMoshaf;
+
+  /// No description provided for @reciterMoshafLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'القراءة'**
+  String get reciterMoshafLabel;
+
+  /// No description provided for @reciterSelectMoshaf.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر القراءة'**
+  String get reciterSelectMoshaf;
+
+  /// No description provided for @reciterChangeMoshaf.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير القراءة'**
+  String get reciterChangeMoshaf;
 
   /// No description provided for @adhanSound1.
   ///
@@ -3326,6 +3452,162 @@ abstract class AppLocalizations {
   /// **'سورة'**
   String get mushafSurahPrefix;
 
+  /// No description provided for @khatmaTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ختمة القرآن'**
+  String get khatmaTitle;
+
+  /// No description provided for @khatmaProgressTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقدّم الختمة'**
+  String get khatmaProgressTitle;
+
+  /// No description provided for @khatmaStartCta.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابدأ ختمة'**
+  String get khatmaStartCta;
+
+  /// No description provided for @khatmaEmptyMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر مدّةً وابدأ رحلتك لختم القرآن'**
+  String get khatmaEmptyMessage;
+
+  /// No description provided for @khatmaTodayPortion.
+  ///
+  /// In ar, this message translates to:
+  /// **'وِرد اليوم'**
+  String get khatmaTodayPortion;
+
+  /// No description provided for @khatmaPagesLeftToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} صفحة متبقية'**
+  String khatmaPagesLeftToday(String count);
+
+  /// No description provided for @khatmaReadNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'اقرأ الآن'**
+  String get khatmaReadNow;
+
+  /// No description provided for @khatmaTodayDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'أتممتَ وِرد اليوم 🎉'**
+  String get khatmaTodayDone;
+
+  /// No description provided for @khatmaDaysLeft.
+  ///
+  /// In ar, this message translates to:
+  /// **'{days} يوم متبقٍ'**
+  String khatmaDaysLeft(String days);
+
+  /// No description provided for @khatmaStreakLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'{days} يوم متتالٍ'**
+  String khatmaStreakLabel(String days);
+
+  /// No description provided for @khatmaCompleteLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'مكتمل'**
+  String get khatmaCompleteLabel;
+
+  /// No description provided for @khatmaJuzMapTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'خريطة الأجزاء'**
+  String get khatmaJuzMapTitle;
+
+  /// No description provided for @khatmaCreateTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابدأ ختمة جديدة'**
+  String get khatmaCreateTitle;
+
+  /// No description provided for @khatmaCreateSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'في كم يوماً تريد ختم القرآن؟'**
+  String get khatmaCreateSubtitle;
+
+  /// No description provided for @khatmaDurationDaysLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'{days} يوماً'**
+  String khatmaDurationDaysLabel(String days);
+
+  /// No description provided for @khatmaDurationRamadanNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'رمضان'**
+  String get khatmaDurationRamadanNote;
+
+  /// No description provided for @khatmaDeleteTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء الختمة؟'**
+  String get khatmaDeleteTitle;
+
+  /// No description provided for @khatmaDeleteMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيُحذف تقدّمك الحالي في الختمة.'**
+  String get khatmaDeleteMessage;
+
+  /// No description provided for @khatmaCompletedTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقبّل الله — أتممتَ ختمة القرآن'**
+  String get khatmaCompletedTitle;
+
+  /// No description provided for @khatmaCompletedDua.
+  ///
+  /// In ar, this message translates to:
+  /// **'اللّهُمَّ ارحَمني بالقُرآن، واجعَلهُ لي إماماً ونوراً وهُدىً ورحمة'**
+  String get khatmaCompletedDua;
+
+  /// No description provided for @khatmaReadWird.
+  ///
+  /// In ar, this message translates to:
+  /// **'اقرأ ورد اليوم'**
+  String get khatmaReadWird;
+
+  /// No description provided for @khatmaReadAhead.
+  ///
+  /// In ar, this message translates to:
+  /// **'اقرأ الورد التالي'**
+  String get khatmaReadAhead;
+
+  /// No description provided for @khatmaCompleteWird.
+  ///
+  /// In ar, this message translates to:
+  /// **'أتممتُ الورد'**
+  String get khatmaCompleteWird;
+
+  /// No description provided for @khatmaWirdRangeLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'صفحات {from} – {to}'**
+  String khatmaWirdRangeLabel(String from, String to);
+
+  /// No description provided for @khatmaPagesOfTotal.
+  ///
+  /// In ar, this message translates to:
+  /// **'{read} من {total} صفحة'**
+  String khatmaPagesOfTotal(String read, String total);
+
+  /// No description provided for @khatmaWirdHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'تابِع القراءة حتى آخر صفحة من الورد'**
+  String get khatmaWirdHint;
+
   /// No description provided for @mushafAyahsCount.
   ///
   /// In ar, this message translates to:
@@ -3559,6 +3841,24 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تعريف بالميزات'**
   String get mushafIntroHelp;
+
+  /// No description provided for @calculatedTimesNoticeTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'مواقيت محسوبة فلكيًّا'**
+  String get calculatedTimesNoticeTitle;
+
+  /// No description provided for @calculatedTimesNoticeBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذه المدينة غير مُدرجة ضمن الجداول الرسمية، لذلك تُحسب مواقيتها فلكيًّا وقد تختلف دقائق قليلة عن التوقيت المعتمد في بلدك.'**
+  String get calculatedTimesNoticeBody;
+
+  /// No description provided for @calculatedTimesNoticeAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسناً، متابعة'**
+  String get calculatedTimesNoticeAction;
 }
 
 class _AppLocalizationsDelegate

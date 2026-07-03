@@ -9,6 +9,8 @@ class NotificationHealth {
   final bool batteryUnrestricted;
   final OemInfo oem;
   final List<ScheduleLogEntry> scheduleLog;
+  final List<Map<String, Object?>> channels;
+  final List<Map<String, Object?>> nativeDiagnostics;
 
   const NotificationHealth({
     required this.postNotifications,
@@ -16,6 +18,8 @@ class NotificationHealth {
     required this.batteryUnrestricted,
     required this.oem,
     required this.scheduleLog,
+    this.channels = const [],
+    this.nativeDiagnostics = const [],
   });
 
   bool get allGreen => postNotifications && exactAlarm && batteryUnrestricted;
@@ -26,6 +30,8 @@ class NotificationHealth {
     batteryUnrestricted: false,
     oem: OemInfo.unknown,
     scheduleLog: [],
+    channels: [],
+    nativeDiagnostics: [],
   );
 
   NotificationHealth copyWith({List<ScheduleLogEntry>? scheduleLog}) =>
@@ -35,6 +41,8 @@ class NotificationHealth {
         batteryUnrestricted: batteryUnrestricted,
         oem: oem,
         scheduleLog: List.unmodifiable(scheduleLog ?? this.scheduleLog),
+        channels: channels,
+        nativeDiagnostics: nativeDiagnostics,
       );
 }
 

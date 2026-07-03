@@ -4,6 +4,7 @@ import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../core/app_colors.dart';
 import '../../../../core/city_translations.dart';
+import '../../../../core/widgets/calculated_times_notice_dialog.dart';
 import '../../../../features/prayer/data/composite_prayer_repository.dart';
 import '../../../../features/prayer/domain/usecases/download_city_use_case.dart';
 import '../../../../injection.dart';
@@ -58,13 +59,14 @@ class TvLocationSection extends StatelessWidget {
     );
   }
 
-  void _showLocationDialog(
+  Future<void> _showLocationDialog(
     BuildContext context, {
     bool showCitiesForCurrentCountry = false,
-  }) {
+  }) async {
     final settingsProvider = context.read<SettingsProvider>();
     final settings = settingsProvider.settings;
-    showDialog<void>(
+    final accent = getThemePalette(settings.themeColorKey).primary;
+    final isCalculated = await showDialog<bool>(
       context: context,
       builder: (_) => MultiBlocProvider(
         providers: [
@@ -90,5 +92,10 @@ class TvLocationSection extends StatelessWidget {
         child: const TvLocationPickerDialog(),
       ),
     );
+    // A calculated (world) city has no official table — let the user know its
+    // times are computed and may differ slightly from the official schedule.
+    if (isCalculated == true && context.mounted) {
+      await CalculatedTimesNoticeDialog.show(context, accent: accent);
+    }
   }
 }

@@ -22,6 +22,10 @@ mixin AudioServiceQuranMixin {
 
   Stream<int> get onQuranSurahCompleted => quranService.onSurahCompleted;
 
+  Stream<void> get onQuranError => quranService.onError;
+
+  Stream<bool> get onQuranLoading => quranService.onLoading;
+
   void setQuranNextSurahResolver(NextSurahResolver? resolver) =>
       quranService.setNextSurahResolver(resolver);
 

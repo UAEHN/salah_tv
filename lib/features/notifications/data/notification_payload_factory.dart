@@ -21,8 +21,9 @@ class NotificationPayloadFactory {
     AppSettings s,
     AppLocalizations l,
     ({String channelId, String? contentUri}) adhan,
+    ({String channelId, String? contentUri}) iqama,
   ) {
-    _addPrayerNotifications(out, day, dayIndex, s, l, adhan);
+    _addPrayerNotifications(out, day, dayIndex, s, l, adhan, iqama);
     _addAdhkarNotifications(out, day, dayIndex, s, l);
     _addAlKahfReminder(out, day, dayIndex, s, l);
   }
@@ -34,6 +35,7 @@ class NotificationPayloadFactory {
     AppSettings s,
     AppLocalizations l,
     ({String channelId, String? contentUri}) adhan,
+    ({String channelId, String? contentUri}) iqama,
   ) {
     for (final entry in day.prayersOnly) {
       if (!_prayerKeys.contains(entry.key)) continue;
@@ -119,7 +121,8 @@ class NotificationPayloadFactory {
             time: iqamaTime,
             title: l.notificationIqamaBody(name),
             body: '',
-            channelId: NotificationChannelResolver.iqama,
+            channelId: iqama.channelId,
+            soundUri: iqama.contentUri,
             dayIndex: dayIndex,
             prayerKey: entry.key,
           ),

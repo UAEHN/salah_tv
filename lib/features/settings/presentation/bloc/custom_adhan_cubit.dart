@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path/path.dart' as p;
 
 import '../../domain/usecases/delete_custom_adhan_usecase.dart';
 import '../../domain/usecases/import_custom_adhan_usecase.dart';
@@ -40,7 +41,9 @@ class CustomAdhanCubit extends Cubit<CustomAdhanState> {
        _settings = settings,
        super(const CustomAdhanIdle());
 
-  Future<void> pickAndImport(String label) async {
+  /// Mobile picker import. [isIqama] routes the imported sound to the iqama
+  /// list instead of the adhan one; selection stays the user's next step.
+  Future<void> pickAndImport(String label, {bool isIqama = false}) async {
     emit(const CustomAdhanBusy());
     final picked = await FilePicker.platform.pickFiles(
       type: FileType.audio,
@@ -59,7 +62,56 @@ class CustomAdhanCubit extends Cubit<CustomAdhanState> {
     result.fold((failure) => emit(CustomAdhanError(failure.message)), (
       custom,
     ) async {
-      await _settings.addCustomAdhan(custom);
+      if (isIqama) {
+        await _settings.addCustomIqama(custom);
+      } else {
+        await _settings.addCustomAdhan(custom);
+      }
+      emit(const CustomAdhanIdle());
+    });
+  }
+
+  /// TV path: import an audio file the user picked via the D-pad browser
+  /// (no [FilePicker]). [isIqama] routes the result to the iqama list/selection
+  /// instead of the adhan one. The new sound is auto-selected so the user hears
+  /// it on the next cycle without a second step.
+  Future<void> importFromDevicePath(
+    String path, {
+    required bool isIqama,
+  }) async {
+    emit(const CustomAdhanBusy());
+    final result = await _import(path, _deriveLabel(p.basename(path)));
+    result.fold((failure) => emit(CustomAdhanError(failure.message)), (
+      custom,
+    ) async {
+      if (isIqama) {
+        await _settings.addCustomIqama(custom);
+        await _settings.updateIqamaSound(custom.settingsKey);
+      } else {
+        await _settings.addCustomAdhan(custom);
+        await _settings.updateAdhanSound(custom.settingsKey);
+      }
+      emit(const CustomAdhanIdle());
+    });
+  }
+
+  /// Category-aware delete used by the TV picker for both adhan and iqama.
+  Future<void> removeSound(String id, {required bool isIqama}) async {
+    final list = isIqama
+        ? _settings.settings.customIqamas
+        : _settings.settings.customAdhans;
+    final entry = list.where((c) => c.id == id).firstOrNull;
+    if (entry == null) return;
+    emit(const CustomAdhanBusy());
+    final result = await _delete(entry);
+    result.fold((failure) => emit(CustomAdhanError(failure.message)), (
+      _,
+    ) async {
+      if (isIqama) {
+        await _settings.removeCustomIqama(id);
+      } else {
+        await _settings.removeCustomAdhan(id);
+      }
       emit(const CustomAdhanIdle());
     });
   }
@@ -81,6 +133,15 @@ class CustomAdhanCubit extends Cubit<CustomAdhanState> {
 
   Future<void> rename(String id, String newLabel) =>
       _settings.renameCustomAdhan(id, newLabel);
+
+  /// Category-aware rename used by both the adhan and iqama pickers.
+  Future<void> renameSound(
+    String id,
+    String newLabel, {
+    required bool isIqama,
+  }) => isIqama
+      ? _settings.renameCustomIqama(id, newLabel)
+      : _settings.renameCustomAdhan(id, newLabel);
 
   void clearError() {
     if (state is CustomAdhanError) emit(const CustomAdhanIdle());

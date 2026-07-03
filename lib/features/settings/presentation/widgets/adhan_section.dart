@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../core/adhan_sounds.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/localization/adhan_sound_localizer.dart';
+import '../../../../injection.dart';
+import '../../domain/entities/app_settings.dart';
 import '../../domain/entities/prayer_sound_mode.dart';
-import '../dialogs/adhan_sound_picker_dialog.dart';
+import '../../domain/usecases/delete_custom_adhan_usecase.dart';
+import '../../domain/usecases/import_custom_adhan_usecase.dart';
+import '../bloc/custom_adhan_cubit.dart';
 import '../settings_provider.dart';
 import 'section_title.dart';
 import 'sound_mode_picker.dart';
-import '../../../../core/widgets/tv_button.dart';
+import 'sound_picker_row.dart';
 
 class AdhanSection extends StatelessWidget {
   const AdhanSection({super.key});
@@ -23,123 +27,89 @@ class AdhanSection extends StatelessWidget {
     final palette = getThemePalette(settings.themeColorKey);
     final tc = ThemeColors.of(settings.isDarkMode);
     final adhanHasSound = settings.adhanMode == PrayerSoundMode.sound;
+    final iqamaHasSound = settings.iqamaMode == PrayerSoundMode.sound;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (adhanHasSound) ...[
-          SettingsSectionTitle(title: l.settingsAdhanSoundLabel),
+    return BlocProvider<CustomAdhanCubit>(
+      create: (_) => CustomAdhanCubit(
+        import: getIt<ImportCustomAdhanUseCase>(),
+        delete: getIt<DeleteCustomAdhanUseCase>(),
+        settings: context.read<SettingsProvider>(),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (adhanHasSound) ...[
+            SettingsSectionTitle(title: l.settingsAdhanSoundLabel),
+            const SizedBox(height: 12),
+            SoundPickerRow(
+              palette: palette,
+              tc: tc,
+              isIqama: false,
+              changeLabel: l.settingsChangeAdhan,
+              currentLabel: _adhanLabel(context, settings),
+            ),
+            const SizedBox(height: 24),
+          ],
+          SettingsSectionTitle(title: l.adhanLabel),
           const SizedBox(height: 12),
-          _AdhanSoundPicker(
+          SoundModePicker(
+            value: settings.adhanMode,
+            onChanged: settingsProv.updateAdhanMode,
             palette: palette,
             tc: tc,
-            settings: settings,
-            settingsProv: settingsProv,
-            l: l,
           ),
           const SizedBox(height: 24),
+          if (iqamaHasSound) ...[
+            SettingsSectionTitle(title: l.settingsIqamaSoundLabel),
+            const SizedBox(height: 12),
+            SoundPickerRow(
+              palette: palette,
+              tc: tc,
+              isIqama: true,
+              changeLabel: l.settingsChangeIqama,
+              currentLabel: _iqamaLabel(context, settings),
+            ),
+            const SizedBox(height: 24),
+          ],
+          SettingsSectionTitle(title: l.iqamaLabel),
+          const SizedBox(height: 12),
+          SoundModePicker(
+            value: settings.iqamaMode,
+            onChanged: settingsProv.updateIqamaMode,
+            palette: palette,
+            tc: tc,
+          ),
         ],
-        SettingsSectionTitle(title: l.adhanLabel),
-        const SizedBox(height: 12),
-        SoundModePicker(
-          value: settings.adhanMode,
-          onChanged: settingsProv.updateAdhanMode,
-          palette: palette,
-          tc: tc,
-        ),
-        const SizedBox(height: 24),
-        SettingsSectionTitle(title: l.iqamaLabel),
-        const SizedBox(height: 12),
-        SoundModePicker(
-          value: settings.iqamaMode,
-          onChanged: settingsProv.updateIqamaMode,
-          palette: palette,
-          tc: tc,
-        ),
-      ],
+      ),
     );
   }
-}
 
-class _AdhanSoundPicker extends StatelessWidget {
-  final AccentPalette palette;
-  final ThemeColors tc;
-  final dynamic settings;
-  final SettingsProvider settingsProv;
-  final AppLocalizations l;
+  String _adhanLabel(BuildContext context, AppSettings settings) {
+    return soundDisplayLabel(
+      settings.adhanSound,
+      settings.customAdhans.map<({String key, String label})>(
+        (c) => (key: c.settingsKey, label: c.label),
+      ),
+      localizedAdhanSoundLabel(
+        context,
+        kAdhanSounds
+            .firstWhere(
+              (s) => s.key == settings.adhanSound,
+              orElse: () => kAdhanSounds.first,
+            )
+            .key,
+      ),
+    );
+  }
 
-  const _AdhanSoundPicker({
-    required this.palette,
-    required this.tc,
-    required this.settings,
-    required this.settingsProv,
-    required this.l,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: tc.glass(opacity: 0.06, borderRadius: 10),
-            child: Row(
-              children: [
-                Icon(Icons.volume_up_rounded, color: palette.primary, size: 22),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    localizedAdhanSoundLabel(
-                      context,
-                      kAdhanSounds
-                          .firstWhere(
-                            (s) => s.key == settings.adhanSound,
-                            orElse: () => kAdhanSounds.first,
-                          )
-                          .key,
-                    ),
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: tc.textPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        TvButton(
-          onPressed: () => showDialog<void>(
-            context: context,
-            builder: (_) => AdhanSoundPickerDialog(
-              palette: palette,
-              selectedKey: settings.adhanSound,
-              onSelected: settingsProv.updateAdhanSound,
-            ),
-          ),
-          accent: palette.primary,
-          filled: true,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.music_note_rounded,
-                color: Colors.white,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                l.settingsChangeAdhan,
-                style: const TextStyle(fontSize: 18, color: Colors.white),
-              ),
-            ],
-          ),
-        ),
-      ],
+  String _iqamaLabel(BuildContext context, AppSettings settings) {
+    final l = AppLocalizations.of(context);
+    return soundDisplayLabel(
+      settings.iqamaSound,
+      settings.customIqamas.map<({String key, String label})>(
+        (c) => (key: c.settingsKey, label: c.label),
+      ),
+      l.iqamaDefaultSound,
     );
   }
 }

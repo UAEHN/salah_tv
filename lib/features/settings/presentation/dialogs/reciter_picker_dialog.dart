@@ -115,8 +115,8 @@ class _ReciterPickerDialogState extends State<ReciterPickerDialog> {
       currentServerUrl: widget.currentServerUrl,
       query: _query,
       palette: widget.palette,
-      onSelect: (r) {
-        widget.onSelected(r.nameAr, r.serverUrl);
+      onSelect: (name, serverUrl) {
+        widget.onSelected(name, serverUrl);
         Navigator.pop(context);
       },
     );

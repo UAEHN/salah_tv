@@ -36,6 +36,19 @@ class PrayerState {
   final List<String> availableCities;
   final int? currentSurahNumber;
 
+  /// True while a transient Quran network/CDN error banner should be shown.
+  final bool hasQuranError;
+
+  /// True while the active Quran surah is loading/buffering (slow network).
+  final bool isQuranLoading;
+
+  /// Most recent engine-tick fault summary, or null. Drives the on-screen
+  /// diagnostic banner in test builds. Null in normal operation.
+  final String? lastTickError;
+
+  /// Short user-visible diagnostic when adhan/iqama failed on TV.
+  final String? lastPrayerAlertError;
+
   const PrayerState({
     required this.now,
     this.todayPrayers,
@@ -68,6 +81,10 @@ class PrayerState {
     required this.isMultiCity,
     required this.availableCities,
     this.currentSurahNumber,
+    this.hasQuranError = false,
+    this.isQuranLoading = false,
+    this.lastTickError,
+    this.lastPrayerAlertError,
   });
 
   factory PrayerState.fromEngine(
@@ -109,6 +126,10 @@ class PrayerState {
     isMultiCity: e.isMultiCity,
     availableCities: e.availableCities,
     currentSurahNumber: e.currentSurahNumber,
+    hasQuranError: e.hasQuranError,
+    isQuranLoading: e.isQuranLoading,
+    lastTickError: e.lastTickError,
+    lastPrayerAlertError: e.lastPrayerAlertError,
   );
 
   factory PrayerState.initial() => PrayerState(

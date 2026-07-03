@@ -12,6 +12,9 @@ import '../bloc/prayer_event.dart';
 import '../../../settings/presentation/settings_provider.dart';
 import '../../../takbeerat/presentation/cubit/takbeerat_visibility_cubit.dart';
 import '../widgets/home_main_view.dart';
+import '../widgets/prayer_alert_error_banner.dart';
+import '../widgets/quran_status_banner.dart';
+import '../widgets/tick_error_diagnostic_banner.dart';
 import '../../../audio/presentation/screens/adhan_screen.dart';
 import '../../../audio/presentation/screens/dua_screen.dart';
 import '../../../audio/presentation/screens/iqama_screen.dart';
@@ -200,70 +203,126 @@ class _HomeScreenState extends State<HomeScreen> {
                 takbeeratReciterUrl: takbeeratReciterUrl,
               );
             },
-            child: isAdhanPlaying
-                ? (isMosqueMode
-                      ? MosqueAdhanScreen(
-                          prayerName: localizedPrayerName(
-                            context,
-                            currentAdhanPrayerKey,
-                          ),
-                          palette: palette,
-                        )
-                      : AdhanScreen(
-                          prayerName: localizedPrayerName(
-                            context,
-                            currentAdhanPrayerKey,
-                          ),
-                          palette: palette,
-                        ))
-                : isDuaPlaying
-                ? DuaScreen(palette: palette)
-                : isIqamaPlaying
-                ? (isMosqueMode
-                      ? MosqueIqamaScreen(
-                          prayerName: localizedPrayerName(
-                            context,
-                            iqamaPrayerKey,
-                          ),
-                          palette: palette,
-                        )
-                      : IqamaScreen(
-                          prayerName: localizedPrayerName(
-                            context,
-                            iqamaPrayerKey,
-                          ),
-                          palette: palette,
-                        ))
-                : isSilencePhoneWindow
-                ? MosqueSilencePhoneScreen(palette: palette)
-                : isAfterPrayerAdhkar
-                ? AfterPrayerAdhkarScreen(palette: palette)
-                : (isSessionAdhkar && sessionAdhkarCategory.isNotEmpty)
-                ? SessionAdhkarScreen(
-                    palette: palette,
-                    categoryId: sessionAdhkarCategory,
-                    silent: isMosqueMode,
-                    onCompleted: () => context.read<PrayerBloc>().add(
-                      const PrayerSessionAdhkarStopped(),
-                    ),
-                  )
-                : showScreensaver
-                ? ScreensaverScreen(palette: palette)
-                : HomeMainView(
+            // expand so the Stack always fills the screen even when the only
+            // non-positioned child (the Quran status banner) collapses to
+            // SizedBox.shrink — otherwise the home would render at 0×0 (black).
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Positioned.fill(
+                  child: _homeBody(
+                    context,
                     palette: palette,
                     tc: tc,
-                    isIqamaCountdown: isIqamaCountdown,
                     settings: settings,
                     screenW: screenW,
                     screenH: screenH,
-                    quranFocusNode: _quranFocusNode,
-                    takbeeratFocusNode: _takbeeratFocusNode,
+                    isAdhanPlaying: isAdhanPlaying,
+                    isDuaPlaying: isDuaPlaying,
+                    isIqamaPlaying: isIqamaPlaying,
+                    isIqamaCountdown: isIqamaCountdown,
+                    isMosqueMode: isMosqueMode,
+                    isSilencePhoneWindow: isSilencePhoneWindow,
+                    isAfterPrayerAdhkar: isAfterPrayerAdhkar,
+                    isSessionAdhkar: isSessionAdhkar,
+                    sessionAdhkarCategory: sessionAdhkarCategory,
+                    currentAdhanPrayerKey: currentAdhanPrayerKey,
+                    iqamaPrayerKey: iqamaPrayerKey,
                     takbeeratReciterUrl: takbeeratReciterUrl,
-                    mainFocusNode: _focusNode,
+                    showScreensaver: showScreensaver,
                   ),
+                ),
+                // Non-silent Quran status overlay: loading spinner (buffering)
+                // or error message; self-hides when playback is healthy.
+                QuranStatusBanner(palette: palette),
+                const PrayerAlertErrorBanner(),
+                // TEST-BUILD diagnostic: shows the exact engine-tick fault on
+                // screen so a tester can screenshot it. Invisible unless a tick
+                // throws. Disable via _kEnabled before a public release.
+                const TickErrorDiagnosticBanner(),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Widget _homeBody(
+    BuildContext context, {
+    required AccentPalette palette,
+    required ThemeColors tc,
+    required dynamic settings,
+    required double screenW,
+    required double screenH,
+    required bool isAdhanPlaying,
+    required bool isDuaPlaying,
+    required bool isIqamaPlaying,
+    required bool isIqamaCountdown,
+    required bool isMosqueMode,
+    required bool isSilencePhoneWindow,
+    required bool isAfterPrayerAdhkar,
+    required bool isSessionAdhkar,
+    required String sessionAdhkarCategory,
+    required String currentAdhanPrayerKey,
+    required String iqamaPrayerKey,
+    required String takbeeratReciterUrl,
+    required bool showScreensaver,
+  }) {
+    return isAdhanPlaying
+        ? (isMosqueMode
+              ? MosqueAdhanScreen(
+                  prayerName: localizedPrayerName(
+                    context,
+                    currentAdhanPrayerKey,
+                  ),
+                  palette: palette,
+                )
+              : AdhanScreen(
+                  prayerName: localizedPrayerName(
+                    context,
+                    currentAdhanPrayerKey,
+                  ),
+                  palette: palette,
+                ))
+        : isDuaPlaying
+        ? DuaScreen(palette: palette)
+        : isIqamaPlaying
+        ? (isMosqueMode
+              ? MosqueIqamaScreen(
+                  prayerName: localizedPrayerName(context, iqamaPrayerKey),
+                  palette: palette,
+                )
+              : IqamaScreen(
+                  prayerName: localizedPrayerName(context, iqamaPrayerKey),
+                  palette: palette,
+                ))
+        : isSilencePhoneWindow
+        ? MosqueSilencePhoneScreen(palette: palette)
+        : isAfterPrayerAdhkar
+        ? AfterPrayerAdhkarScreen(palette: palette)
+        : (isSessionAdhkar && sessionAdhkarCategory.isNotEmpty)
+        ? SessionAdhkarScreen(
+            palette: palette,
+            categoryId: sessionAdhkarCategory,
+            silent: isMosqueMode,
+            onCompleted: () => context.read<PrayerBloc>().add(
+              const PrayerSessionAdhkarStopped(),
+            ),
+          )
+        : showScreensaver
+        ? ScreensaverScreen(palette: palette)
+        : HomeMainView(
+            palette: palette,
+            tc: tc,
+            isIqamaCountdown: isIqamaCountdown,
+            settings: settings,
+            screenW: screenW,
+            screenH: screenH,
+            quranFocusNode: _quranFocusNode,
+            takbeeratFocusNode: _takbeeratFocusNode,
+            takbeeratReciterUrl: takbeeratReciterUrl,
+            mainFocusNode: _focusNode,
+          );
   }
 }

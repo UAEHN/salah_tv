@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/app_colors.dart';
 import '../settings_provider.dart';
+import 'quran_moshaf_row.dart';
 import 'quran_playback_mode_section.dart';
 import 'quran_reciter_row.dart';
 import 'tv_switch_row.dart';
@@ -59,6 +60,7 @@ class QuranSection extends StatelessWidget {
         if (settings.isQuranEnabled) ...[
           const SizedBox(height: 16),
           const QuranReciterRow(),
+          const QuranMoshafRow(),
           const QuranPlaybackModeSection(),
           const SizedBox(height: 16),
           Container(

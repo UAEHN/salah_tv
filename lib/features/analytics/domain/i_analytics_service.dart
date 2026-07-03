@@ -9,6 +9,9 @@ abstract interface class IAnalyticsService {
   /// with its Firestore heartbeat. Called once after install-id resolves.
   Future<void> setDeviceId(String deviceId);
 
+  /// Optional authenticated/app-level user id. Not every install has one.
+  Future<void> setUserId(String userId);
+
   /// Returns a `NavigatorObserver` for automatic screen tracking.
   /// Typed as `dynamic` to keep the domain layer free of Flutter imports.
   dynamic get navigatorObserver;
@@ -148,6 +151,23 @@ abstract interface class IAnalyticsService {
     required String country,
   });
 
+  /// Single normalized adhan journey event for BigQuery funnels.
+  void logAdhanJourneyState({
+    required String prayerKey,
+    required String state,
+    required String stage,
+    String? reason,
+  });
+
+  /// TV in-app alert journey for both adhan and iqama.
+  void logPrayerAlertJourneyState({
+    required String alertType,
+    required String prayerKey,
+    required String state,
+    required String stage,
+    String? reason,
+  });
+
   // ── Phase 1C.2: full cycle phase tracking ────────────────────────
   void logDuaStarted({required String prayerKey, required bool isSilent});
   void logDuaCompleted({
@@ -181,5 +201,19 @@ abstract interface class IAnalyticsService {
   void logSettingsChangeDuringCycle({
     required String activePhase,
     required String changedField,
+  });
+
+  /// Fired when the 1Hz [tick] threw before reaching [notify]. The throw
+  /// would otherwise freeze the live clock/countdown (the timer keeps firing
+  /// but the screen never updates) while the rest of the app still responds.
+  /// Carries the exception type + message + the first stack frame so the exact
+  /// device-specific failing call is identifiable from the dashboard without
+  /// asking the user to pull logs. Throttled to ~1/min by the engine.
+  void logTickError({
+    required String errorType,
+    required String message,
+    required String stackHead,
+    required String city,
+    required String country,
   });
 }

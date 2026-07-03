@@ -5,6 +5,8 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import com.ghasaq.app.notifications.models.ScheduledNotification
+import com.ghasaq.app.notifications.store.NativeDiagnostics
+import org.json.JSONObject
 
 /**
  * Thin wrapper around AlarmManager. Picks the strongest API the platform +
@@ -23,6 +25,7 @@ class AlarmScheduler(private val context: Context) {
 
     private val alarmManager: AlarmManager =
         context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    private val diagnostics = NativeDiagnostics(context)
 
     fun schedule(n: ScheduledNotification) {
         val pi = PendingIntentFactory.forAlarm(context, n.id)
@@ -34,13 +37,45 @@ class AlarmScheduler(private val context: Context) {
                     AlarmManager.RTC_WAKEUP, triggerAt, pi,
                 )
                 Log.w(TAG, "Inexact alarm for id=${n.id} (no exact-alarm permission)")
+                diagnostics.record("WARNING", "alarm_scheduled_inexact", JSONObject().apply {
+                    put("id", n.id)
+                    put("type", n.type.key)
+                    put("prayerKey", n.prayerKey)
+                    put("triggerAtMillis", triggerAt)
+                    put("adhanFinalState", "SCHEDULED")
+                    put("stage", "alarm_scheduled_inexact")
+                })
             } else {
                 alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP, triggerAt, pi,
                 )
+                diagnostics.record("INFO", "alarm_scheduled_exact", JSONObject().apply {
+                    put("id", n.id)
+                    put("type", n.type.key)
+                    put("prayerKey", n.prayerKey)
+                    put("triggerAtMillis", triggerAt)
+                    put("adhanFinalState", "SCHEDULED")
+                    put("stage", "alarm_scheduled_exact")
+                })
             }
         } catch (e: SecurityException) {
             Log.e(TAG, "schedule id=${n.id} denied by system", e)
+            diagnostics.record("ERROR", "schedule_failed", JSONObject().apply {
+                put("id", n.id)
+                put("type", n.type.key)
+                put("prayerKey", n.prayerKey)
+                put("triggerAtMillis", triggerAt)
+                put("adhanFinalState", "FAILED")
+                put("stage", "alarm_schedule")
+                put("error", e.message)
+            })
+            diagnostics.record("ERROR", "alarm_schedule_denied", JSONObject().apply {
+                put("id", n.id)
+                put("type", n.type.key)
+                put("prayerKey", n.prayerKey)
+                put("triggerAtMillis", triggerAt)
+                put("error", e.message)
+            })
         }
     }
 

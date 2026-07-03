@@ -24,6 +24,7 @@ extension AppSettingsMapper on AppSettings {
     'quranReciterName': quranReciterName,
     'quranReciterServerUrl': quranReciterServerUrl,
     'favoriteReciterServerUrls': jsonEncode(favoriteReciterServerUrls),
+    'hasExplicitReciterChoice': hasExplicitReciterChoice,
     'selectedCountry': selectedCountry,
     'selectedCity': selectedCity,
     'selectedLatitude': selectedLatitude,
@@ -36,6 +37,8 @@ extension AppSettingsMapper on AppSettings {
     'utcOffsetHours': utcOffsetHours,
     'layoutStyle': layoutStyle,
     'adhanSound': adhanSound,
+    'iqamaSound': iqamaSound,
+    'customIqamas': jsonEncode(customIqamas.map((c) => c.toJson()).toList()),
     'isAnalogClock': isAnalogClock,
     'isAdhkarEnabled': isAdhkarEnabled,
     'isAfterPrayerAdhkarEnabled': isAfterPrayerAdhkarEnabled,
@@ -67,8 +70,10 @@ extension AppSettingsMapper on AppSettings {
 
 AppSettings appSettingsFromMap(Map<String, dynamic> map) {
   final customAdhans = decodeCustomAdhans(map['customAdhans']);
+  final customIqamas = decodeCustomAdhans(map['customIqamas']);
+  final hasExplicitChoice = map['hasExplicitReciterChoice'] as bool? ?? false;
   return AppSettings(
-    themeColorKey: map['themeColorKey'] as String? ?? 'gold',
+    themeColorKey: migrateThemeColorKey(map['themeColorKey'] as String?),
     use24HourFormat: map['use24HourFormat'] as bool? ?? false,
     adhanMode: decodePrayerSoundMode(
       map['adhanMode'],
@@ -127,9 +132,14 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
         : 'ar',
     isQuranEnabled: map['isQuranEnabled'] as bool? ?? false,
     quranReciterName: map['quranReciterName'] as String? ?? '',
-    quranReciterServerUrl: migrateToHafsReciterUrl(
-      validatedQuranUrl(map['quranReciterServerUrl'] as String? ?? ''),
-    ),
+    hasExplicitReciterChoice: hasExplicitChoice,
+    // Only force old styled URLs back to Hafs when the user has NOT deliberately
+    // chosen a طريقة. An explicit pick (e.g. «المجوّد») is preserved as-is.
+    quranReciterServerUrl: hasExplicitChoice
+        ? validatedQuranUrl(map['quranReciterServerUrl'] as String? ?? '')
+        : migrateToHafsReciterUrl(
+            validatedQuranUrl(map['quranReciterServerUrl'] as String? ?? ''),
+          ),
     favoriteReciterServerUrls: decodeStringList(
       map['favoriteReciterServerUrls'],
     ).map(migrateToHafsReciterUrl).toSet().toList(growable: false),
@@ -158,6 +168,8 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
         ? map['layoutStyle'] as String
         : 'modern',
     adhanSound: validatedAdhanSound(map['adhanSound'] as String?, customAdhans),
+    iqamaSound: validatedIqamaSound(map['iqamaSound'] as String?, customIqamas),
+    customIqamas: customIqamas,
     isAnalogClock: map['isAnalogClock'] as bool? ?? false,
     isAdhkarEnabled: map['isAdhkarEnabled'] as bool? ?? true,
     isAfterPrayerAdhkarEnabled:

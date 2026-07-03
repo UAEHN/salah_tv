@@ -3,103 +3,105 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../../core/app_colors.dart';
 import '../../../../core/app_config.dart';
+import '../../../../core/widgets/focus_scroll.dart';
 
-/// Right-side panel of the TV feedback screen.
-///
-/// Two QR codes side-by-side — Telegram and (when an email is configured)
-/// `mailto:` — so the entire panel fits within the TV viewport without
-/// needing a scrollable region (the TV screen has no scroll affordance).
-///
-/// Theme-aware: pass [tc] so labels render with proper contrast in light mode.
-class TvFeedbackQrEmailPanel extends StatelessWidget {
-  final String title;
+/// Single focusable contact card for the TV feedback screen: Telegram + (when
+/// configured) email QR codes side by side, sized to fit the viewport without
+/// scrolling. Being one focus target keeps entering/leaving the section via the
+/// settings nav reliable — D-pad right steps back out.
+class TvFeedbackQrEmailPanel extends StatefulWidget {
   final String telegramCaption;
   final String emailCaption;
-  final String orFromPhoneLabel;
+  final AccentPalette palette;
   final ThemeColors tc;
 
   const TvFeedbackQrEmailPanel({
     super.key,
-    required this.title,
     required this.telegramCaption,
     required this.emailCaption,
-    required this.orFromPhoneLabel,
+    required this.palette,
     required this.tc,
   });
 
   @override
+  State<TvFeedbackQrEmailPanel> createState() => _TvFeedbackQrEmailPanelState();
+}
+
+class _TvFeedbackQrEmailPanelState extends State<TvFeedbackQrEmailPanel> {
+  bool _isFocused = false;
+
+  @override
   Widget build(BuildContext context) {
+    final p = widget.palette;
+    final tc = widget.tc;
     final telegramUrl = AppConfig.supportTelegramUrl;
     final telegramTarget = telegramUrl.isNotEmpty
         ? telegramUrl
         : AppConfig.tvFeedbackUrl;
     final hasEmail = AppConfig.supportEmail.isNotEmpty;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(28),
-      decoration: tc
-          .glass(opacity: 0.07, borderRadius: 20)
-          .copyWith(border: Border.all(color: tc.borderGlass)),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: tc.textPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 28),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: _QrTile(
-                  data: telegramTarget,
-                  icon: Icons.send_rounded,
-                  caption: telegramCaption,
-                  tc: tc,
-                ),
+    return Focus(
+      onFocusChange: (f) {
+        setState(() => _isFocused = f);
+        if (f) ensureFocusedVisible(context);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.all(20),
+        decoration: tc
+            .glass(opacity: 0.07, borderRadius: 20)
+            .copyWith(
+              border: Border.all(
+                color: _isFocused ? p.primary : tc.borderGlass,
+                width: _isFocused ? 2.5 : 1,
               ),
-              if (hasEmail) ...[
-                const SizedBox(width: 24),
-                Container(width: 1, height: 200, color: tc.borderGlass),
-                const SizedBox(width: 24),
+              boxShadow: _isFocused
+                  ? [BoxShadow(color: p.glow, blurRadius: 18, spreadRadius: 1)]
+                  : null,
+            ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Expanded(
                   child: _QrTile(
-                    data: 'mailto:${AppConfig.supportEmail}',
-                    icon: Icons.email_rounded,
-                    caption: emailCaption,
+                    data: telegramTarget,
+                    icon: Icons.send_rounded,
+                    caption: widget.telegramCaption,
+                    palette: p,
                     tc: tc,
                   ),
                 ),
+                if (hasEmail) ...[
+                  Container(width: 1, height: 160, color: tc.borderGlass),
+                  Expanded(
+                    child: _QrTile(
+                      data: 'mailto:${AppConfig.supportEmail}',
+                      icon: Icons.email_rounded,
+                      caption: widget.emailCaption,
+                      palette: p,
+                      tc: tc,
+                    ),
+                  ),
+                ],
               ],
-            ],
-          ),
-          if (hasEmail) ...[
-            const SizedBox(height: 24),
-            Text(
-              orFromPhoneLabel,
-              style: TextStyle(color: tc.textMuted, fontSize: 14),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 4),
-            Text(
-              AppConfig.supportEmail,
-              style: TextStyle(
-                color: tc.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+            if (hasEmail) ...[
+              const SizedBox(height: 14),
+              Text(
+                AppConfig.supportEmail,
+                textDirection: TextDirection.ltr,
+                style: TextStyle(
+                  color: p.primary,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              textDirection: TextDirection.ltr,
-              textAlign: TextAlign.center,
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -109,12 +111,14 @@ class _QrTile extends StatelessWidget {
   final String data;
   final IconData icon;
   final String caption;
+  final AccentPalette palette;
   final ThemeColors tc;
 
   const _QrTile({
     required this.data,
     required this.icon,
     required this.caption,
+    required this.palette,
     required this.tc,
   });
 
@@ -128,23 +132,23 @@ class _QrTile extends StatelessWidget {
           child: QrImageView(
             data: data,
             version: QrVersions.auto,
-            size: 180,
+            size: 140,
             backgroundColor: Colors.white,
             padding: const EdgeInsets.all(8),
           ),
         ),
         const SizedBox(height: 12),
-        Icon(icon, color: Colors.amber, size: 22),
+        Icon(icon, color: palette.primary, size: 24),
         const SizedBox(height: 4),
         Text(
           caption,
+          textAlign: TextAlign.center,
           style: TextStyle(
-            color: tc.textMuted,
-            fontSize: 14,
+            color: tc.textPrimary,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
             height: 1.25,
           ),
-          textAlign: TextAlign.center,
         ),
       ],
     );

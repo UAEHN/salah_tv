@@ -9,6 +9,7 @@ import '../../bloc/custom_adhan_cubit.dart';
 import '../../settings_provider.dart';
 import 'mobile_adhan_sound_dialog.dart';
 import 'mobile_adhkar_notification_section.dart';
+import 'mobile_iqama_sound_dialog.dart';
 import 'mobile_al_kahf_notification_section.dart';
 import 'mobile_notification_health_tile.dart';
 import 'mobile_notification_master_toggle.dart';
@@ -68,6 +69,11 @@ class MobileNotificationSettingsList extends StatelessWidget {
                 title: l.settingsAdhanSoundLabel,
                 onTap: () => _showAdhanSoundPicker(context, sp, s.adhanSound),
               ),
+              MobileSettingsTile(
+                icon: Icons.notifications_active_rounded,
+                title: l.settingsIqamaSoundLabel,
+                onTap: () => _showIqamaSoundPicker(context, sp, s.iqamaSound),
+              ),
               const SizedBox(height: 22),
               MobileSettingsSectionTitle(
                 title: l.settingsPrayerAlerts,
@@ -110,6 +116,34 @@ class MobileNotificationSettingsList extends StatelessWidget {
         child: MobileAdhanSoundDialog(
           currentSound: current,
           onSave: (key) => sp.updateAdhanSound(key),
+        ),
+      ),
+    );
+  }
+
+  void _showIqamaSoundPicker(
+    BuildContext context,
+    SettingsProvider sp,
+    String current,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => getIt<AdhanPreviewCubit>()),
+          BlocProvider(
+            create: (_) => CustomAdhanCubit(
+              import: getIt(),
+              delete: getIt(),
+              settings: sp,
+            ),
+          ),
+        ],
+        child: MobileIqamaSoundDialog(
+          currentSound: current,
+          onSave: (key) => sp.updateIqamaSound(key),
         ),
       ),
     );

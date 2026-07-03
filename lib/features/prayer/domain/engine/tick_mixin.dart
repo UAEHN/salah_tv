@@ -29,6 +29,21 @@ const int _kTimeJumpThresholdSeconds = 30;
 /// Issue comments 6 and 11 are preserved verbatim.
 mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
   void tick(Timer t) {
+    // A throw anywhere below would otherwise freeze the live clock/countdown:
+    // Timer.periodic keeps firing after a callback throws, but [notify] is
+    // never reached, so the screen stops updating while the rest of the app
+    // (date nav, settings) still responds. Catch it, report it (throttled, so
+    // the dashboard reveals the exact device-specific failing call without
+    // asking the user to pull logs), then [notify] anyway so the clock lives.
+    try {
+      _runTick();
+    } catch (e, st) {
+      _reportEngineFault(e, st);
+      notify();
+    }
+  }
+
+  void _runTick() {
     final prev = s.now;
     s.now = currentTime();
 
@@ -38,8 +53,10 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
     if (drift.abs() > _kTimeJumpThresholdSeconds) {
       analytics?.logTimeJumpDetected(driftSeconds: drift);
       s.adhansToday.clear();
+      s.sessionAdhkarShownToday.clear();
       loadToday();
       recoverIqamaState();
+      recoverSessionAdhkar();
       notify();
       return;
     }
@@ -48,6 +65,7 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
     // that could be skipped when Timer.periodic drifts on slow hardware.
     if (s.now.day != s.lastLoadedDay) {
       s.adhansToday.clear();
+      s.sessionAdhkarShownToday.clear();
       // Phase 1C.1: dedup sets are scoped per day. Reset them with
       // adhansToday so today's overdue/skipped events can fire fresh.
       s.overdueReported.clear();
@@ -62,6 +80,7 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
     if (s.todayPrayers == null) loadToday();
     if (s.needsIqamaRecovery && s.todayPrayers != null) {
       recoverIqamaState();
+      recoverSessionAdhkar(); // app-open catch-up once prayer data is ready
       s.needsIqamaRecovery = false;
     }
 
@@ -77,14 +96,57 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
     checkPreAnnouncement();
     checkPreAlertBell();
     checkAdhanTrigger();
+    checkIqamaRescue();
     tickIqama();
+    clearStaleQuranError();
+    clearStalePrayerAlertError();
     runTickDiagnostics(); // Phase 1C — see tick_diagnostics.dart
     notify();
   }
 
+  /// Reports a crash inside the engine hot path ([tick] / [loadToday]) to
+  /// analytics, throttled to ~1/min so a per-tick fault doesn't flood the
+  /// pipeline. Carries the exception type, message, and first stack frame —
+  /// enough to pinpoint the failing call on a specific device from the
+  /// dashboard alone.
+  void _reportEngineFault(Object e, StackTrace st) {
+    final frames = st.toString().split('\n');
+    final stackHead = frames.isNotEmpty ? frames.first.trim() : '';
+    // Always refresh the on-screen diagnostic (un-throttled) so a tester sees
+    // the latest fault; only the analytics event is throttled to ~1/min.
+    s.lastTickError = '${e.runtimeType}: $e\n$stackHead';
+    final last = s.tickErrorReportedAt;
+    if (last != null && s.now.difference(last).inSeconds.abs() < 60) return;
+    s.tickErrorReportedAt = s.now;
+    analytics?.logTickError(
+      errorType: e.runtimeType.toString(),
+      message: e.toString(),
+      stackHead: stackHead,
+      city: settings.selectedCity,
+      country: settings.selectedCountry,
+    );
+  }
+
+  void clearStalePrayerAlertError() {
+    final at = s.prayerAlertErrorAt;
+    if (at == null) return;
+    if (s.now.difference(at).inMinutes < 10) return;
+    s.lastPrayerAlertError = null;
+    s.prayerAlertErrorAt = null;
+  }
+
   void loadToday() {
     // Hot path (1 Hz tick) — sync O(1) cache read; Either overhead not justified.
-    s.todayPrayers = repo.getToday();
+    // Guarded: getToday() can throw on specific devices/locations (e.g. a
+    // calculated-mode edge case). start() calls loadToday() BEFORE the 1Hz
+    // timer is created, so an un-caught throw here would leave the timer
+    // un-created and freeze the live clock/countdown forever. Swallow + report
+    // and keep the previous schedule rather than killing the engine.
+    try {
+      s.todayPrayers = repo.getToday();
+    } catch (e, st) {
+      _reportEngineFault(e, st);
+    }
     s.lastLoadedDay = s.now.day; // Issue 6: record the day we loaded for
     updateNextPrayer();
     if (s.todayPrayers != null) {
@@ -204,8 +266,21 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
         !s.isSessionAdhkarPlaying &&
         !s.isAfterPrayerAdhkarPlaying) {
       s.sessionAdhkarStartsAt = null;
+      final category = s.sessionAdhkarCategory;
+      // Already shown today (e.g. the catch-up scheduled before the persisted
+      // log finished hydrating after a restart) — drop without re-showing.
+      if (category.isNotEmpty && s.sessionAdhkarShownToday.contains(category)) {
+        s.sessionAdhkarCategory = '';
+        return;
+      }
       s.isSessionAdhkarPlaying = true;
       s.sessionAdhkarEndsAt = s.now.add(_kSessionAdhkarWindow);
+      // Mark as shown — in memory and persisted — so neither this run nor a
+      // later restart re-fires the same session today.
+      if (category.isNotEmpty) {
+        s.sessionAdhkarShownToday.add(category);
+        unawaited(sessionAdhkarLog?.markShown(calc.dateKey(s.now), category));
+      }
       pauseQuranForAdhan();
     }
     final endAt = s.sessionAdhkarEndsAt;

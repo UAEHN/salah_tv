@@ -596,6 +596,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAddCustomAdhan => 'Add from device';
 
   @override
+  String get settingsIqamaSoundLabel => 'Iqama sound';
+
+  @override
+  String get settingsChooseIqamaSound => 'Choose iqama sound';
+
+  @override
+  String get settingsIqamaDefaultSound => 'Default iqama';
+
+  @override
+  String get settingsCustomIqamasTitle => 'Custom iqama sounds';
+
+  @override
+  String get settingsChangeIqama => 'Change iqama';
+
+  @override
+  String get iqamaDefaultSound => 'Default iqama';
+
+  @override
+  String get browserTitle => 'Choose an audio file';
+
+  @override
+  String get browserUp => 'Up';
+
+  @override
+  String get browserEmpty => 'No audio files here';
+
+  @override
+  String get browserError => 'Couldn\'t open folder';
+
+  @override
+  String get browserPermissionTitle => 'Allow storage access';
+
+  @override
+  String get browserPermissionBody =>
+      'Allow reading audio files to list them here, or use the system picker below to pick a file from a USB drive.';
+
+  @override
+  String get browserGrant => 'Allow access';
+
+  @override
+  String get browserRetry => 'I granted it, retry';
+
+  @override
+  String get browserSystemPicker => 'Browse with system picker';
+
+  @override
+  String get quranNetworkError =>
+      'Couldn\'t play Quran — check your internet connection';
+
+  @override
+  String get quranLoading => 'Loading Quran…';
+
+  @override
   String get settingsRenameAdhan => 'Rename adhan';
 
   @override
@@ -834,8 +887,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTicker => 'Scrolling ticker';
 
   @override
-  String get settingsTickerLabel =>
-      'Scrolling bar of verses & adhkar along the bottom';
+  String get settingsTickerLabel => 'Verses & adhkar ticker';
 
   @override
   String get layoutModern => 'Modern';
@@ -865,7 +917,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fontInter => 'Inter';
 
   @override
-  String get themeGreen => 'Emerald';
+  String get themeRed => 'Ruby';
 
   @override
   String get themeTeal => 'Turquoise';
@@ -999,7 +1051,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsAdhkarScheduleNote =>
-      'Morning adhkar appears after Fajr until 10:00 AM. Evening adhkar appears after Asr and ends 5 minutes before Maghrib adhan. It appears once daily and pauses during adhan and iqama.';
+      'Morning adhkar after Fajr, evening adhkar after Asr.';
 
   @override
   String get settingsNoCitySelected => 'No city selected';
@@ -1028,6 +1080,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reciterAllSection => 'All reciters';
+
+  @override
+  String get reciterDefaultMoshaf => 'Default';
+
+  @override
+  String get reciterMoshafLabel => 'Recitation';
+
+  @override
+  String get reciterSelectMoshaf => 'Choose recitation';
+
+  @override
+  String get reciterChangeMoshaf => 'Change recitation';
 
   @override
   String get adhanSound1 => 'Adhan 1';
@@ -1715,6 +1779,101 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mushafSurahPrefix => 'Surah';
 
   @override
+  String get khatmaTitle => 'Quran Khatma';
+
+  @override
+  String get khatmaProgressTitle => 'Khatma progress';
+
+  @override
+  String get khatmaStartCta => 'Start a Khatma';
+
+  @override
+  String get khatmaEmptyMessage =>
+      'Pick a duration and begin your journey to complete the Quran';
+
+  @override
+  String get khatmaTodayPortion => 'Today\'s portion';
+
+  @override
+  String khatmaPagesLeftToday(String count) {
+    return '$count pages left';
+  }
+
+  @override
+  String get khatmaReadNow => 'Read now';
+
+  @override
+  String get khatmaTodayDone => 'Today\'s portion done 🎉';
+
+  @override
+  String khatmaDaysLeft(String days) {
+    return '$days days left';
+  }
+
+  @override
+  String khatmaStreakLabel(String days) {
+    return '$days-day streak';
+  }
+
+  @override
+  String get khatmaCompleteLabel => 'complete';
+
+  @override
+  String get khatmaJuzMapTitle => 'Juz map';
+
+  @override
+  String get khatmaCreateTitle => 'Start a new Khatma';
+
+  @override
+  String get khatmaCreateSubtitle =>
+      'In how many days do you want to finish the Quran?';
+
+  @override
+  String khatmaDurationDaysLabel(String days) {
+    return '$days days';
+  }
+
+  @override
+  String get khatmaDurationRamadanNote => 'Ramadan';
+
+  @override
+  String get khatmaDeleteTitle => 'Cancel Khatma?';
+
+  @override
+  String get khatmaDeleteMessage =>
+      'Your current Khatma progress will be deleted.';
+
+  @override
+  String get khatmaCompletedTitle =>
+      'May Allah accept it — you completed the Quran';
+
+  @override
+  String get khatmaCompletedDua =>
+      'O Allah, have mercy on me through the Quran, and make it a guide, light, and mercy for me';
+
+  @override
+  String get khatmaReadWird => 'Read today\'s wird';
+
+  @override
+  String get khatmaReadAhead => 'Read the next wird';
+
+  @override
+  String get khatmaCompleteWird => 'I\'ve finished the wird';
+
+  @override
+  String khatmaWirdRangeLabel(String from, String to) {
+    return 'Pages $from – $to';
+  }
+
+  @override
+  String khatmaPagesOfTotal(String read, String total) {
+    return '$read of $total pages';
+  }
+
+  @override
+  String get khatmaWirdHint => 'Keep reading to the last page of the wird';
+
+  @override
   String mushafAyahsCount(String count) {
     return '$count ayahs';
   }
@@ -1837,4 +1996,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mushafIntroHelp => 'Feature tour';
+
+  @override
+  String get calculatedTimesNoticeTitle => 'Astronomically calculated times';
+
+  @override
+  String get calculatedTimesNoticeBody =>
+      'This city isn\'t in the official tables, so its prayer times are calculated astronomically and may differ by a few minutes from your country\'s official schedule.';
+
+  @override
+  String get calculatedTimesNoticeAction => 'OK, continue';
 }

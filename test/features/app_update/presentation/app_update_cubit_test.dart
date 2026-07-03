@@ -15,21 +15,25 @@ void main() {
       expect(await repo.isCurrentVersionSeen(), isFalse);
     });
 
-    test('isCurrentVersionSeen returns false when a different version stored',
-        () async {
-      SharedPreferences.setMockInitialValues({
-        'app_update_whats_new_seen_version': '0.0.1',
-      });
-      final repo = AppUpdateRepository();
-      expect(await repo.isCurrentVersionSeen(), isFalse);
-    });
+    test(
+      'isCurrentVersionSeen returns false when a different version stored',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'app_update_whats_new_seen_version': '0.0.1',
+        });
+        final repo = AppUpdateRepository();
+        expect(await repo.isCurrentVersionSeen(), isFalse);
+      },
+    );
 
-    test('isCurrentVersionSeen returns true after markCurrentVersionSeen',
-        () async {
-      final repo = AppUpdateRepository();
-      await repo.markCurrentVersionSeen();
-      expect(await repo.isCurrentVersionSeen(), isTrue);
-    });
+    test(
+      'isCurrentVersionSeen returns true after markCurrentVersionSeen',
+      () async {
+        final repo = AppUpdateRepository();
+        await repo.markCurrentVersionSeen();
+        expect(await repo.isCurrentVersionSeen(), isTrue);
+      },
+    );
 
     test('markCurrentVersionSeen stores kCurrentVersion', () async {
       final repo = AppUpdateRepository();

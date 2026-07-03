@@ -80,8 +80,8 @@ class ThemeSection extends StatelessWidget {
 
   String _localizedThemeLabel(AppLocalizations l, String themeKey) {
     switch (themeKey) {
-      case 'green':
-        return l.themeGreen;
+      case 'red':
+        return l.themeRed;
       case 'teal':
         return l.themeTeal;
       case 'gold':

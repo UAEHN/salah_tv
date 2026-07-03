@@ -39,5 +39,10 @@ void main() {
       // rather than firing a clearly-stale adhan.
       expect(calc.kAdhanCatchUpSeconds, lessThan(60));
     });
+
+    test('rescue catch-up covers short TV stalls after the live window', () {
+      expect(calc.kAdhanRescueCatchUpSeconds, greaterThan(60));
+      expect(calc.kAdhanRescueCatchUpSeconds, 300);
+    });
   });
 }

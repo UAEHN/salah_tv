@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import '../../../../core/diagnostics/adhan_journey_state.dart';
+import '../../../../core/diagnostics/diagnostic_level.dart';
 import '../../../settings/domain/entities/prayer_sound_mode.dart';
 import 'engine_telemetry_extension.dart';
 import 'prayer_cycle_base.dart';
+import 'prayer_diagnostics_extension.dart';
 import 'quran_mixin.dart';
 import 'takbeerat_mixin.dart';
 
@@ -34,17 +37,57 @@ const Duration _kSessionAdhkarDelay = Duration(minutes: 30);
 mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
   void tickIqama() {
     if (!s.isIqamaCountdown) return;
+    final dueAt = s.iqamaDueAt;
+    if (dueAt != null) {
+      final remaining = dueAt.difference(s.now);
+      if (remaining.inSeconds > 0) {
+        s.iqamaCountdown = remaining;
+        return;
+      }
+      s.isIqamaCountdown = false;
+      s.iqamaCountdown = Duration.zero;
+      unawaited(triggerIqama());
+      return;
+    }
     if (s.iqamaCountdown.inSeconds > 0) {
       s.iqamaCountdown -= const Duration(seconds: 1);
-    } else {
-      s.isIqamaCountdown = false;
-      unawaited(triggerIqama());
+      return;
     }
+    s.isIqamaCountdown = false;
+    unawaited(triggerIqama());
+  }
+
+  void checkIqamaRescue() {
+    final dueAt = s.iqamaDueAt;
+    if (dueAt == null) return;
+    if (s.isAdhanPlaying || s.isDuaPlaying || s.isIqamaPlaying) return;
+    if (s.now.isBefore(dueAt)) return;
+    if (settings.iqamaMode == PrayerSoundMode.off && !settings.isMosqueMode) {
+      s.iqamaDueAt = null;
+      return;
+    }
+    s.isIqamaCountdown = false;
+    s.iqamaCountdown = Duration.zero;
+    diag(
+      DiagnosticLevel.warning,
+      'iqama_rescue_triggered',
+      fields: {
+        'trigger_prayer': s.iqamaPrayerKey,
+        'late_sec': s.now.difference(dueAt).inSeconds,
+      },
+      forceUpload: true,
+    );
+    unawaited(triggerIqama());
   }
 
   // Issue 3: async so we can detect playIqama() failure and skip to Quran
   // resume immediately rather than waiting for the 4-minute fallback timer.
   Future<void> triggerIqama() async {
+    clearPrayerAlertError();
+    if (s.isIqamaPlaying) return;
+    s.isIqamaCountdown = false;
+    s.iqamaCountdown = Duration.zero;
+    s.iqamaDueAt = null;
     s.isIqamaPlaying = true;
     s.iqamaTriggerTime = s.now;
     final isSilent =
@@ -55,22 +98,128 @@ mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
         : _kSilentIqamaWindow;
     final window = isSilent ? silentWindow : const Duration(minutes: 4);
     final prayerKey = s.iqamaPrayerKey;
+    telPrayerAlertJourneyState(
+      alertType: 'iqama',
+      prayerKey: prayerKey,
+      state: AdhanJourneyState.fired,
+      stage: 'iqama_trigger_started',
+    );
+    diag(
+      DiagnosticLevel.info,
+      'iqama_trigger_started',
+      fields: {
+        'trigger_prayer': prayerKey,
+        'silent_visual_only': isSilent,
+        'fallback_window_sec': window.inSeconds,
+      },
+    );
     s.iqamaFallbackTimer = Timer(window, () {
       if (s.isIqamaPlaying) {
         telIqamaFallback(prayerKey, window.inSeconds, settings.isMosqueMode);
+        telPrayerAlertJourneyState(
+          alertType: 'iqama',
+          prayerKey: prayerKey,
+          state: AdhanJourneyState.failed,
+          stage: 'fallback_timeout',
+          reason: 'playback_window_expired',
+        );
+        markPrayerAlertError(
+          alertType: 'iqama',
+          prayerKey: prayerKey,
+          code: 'IQAMA_TIMEOUT',
+          detail: 'fallback_window=${window.inSeconds}s',
+        );
+        diag(
+          DiagnosticLevel.warning,
+          'iqama_fallback_triggered',
+          fields: {'trigger_prayer': prayerKey, 'after_sec': window.inSeconds},
+          forceUpload: true,
+        );
         s.iqamaWasNaturalCompletion = false;
         stopIqama();
       }
     });
     notify();
-    if (isSilent) return; // visual-only takeover, no audio
+    telPrayerAlertJourneyState(
+      alertType: 'iqama',
+      prayerKey: prayerKey,
+      state: AdhanJourneyState.notificationShown,
+      stage: 'visual_takeover_shown',
+    );
+    if (isSilent) {
+      telPrayerAlertJourneyState(
+        alertType: 'iqama',
+        prayerKey: prayerKey,
+        state: AdhanJourneyState.silentVisualOnly,
+        stage: 'silent_mode',
+        reason: settings.isMosqueMode ? 'mosque_mode' : 'iqama_mode_silent',
+      );
+      diag(
+        DiagnosticLevel.info,
+        'silent_mode',
+        fields: {
+          'trigger_prayer': prayerKey,
+          'alert_type': 'iqama',
+          'mosque_mode': settings.isMosqueMode,
+        },
+      );
+      diag(
+        DiagnosticLevel.info,
+        'iqama_visual_only',
+        fields: {'trigger_prayer': prayerKey},
+      );
+      return; // visual-only takeover, no audio
+    }
     final success = await audio.playIqama();
     if (!success && s.isIqamaPlaying) {
       telIqamaFail(prayerKey);
+      telPrayerAlertJourneyState(
+        alertType: 'iqama',
+        prayerKey: prayerKey,
+        state: AdhanJourneyState.failed,
+        stage: 'audio_start',
+        reason: 'play_returned_false',
+      );
+      markPrayerAlertError(
+        alertType: 'iqama',
+        prayerKey: prayerKey,
+        code: 'IQAMA_AUDIO_START_FAILED',
+      );
+      diag(
+        DiagnosticLevel.error,
+        'audio_failed',
+        fields: {
+          'trigger_prayer': prayerKey,
+          'alert_type': 'iqama',
+          'audio_stage': 'iqama_start',
+          'reason': 'play_returned_false',
+        },
+        forceUpload: true,
+      );
+      diag(
+        DiagnosticLevel.error,
+        'iqama_audio_start_failed',
+        fields: {'trigger_prayer': prayerKey},
+        forceUpload: true,
+      );
       // Audio failed to start — clean up immediately
       s.iqamaFallbackTimer?.cancel();
       s.iqamaWasNaturalCompletion = false;
       await stopIqama();
+      return;
+    }
+    if (success && s.isIqamaPlaying) {
+      telPrayerAlertJourneyState(
+        alertType: 'iqama',
+        prayerKey: prayerKey,
+        state: AdhanJourneyState.audioStarted,
+        stage: 'audio_start',
+      );
+      diag(
+        DiagnosticLevel.info,
+        'iqama_audio_start_succeeded',
+        fields: {'trigger_prayer': prayerKey},
+      );
     }
   }
 
@@ -79,8 +228,20 @@ mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
   Future<void> stopIqama() async {
     if (!s.isIqamaPlaying) return;
     telIqamaCompletedFromState(s);
+    telPrayerAlertJourneyState(
+      alertType: 'iqama',
+      prayerKey: s.iqamaPrayerKey,
+      state: AdhanJourneyState.audioCompleted,
+      stage: 'iqama_completed',
+    );
+    diag(
+      DiagnosticLevel.info,
+      'iqama_completed',
+      fields: {'trigger_prayer': s.iqamaPrayerKey},
+    );
     s.iqamaWasNaturalCompletion = true; // reset for next cycle
     s.isIqamaPlaying = false;
+    s.iqamaDueAt = null;
     s.activeCyclePrayerKey = ''; // cycle fully done — release card highlight
     s.iqamaFallbackTimer?.cancel();
     await audio.stop();
@@ -88,6 +249,11 @@ mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
     // screen shows the silence-phone takeover during the actual prayer.
     if (settings.isMosqueMode) {
       s.prayerInProgressEndsAt = s.now.add(_kMosquePrayerWindow);
+      diag(
+        DiagnosticLevel.info,
+        'mosque_prayer_window_started',
+        fields: {'duration_min': _kMosquePrayerWindow.inMinutes},
+      );
     }
     // Schedule the after-prayer adhkar takeover (gated by the adhkar setting
     // and its own dedicated toggle, so it can be turned off without disabling

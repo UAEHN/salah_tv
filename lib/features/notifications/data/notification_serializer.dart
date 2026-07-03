@@ -5,6 +5,7 @@ import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../prayer/domain/entities/daily_prayer_times.dart';
 import '../../settings/domain/entities/app_settings.dart';
+import '../../settings/domain/entities/custom_adhan.dart';
 import 'notification_channel_resolver.dart';
 import 'notification_payload_factory.dart';
 
@@ -27,20 +28,22 @@ class NotificationSerializer {
   String build(List<DailyPrayerTimes> days, AppSettings settings) {
     final l = lookupAppLocalizations(Locale(settings.locale));
     final adhan = _channels.resolveAdhan(settings);
+    final iqama = _channels.resolveIqama(settings);
     final notifications = <Map<String, Object?>>[];
     for (var i = 0; i < days.length; i++) {
-      _factory.addForDay(notifications, days[i], i, settings, l, adhan);
+      _factory.addForDay(notifications, days[i], i, settings, l, adhan, iqama);
     }
     return jsonEncode({
       'notifications': notifications,
-      'customAdhans': _customAdhansPayload(settings),
+      'customAdhans': _customSoundsPayload(settings.customAdhans),
+      'customIqamas': _customSoundsPayload(settings.customIqamas),
       'meta': {'horizonDays': days.length, 'locale': settings.locale},
     });
   }
 
-  List<Map<String, String>> _customAdhansPayload(AppSettings s) => s
-      .customAdhans
-      .where((c) => c.contentUri.isNotEmpty)
-      .map((c) => {'fileName': c.fileName, 'contentUri': c.contentUri})
-      .toList(growable: false);
+  List<Map<String, String>> _customSoundsPayload(List<CustomAdhan> customs) =>
+      customs
+          .where((c) => c.contentUri.isNotEmpty)
+          .map((c) => {'fileName': c.fileName, 'contentUri': c.contentUri})
+          .toList(growable: false);
 }

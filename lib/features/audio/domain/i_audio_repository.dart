@@ -10,6 +10,9 @@ abstract class IAudioRepository {
   Future<void> playPrayerAnnouncement(String prayerKey);
   Future<void> stop();
 
+  Stream<void> get onQuranError;
+  Stream<bool> get onQuranLoading;
+
   Future<void> playQuranFromServer(String serverUrl);
   Future<void> pauseQuranPlayer();
   Future<void> resumeOrRestartQuranPlayer(String serverUrl);

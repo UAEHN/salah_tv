@@ -3,6 +3,15 @@ import '../entities/daily_prayer_times.dart';
 import '../prayer_time_calculator.dart' as calc;
 import 'prayer_cycle_base.dart';
 
+/// Delay from app-open before the recovered session adhkar takeover appears.
+/// Short, so the user sees the adhkar shortly after opening, but not instantly
+/// over the home screen they just landed on.
+const Duration _kSessionAdhkarRecoveryDelay = Duration(minutes: 1);
+
+/// How long before Maghrib the evening session window closes for the catch-up.
+/// Mirrors the user-requested «قبل المغرب بـ15 دقيقة» cutoff.
+const Duration _kEveningWindowEndBeforeMaghrib = Duration(minutes: 15);
+
 /// Handles iqama recovery when the app resumes after missing a prayer trigger.
 /// Issue 8: marks all missed prayers to prevent duplicate adhan fires.
 mixin RecoveryMixin on PrayerCycleBase {
@@ -29,7 +38,6 @@ mixin RecoveryMixin on PrayerCycleBase {
     }
 
     final iqamaDelayMin = settings.iqamaDelays[missed.key] ?? 0;
-    if (iqamaDelayMin <= 0) return;
 
     // Iqama target = adjusted prayer time + iqama delay
     final iqamaAt = calc
@@ -45,11 +53,88 @@ mixin RecoveryMixin on PrayerCycleBase {
       );
       s.isIqamaCountdown = true;
       s.iqamaCountdown = remaining;
+      s.iqamaDueAt = iqamaAt;
       s.iqamaPrayerKey = missed.key;
       s.currentAdhanPrayerKey = missed.key;
       s.activeCyclePrayerKey = missed.key; // lock card highlight on recovery
     }
     // If remaining <= 0 the iqama window has already closed — nothing to show
+  }
+
+  /// Loads today's persisted "session adhkar shown" categories into the
+  /// in-memory set so the app-open catch-up survives a full restart. Fire it
+  /// (unawaited) on start/resume: it completes in a few ms — well inside the
+  /// 1-min catch-up delay — and the fire-time dedup in [checkSessionAdhkar]
+  /// catches the rare case where it lands after [recoverSessionAdhkar] scheduled.
+  Future<void> hydrateSessionAdhkarShown() async {
+    final port = sessionAdhkarLog;
+    if (port == null) return;
+    final shown = await port.shownOn(calc.dateKey(s.now));
+    if (shown.isNotEmpty) s.sessionAdhkarShownToday.addAll(shown);
+  }
+
+  /// App-open catch-up for the morning/evening session adhkar: schedules the
+  /// takeover ~1 min after open when we land inside an adhkar window that the
+  /// app missed because it was closed during Fajr/Asr. The live cycle's own
+  /// [stopIqama] still schedules it when the app *is* open at prayer time —
+  /// this only fills the gap, deduped per day via [sessionAdhkarShownToday].
+  void recoverSessionAdhkar() {
+    if (s.todayPrayers == null) return;
+    // Gated by the master adhkar toggle; never shown in mosque mode (the imam
+    // leads it live), matching the live [IqamaMixin.stopIqama] gate.
+    if (!settings.isAdhkarEnabled || settings.isMosqueMode) return;
+    // A live cycle owns the screen and schedules the session itself — stay out.
+    if (s.isCycleActive) return;
+    // Already scheduled (live path), already on screen, or already shown today.
+    if (s.sessionAdhkarStartsAt != null || s.isSessionAdhkarPlaying) return;
+    // Never overlap the «دعاء بعد الصلاة» takeover (its own schedule/window).
+    if (s.afterPrayerAdhkarStartsAt != null || s.isAfterPrayerAdhkarPlaying) {
+      return;
+    }
+
+    final session = _sessionForRecovery();
+    if (session.isEmpty) return;
+    if (s.sessionAdhkarShownToday.contains(session)) return;
+
+    s.sessionAdhkarCategory = session;
+    s.sessionAdhkarStartsAt = s.now.add(_kSessionAdhkarRecoveryDelay);
+  }
+
+  /// Which session window the current time falls in, computed from prayer times
+  /// directly (not [nextPrayerKey], which may be stale right after a resume).
+  /// Morning: after Fajr, before Dhuhr, before 10:00. Evening: after Asr, with
+  /// more than 15 min still left before Maghrib. Otherwise ''.
+  String _sessionForRecovery() {
+    final prayers = s.todayPrayers!.prayersOnly;
+    DateTime? timeFor(String key) {
+      for (final p in prayers) {
+        if (p.key == key) {
+          return calc.adjustedPrayerTime(p, settings.adhanOffsets);
+        }
+      }
+      return null;
+    }
+
+    final now = s.now;
+    final fajr = timeFor('fajr');
+    final dhuhr = timeFor('dhuhr');
+    final asr = timeFor('asr');
+    final maghrib = timeFor('maghrib');
+
+    if (fajr != null &&
+        dhuhr != null &&
+        !now.isBefore(fajr) &&
+        now.isBefore(dhuhr) &&
+        now.hour < 10) {
+      return 'morning';
+    }
+    if (asr != null &&
+        maghrib != null &&
+        !now.isBefore(asr) &&
+        now.isBefore(maghrib.subtract(_kEveningWindowEndBeforeMaghrib))) {
+      return 'evening';
+    }
+    return '';
   }
 
   /// Issue 8: mark ALL missed prayers in adhansToday so checkAdhanTrigger

@@ -71,5 +71,11 @@ class NoOpPrayerAudioPort implements IPrayerAudioPort {
   Stream<int> get onQuranSurahCompleted => const Stream.empty();
 
   @override
+  Stream<void> get onQuranError => const Stream.empty();
+
+  @override
+  Stream<bool> get onQuranLoading => const Stream.empty();
+
+  @override
   void setQuranNextSurahResolver(NextSurahResolver? resolver) {}
 }

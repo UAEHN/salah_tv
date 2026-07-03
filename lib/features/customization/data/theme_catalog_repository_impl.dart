@@ -10,7 +10,7 @@ import 'mobile_theme_palettes.dart';
 /// Maps every palette key to its localization label key.
 const Map<String, String> _kThemeLabelKeys = {
   // Legacy (TV-shared) — labels already exist in app_*.arb.
-  'green': 'themeGreen',
+  'red': 'themeRed',
   'teal': 'themeTeal',
   'gold': 'themeGold',
   'blue': 'themeBlue',

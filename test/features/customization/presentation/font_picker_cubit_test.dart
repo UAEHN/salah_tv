@@ -14,9 +14,7 @@ void main() {
     test('load → Loaded with current family', () async {
       final writer = FakeAppearanceWriter();
       final cubit = FontPickerCubit(
-        getAll: GetAllQuranFontsUseCase(
-          const QuranFontCatalogRepositoryImpl(),
-        ),
+        getAll: GetAllQuranFontsUseCase(const QuranFontCatalogRepositoryImpl()),
         apply: ApplyQuranFontUseCase(writer),
       );
 
@@ -32,9 +30,7 @@ void main() {
     test('select → flips selection and persists', () async {
       final writer = FakeAppearanceWriter();
       final cubit = FontPickerCubit(
-        getAll: GetAllQuranFontsUseCase(
-          const QuranFontCatalogRepositoryImpl(),
-        ),
+        getAll: GetAllQuranFontsUseCase(const QuranFontCatalogRepositoryImpl()),
         apply: ApplyQuranFontUseCase(writer),
       );
 
@@ -51,9 +47,7 @@ void main() {
       final writer = FakeAppearanceWriter()
         ..nextFailure = const CacheFailure('boom');
       final cubit = FontPickerCubit(
-        getAll: GetAllQuranFontsUseCase(
-          const QuranFontCatalogRepositoryImpl(),
-        ),
+        getAll: GetAllQuranFontsUseCase(const QuranFontCatalogRepositoryImpl()),
         apply: ApplyQuranFontUseCase(writer),
       );
 

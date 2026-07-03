@@ -59,37 +59,39 @@ const _testCatalog = <RemoteOccasionDto>[
 ];
 
 IslamicOccasionsRepositoryImpl _buildRepo() => IslamicOccasionsRepositoryImpl(
-      remoteSource: _ThrowingRemote(),
-      localSource: _StubLocal(_testCatalog),
-      versionInfo: _StubVersion(),
-    );
+  remoteSource: _ThrowingRemote(),
+  localSource: _StubLocal(_testCatalog),
+  versionInfo: _StubVersion(),
+);
 
 void main() {
   group('IslamicOccasionsRepositoryImpl', () {
-    test('returns a Right with non-null when an occasion is within window',
-        () async {
-      final repo = _buildRepo();
-      DateTime probe = DateTime(2026, 1, 1);
-      var found = false;
-      for (var i = 0; i < 365; i++) {
-        final hijri = HijriCalendar.fromDate(probe);
-        final match = _testCatalog.any(
-          (o) => o.hijriMonth == hijri.hMonth && o.hijriDay == hijri.hDay,
-        );
-        if (match) {
-          found = true;
-          break;
+    test(
+      'returns a Right with non-null when an occasion is within window',
+      () async {
+        final repo = _buildRepo();
+        DateTime probe = DateTime(2026, 1, 1);
+        var found = false;
+        for (var i = 0; i < 365; i++) {
+          final hijri = HijriCalendar.fromDate(probe);
+          final match = _testCatalog.any(
+            (o) => o.hijriMonth == hijri.hMonth && o.hijriDay == hijri.hDay,
+          );
+          if (match) {
+            found = true;
+            break;
+          }
+          probe = probe.add(const Duration(days: 1));
         }
-        probe = probe.add(const Duration(days: 1));
-      }
-      expect(found, isTrue, reason: 'catalog should hit within a year');
+        expect(found, isTrue, reason: 'catalog should hit within a year');
 
-      final result = await repo.getNextOccasion(probe);
-      result.fold((_) => fail('expected Right'), (occasion) {
-        expect(occasion, isNotNull);
-        expect(occasion!.daysUntil, 0);
-      });
-    });
+        final result = await repo.getNextOccasion(probe);
+        result.fold((_) => fail('expected Right'), (occasion) {
+          expect(occasion, isNotNull);
+          expect(occasion!.daysUntil, 0);
+        });
+      },
+    );
 
     test('daysUntil increases as the start date moves earlier', () async {
       final repo = _buildRepo();

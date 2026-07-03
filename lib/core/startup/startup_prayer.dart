@@ -15,18 +15,29 @@ import '../../features/prayer/data/prayer_cache_db_queries.dart';
 import '../../features/prayer/data/prayer_cache_db_writer.dart';
 import '../../features/prayer/data/prayer_city_downloader.dart';
 import '../../features/prayer/domain/cancellation_token.dart';
+import '../../features/prayer/data/session_adhkar_log_prefs.dart';
 import '../../features/prayer/domain/i_prayer_audio_port.dart';
 import '../../features/prayer/domain/i_takbeerat_audio_port.dart';
 import '../../features/prayer/domain/i_prayer_times_repository.dart';
+import '../../features/prayer/domain/i_session_adhkar_log_port.dart';
 import '../../features/prayer/domain/usecases/check_city_update_use_case.dart';
 import '../../features/prayer/domain/usecases/download_city_use_case.dart';
+import '../../features/settings/data/adhan_preview_service.dart';
+import '../../features/settings/data/android_device_audio_media_port.dart';
 import '../../features/settings/data/android_media_store_publisher.dart';
 import '../../features/settings/data/custom_adhan_repository.dart';
+import '../../features/settings/data/noop_notification_sound_publisher.dart';
+import '../../features/settings/domain/i_adhan_preview_port.dart';
+import '../../features/settings/domain/i_device_audio_media_port.dart';
+import '../../features/settings/presentation/bloc/adhan_preview_cubit.dart';
 import '../../features/settings/data/datasources/custom_adhan_file_datasource.dart';
 import '../../features/settings/domain/entities/app_settings.dart';
 import '../../features/settings/domain/i_custom_adhan_repository.dart';
 import '../../features/settings/domain/i_notification_sound_publisher.dart';
+import '../../features/settings/domain/usecases/delete_custom_adhan_usecase.dart';
+import '../../features/settings/domain/usecases/import_custom_adhan_usecase.dart';
 import '../../injection.dart';
+import '../diagnostics/app_diagnostics.dart';
 import '../platform_config.dart';
 
 Future<void> registerPrayerServices(
@@ -134,8 +145,12 @@ Future<void> registerPrayerServices(
   }
 
   // ── Audio services ───────────────────────────────────────────────────────
+  // TV plays custom adhan/iqama in-app (never via a notification channel), so
+  // it uses a no-op publisher; only mobile needs the real MediaStore entry.
   getIt.registerLazySingleton<INotificationSoundPublisher>(
-    () => AndroidMediaStorePublisher(),
+    () => platformConfig.isTV
+        ? const NoOpNotificationSoundPublisher()
+        : AndroidMediaStorePublisher(),
   );
   getIt.registerLazySingleton<ICustomAdhanRepository>(
     () => CustomAdhanRepository(
@@ -144,12 +159,47 @@ Future<void> registerPrayerServices(
     ),
   );
 
+  // TV-only: backs the MediaStore D-pad browser used to import custom
+  // adhan/iqama sounds. Mobile uses the system SAF picker instead.
+  // The import/delete use-cases are registered on mobile inside
+  // startup_features' mobile-only block, so TV registers its own copies here
+  // (the TV adhan/iqama sound pickers need them). No double-registration: the
+  // two paths are mutually exclusive on platform.
+  if (platformConfig.isTV) {
+    getIt.registerLazySingleton<IDeviceAudioMediaPort>(
+      () => const AndroidDeviceAudioMediaPort(),
+    );
+    getIt.registerFactory<ImportCustomAdhanUseCase>(
+      () => ImportCustomAdhanUseCase(getIt<ICustomAdhanRepository>()),
+    );
+    getIt.registerFactory<DeleteCustomAdhanUseCase>(
+      () => DeleteCustomAdhanUseCase(getIt<ICustomAdhanRepository>()),
+    );
+    // Sound preview (test button) for the TV adhan/iqama pickers — own
+    // AudioPlayer so it never collides with the cycle.
+    getIt.registerLazySingleton<IAdhanPreviewPort>(
+      () => AdhanPreviewService(customAdhans: getIt<ICustomAdhanRepository>()),
+    );
+    getIt.registerFactory<AdhanPreviewCubit>(
+      () => AdhanPreviewCubit(getIt<IAdhanPreviewPort>()),
+    );
+  }
+
   final audioService = AudioService(
     customAdhans: getIt<ICustomAdhanRepository>(),
+    diagnostics: getIt.isRegistered<AppDiagnostics>()
+        ? getIt<AppDiagnostics>()
+        : null,
   );
   getIt.registerSingleton<IAudioRepository>(audioService);
   getIt.registerSingleton<IPrayerAudioPort>(
     platformConfig.isTV ? audioService : NoOpPrayerAudioPort(),
+  );
+
+  // Persists which morning/evening session adhkar were already shown today, so
+  // the app-open catch-up never re-shows one after a full app restart.
+  getIt.registerLazySingleton<ISessionAdhkarLogPort>(
+    () => SessionAdhkarLogPrefs(),
   );
 
   // Eid Takbeerat — standalone player on TV, silent shim on mobile.

@@ -15,9 +15,7 @@ void main() {
   group('kill switches', () {
     test('feature disabled → hidden even on Eid day', () async {
       final v = await ShouldShowTakbeeratCard(
-        configRepo: _FakeConfigRepo(
-          _config(enabled: false),
-        ),
+        configRepo: _FakeConfigRepo(_config(enabled: false)),
         hijri: _FakeHijri(_eidDay()),
       ).call(anyDate);
       expect(v.getOrElse(() => EidVisibility.hidden()).hasCard, isFalse);
@@ -122,24 +120,22 @@ TakbeeratConfig _config({
   bool enabled = true,
   bool hasForceHide = false,
   bool hasForceShow = false,
-}) =>
-    TakbeeratConfig(
-      isFeatureEnabled: enabled,
-      hasForceHide: hasForceHide,
-      hasForceShow: hasForceShow,
-      fitrStartOffsetDays: 1,
-      fitrEndOffsetDays: 0,
-      adhaStartOffsetDays: 2,
-      adhaEndOffsetDays: 3,
-      reciters: const [],
-    );
+}) => TakbeeratConfig(
+  isFeatureEnabled: enabled,
+  hasForceHide: hasForceHide,
+  hasForceShow: hasForceShow,
+  fitrStartOffsetDays: 1,
+  fitrEndOffsetDays: 0,
+  adhaStartOffsetDays: 2,
+  adhaEndOffsetDays: 3,
+  reciters: const [],
+);
 
 HijriSnapshot _hijri({
   required int month,
   required int day,
   required int length,
-}) =>
-    HijriSnapshot(year: 1447, month: month, day: day, lengthOfMonth: length);
+}) => HijriSnapshot(year: 1447, month: month, day: day, lengthOfMonth: length);
 
 HijriSnapshot _eidDay() => _hijri(month: 10, day: 1, length: 29);
 HijriSnapshot _ordinaryDay() => _hijri(month: 7, day: 15, length: 29);

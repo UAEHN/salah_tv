@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.ghasaq.app.notifications.scheduler.RebuildCoordinator
+import com.ghasaq.app.notifications.store.NativeDiagnostics
 import com.ghasaq.app.notifications.worker.RefreshScheduler
+import org.json.JSONObject
 
 /**
  * Re-establishes the engine after the device reboots, the package updates,
@@ -24,8 +26,16 @@ class BootReceiver : BroadcastReceiver() {
         val action = intent.action ?: return
         if (action !in HANDLED_ACTIONS) return
         Log.i(TAG, "Rebuilding alarms after action=$action")
-        RebuildCoordinator.rebuildAll(context)
+        val diag = NativeDiagnostics(context)
+        diag.record("INFO", "boot_receiver_started", JSONObject().apply {
+            put("action", action)
+        })
+        val rebuilt = RebuildCoordinator.rebuildAll(context)
         RefreshScheduler.ensurePeriodicWork(context)
+        diag.record("INFO", "boot_receiver_finished", JSONObject().apply {
+            put("action", action)
+            put("rebuilt", rebuilt)
+        })
     }
 
     companion object {

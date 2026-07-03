@@ -7,7 +7,7 @@ class ThemePaletteInfo {
   final String id;
 
   /// Localization key for the human-readable label. The presentation layer
-  /// resolves it against `AppLocalizations` (e.g. `'themeGreen'`).
+  /// resolves it against `AppLocalizations` (e.g. `'themeGold'`).
   final String labelKey;
 
   /// 0xAARRGGBB ARGB int for the primary accent.

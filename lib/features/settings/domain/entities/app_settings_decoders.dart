@@ -37,6 +37,14 @@ String migrateToHafsReciterUrl(String url) {
   return url;
 }
 
+/// The green («زمردي») accent theme was removed in favour of red («ياقوتي»).
+/// Migrate any stored `'green'` key so upgrading users land on the new red
+/// theme instead of silently falling back to gold. No-op for every other key.
+String migrateThemeColorKey(String? key) {
+  if (key == null || key.isEmpty) return 'gold';
+  return key == 'green' ? 'red' : key;
+}
+
 Map<String, bool> decodeBoolMap(dynamic raw, Map<String, bool> fallback) {
   if (raw == null) return fallback;
   try {
@@ -74,6 +82,18 @@ List<CustomAdhan> decodeCustomAdhans(dynamic raw) {
 String validatedAdhanSound(String? key, List<CustomAdhan> customs) {
   if (key == null) return 'default';
   if (const ['default', 'adhan2'].contains(key)) return key;
+  final fileName = CustomAdhan.extractFileName(key);
+  if (fileName != null && customs.any((c) => c.fileName == fileName)) {
+    return key;
+  }
+  return 'default';
+}
+
+/// Iqama variant of [validatedAdhanSound]. The only built-in is `'default'`
+/// (the bundled `audio/iqama.mp3`); everything else must be a `custom:<file>`
+/// key resolving to an existing [customs] entry, else falls back to default.
+String validatedIqamaSound(String? key, List<CustomAdhan> customs) {
+  if (key == null || key == 'default') return 'default';
   final fileName = CustomAdhan.extractFileName(key);
   if (fileName != null && customs.any((c) => c.fileName == fileName)) {
     return key;

@@ -34,6 +34,8 @@ class NotificationHealthService implements INotificationHealthPort {
   NotificationHealth _decodeHealth(Map<String, dynamic> json) {
     final oem = json['oem'] as Map<String, dynamic>? ?? const {};
     final logRaw = json['scheduleLog'] as List? ?? const [];
+    final channelsRaw = json['channels'] as List? ?? const [];
+    final diagnosticsRaw = json['nativeDiagnostics'] as List? ?? const [];
     return NotificationHealth(
       postNotifications: json['postNotifications'] as bool? ?? false,
       exactAlarm: json['exactAlarm'] as bool? ?? false,
@@ -49,6 +51,12 @@ class NotificationHealthService implements INotificationHealthPort {
         logRaw.cast<Map>().map(
           (e) => ScheduleLogEntry.fromJson(e.cast<String, dynamic>()),
         ),
+      ),
+      channels: List.unmodifiable(
+        channelsRaw.cast<Map>().map((e) => e.cast<String, Object?>()),
+      ),
+      nativeDiagnostics: List.unmodifiable(
+        diagnosticsRaw.cast<Map>().map((e) => e.cast<String, Object?>()),
       ),
     );
   }

@@ -1,12 +1,14 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/diagnostics/app_diagnostics.dart';
 import '../../../settings/domain/entities/app_settings.dart';
 import '../../domain/i_prayer_audio_port.dart';
 import '../../domain/i_takbeerat_audio_port.dart';
 import '../../../analytics/domain/i_analytics_service.dart';
 import '../../../notifications/domain/i_prayer_notification_port.dart';
 import '../../domain/i_prayer_times_repository.dart';
+import '../../domain/i_session_adhkar_log_port.dart';
 import '../../domain/prayer_cycle_engine.dart';
 import 'prayer_displayed_date_controller.dart';
 import 'prayer_event.dart';
@@ -26,7 +28,9 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
     ITakbeeratAudioPort takbeeratAudio,
     AppSettings initialSettings, {
     IPrayerNotificationPort? notifications,
+    ISessionAdhkarLogPort? sessionAdhkarLog,
     IAnalyticsService? analytics,
+    AppDiagnostics? diagnostics,
     void Function(int)? onCurrentSurahChanged,
   }) : _analytics = analytics,
        _onCurrentSurahChanged = onCurrentSurahChanged,
@@ -39,7 +43,9 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
       initialSettings,
       _onEngineChanged,
       notifications: notifications,
+      sessionAdhkarLog: sessionAdhkarLog,
       analytics: analytics,
+      diagnostics: diagnostics,
     );
     on<PrayerEngineRefreshed>(_onRefreshed);
     on<PrayerStarted>(_onStarted);

@@ -58,12 +58,66 @@ class _NotificationHealthScreenState extends State<NotificationHealthScreen> {
                   ),
                 ),
                 ScheduleLogList(entries: state.health.scheduleLog),
+                if (state.health.channels.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  _SectionTitle('Notification channels'),
+                  _JsonList(items: state.health.channels.take(12).toList()),
+                ],
+                if (state.health.nativeDiagnostics.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  _SectionTitle('Native diagnostics'),
+                  _JsonList(
+                    items: state.health.nativeDiagnostics.take(20).toList(),
+                  ),
+                ],
                 const SizedBox(height: 24),
               ],
             ),
           );
         },
       ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String text;
+
+  const _SectionTitle(this.text);
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: Text(text, style: Theme.of(context).textTheme.titleMedium),
+  );
+}
+
+class _JsonList extends StatelessWidget {
+  final List<Map<String, Object?>> items;
+
+  const _JsonList({required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: items.length,
+      separatorBuilder: (_, _) => const Divider(height: 0),
+      itemBuilder: (_, index) {
+        final item = items[index];
+        final title = (item['name'] ?? item['id'] ?? '-').toString();
+        return ListTile(
+          dense: true,
+          title: Text(title, textDirection: TextDirection.ltr),
+          subtitle: Text(
+            item.toString(),
+            textDirection: TextDirection.ltr,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+        );
+      },
     );
   }
 }

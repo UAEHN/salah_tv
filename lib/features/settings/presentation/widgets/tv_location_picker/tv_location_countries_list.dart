@@ -74,7 +74,7 @@ class TvLocationCountriesList extends StatelessWidget {
           case OnlineGeocodingStatus.empty:
             return TvLocationEmptyState(message: l.settingsSearchOnlineEmpty);
           case OnlineGeocodingStatus.idle:
-            return TvLocationEmptyState(message: l.settingsNoMatchingCountries);
+            return TvLocationEmptyState(message: l.settingsSearchOnlinePrompt);
           case OnlineGeocodingStatus.results:
             final settings = context.watch<SettingsProvider>().settings;
             final tc = ThemeColors.of(settings.isDarkMode);

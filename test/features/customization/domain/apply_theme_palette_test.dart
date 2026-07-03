@@ -17,20 +17,22 @@ void main() {
       expect(writer.themeKeysWritten, ['desert_dawn']);
     });
 
-    test('returns Left(CacheFailure) on empty key without touching writer',
-        () async {
-      final writer = FakeAppearanceWriter();
-      final useCase = ApplyThemePaletteUseCase(writer);
+    test(
+      'returns Left(CacheFailure) on empty key without touching writer',
+      () async {
+        final writer = FakeAppearanceWriter();
+        final useCase = ApplyThemePaletteUseCase(writer);
 
-      final result = await useCase('');
+        final result = await useCase('');
 
-      expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) => expect(failure, isA<CacheFailure>()),
-        (_) => fail('expected Left'),
-      );
-      expect(writer.themeKeysWritten, isEmpty);
-    });
+        expect(result.isLeft(), isTrue);
+        result.fold(
+          (failure) => expect(failure, isA<CacheFailure>()),
+          (_) => fail('expected Left'),
+        );
+        expect(writer.themeKeysWritten, isEmpty);
+      },
+    );
 
     test('propagates writer failure', () async {
       final writer = FakeAppearanceWriter()

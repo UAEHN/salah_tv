@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/app_colors.dart';
+import '../../../../../core/widgets/worldwide_search_hint.dart';
 import '../../../domain/entities/online_geocoding_result.dart';
 import '../../bloc/location_selection_cubit.dart';
 import '../../bloc/online_geocoding_cubit.dart';
@@ -31,7 +32,13 @@ class TvLocationPickerDialog extends StatelessWidget {
             next.downloadStatus == CityDownloadStatus.ready;
         return worldSaved || downloadReady;
       },
-      listener: (context, _) => Navigator.of(context).pop(),
+      // Pop with whether a *calculated* (world) city was just saved, so the
+      // opener can surface the calculated-times notice. DB downloads end in
+      // `downloadStatus == ready`; world saves end in `idle`.
+      listener: (context, state) => Navigator.of(context).pop(
+        state.status == LocationSelectionStatus.saved &&
+            state.downloadStatus == CityDownloadStatus.idle,
+      ),
       child: BlocBuilder<TvLocationPickerCubit, TvLocationPickerState>(
         builder: (context, pickerState) =>
             BlocBuilder<LocationSelectionCubit, LocationSelectionState>(
@@ -86,12 +93,18 @@ class _Body extends StatelessWidget {
                           .showCountries,
                     ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 18),
+                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
                       child: TvLocationSearchField(
                         hintText: _hint(context),
                         onChanged: (q) => _onQueryChanged(context, q),
                       ),
                     ),
+                    if (!pickerState.showsCities)
+                      WorldwideSearchHint(
+                        textColor: tc.textMuted,
+                        accentColor: accent,
+                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 14),
+                      ),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),

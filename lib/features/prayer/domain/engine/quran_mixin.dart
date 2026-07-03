@@ -16,7 +16,39 @@ mixin QuranMixin on PrayerCycleBase, ContinuousModeMixin, QuranModesMixin {
   ///  • stopped       → fresh start in the configured playback mode
   ///
   /// Paused-by-adhan is owned by the cycle; toggle is a no-op in that state.
+  /// How long the Quran network-error banner stays up before the tick clears
+  /// it. Long enough to read on a TV across the room, short enough not to linger.
+  static const Duration _kQuranErrorWindow = Duration(seconds: 10);
+
+  /// Records a Quran load/play failure so the home screen can show a non-silent
+  /// message. Ignored when the user has Quran off (nothing was meant to play).
+  void markQuranError() {
+    if (!s.isQuranPlaying) return;
+    s.quranErrorAt = s.now;
+    notify();
+  }
+
+  /// Mirrors the audio layer's loading/buffering signal into state. Clears any
+  /// error banner when loading resumes (the stream is alive again).
+  void setQuranLoading(bool loading) {
+    if (loading) s.quranErrorAt = null;
+    if (s.isQuranLoading == loading) return;
+    s.isQuranLoading = loading;
+    notify();
+  }
+
+  /// Clears the error banner once its display window elapses. Called from tick.
+  void clearStaleQuranError() {
+    final at = s.quranErrorAt;
+    if (at == null) return;
+    if (s.now.difference(at) >= _kQuranErrorWindow) {
+      s.quranErrorAt = null;
+      notify();
+    }
+  }
+
   void toggleQuran(String? serverUrl) {
+    s.quranErrorAt = null; // any user interaction dismisses the error banner
     if (s.isQuranPausedForAdhan) return;
     if (s.isQuranPausedByUser) {
       _resumeByUser(serverUrl);

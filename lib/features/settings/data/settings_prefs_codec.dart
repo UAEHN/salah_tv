@@ -29,6 +29,7 @@ AppSettings loadAppSettings(SharedPreferences prefs) => appSettingsFromMap({
   'quranReciterName': prefs.getString(PrefsKeys.reciterName),
   'quranReciterServerUrl': prefs.getString(PrefsKeys.reciterUrl),
   'favoriteReciterServerUrls': prefs.getString(PrefsKeys.favReciters),
+  'hasExplicitReciterChoice': prefs.getBool(PrefsKeys.reciterChoiceExplicit),
   'selectedCountry': prefs.getString(PrefsKeys.country),
   'selectedCity': prefs.getString(PrefsKeys.city),
   'selectedLatitude': prefs.getDouble(PrefsKeys.lat),
@@ -41,6 +42,8 @@ AppSettings loadAppSettings(SharedPreferences prefs) => appSettingsFromMap({
   'utcOffsetHours': prefs.getDouble(PrefsKeys.utcOff),
   'layoutStyle': prefs.getString(PrefsKeys.layout),
   'adhanSound': prefs.getString(PrefsKeys.adhanSound),
+  'iqamaSound': prefs.getString(PrefsKeys.iqamaSound),
+  'customIqamas': prefs.getString(PrefsKeys.customIqamas),
   'isAnalogClock': prefs.getBool(PrefsKeys.analog),
   'isAdhkarEnabled': prefs.getBool(PrefsKeys.adhkar),
   'isAfterPrayerAdhkarEnabled': prefs.getBool(PrefsKeys.afterPrayerAdhkar),
@@ -100,6 +103,10 @@ Future<void> saveAppSettings(SharedPreferences prefs, AppSettings s) async {
     PrefsKeys.favReciters,
     jsonEncode(s.favoriteReciterServerUrls),
   );
+  await prefs.setBool(
+    PrefsKeys.reciterChoiceExplicit,
+    s.hasExplicitReciterChoice,
+  );
   await prefs.setString(PrefsKeys.country, s.selectedCountry);
   await prefs.setString(PrefsKeys.city, s.selectedCity);
   await setOrRemoveDouble(prefs, PrefsKeys.lat, s.selectedLatitude);
@@ -112,6 +119,11 @@ Future<void> saveAppSettings(SharedPreferences prefs, AppSettings s) async {
   await setOrRemoveDouble(prefs, PrefsKeys.utcOff, s.utcOffsetHours);
   await prefs.setString(PrefsKeys.layout, s.layoutStyle);
   await prefs.setString(PrefsKeys.adhanSound, s.adhanSound);
+  await prefs.setString(PrefsKeys.iqamaSound, s.iqamaSound);
+  await prefs.setString(
+    PrefsKeys.customIqamas,
+    jsonEncode(s.customIqamas.map((c) => c.toJson()).toList()),
+  );
   await prefs.setBool(PrefsKeys.analog, s.isAnalogClock);
   await prefs.setBool(PrefsKeys.adhkar, s.isAdhkarEnabled);
   await prefs.setBool(

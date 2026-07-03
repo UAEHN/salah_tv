@@ -22,6 +22,10 @@ class MobileMushafPageHeader extends StatelessWidget {
   final VoidCallback onSettings;
   final VoidCallback onShowIntro;
 
+  /// Wird mode: hide the surah-index, page-jump and bookmark controls (they
+  /// navigate out of / are irrelevant to the constrained wird range).
+  final bool restricted;
+
   const MobileMushafPageHeader({
     super.key,
     required this.pageNumber,
@@ -32,6 +36,7 @@ class MobileMushafPageHeader extends StatelessWidget {
     required this.onSaveBookmark,
     required this.onSettings,
     required this.onShowIntro,
+    this.restricted = false,
   });
 
   @override
@@ -52,21 +57,29 @@ class MobileMushafPageHeader extends StatelessWidget {
                 onPressed: onBack,
               ),
               const Spacer(),
-              IconButton(
-                icon: Icon(Icons.list_rounded, color: palette.appBarFg),
-                tooltip: l.mushafSurahIndex,
-                onPressed: onOpenSurahIndex,
-              ),
-              IconButton(
-                icon: Icon(Icons.find_in_page_rounded, color: palette.appBarFg),
-                tooltip: l.mushafJumpToPage,
-                onPressed: onOpenPageJump,
-              ),
-              IconButton(
-                icon: Icon(Icons.bookmark_add_rounded, color: palette.appBarFg),
-                tooltip: l.mushafSaveHere,
-                onPressed: onSaveBookmark,
-              ),
+              if (!restricted) ...[
+                IconButton(
+                  icon: Icon(Icons.list_rounded, color: palette.appBarFg),
+                  tooltip: l.mushafSurahIndex,
+                  onPressed: onOpenSurahIndex,
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.find_in_page_rounded,
+                    color: palette.appBarFg,
+                  ),
+                  tooltip: l.mushafJumpToPage,
+                  onPressed: onOpenPageJump,
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.bookmark_add_rounded,
+                    color: palette.appBarFg,
+                  ),
+                  tooltip: l.mushafSaveHere,
+                  onPressed: onSaveBookmark,
+                ),
+              ],
               IconButton(
                 icon: Icon(Icons.tune_rounded, color: palette.appBarFg),
                 tooltip: l.mushafReadingSettings,

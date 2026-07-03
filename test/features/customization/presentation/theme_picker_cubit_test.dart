@@ -24,23 +24,21 @@ void main() {
     test('load → emits Loading then Loaded with current selection', () async {
       final writer = FakeAppearanceWriter();
       final cubit = ThemePickerCubit(
-        getAll: GetAllThemePalettesUseCase(
-          const ThemeCatalogRepositoryImpl(),
-        ),
+        getAll: GetAllThemePalettesUseCase(const ThemeCatalogRepositoryImpl()),
         apply: ApplyThemePaletteUseCase(writer),
       );
 
       final emissions = <ThemePickerState>[];
       final sub = cubit.stream.listen(emissions.add);
 
-      await cubit.load('green');
+      await cubit.load('red');
       // Allow listener microtask to flush before reading the buffered list.
       await Future<void>.delayed(Duration.zero);
 
       expect(emissions.first, isA<ThemePickerLoading>());
       expect(cubit.state, isA<ThemePickerLoaded>());
       final loaded = cubit.state as ThemePickerLoaded;
-      expect(loaded.selectedId, 'green');
+      expect(loaded.selectedId, 'red');
       expect(loaded.isApplying, isFalse);
       expect(loaded.palettes, isNotEmpty);
 
@@ -55,7 +53,7 @@ void main() {
         apply: ApplyThemePaletteUseCase(writer),
       );
 
-      await cubit.load('green');
+      await cubit.load('red');
 
       expect(cubit.state, isA<ThemePickerError>());
       await cubit.close();
@@ -64,13 +62,11 @@ void main() {
     test('select → flips selection and persists', () async {
       final writer = FakeAppearanceWriter();
       final cubit = ThemePickerCubit(
-        getAll: GetAllThemePalettesUseCase(
-          const ThemeCatalogRepositoryImpl(),
-        ),
+        getAll: GetAllThemePalettesUseCase(const ThemeCatalogRepositoryImpl()),
         apply: ApplyThemePaletteUseCase(writer),
       );
 
-      await cubit.load('green');
+      await cubit.load('red');
       await cubit.select('desert_dawn');
 
       expect(cubit.state, isA<ThemePickerLoaded>());
@@ -85,14 +81,12 @@ void main() {
     test('select with same id → no-op (no write)', () async {
       final writer = FakeAppearanceWriter();
       final cubit = ThemePickerCubit(
-        getAll: GetAllThemePalettesUseCase(
-          const ThemeCatalogRepositoryImpl(),
-        ),
+        getAll: GetAllThemePalettesUseCase(const ThemeCatalogRepositoryImpl()),
         apply: ApplyThemePaletteUseCase(writer),
       );
 
-      await cubit.load('green');
-      await cubit.select('green');
+      await cubit.load('red');
+      await cubit.select('red');
 
       expect(writer.themeKeysWritten, isEmpty);
       await cubit.close();
@@ -102,17 +96,15 @@ void main() {
       final writer = FakeAppearanceWriter()
         ..nextFailure = const CacheFailure('persist failed');
       final cubit = ThemePickerCubit(
-        getAll: GetAllThemePalettesUseCase(
-          const ThemeCatalogRepositoryImpl(),
-        ),
+        getAll: GetAllThemePalettesUseCase(const ThemeCatalogRepositoryImpl()),
         apply: ApplyThemePaletteUseCase(writer),
       );
 
-      await cubit.load('green');
+      await cubit.load('red');
       await cubit.select('desert_dawn');
 
       final loaded = cubit.state as ThemePickerLoaded;
-      expect(loaded.selectedId, 'green');
+      expect(loaded.selectedId, 'red');
       expect(loaded.isApplying, isFalse);
 
       await cubit.close();

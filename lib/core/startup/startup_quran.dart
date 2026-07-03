@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../../features/quran/data/ayah_audio_service.dart';
 import '../../features/quran/data/ayah_bounds_repository.dart';
 import '../../features/quran/data/file_ayah_audio_cache.dart';
+import '../../features/quran/data/khatma_repository.dart';
 import '../../features/quran/data/mushaf_preferences_repository.dart';
 import '../../features/quran/data/quran_bookmark_repository.dart';
 import '../../features/quran/data/quran_intro_flag_repository.dart';
@@ -12,15 +13,18 @@ import '../../features/quran/data/quran_text_repository.dart';
 import '../../features/quran/domain/i_ayah_audio_cache.dart';
 import '../../features/quran/domain/i_ayah_audio_port.dart';
 import '../../features/quran/domain/i_ayah_bounds_repository.dart';
+import '../../features/quran/domain/i_khatma_repository.dart';
 import '../../features/quran/domain/i_mushaf_preferences_repository.dart';
 import '../../features/quran/domain/i_page_image_repository.dart';
 import '../../features/quran/domain/i_quran_bookmark_repository.dart';
 import '../../features/quran/domain/i_quran_intro_flag_repository.dart';
 import '../../features/quran/domain/i_quran_offline_choice_repository.dart';
 import '../../features/quran/domain/i_quran_text_repository.dart';
+import '../../features/quran/presentation/bloc/khatma_cubit.dart';
 import '../../features/quran/presentation/bloc/page_image_download_cubit.dart';
 import '../../features/quran/domain/usecases/get_bookmark_usecase.dart';
 import '../../features/quran/domain/usecases/get_mushaf_page_usecase.dart';
+import '../../features/quran/domain/usecases/khatma_usecases.dart';
 import '../../features/quran/domain/usecases/play_ayah_usecase.dart';
 import '../../features/quran/domain/usecases/quran_intro_usecases.dart';
 import '../../features/quran/domain/usecases/save_bookmark_usecase.dart';
@@ -108,6 +112,27 @@ void registerQuranReader() {
       prefsRepo: getIt<IMushafPreferencesRepository>(),
       hasSeenIntro: getIt<HasSeenMushafIntroUseCase>(),
       markIntroSeen: getIt<MarkMushafIntroSeenUseCase>(),
+    ),
+  );
+
+  // Khatma (Quran completion plan). Single-slot store + thin use-cases; the
+  // progress cubit and UI land in a later phase.
+  getIt.registerLazySingleton<IKhatmaRepository>(() => KhatmaRepository());
+  getIt.registerFactory<GetActiveKhatmaUseCase>(
+    () => GetActiveKhatmaUseCase(getIt<IKhatmaRepository>()),
+  );
+  getIt.registerFactory<SaveKhatmaUseCase>(
+    () => SaveKhatmaUseCase(getIt<IKhatmaRepository>()),
+  );
+  getIt.registerFactory<ClearKhatmaUseCase>(
+    () => ClearKhatmaUseCase(getIt<IKhatmaRepository>()),
+  );
+  // Factory: MobileShell holds one instance for the session and closes it.
+  getIt.registerFactory<KhatmaCubit>(
+    () => KhatmaCubit(
+      get: getIt<GetActiveKhatmaUseCase>(),
+      save: getIt<SaveKhatmaUseCase>(),
+      clear: getIt<ClearKhatmaUseCase>(),
     ),
   );
 }

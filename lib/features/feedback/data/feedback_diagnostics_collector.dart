@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../../core/diagnostics/app_diagnostics.dart';
 import '../../../core/platform_config.dart';
 import '../domain/i_feedback_diagnostics_collector.dart';
 
@@ -10,6 +12,11 @@ import '../domain/i_feedback_diagnostics_collector.dart';
 /// wall-clock + timezone — the data we need to diagnose timezone/clock
 /// issues that depend on the user's environment.
 class FeedbackDiagnosticsCollector implements IFeedbackDiagnosticsCollector {
+  FeedbackDiagnosticsCollector({AppDiagnostics? diagnostics})
+    : _diagnostics = diagnostics;
+
+  final AppDiagnostics? _diagnostics;
+
   @override
   Future<Map<String, String>> collect() async {
     String version = '-';
@@ -24,6 +31,7 @@ class FeedbackDiagnosticsCollector implements IFeedbackDiagnosticsCollector {
     }
 
     final now = DateTime.now();
+    final recent = await _diagnostics?.recent(limit: 30);
     return {
       'appVersion': '$version+$build',
       'deviceType': kIsTV ? 'tv' : 'phone',
@@ -33,6 +41,8 @@ class FeedbackDiagnosticsCollector implements IFeedbackDiagnosticsCollector {
       'deviceTimezone': now.timeZoneName,
       'deviceTimezoneOffsetMin': now.timeZoneOffset.inMinutes.toString(),
       'deviceLocale': Platform.localeName,
+      if (recent != null && recent.isNotEmpty)
+        'recentDiagnostics': jsonEncode(recent),
     };
   }
 }

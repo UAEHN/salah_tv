@@ -65,6 +65,44 @@ mixin CycleDiagnosticsMixin on FirebaseAnalyticsBase
     'country': country,
   });
 
+  @override
+  void logAdhanJourneyState({
+    required String prayerKey,
+    required String state,
+    required String stage,
+    String? reason,
+  }) {
+    final params = <String, Object>{
+      'prayer_key': prayerKey,
+      'adhan_final_state': state,
+      'stage': stage,
+    };
+    if (reason != null) {
+      params['reason'] = reason;
+    }
+    logEventInternal('adhan_journey_state', params);
+  }
+
+  @override
+  void logPrayerAlertJourneyState({
+    required String alertType,
+    required String prayerKey,
+    required String state,
+    required String stage,
+    String? reason,
+  }) {
+    final params = <String, Object>{
+      'alert_type': alertType,
+      'prayer_key': prayerKey,
+      'final_state': state,
+      'stage': stage,
+    };
+    if (reason != null) {
+      params['reason'] = reason;
+    }
+    logEventInternal('prayer_alert_journey_state', params);
+  }
+
   // ── 1C.2: full cycle phase tracking ─────────────────────────────
 
   @override
@@ -149,5 +187,24 @@ mixin CycleDiagnosticsMixin on FirebaseAnalyticsBase
   }) => logEventInternal('settings_change_during_cycle', {
     'active_phase': activePhase,
     'changed_field': changedField,
+  });
+
+  @override
+  void logTickError({
+    required String errorType,
+    required String message,
+    required String stackHead,
+    required String city,
+    required String country,
+  }) => logEventInternal('tick_error', {
+    'error_type': errorType,
+    // Firebase caps string params at 100 chars — trim defensively so a long
+    // message/frame doesn't get the whole event dropped.
+    'message': message.length > 100 ? message.substring(0, 100) : message,
+    'stack_head': stackHead.length > 100
+        ? stackHead.substring(0, 100)
+        : stackHead,
+    'city': city,
+    'country': country,
   });
 }

@@ -54,7 +54,10 @@
       "Bash(awk -F',' '$1==\"Kuwait City\" && \\($2 ~ /^\\(01|15\\)\\\\//\\){print $2\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8}' assets/csv/kuwait_prayer_times_2026.csv)",
       "Bash(flutter analyze *)",
       "Bash(flutter test *)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(python -)",
+      "Bash(git push *)",
+      "Bash(gh run *)"
     ],
     "additionalDirectories": [
       "C:\\Users\\boode\\Desktop\\salah\\salah_dashboard\\src\\app"

@@ -8,38 +8,42 @@ void main() {
   group('ThemeCatalogRepositoryImpl', () {
     const repo = ThemeCatalogRepositoryImpl();
 
-    test('returns legacy + Islamic palettes — total count matches sources',
-        () async {
-      final result = await repo.getAll();
-      expect(
-        result.isRight(),
-        isTrue,
-        reason: 'expected Right but got $result',
-      );
-      result.fold((_) {}, (palettes) {
+    test(
+      'returns legacy + Islamic palettes — total count matches sources',
+      () async {
+        final result = await repo.getAll();
         expect(
-          palettes.length,
-          kThemePalettes.length + kMobileExtraPalettes.length,
+          result.isRight(),
+          isTrue,
+          reason: 'expected Right but got $result',
         );
-      });
-    });
+        result.fold((_) {}, (palettes) {
+          expect(
+            palettes.length,
+            kThemePalettes.length + kMobileExtraPalettes.length,
+          );
+        });
+      },
+    );
 
-    test('legacy palettes precede Islamic palettes in returned order',
-        () async {
-      final result = await repo.getAll();
-      result.fold((_) => fail('expected Right'), (palettes) {
-        // Find the index where the first non-legacy entry appears.
-        final firstIslamicIndex = palettes.indexWhere((p) => !p.isLegacy);
-        // Every entry before it must be legacy.
-        for (var i = 0; i < firstIslamicIndex; i++) {
-          expect(palettes[i].isLegacy, isTrue);
-        }
-        // Every entry after it must be islamic.
-        for (var i = firstIslamicIndex; i < palettes.length; i++) {
-          expect(palettes[i].isLegacy, isFalse);
-        }
-      });
-    });
+    test(
+      'legacy palettes precede Islamic palettes in returned order',
+      () async {
+        final result = await repo.getAll();
+        result.fold((_) => fail('expected Right'), (palettes) {
+          // Find the index where the first non-legacy entry appears.
+          final firstIslamicIndex = palettes.indexWhere((p) => !p.isLegacy);
+          // Every entry before it must be legacy.
+          for (var i = 0; i < firstIslamicIndex; i++) {
+            expect(palettes[i].isLegacy, isTrue);
+          }
+          // Every entry after it must be islamic.
+          for (var i = firstIslamicIndex; i < palettes.length; i++) {
+            expect(palettes[i].isLegacy, isFalse);
+          }
+        });
+      },
+    );
 
     test('every palette id is unique', () async {
       final result = await repo.getAll();
@@ -61,8 +65,10 @@ void main() {
     test('Islamic palette ids match mobile_theme_palettes keys', () async {
       final result = await repo.getAll();
       result.fold((_) => fail('expected Right'), (palettes) {
-        final islamicIds =
-            palettes.where((p) => !p.isLegacy).map((p) => p.id).toSet();
+        final islamicIds = palettes
+            .where((p) => !p.isLegacy)
+            .map((p) => p.id)
+            .toSet();
         expect(islamicIds, kMobileExtraPalettes.keys.toSet());
       });
     });
@@ -70,8 +76,10 @@ void main() {
     test('legacy palette ids match kThemePalettes keys', () async {
       final result = await repo.getAll();
       result.fold((_) => fail('expected Right'), (palettes) {
-        final legacyIds =
-            palettes.where((p) => p.isLegacy).map((p) => p.id).toSet();
+        final legacyIds = palettes
+            .where((p) => p.isLegacy)
+            .map((p) => p.id)
+            .toSet();
         expect(legacyIds, kThemePalettes.keys.toSet());
       });
     });

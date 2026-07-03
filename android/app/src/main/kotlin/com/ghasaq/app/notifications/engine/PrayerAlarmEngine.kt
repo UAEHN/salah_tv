@@ -5,6 +5,7 @@ import com.ghasaq.app.notifications.builder.NotificationChannelsManager
 import com.ghasaq.app.notifications.models.ScheduledNotification
 import com.ghasaq.app.notifications.scheduler.AlarmScheduler
 import com.ghasaq.app.notifications.store.NotificationStore
+import com.ghasaq.app.notifications.store.NativeDiagnostics
 import com.ghasaq.app.notifications.store.ScheduleLog
 import com.ghasaq.app.notifications.worker.RefreshScheduler
 import org.json.JSONArray
@@ -28,6 +29,7 @@ class PrayerAlarmEngine(private val context: Context) {
 
     private val store = NotificationStore(context)
     private val scheduler = AlarmScheduler(context)
+    private val diagnostics = NativeDiagnostics(context)
 
     fun initialize(): Boolean {
         NotificationChannelsManager(context).ensureAll()
@@ -37,6 +39,10 @@ class PrayerAlarmEngine(private val context: Context) {
 
     fun sync(payload: JSONObject): Int {
         val list = parseAndValidate(payload)
+        diagnostics.record("INFO", "notification_sync_native_started", JSONObject().apply {
+            put("parsed", list.size)
+            put("payloadCount", payload.optJSONArray("notifications")?.length() ?: 0)
+        })
         val previous = store.readAll().map { it.id }
         scheduler.cancelAll(previous)
         store.writeAll(list)
@@ -44,9 +50,15 @@ class PrayerAlarmEngine(private val context: Context) {
         scheduler.scheduleAll(list)
         NotificationChannelsManager(context).ensureAll()
         registerCustomAdhanChannels(payload)
+        registerCustomIqamaChannels(payload)
         RefreshScheduler.ensurePeriodicWork(context)
         val now = System.currentTimeMillis()
-        return list.count { it.triggerAtMillis > now }
+        val count = list.count { it.triggerAtMillis > now }
+        diagnostics.record("INFO", "notification_sync_native_finished", JSONObject().apply {
+            put("scheduled", count)
+            put("stored", list.size)
+        })
+        return count
     }
 
     fun cancelAll() {
@@ -113,16 +125,41 @@ class PrayerAlarmEngine(private val context: Context) {
     private fun parseAndValidate(payload: JSONObject): List<ScheduledNotification> {
         val now = System.currentTimeMillis()
         val cutoff = now + MAX_HORIZON_MS
-        val items = payload.optJSONArray("notifications") ?: return emptyList()
+        val items = payload.optJSONArray("notifications") ?: run {
+            diagnostics.record("ERROR", "notification_sync_missing_items")
+            return emptyList()
+        }
         return (0 until items.length()).mapNotNull { i ->
             try {
                 val n = ScheduledNotification.fromJson(items.getJSONObject(i))
                 when {
-                    n.triggerAtMillis <= now -> null
-                    n.triggerAtMillis > cutoff -> null
+                    n.triggerAtMillis <= now -> {
+                        diagnostics.record("WARNING", "notification_dropped_past", JSONObject().apply {
+                            put("index", i)
+                            put("id", n.id)
+                            put("type", n.type.key)
+                            put("prayerKey", n.prayerKey)
+                        })
+                        null
+                    }
+                    n.triggerAtMillis > cutoff -> {
+                        diagnostics.record("WARNING", "notification_dropped_beyond_horizon", JSONObject().apply {
+                            put("index", i)
+                            put("id", n.id)
+                            put("type", n.type.key)
+                            put("prayerKey", n.prayerKey)
+                        })
+                        null
+                    }
                     else -> n
                 }
-            } catch (e: Exception) { null }
+            } catch (e: Exception) {
+                diagnostics.record("ERROR", "notification_parse_failed", JSONObject().apply {
+                    put("index", i)
+                    put("error", e.message)
+                })
+                null
+            }
         }
     }
 
@@ -135,6 +172,19 @@ class PrayerAlarmEngine(private val context: Context) {
             val uri = o.optString("contentUri")
             if (name.isNotEmpty() && uri.isNotEmpty()) {
                 mgr.ensureCustomAdhan(name, uri)
+            }
+        }
+    }
+
+    private fun registerCustomIqamaChannels(payload: JSONObject) {
+        val arr = payload.optJSONArray("customIqamas") ?: return
+        val mgr = NotificationChannelsManager(context)
+        for (i in 0 until arr.length()) {
+            val o = arr.optJSONObject(i) ?: continue
+            val name = o.optString("fileName")
+            val uri = o.optString("contentUri")
+            if (name.isNotEmpty() && uri.isNotEmpty()) {
+                mgr.ensureCustomIqama(name, uri)
             }
         }
     }

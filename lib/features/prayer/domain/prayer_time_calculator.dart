@@ -22,6 +22,11 @@ DateTime adjustedPrayerTime(PrayerEntry p, Map<String, int> adhanOffsets) {
 /// `prayer_overdue_no_trigger` instead of firing a clearly-stale adhan.
 const int kAdhanCatchUpSeconds = 30;
 
+/// TV safety net: if the 1 Hz timer or Flutter isolate stalls past the normal
+/// live window, still fire the adhan shortly after the prayer instead of
+/// silently skipping the whole visual/audio takeover.
+const int kAdhanRescueCatchUpSeconds = 5 * 60;
+
 /// True when [diffSeconds] (now − adjusted prayer time) is inside the live
 /// adhan fire window: at or after the prayer time, and no later than
 /// [kAdhanCatchUpSeconds]. Pure so the trigger boundary is unit-testable

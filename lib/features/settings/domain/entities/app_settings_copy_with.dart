@@ -26,6 +26,7 @@ extension AppSettingsCopyWith on AppSettings {
     String? quranReciterName,
     String? quranReciterServerUrl,
     List<String>? favoriteReciterServerUrls,
+    bool? hasExplicitReciterChoice,
     String? selectedCountry,
     String? selectedCity,
     double? selectedLatitude,
@@ -41,6 +42,8 @@ extension AppSettingsCopyWith on AppSettings {
     String? layoutStyle,
     String? adhanSound,
     List<CustomAdhan>? customAdhans,
+    String? iqamaSound,
+    List<CustomAdhan>? customIqamas,
     bool? isAnalogClock,
     bool? isAdhkarEnabled,
     bool? isAfterPrayerAdhkarEnabled,
@@ -101,6 +104,8 @@ extension AppSettingsCopyWith on AppSettings {
       favoriteReciterServerUrls: List.unmodifiable(
         favoriteReciterServerUrls ?? this.favoriteReciterServerUrls,
       ),
+      hasExplicitReciterChoice:
+          hasExplicitReciterChoice ?? this.hasExplicitReciterChoice,
       selectedCountry: selectedCountry ?? this.selectedCountry,
       selectedCity: selectedCity ?? this.selectedCity,
       selectedLatitude: selectedLatitude ?? this.selectedLatitude,
@@ -118,6 +123,8 @@ extension AppSettingsCopyWith on AppSettings {
       layoutStyle: layoutStyle ?? this.layoutStyle,
       adhanSound: adhanSound ?? this.adhanSound,
       customAdhans: List.unmodifiable(customAdhans ?? this.customAdhans),
+      iqamaSound: iqamaSound ?? this.iqamaSound,
+      customIqamas: List.unmodifiable(customIqamas ?? this.customIqamas),
       isAnalogClock: isAnalogClock ?? this.isAnalogClock,
       isAdhkarEnabled: isAdhkarEnabled ?? this.isAdhkarEnabled,
       isAfterPrayerAdhkarEnabled:
@@ -173,6 +180,7 @@ extension AppSettingsCopyWith on AppSettings {
       iqamaMode == other.iqamaMode &&
       isMosqueMode == other.isMosqueMode &&
       adhanSound == other.adhanSound &&
+      iqamaSound == other.iqamaSound &&
       isQuranEnabled == other.isQuranEnabled &&
       quranReciterServerUrl == other.quranReciterServerUrl &&
       isAdhkarEnabled == other.isAdhkarEnabled &&

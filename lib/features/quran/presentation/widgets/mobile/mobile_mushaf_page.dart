@@ -21,6 +21,9 @@ class MobileMushafPage extends StatefulWidget {
   final VoidCallback onShowIntro;
   final void Function(int surah, int ayah) onAyahTap;
 
+  /// Wird mode: hide controls that navigate out of the wird's page range.
+  final bool restricted;
+
   const MobileMushafPage({
     super.key,
     required this.pageNumber,
@@ -32,6 +35,7 @@ class MobileMushafPage extends StatefulWidget {
     required this.onSettings,
     required this.onShowIntro,
     required this.onAyahTap,
+    this.restricted = false,
   });
 
   @override
@@ -56,6 +60,7 @@ class _MobileMushafPageState extends State<MobileMushafPage>
             child: MobileMushafPageHeader(
               pageNumber: widget.pageNumber,
               palette: widget.palette,
+              restricted: widget.restricted,
               onBack: widget.onBack,
               onOpenSurahIndex: widget.onOpenSurahIndex,
               onOpenPageJump: widget.onOpenPageJump,

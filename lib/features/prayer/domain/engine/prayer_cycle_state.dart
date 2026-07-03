@@ -38,6 +38,7 @@ class PrayerCycleState {
   // ── Iqama countdown & playback ───────────────────────────────────────────
   bool isIqamaCountdown = false;
   Duration iqamaCountdown = Duration.zero;
+  DateTime? iqamaDueAt;
   String iqamaPrayerKey = '';
   bool isIqamaPlaying = false;
   Timer? iqamaFallbackTimer;
@@ -77,6 +78,12 @@ class PrayerCycleState {
   bool isSessionAdhkarPlaying = false;
   String sessionAdhkarCategory = ''; // 'morning' | 'evening' | ''
 
+  /// Which session categories ('morning'/'evening') have already been shown
+  /// today, so the app-open catch-up ([RecoveryMixin.recoverSessionAdhkar])
+  /// never re-shows one the live cycle (or an earlier open) already played.
+  /// Eviction rule: cleared together with [adhansToday] on day/time-jump change.
+  final Set<String> sessionAdhkarShownToday = {};
+
   // ── Quran background audio ───────────────────────────────────────────────
   /// Whether the user has Quran "on" (wants it to play).
   bool isQuranPlaying = false;
@@ -106,6 +113,15 @@ class PrayerCycleState {
 
   /// How many times the selected surah has played (single-surah mode).
   int surahPlayCount = 0;
+
+  /// Set when a Quran surah fails to load/play (network/CDN). Drives the
+  /// non-silent home banner; auto-cleared by the tick after a short window and
+  /// on the next user toggle. Transient (in-memory).
+  DateTime? quranErrorAt;
+
+  /// True while the current surah is loading/buffering (slow network). Drives
+  /// the loading indicator. Mirrored from [IPrayerAudioPort.onQuranLoading].
+  bool isQuranLoading = false;
 
   // ── Eid Takbeerat background audio ───────────────────────────────────────
   /// User has Takbeerat "on". Mirrors [isQuranPlaying]'s intent flag.
@@ -141,6 +157,22 @@ class PrayerCycleState {
   /// Phase 1C.3: dedup set keyed by `<phase>_<startMs>` so cycle_stuck
   /// fires at most once per individual stuck phase.
   final Set<String> stuckReported = {};
+
+  /// Last time tick_error was reported. Throttles the crash-in-tick telemetry
+  /// to ~1/min so a per-tick fault doesn't flood analytics. The guard that
+  /// keeps the clock alive (catch → notify) is NOT throttled — only the report.
+  DateTime? tickErrorReportedAt;
+
+  /// Human-readable summary of the most recent [tick] fault (`Type: msg` +
+  /// first stack frame). Drives the on-screen diagnostic banner in test
+  /// builds so a non-technical tester can screenshot the exact cause. Null
+  /// until a fault occurs. In-memory only.
+  String? lastTickError;
+
+  /// User-visible TV diagnostic when adhan/iqama failed in a way the user can
+  /// report. Short and screenshot-friendly; not used for silent/mosque modes.
+  String? lastPrayerAlertError;
+  DateTime? prayerAlertErrorAt;
 
   // ── Derived state ────────────────────────────────────────────────────────
   bool get isCycleActive =>

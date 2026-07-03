@@ -27,6 +27,35 @@ extension SettingsProviderAppearance on SettingsProvider {
     return _update(_settings.copyWith(customAdhans: next));
   }
 
+  Future<void> addCustomIqama(CustomAdhan iqama) {
+    final next = [..._settings.customIqamas, iqama];
+    return _update(_settings.copyWith(customIqamas: next));
+  }
+
+  Future<void> removeCustomIqama(String id) {
+    final removed = _settings.customIqamas.where((c) => c.id == id).firstOrNull;
+    final next = _settings.customIqamas.where((c) => c.id != id).toList();
+    final resetSound =
+        removed != null && _settings.iqamaSound == removed.settingsKey
+        ? 'default'
+        : _settings.iqamaSound;
+    return _update(
+      _settings.copyWith(customIqamas: next, iqamaSound: resetSound),
+    );
+  }
+
+  Future<void> renameCustomIqama(String id, String newLabel) {
+    final trimmed = newLabel.trim();
+    if (trimmed.isEmpty) return Future.value();
+    final next = _settings.customIqamas
+        .map((c) => c.id == id ? c.copyWith(label: trimmed) : c)
+        .toList();
+    return _update(_settings.copyWith(customIqamas: next));
+  }
+
+  Future<void> updateIqamaSound(String key) =>
+      _update(_settings.copyWith(iqamaSound: key));
+
   Future<void> updateTheme(String colorKey) =>
       _update(_settings.copyWith(themeColorKey: colorKey));
 

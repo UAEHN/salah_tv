@@ -103,6 +103,41 @@ extension EngineTelemetry on PrayerCycleBase {
         country: country,
       );
 
+  void telAdhanJourneyState(
+    String prayerKey,
+    String state,
+    String stage, {
+    String? reason,
+  }) {
+    analytics?.logAdhanJourneyState(
+      prayerKey: prayerKey,
+      state: state,
+      stage: stage,
+      reason: reason,
+    );
+    telPrayerAlertJourneyState(
+      alertType: 'adhan',
+      prayerKey: prayerKey,
+      state: state,
+      stage: stage,
+      reason: reason,
+    );
+  }
+
+  void telPrayerAlertJourneyState({
+    required String alertType,
+    required String prayerKey,
+    required String state,
+    required String stage,
+    String? reason,
+  }) => analytics?.logPrayerAlertJourneyState(
+    alertType: alertType,
+    prayerKey: prayerKey,
+    state: state,
+    stage: stage,
+    reason: reason,
+  );
+
   // ── Phase 1C.2: full cycle phase tracking ──────────────────────
   void telDuaStarted(String prayerKey, bool isSilent) =>
       analytics?.logDuaStarted(prayerKey: prayerKey, isSilent: isSilent);

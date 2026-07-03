@@ -6,8 +6,10 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../../domain/entities/reading_theme.dart';
 import '../../../domain/i_ayah_bounds_repository.dart';
+import '../../../domain/khatma_calculator.dart';
 import '../../bloc/mushaf_reader_cubit.dart';
 import '../../bloc/mushaf_reader_state.dart';
+import '../../widgets/mobile/khatma_wird_bar.dart';
 import '../../widgets/mobile/mobile_mushaf_intro_sheet.dart';
 import '../../widgets/mobile/mobile_mushaf_page.dart';
 import '../../widgets/mobile/mobile_mushaf_page_jump_dialog.dart';
@@ -28,7 +30,15 @@ import '../../widgets/mobile/mobile_mushaf_surah_index_sheet.dart';
 /// `project_quran_engine_pivot` memory). No font gate, no QCF
 /// bundle — `CachedNetworkImage` inside each page handles loading.
 class MobileMushafReaderScreen extends StatefulWidget {
-  const MobileMushafReaderScreen({super.key});
+  /// When non-null the reader runs in "wird mode": the PageView is restricted
+  /// to [wird].first..[wird].last, navigation controls that leave the range
+  /// are hidden, and a bottom bar offers «أتممت الورد» on the last page.
+  final KhatmaWird? wird;
+
+  /// Called when the user confirms the wird is finished (wird mode only).
+  final Future<void> Function()? onWirdComplete;
+
+  const MobileMushafReaderScreen({super.key, this.wird, this.onWirdComplete});
 
   @override
   State<MobileMushafReaderScreen> createState() =>
@@ -40,11 +50,19 @@ class _MobileMushafReaderScreenState extends State<MobileMushafReaderScreen> {
   late final MushafReaderCubit _cubit;
   bool _swipeOriginated = false;
 
+  // First page number rendered at PageView index 0. In wird mode the view is
+  // offset to the wird's first page so indices map onto the wird sub-range.
+  int get _base => widget.wird?.first ?? 1;
+  int get _pageCount =>
+      widget.wird != null ? widget.wird!.last - widget.wird!.first + 1 : 604;
+
   @override
   void initState() {
     super.initState();
     _cubit = context.read<MushafReaderCubit>();
-    _controller = PageController(initialPage: _cubit.state.currentPage - 1);
+    _controller = PageController(
+      initialPage: (_cubit.state.currentPage - _base).clamp(0, _pageCount - 1),
+    );
     WakelockPlus.enable();
     // Fire-and-forget: kick the 2.2 MB ayahinfo SQLite download so
     // tap-to-play is ready by the time the user picks a verse.
@@ -93,9 +111,10 @@ class _MobileMushafReaderScreenState extends State<MobileMushafReaderScreen> {
   }
 
   void _onPageChanged(int i) {
-    if (_cubit.state.currentPage == i + 1) return;
+    final page = i + _base;
+    if (_cubit.state.currentPage == page) return;
     _swipeOriginated = true;
-    _cubit.goToPage(i + 1);
+    _cubit.goToPage(page);
   }
 
   void _syncControllerToState(MushafReaderState state) {
@@ -104,13 +123,20 @@ class _MobileMushafReaderScreenState extends State<MobileMushafReaderScreen> {
       return;
     }
     if (!_controller.hasClients) return;
-    final wanted = state.currentPage - 1;
+    final wanted = state.currentPage - _base;
+    // Ignore jumps outside the wird sub-range (wird mode clamps navigation).
+    if (wanted < 0 || wanted >= _pageCount) return;
     if (_controller.page?.round() == wanted) return;
     _controller.animateToPage(
       wanted,
       duration: const Duration(milliseconds: 320),
       curve: Curves.easeInOut,
     );
+  }
+
+  Future<void> _completeWird() async {
+    await widget.onWirdComplete?.call();
+    if (mounted) Navigator.of(context).pop();
   }
 
   @override
@@ -147,13 +173,16 @@ class _MobileMushafReaderScreenState extends State<MobileMushafReaderScreen> {
                   child: PageView.builder(
                     controller: _controller,
                     reverse: true,
-                    itemCount: 604,
+                    itemCount: _pageCount,
                     allowImplicitScrolling: true,
                     onPageChanged: _onPageChanged,
                     itemBuilder: (_, i) => RepaintBoundary(
                       child: MobileMushafPage(
-                        pageNumber: i + 1,
+                        pageNumber: i + _base,
                         palette: palette,
+                        // Wird mode hides controls that would leave the
+                        // wird's page range (surah index / page jump).
+                        restricted: widget.wird != null,
                         onBack: () => Navigator.of(context).pop(),
                         onOpenSurahIndex: _openSurahIndex,
                         onOpenPageJump: _openPageJump,
@@ -166,6 +195,16 @@ class _MobileMushafReaderScreenState extends State<MobileMushafReaderScreen> {
                     ),
                   ),
                 ),
+                if (widget.wird != null)
+                  BlocBuilder<MushafReaderCubit, MushafReaderState>(
+                    buildWhen: (p, n) => p.currentPage != n.currentPage,
+                    builder: (_, state) => KhatmaWirdBar(
+                      currentPage: state.currentPage,
+                      wird: widget.wird!,
+                      palette: palette,
+                      onComplete: _completeWird,
+                    ),
+                  ),
                 BlocBuilder<MushafReaderCubit, MushafReaderState>(
                   buildWhen: (p, n) =>
                       p.audioStatus != n.audioStatus ||

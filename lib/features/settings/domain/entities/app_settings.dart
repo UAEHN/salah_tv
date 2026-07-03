@@ -30,6 +30,12 @@ class AppSettings {
   /// order; rendered above the full list in the picker for quick access.
   final List<String> favoriteReciterServerUrls;
 
+  /// True once the user has *deliberately* picked a reciter طريقة via the
+  /// picker. Gates [migrateToHafsReciterUrl]: an untouched install keeps being
+  /// auto-corrected to the plain Hafs murattal, but a user who explicitly
+  /// chooses a styled moshaf («المجوّد»/«المعلّم») keeps that choice on reload.
+  final bool hasExplicitReciterChoice;
+
   // Quran playback mode (continuous / single surah / playlist)
   final QuranPlaybackMode quranPlaybackMode;
   final int? selectedSurahNumber; // 1..114, null when none selected
@@ -73,6 +79,17 @@ class AppSettings {
   final String layoutStyle;
   final String adhanSound;
   final List<CustomAdhan> customAdhans;
+
+  /// Selected iqama sound key: `'default'` (bundled `audio/iqama.mp3`) or a
+  /// `custom:<fileName>` key referring to a [customIqamas] entry. TV-only —
+  /// mobile fires the iqama via the native notification engine.
+  final String iqamaSound;
+
+  /// User-imported iqama audio files. Stored separately from [customAdhans]
+  /// so the two pickers list their own sounds, though both resolve through the
+  /// same `custom_adhans/` directory and `custom:` playback path.
+  final List<CustomAdhan> customIqamas;
+
   final bool isAnalogClock;
   final bool isAdhkarEnabled;
 
@@ -151,6 +168,8 @@ class AppSettings {
     this.layoutStyle = 'modern',
     this.adhanSound = 'default',
     this.customAdhans = const [],
+    this.iqamaSound = 'default',
+    this.customIqamas = const [],
     this.isAnalogClock = false,
     this.isAdhkarEnabled = true,
     this.isAfterPrayerAdhkarEnabled = true,
@@ -215,6 +234,7 @@ class AppSettings {
     this.quranReciterName = '',
     this.quranReciterServerUrl = '',
     this.favoriteReciterServerUrls = const [],
+    this.hasExplicitReciterChoice = false,
     this.quranPlaybackMode = QuranPlaybackMode.continuous,
     this.selectedSurahNumber,
     this.surahPlaylist = const [],

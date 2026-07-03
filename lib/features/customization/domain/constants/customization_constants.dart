@@ -3,7 +3,7 @@
 library;
 
 /// Default theme key when nothing is selected (matches `AppSettings`).
-const String kDefaultThemeKey = 'green';
+const String kDefaultThemeKey = 'gold';
 
 /// Default font family when nothing is selected (matches `AppSettings`).
 const String kDefaultFontFamily = 'Kufi';

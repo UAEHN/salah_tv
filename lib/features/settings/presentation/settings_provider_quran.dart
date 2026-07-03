@@ -8,6 +8,9 @@ extension SettingsProviderQuran on SettingsProvider {
     _settings.copyWith(
       quranReciterName: name,
       quranReciterServerUrl: serverUrl,
+      // Any pick through the picker is deliberate — preserve it across reloads
+      // instead of letting the Hafs auto-migration overwrite a chosen طريقة.
+      hasExplicitReciterChoice: true,
     ),
   );
 

@@ -22,13 +22,7 @@ const Map<String, AccentPalette> kMobileExtraPalettes = {
 
 /// Set of legacy theme keys that exist in [kThemePalettes] (TV-shared).
 /// Used by the catalog to mark them with `isLegacy: true`.
-const Set<String> kLegacyThemeKeys = {
-  'green',
-  'teal',
-  'gold',
-  'blue',
-  'purple',
-};
+const Set<String> kLegacyThemeKeys = {'red', 'teal', 'gold', 'blue', 'purple'};
 
 /// Combined palette map — TV-shared + mobile-exclusive themes.
 /// **Use only from mobile-only code paths.**
@@ -37,7 +31,7 @@ Map<String, AccentPalette> get kAllMobilePalettes => {
   ...kMobileExtraPalettes,
 };
 
-/// Mobile-aware palette resolver. Falls back to `green` if [key] is unknown.
+/// Mobile-aware palette resolver. Falls back to `gold` if [key] is unknown.
 /// Used in `app.dart` when `isTV == false`.
 AccentPalette getMobileThemePalette(String key) =>
-    kAllMobilePalettes[key] ?? kThemePalettes['green']!;
+    kAllMobilePalettes[key] ?? kThemePalettes['gold']!;

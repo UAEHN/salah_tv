@@ -38,7 +38,12 @@ class InfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: tc.bgSurface.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: tc.borderGlass, width: 1),
+        // Colored accent frame matching the hero/timer card's default state
+        // ([HeroCardView]) so the clock card reads as part of the same set.
+        border: Border.all(
+          color: palette.primary.withValues(alpha: 0.4),
+          width: 1.5,
+        ),
       ),
       // FittedBox keeps clock → date → audio group as one centred block and
       // scales it down when the surah card + ticker bar leave too little

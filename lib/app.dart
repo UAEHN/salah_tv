@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'core/app_colors.dart';
+import 'core/font_metrics.dart';
 import 'core/navigation/app_navigator_key.dart';
 import 'core/navigation/app_route_builder.dart';
 import 'core/platform_config.dart';
@@ -133,10 +134,22 @@ class GhasaqApp extends StatelessWidget {
         highlightColor: Colors.transparent,
         focusColor: palette.primary.withValues(alpha: 0.3),
       ),
-      builder: (_, child) {
+      builder: (context, child) {
         // TV layout is fixed LTR regardless of locale — only text direction
         // within individual widgets changes. Mobile follows the locale naturally.
-        final content = child ?? const SizedBox.shrink();
+        var content = child ?? const SizedBox.shrink();
+        // Cairo/Beiruti read smaller than Kufi/Rubik; on TV scale them up so all
+        // fonts are legible across the room. Composes with the device scaler.
+        final fontScale = isTV ? tvFontSizeScaleFor(effectiveFontFamily) : 1.0;
+        if (fontScale != 1.0) {
+          final mq = MediaQuery.of(context);
+          content = MediaQuery(
+            data: mq.copyWith(
+              textScaler: TextScaler.linear(mq.textScaler.scale(1) * fontScale),
+            ),
+            child: content,
+          );
+        }
         return ColoredBox(
           color: tc.bgMain,
           child: isTV

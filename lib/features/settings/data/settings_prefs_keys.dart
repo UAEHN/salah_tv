@@ -26,6 +26,7 @@ class PrefsKeys {
   static const reciterName = '${_p}quran_reciter_name';
   static const reciterUrl = '${_p}quran_reciter_url';
   static const favReciters = '${_p}favorite_reciters';
+  static const reciterChoiceExplicit = '${_p}quran_reciter_choice_explicit';
   static const country = '${_p}selected_country';
   static const city = '${_p}selected_city';
   static const lat = '${_p}selected_lat';
@@ -38,6 +39,8 @@ class PrefsKeys {
   static const utcOff = '${_p}utc_offset';
   static const layout = '${_p}layout_style';
   static const adhanSound = '${_p}adhan_sound';
+  static const iqamaSound = '${_p}iqama_sound';
+  static const customIqamas = '${_p}custom_iqamas';
   static const analog = '${_p}analog_clock';
   static const adhkar = '${_p}adhkar_enabled';
   static const afterPrayerAdhkar = '${_p}after_prayer_adhkar_enabled';

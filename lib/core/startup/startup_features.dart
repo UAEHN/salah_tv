@@ -71,6 +71,7 @@ import '../../features/home_widget/domain/usecases/get_upcoming_schedule.dart';
 import '../../features/home_widget/domain/usecases/publish_widget_payload.dart';
 import '../../features/prayer/domain/i_prayer_times_repository.dart';
 import '../../injection.dart';
+import '../diagnostics/app_diagnostics.dart';
 import '../platform_config.dart';
 import 'startup_customization.dart';
 import 'startup_dynamic_content.dart';
@@ -210,7 +211,11 @@ void _registerFeedback() {
     () => FirestoreFeedbackRepository(FirebaseFirestore.instance, getIt<Dio>()),
   );
   getIt.registerLazySingleton<IFeedbackDiagnosticsCollector>(
-    () => FeedbackDiagnosticsCollector(),
+    () => FeedbackDiagnosticsCollector(
+      diagnostics: getIt.isRegistered<AppDiagnostics>()
+          ? getIt<AppDiagnostics>()
+          : null,
+    ),
   );
 }
 
@@ -255,6 +260,9 @@ Future<void> _registerMobileOnly() async {
   // its mixins keep working without modification.
   final notifService = NativeNotificationEngine(
     getIt<IPrayerTimesRepository>(),
+    diagnostics: getIt.isRegistered<AppDiagnostics>()
+        ? getIt<AppDiagnostics>()
+        : null,
   );
   await notifService.initialize();
   getIt.registerSingleton<IPrayerNotificationPort>(notifService);

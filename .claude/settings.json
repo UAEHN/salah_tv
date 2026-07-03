@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/boode/AppData/Local/Pub/Cache/hosted/pub.dev/adhan_dart-1.2.0/lib/src/**)",
+      "Bash(grep -vE '^\\\\s*$')"
+    ]
+  }
+}

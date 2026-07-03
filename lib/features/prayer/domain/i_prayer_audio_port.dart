@@ -37,6 +37,14 @@ abstract class IPrayerAudioPort {
   /// Emits the surah number that just finished playing.
   Stream<int> get onQuranSurahCompleted;
 
+  /// Emits when a surah fails to load/play (network down, CDN hung, timeout)
+  /// so the UI can show a non-silent message instead of the stream just dying.
+  Stream<void> get onQuranError;
+
+  /// Emits true while a surah is loading/buffering (slow network) so the UI
+  /// can show a loading indicator, false once playback is ready or stopped.
+  Stream<bool> get onQuranLoading;
+
   /// Sets the strategy used to pick the next surah after one finishes.
   /// Pass null to restore default continuous (1→2→…→114→1).
   void setQuranNextSurahResolver(NextSurahResolver? resolver);

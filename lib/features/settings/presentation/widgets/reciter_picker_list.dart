@@ -18,7 +18,7 @@ class ReciterPickerList extends StatelessWidget {
   final String currentServerUrl;
   final String query;
   final AccentPalette palette;
-  final void Function(QuranApiReciter) onSelect;
+  final void Function(String name, String serverUrl) onSelect;
 
   const ReciterPickerList({
     required this.reciters,
@@ -54,7 +54,7 @@ class ReciterPickerList extends StatelessWidget {
     }
     final autofocusUrl = rows
         .firstWhere(
-          (e) => e.reciter.serverUrl == currentServerUrl,
+          (e) => e.reciter.containsServerUrl(currentServerUrl),
           orElse: () => rows.first,
         )
         .reciter
@@ -79,11 +79,13 @@ class ReciterPickerList extends StatelessWidget {
     final row = entry as ReciterRow;
     return ReciterListRow(
       reciter: row.reciter,
-      isSelected: row.reciter.serverUrl == currentServerUrl,
+      // Highlight the reciter that holds the active selection even when a
+      // specific طريقة (sub-URL) is chosen — the طريقة is refined separately.
+      isSelected: row.reciter.containsServerUrl(currentServerUrl),
       isFavorite: row.isFavorite,
       autofocus: row.reciter.serverUrl == autofocusUrl && query.isEmpty,
       accent: palette.primary,
-      onSelect: () => onSelect(row.reciter),
+      onSelect: () => onSelect(row.reciter.nameAr, row.reciter.serverUrl),
       onToggleFavorite: () =>
           settingsProv.toggleFavoriteReciter(row.reciter.serverUrl),
     );

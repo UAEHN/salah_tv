@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 
+import '../../../core/diagnostics/app_diagnostics.dart';
+import '../../../core/diagnostics/diagnostic_level.dart' as diag;
 import '../../prayer/domain/entities/daily_prayer_times.dart';
 import '../../prayer/domain/i_prayer_times_repository.dart';
 import '../../settings/domain/entities/app_settings.dart';
@@ -23,15 +27,18 @@ class NativeNotificationEngine implements IPrayerNotificationPort {
   final HorizonBuilder _horizon;
   final NotificationSerializer _serializer;
   final DateTime Function() _clock;
+  final AppDiagnostics? _diagnostics;
 
   NativeNotificationEngine(
     this._repo, {
     HorizonBuilder? horizon,
     NotificationSerializer? serializer,
     DateTime Function()? clock,
+    AppDiagnostics? diagnostics,
   }) : _horizon = horizon ?? HorizonBuilder(_repo),
        _serializer = serializer ?? NotificationSerializer(),
-       _clock = clock ?? DateTime.now;
+       _clock = clock ?? DateTime.now,
+       _diagnostics = diagnostics;
 
   @override
   Future<void> initialize() async {
@@ -47,9 +54,39 @@ class NativeNotificationEngine implements IPrayerNotificationPort {
     AppSettings settings,
   ) async {
     final days = _horizon.build(_clock());
-    if (days.isEmpty) return;
+    if (days.isEmpty) {
+      _diag(
+        diag.DiagnosticLevel.error,
+        'notification_horizon_empty',
+        fields: {
+          'city': settings.selectedCity,
+          'country': settings.selectedCountry,
+        },
+        forceUpload: true,
+      );
+      return;
+    }
+    if (days.length < _horizon.horizonDays) {
+      _diag(
+        diag.DiagnosticLevel.warning,
+        'notification_horizon_incomplete',
+        fields: {'days': days.length, 'expected_days': _horizon.horizonDays},
+        forceUpload: true,
+      );
+    }
     final json = _serializer.build(days, settings);
-    await _invoke<int>('sync', json);
+    _diag(
+      diag.DiagnosticLevel.info,
+      'notification_sync_started',
+      fields: {'days': days.length, 'payload_bytes': json.length},
+    );
+    final count = await _invoke<int>('sync', json);
+    _diag(
+      count == null ? diag.DiagnosticLevel.error : diag.DiagnosticLevel.info,
+      count == null ? 'notification_sync_failed' : 'notification_sync_finished',
+      fields: {'scheduled_count': count ?? -1, 'days': days.length},
+      forceUpload: count == null,
+    );
   }
 
   @override
@@ -58,7 +95,10 @@ class NativeNotificationEngine implements IPrayerNotificationPort {
     // so changing adhkar settings means re-sending the full horizon. The
     // engine compares per-id and updates only what changed.
     final today = _repo.getToday();
-    if (today == null) return;
+    if (today == null) {
+      _diag(diag.DiagnosticLevel.warning, 'adhkar_schedule_skipped_no_today');
+      return;
+    }
     await scheduleForDay(today, null, settings);
   }
 
@@ -82,13 +122,45 @@ class NativeNotificationEngine implements IPrayerNotificationPort {
   Future<T?> _invoke<T>(String method, [Object? arg]) async {
     try {
       return await _channel.invokeMethod<T>(method, arg);
-    } on PlatformException {
+    } on PlatformException catch (e) {
       // Native side has its own logging — swallow here so a single broken
       // call doesn't take down the prayer cycle.
+      _diag(
+        diag.DiagnosticLevel.error,
+        'notification_channel_platform_error',
+        fields: {'method': method, 'code': e.code, 'message': e.message},
+        error: e,
+        forceUpload: true,
+      );
       return null;
-    } on MissingPluginException {
+    } on MissingPluginException catch (e) {
       // TV builds: channel never registered. No-op silently.
+      _diag(
+        diag.DiagnosticLevel.warning,
+        'notification_channel_missing_plugin',
+        fields: {'method': method},
+        error: e,
+      );
       return null;
     }
+  }
+
+  void _diag(
+    diag.DiagnosticLevel level,
+    String name, {
+    Map<String, Object?> fields = const {},
+    Object? error,
+    bool forceUpload = false,
+  }) {
+    unawaited(
+      _diagnostics?.record(
+            level,
+            name,
+            fields: fields,
+            error: error,
+            forceUpload: forceUpload,
+          ) ??
+          Future<void>.value(),
+    );
   }
 }

@@ -8,18 +8,37 @@ import 'package:flutter/widgets.dart';
 /// where pressing UP onto the first row of a section left the title clipped.
 void ensureFocusedVisible(BuildContext context, {double topPadding = 100.0}) {
   if (!context.mounted) return;
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _ensureFocusedVisibleAfterLayout(context, topPadding: topPadding);
+  });
+}
+
+void _ensureFocusedVisibleAfterLayout(
+  BuildContext context, {
+  required double topPadding,
+}) {
+  if (!context.mounted) return;
   final scrollable = Scrollable.maybeOf(context);
   if (scrollable == null) return;
   final widgetBox = context.findRenderObject() as RenderBox?;
   if (widgetBox == null || !widgetBox.hasSize) return;
   final scrollableBox = scrollable.context.findRenderObject() as RenderBox?;
-  if (scrollableBox == null) return;
+  if (scrollableBox == null || !scrollableBox.hasSize) return;
 
   final position = scrollable.position;
-  final widgetTop = widgetBox
-      .localToGlobal(Offset.zero, ancestor: scrollableBox)
-      .dy;
-  final widgetHeight = widgetBox.size.height;
+  if (!position.hasPixels || !position.hasContentDimensions) return;
+
+  late final double widgetTop;
+  late final double widgetHeight;
+  try {
+    widgetTop = widgetBox
+        .localToGlobal(Offset.zero, ancestor: scrollableBox)
+        .dy;
+    widgetHeight = widgetBox.size.height;
+  } on FlutterError {
+    return;
+  }
+
   final viewportHeight = position.viewportDimension;
   final scrollOffset = position.pixels;
   const bottomPadding = 16.0;
