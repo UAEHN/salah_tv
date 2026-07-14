@@ -56,10 +56,12 @@ mixin PrayerHealthEventsMixin on FirebaseAnalyticsBase
     required String prayerKey,
     required int durationSeconds,
     required String source,
+    bool stoppedByUser = false,
   }) => logEventInternal('adhan_completed', {
     'prayer_key': prayerKey,
     'duration_seconds': durationSeconds,
     'source': source,
+    'stopped_by_user': stoppedByUser.toString(),
   });
 
   @override
@@ -67,10 +69,12 @@ mixin PrayerHealthEventsMixin on FirebaseAnalyticsBase
     required String prayerKey,
     required int durationSeconds,
     required bool wasNatural,
+    bool stoppedByUser = false,
   }) => logEventInternal('iqama_completed', {
     'prayer_key': prayerKey,
     'duration_seconds': durationSeconds,
     'was_natural': wasNatural.toString(),
+    'stopped_by_user': stoppedByUser.toString(),
   });
 
   @override

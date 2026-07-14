@@ -34,7 +34,9 @@ internal object WidgetAlarmScheduler {
     )
 
     fun scheduleNextTick(context: Context) {
-        val mgr = AppWidgetManager.getInstance(context)
+        // getInstance() returns null on devices without app-widget support
+        // (some TV boxes, restricted profiles) — bail instead of NPE-crashing.
+        val mgr = AppWidgetManager.getInstance(context) ?: return
         val now = System.currentTimeMillis()
         val nextMinute = ((now / 60_000L) + 1L) * 60_000L
         val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -59,7 +61,9 @@ internal object WidgetAlarmScheduler {
     }
 
     fun cancel(context: Context) {
-        val mgr = AppWidgetManager.getInstance(context)
+        // getInstance() returns null on devices without app-widget support
+        // (some TV boxes, restricted profiles) — bail instead of NPE-crashing.
+        val mgr = AppWidgetManager.getInstance(context) ?: return
         val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         for (t in targets) {
             val ids = mgr.getAppWidgetIds(ComponentName(context, t.cls))

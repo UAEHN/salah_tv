@@ -51,6 +51,7 @@ class PrayerAlarmEngine(private val context: Context) {
         NotificationChannelsManager(context).ensureAll()
         registerCustomAdhanChannels(payload)
         registerCustomIqamaChannels(payload)
+        registerPreAdhanChannels(payload)
         RefreshScheduler.ensurePeriodicWork(context)
         val now = System.currentTimeMillis()
         val count = list.count { it.triggerAtMillis > now }
@@ -185,6 +186,26 @@ class PrayerAlarmEngine(private val context: Context) {
             val uri = o.optString("contentUri")
             if (name.isNotEmpty() && uri.isNotEmpty()) {
                 mgr.ensureCustomIqama(name, uri)
+            }
+        }
+    }
+
+    /**
+     * Mints a sounded pre-adhan channel per imported sound. Pre-adhan reminder
+     * sounds are drawn from the same `customAdhans` list (see the Dart
+     * `NotificationChannelResolver.resolvePreAdhan`), so a 'silent' selection
+     * keeps the built-in silent channel while a custom one gets its own sounded
+     * `prayer_reminder_v2_custom_<stem>` channel.
+     */
+    private fun registerPreAdhanChannels(payload: JSONObject) {
+        val arr = payload.optJSONArray("customAdhans") ?: return
+        val mgr = NotificationChannelsManager(context)
+        for (i in 0 until arr.length()) {
+            val o = arr.optJSONObject(i) ?: continue
+            val name = o.optString("fileName")
+            val uri = o.optString("contentUri")
+            if (name.isNotEmpty() && uri.isNotEmpty()) {
+                mgr.ensureCustomPreAdhan(name, uri)
             }
         }
     }

@@ -12,6 +12,8 @@ extension AppSettingsNotificationFields on AppSettings {
           other.prayerNotificationEnabled.toString() &&
       preAdhanReminderEnabled.toString() ==
           other.preAdhanReminderEnabled.toString() &&
+      preAdhanReminderSound.toString() ==
+          other.preAdhanReminderSound.toString() &&
       preAdhanReminderMinutes == other.preAdhanReminderMinutes &&
       iqamaNotificationEnabled.toString() ==
           other.iqamaNotificationEnabled.toString() &&

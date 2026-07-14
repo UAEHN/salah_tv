@@ -21,7 +21,9 @@ class CountryPickerDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final isEn = l.localeName == 'en';
+    // Latin-script UI (English, French, …) gets Latin names + LTR; only the
+    // Arabic locale gets the Arabic name + RTL.
+    final isEn = l.localeName != 'ar';
     return Directionality(
       textDirection: isEn ? TextDirection.ltr : TextDirection.rtl,
       child: Dialog(

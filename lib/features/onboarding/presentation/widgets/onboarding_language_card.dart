@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/widgets/language_flag.dart';
+
 const _accent = Color(0xFFE6B450);
 
 /// Single language pick row in the welcome step. Matches the country/city
@@ -71,13 +73,7 @@ class OnboardingLanguageCard extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      icon,
-                      color: isSelected
-                          ? _accent
-                          : Colors.white.withValues(alpha: 0.75),
-                      size: 22,
-                    ),
+                    LanguageFlag(locale: locale, height: 22),
                     const SizedBox(width: 14),
                     Expanded(
                       child: Column(

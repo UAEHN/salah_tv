@@ -28,8 +28,8 @@ Future<void> main() async {
 
   final result = <String, List<String>>{};
   for (final r in rows) {
-    final key  = r['country_key'] as String;
-    final city = r['city_name']   as String;
+    final key = r['country_key'] as String;
+    final city = r['city_name'] as String;
     (result[key] ??= <String>[]).add(city);
   }
 

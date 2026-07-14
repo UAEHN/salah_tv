@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import '../../../core/diagnostics/app_diagnostics.dart';
+import '../../../core/diagnostics/diagnostic_level.dart';
 import '../../analytics/domain/i_analytics_service.dart';
+import '../../settings/domain/entities/prayer_sound_mode.dart';
 import 'entities/daily_prayer_times.dart';
 import 'i_prayer_audio_port.dart';
 import 'i_takbeerat_audio_port.dart';
@@ -13,6 +15,7 @@ import 'prayer_time_zone.dart';
 import 'engine/engine_telemetry_extension.dart';
 import 'engine/prayer_cycle_state.dart';
 import 'engine/prayer_cycle_base.dart';
+import 'engine/prayer_diagnostics_extension.dart';
 import 'engine/recovery_mixin.dart';
 import 'engine/continuous_mode_mixin.dart';
 import 'engine/quran_modes_mixin.dart';
@@ -29,11 +32,11 @@ import 'engine/settings_mixin.dart';
 /// subscription (Issue 2).
 class PrayerCycleEngine extends PrayerCycleBase
     with
-        RecoveryMixin,
         ContinuousModeMixin,
         QuranModesMixin,
         QuranMixin,
         TakbeeratMixin,
+        RecoveryMixin,
         IqamaMixin,
         AdhanCycleMixin,
         TickMixin,
@@ -68,6 +71,10 @@ class PrayerCycleEngine extends PrayerCycleBase
   @override
   final void Function() notify;
 
+  /// Test-only clock override. Null in production → the real device/zone clock.
+  /// Lets time-jump / recovery behaviour be driven deterministically in tests.
+  final DateTime Function()? clockOverride;
+
   StreamSubscription<void>? _completionSub;
   StreamSubscription<int>? _quranCompletionSub;
   StreamSubscription<void>? _quranErrorSub;
@@ -83,6 +90,7 @@ class PrayerCycleEngine extends PrayerCycleBase
     this.sessionAdhkarLog,
     this.analytics,
     this.diagnostics,
+    this.clockOverride,
   }) : settings = initialSettings {
     // Issue 2: stored subscription; Issue 4: entry guards in each stop method
     // prevent re-entrant / double-fire from onComplete
@@ -174,14 +182,16 @@ class PrayerCycleEngine extends PrayerCycleBase
   List<String> get availableCities => repo.availableCities;
 
   @override
-  DateTime currentTime() => PrayerTimeZone.now(
-    timeZoneId: settings.isCalculatedLocation
-        ? settings.selectedTimeZoneId
-        : null,
-    utcOffsetHours: settings.isCalculatedLocation
-        ? settings.utcOffsetHours
-        : null,
-  );
+  DateTime currentTime() =>
+      clockOverride?.call() ??
+      PrayerTimeZone.now(
+        timeZoneId: settings.isCalculatedLocation
+            ? settings.selectedTimeZoneId
+            : null,
+        utcOffsetHours: settings.isCalculatedLocation
+            ? settings.utcOffsetHours
+            : null,
+      );
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
   void start() {
@@ -205,17 +215,25 @@ class PrayerCycleEngine extends PrayerCycleBase
   /// Called by PrayerBloc when the app is sent to the background.
   /// Pauses Quran so it doesn't bleed into the next foreground session.
   void onPaused() {
+    s.isAppInForeground = false;
     telAppLifecycle('paused', s.isCycleActive, activeCyclePhase(s));
     if (s.isQuranPlaying &&
         !s.isQuranPausedForAdhan &&
         !s.isQuranPausedByUser) {
       audio.pauseQuranPlayer(); // sets _quranPausedAt timestamp for Issue 7
     }
+    // Mirror Quran: a user-enabled Takbeerat track must not keep sounding in the
+    // background either. The cycle-pause flag is left untouched so this raw
+    // background pause is symmetric with the resume in onResumed.
+    if (s.isTakbeeratPlaying && !s.isTakbeeratPausedForCycle) {
+      unawaited(takbeeratAudio.pause());
+    }
   }
 
   /// Called by PrayerBloc when the app returns to foreground.
   void onResumed() {
     s.now = currentTime();
+    s.isAppInForeground = true;
     telAppLifecycle('resumed', s.isCycleActive, activeCyclePhase(s));
     // Issue 6 + 11: reload if the date changed — catches new day and
     // timezone changes that shift DateTime.now() to a different calendar day.
@@ -231,19 +249,52 @@ class PrayerCycleEngine extends PrayerCycleBase
     // may have played partially or not at all (Android suspends the isolate).
     // Clear these phases so recoverIqamaState() can recompute the correct
     // state (iqama countdown or idle) based on actual elapsed time.
-    if (s.isAdhanPlaying || s.isDuaPlaying) {
+    final clearedActiveCycle = s.isAdhanPlaying || s.isDuaPlaying;
+    final clearedPrayerKey = s.currentAdhanPrayerKey;
+    if (clearedActiveCycle) {
       s.adhanFallbackTimer?.cancel();
       s.duaFallbackTimer?.cancel();
       s.isAdhanPlaying = false;
       s.isDuaPlaying = false;
       unawaited(audio.stop());
+      // The adhan/dua froze in the background; recoverIqamaState can't rebuild
+      // its iqama (the prayer is already in adhansToday) and would DROP it —
+      // the iqama vanishes mid-countdown while its time hasn't come. Advance the
+      // cycle straight to the iqama countdown from the adhan anchor instead.
+      advanceToIqamaAfterInterruptedAdhan();
+    } else {
+      recoverIqamaState();
     }
-    recoverIqamaState();
     recoverSessionAdhkar(); // show morning/evening adhkar missed while closed
+    // Guarantee no silent drop: if resuming tore down a mid-flight adhan/dua but
+    // recovery did NOT bring the iqama up (and iqama isn't disabled), the cycle
+    // just jumped to the next prayer without its iqama. Flag it FATAL so this
+    // "nothing happened, moved on" case never escapes while on screen. Telemetry
+    // only — the cycle already advanced; this only surfaces it. onResumed fires
+    // solely after a real background episode, so on an always-foreground TV this
+    // stays silent unless something genuinely dropped the iqama.
+    final iqamaDisabled =
+        settings.iqamaMode == PrayerSoundMode.off && !settings.isMosqueMode;
+    if (clearedActiveCycle &&
+        !iqamaDisabled &&
+        !s.isIqamaCountdown &&
+        !s.isIqamaPlaying) {
+      diag(
+        DiagnosticLevel.fatal,
+        'iqama_dropped_in_foreground',
+        fields: {'dropped_prayer': clearedPrayerKey},
+        forceUpload: true,
+      );
+    }
     if (s.isQuranPlaying &&
         !s.isQuranPausedForAdhan &&
         !s.isQuranPausedByUser) {
       audio.resumeOrRestartQuranPlayer(settings.quranReciterServerUrl);
+    }
+    // Mirror Quran: resume the background Takbeerat paused by onPaused, unless
+    // the cycle owns the pause (it will resume it after iqama).
+    if (s.isTakbeeratPlaying && !s.isTakbeeratPausedForCycle) {
+      unawaited(takbeeratAudio.resume());
     }
     notify();
   }

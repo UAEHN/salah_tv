@@ -7,7 +7,9 @@ class MobileAdhanSoundTile extends StatelessWidget {
   final bool isSelected;
   final bool isPlaying;
   final VoidCallback onSelect;
-  final VoidCallback onPreview;
+
+  /// When null the preview button is hidden (e.g. the soundless «صامت» tile).
+  final VoidCallback? onPreview;
 
   const MobileAdhanSoundTile({
     super.key,
@@ -15,7 +17,7 @@ class MobileAdhanSoundTile extends StatelessWidget {
     required this.isSelected,
     required this.isPlaying,
     required this.onSelect,
-    required this.onPreview,
+    this.onPreview,
   });
 
   @override
@@ -54,7 +56,8 @@ class MobileAdhanSoundTile extends StatelessWidget {
                 textDirection: TextDirection.rtl,
               ),
             ),
-            _PreviewButton(isPlaying: isPlaying, onTap: onPreview),
+            if (onPreview != null)
+              _PreviewButton(isPlaying: isPlaying, onTap: onPreview!),
           ],
         ),
       ),

@@ -28,6 +28,14 @@ extension SettingsProviderNotifications on SettingsProvider {
         (map) => _settings.copyWith(preAdhanReminderEnabled: map),
       );
 
+  /// Sets the per-prayer pre-adhan reminder sound. [soundKey] is `'silent'`
+  /// or a `custom:<fileName>` key referring to an imported sound.
+  Future<void> updatePreAdhanReminderSound(String prayerKey, String soundKey) {
+    final map = Map<String, String>.from(_settings.preAdhanReminderSound);
+    map[prayerKey] = soundKey;
+    return _update(_settings.copyWith(preAdhanReminderSound: map));
+  }
+
   Future<void> updateIqamaNotificationEnabled(String key, bool value) =>
       _updateBoolMap(
         key,

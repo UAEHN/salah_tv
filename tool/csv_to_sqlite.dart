@@ -132,14 +132,10 @@ Future<void> _createSchema(Database db) async {
 
 /// Inserts or ignores the country row and returns its id.
 Future<int> _upsertCountry(Database db, String key) async {
-  await db.execute(
-    'INSERT OR IGNORE INTO countries (key) VALUES (?)',
-    [key],
-  );
-  final rows = await db.rawQuery(
-    'SELECT id FROM countries WHERE key = ?',
-    [key],
-  );
+  await db.execute('INSERT OR IGNORE INTO countries (key) VALUES (?)', [key]);
+  final rows = await db.rawQuery('SELECT id FROM countries WHERE key = ?', [
+    key,
+  ]);
   return rows.first['id'] as int;
 }
 

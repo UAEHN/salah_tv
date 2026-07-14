@@ -47,15 +47,17 @@ class MobileNotificationToggleRow extends StatelessWidget {
   }
 }
 
-/// Tappable chip showing reminder duration with edit icon.
+/// Tappable chip showing a reminder detail (duration or sound) with an icon.
 class MobileReminderDurationChip extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
+  final IconData icon;
 
   const MobileReminderDurationChip({
     super.key,
     required this.label,
     required this.onTap,
+    this.icon = Icons.edit_outlined,
   });
 
   @override
@@ -83,7 +85,7 @@ class MobileReminderDurationChip extends StatelessWidget {
                 textDirection: TextDirection.rtl,
                 children: [
                   Icon(
-                    Icons.edit_outlined,
+                    icon,
                     size: 13,
                     color: MobileColors.primaryContainer,
                   ),

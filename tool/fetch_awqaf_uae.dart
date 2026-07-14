@@ -25,21 +25,21 @@ const _targetYear = 2026;
 // Discovered by inspecting /prayertimes/{year}/{month}/{emirateId}/{cityId}.
 // Khor Fakkan + Kalba both map to Sharjah Eastern Coast (36); no separate IDs.
 const _cityDefs = <String, (int, int)>{
-  'Dubai':             (2, 32),
-  'Abu Dhabi':         (1, 1),
-  'Sharjah':           (3, 33),
-  'Ajman':             (4, 41),
-  'Umm Al Quwain':     (5, 44),
-  'Ras Al Khaimah':    (6, 45),
-  'Fujairah':          (7, 52),
-  'Al Ain':            (1, 2),
+  'Dubai': (2, 32),
+  'Abu Dhabi': (1, 1),
+  'Sharjah': (3, 33),
+  'Ajman': (4, 41),
+  'Umm Al Quwain': (5, 44),
+  'Ras Al Khaimah': (6, 45),
+  'Fujairah': (7, 52),
+  'Al Ain': (1, 2),
   'Dibba Al-Fujairah': (7, 53),
-  'Khor Fakkan':       (3, 36),
-  'Kalba':             (3, 36),
-  'Hatta':             (2, 60),
-  'Al Dhaid':          (3, 34),
-  'Ruwais':            (1, 27),
-  'Madinat Zayed':     (1, 25),
+  'Khor Fakkan': (3, 36),
+  'Kalba': (3, 36),
+  'Hatta': (2, 60),
+  'Al Dhaid': (3, 34),
+  'Ruwais': (1, 27),
+  'Madinat Zayed': (1, 25),
 };
 
 Future<void> main(List<String> args) async {
@@ -82,11 +82,15 @@ Future<void> main(List<String> args) async {
       final (emirateId, cityId) = entry.value;
       final rows = <String>[];
       for (final month in _targetMonths) {
-        print('  Fetching $dbName (emirate=$emirateId city=$cityId) month $month...');
+        print(
+          '  Fetching $dbName (emirate=$emirateId city=$cityId) month $month...',
+        );
         final url = '$_base/prayertimes/$_targetYear/$month/$emirateId/$cityId';
         final resp = await http.get(Uri.parse(url), headers: headers);
         if (resp.statusCode != 200) {
-          stderr.writeln('    WARN: $dbName month $month → ${resp.statusCode}, skipping');
+          stderr.writeln(
+            '    WARN: $dbName month $month → ${resp.statusCode}, skipping',
+          );
           continue;
         }
         final monthRows = _parseTimeRows(resp.body, dbName, month);
@@ -110,7 +114,8 @@ Future<void> main(List<String> args) async {
 /// Returns CSV lines: "CityName,dd/MM/yyyy,HH:MM,HH:MM,..."
 List<String> _parseTimeRows(String body, String dbCityName, int month) {
   final decoded = json.decode(body);
-  final list = (decoded is Map ? decoded['prayerData'] : decoded) as List? ?? [];
+  final list =
+      (decoded is Map ? decoded['prayerData'] : decoded) as List? ?? [];
   final rows = <String>[];
 
   for (final item in list) {
@@ -119,11 +124,11 @@ List<String> _parseTimeRows(String body, String dbCityName, int month) {
     // Date field — API uses "gDate" (Gregorian date ISO string)
     final dateRaw =
         (item['gDate'] ??
-            item['PrayerDate'] ??
-            item['prayerDate'] ??
-            item['Date'] ??
-            item['date'] ??
-            '')
+                item['PrayerDate'] ??
+                item['prayerDate'] ??
+                item['Date'] ??
+                item['date'] ??
+                '')
             .toString()
             .trim();
     if (dateRaw.isEmpty) continue;
@@ -132,26 +137,37 @@ List<String> _parseTimeRows(String body, String dbCityName, int month) {
     if (dateFormatted == null) continue;
 
     final fajr = _extractTime(item, ['Fajr', 'fajr', 'FajrTime', 'fajrTime']);
-    final sunrise = _extractTime(
-      item,
-      ['Shurooq', 'shurooq', 'Sunrise', 'sunrise', 'SunriseTime'],
-    );
-    final dhuhr = _extractTime(
-      item,
-      ['zuhr', 'Zuhr', 'Dhuhr', 'dhuhr', 'DhuhrTime', 'dhuhrTime'],
-    );
+    final sunrise = _extractTime(item, [
+      'Shurooq',
+      'shurooq',
+      'Sunrise',
+      'sunrise',
+      'SunriseTime',
+    ]);
+    final dhuhr = _extractTime(item, [
+      'zuhr',
+      'Zuhr',
+      'Dhuhr',
+      'dhuhr',
+      'DhuhrTime',
+      'dhuhrTime',
+    ]);
     final asr = _extractTime(item, ['Asr', 'asr', 'AsrTime', 'asrTime']);
-    final maghrib = _extractTime(
-      item,
-      ['Maghrib', 'maghrib', 'MaghribTime', 'maghribTime'],
-    );
+    final maghrib = _extractTime(item, [
+      'Maghrib',
+      'maghrib',
+      'MaghribTime',
+      'maghribTime',
+    ]);
     final isha = _extractTime(item, ['Isha', 'isha', 'IshaTime', 'ishaTime']);
 
     if ([fajr, sunrise, dhuhr, asr, maghrib, isha].any((t) => t == null)) {
       continue; // skip incomplete rows
     }
 
-    rows.add('$dbCityName,$dateFormatted,$fajr,$sunrise,$dhuhr,$asr,$maghrib,$isha');
+    rows.add(
+      '$dbCityName,$dateFormatted,$fajr,$sunrise,$dhuhr,$asr,$maghrib,$isha',
+    );
   }
   return rows;
 }

@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../../core/diagnostics/report_fault.dart';
 import '../../../core/error/failures.dart';
 import '../../../core/usecases/success.dart';
 import '../domain/entities/daily_prayer_times.dart';
@@ -149,6 +150,13 @@ class DownloadedPrayerRepository implements IPrayerTimesRepository {
       final cityId = _cityIds[_activeCity];
       if (cityId == null) return;
       await _cache.refresh(_db, cityId, _queries);
+    } catch (e) {
+      // Fired fire-and-forget from getToday()/setActiveCity(), so a DB read
+      // error here just leaves the cache empty → "no prayer times" with no
+      // signal (the mobile heartbeat is off). Name it so the cause is visible.
+      reportFaultError('prayer_cache_refresh_failed', fields: {
+        'city': _activeCity,
+      }, error: e);
     } finally {
       _refreshInFlight = null;
     }

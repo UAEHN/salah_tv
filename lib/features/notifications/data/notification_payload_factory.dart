@@ -12,7 +12,7 @@ import 'notification_payload_dto.dart';
 /// exceeds the 150-line limit and so the time/title/body assembly is
 /// independently testable.
 class NotificationPayloadFactory {
-  static const _prayerKeys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  static const prayerKeys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
   void addForDay(
     List<Map<String, Object?>> out,
@@ -22,8 +22,9 @@ class NotificationPayloadFactory {
     AppLocalizations l,
     ({String channelId, String? contentUri}) adhan,
     ({String channelId, String? contentUri}) iqama,
+    Map<String, ({String channelId, String? contentUri})> preAdhan,
   ) {
-    _addPrayerNotifications(out, day, dayIndex, s, l, adhan, iqama);
+    _addPrayerNotifications(out, day, dayIndex, s, l, adhan, iqama, preAdhan);
     _addAdhkarNotifications(out, day, dayIndex, s, l);
     _addAlKahfReminder(out, day, dayIndex, s, l);
   }
@@ -36,9 +37,10 @@ class NotificationPayloadFactory {
     AppLocalizations l,
     ({String channelId, String? contentUri}) adhan,
     ({String channelId, String? contentUri}) iqama,
+    Map<String, ({String channelId, String? contentUri})> preAdhan,
   ) {
     for (final entry in day.prayersOnly) {
-      if (!_prayerKeys.contains(entry.key)) continue;
+      if (!prayerKeys.contains(entry.key)) continue;
       final name = localizedPrayerNameForLocale(s.locale, entry.key);
       final adhanTime = entry.time.add(
         Duration(minutes: s.adhanOffsets[entry.key] ?? 0),
@@ -80,7 +82,10 @@ class NotificationPayloadFactory {
             ),
             title: l.notificationPreAdhanBody(name, s.preAdhanReminderMinutes),
             body: '',
-            channelId: NotificationChannelResolver.preAdhan,
+            channelId:
+                preAdhan[entry.key]?.channelId ??
+                NotificationChannelResolver.preAdhan,
+            soundUri: preAdhan[entry.key]?.contentUri,
             dayIndex: dayIndex,
             prayerKey: entry.key,
           ),

@@ -28,6 +28,8 @@ class MobilePrayerNotificationCard extends StatelessWidget {
   final ValueChanged<bool> onIqamaChanged;
   final ValueChanged<bool> onPreIqamaChanged;
   final VoidCallback onPreAdhanDurationTap;
+  final String preAdhanSoundLabel;
+  final VoidCallback onPreAdhanSoundTap;
   final VoidCallback onPreIqamaDurationTap;
 
   const MobilePrayerNotificationCard({
@@ -46,6 +48,8 @@ class MobilePrayerNotificationCard extends StatelessWidget {
     required this.onIqamaChanged,
     required this.onPreIqamaChanged,
     required this.onPreAdhanDurationTap,
+    required this.preAdhanSoundLabel,
+    required this.onPreAdhanSoundTap,
     required this.onPreIqamaDurationTap,
   });
 
@@ -80,6 +84,12 @@ class MobilePrayerNotificationCard extends StatelessWidget {
               MobileReminderDurationChip(
                 label: l.settingsBeforeMinutes(preAdhanMinutes),
                 onTap: onPreAdhanDurationTap,
+              ),
+            if (isPreAdhanOn && isEnabled)
+              MobileReminderDurationChip(
+                label: preAdhanSoundLabel,
+                icon: Icons.music_note_rounded,
+                onTap: onPreAdhanSoundTap,
               ),
             MobileNotificationToggleRow(
               label: l.settingsAdhanAlert,

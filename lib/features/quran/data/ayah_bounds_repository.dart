@@ -33,13 +33,23 @@ class AyahBoundsRepository implements IAyahBoundsRepository {
   }
 
   Future<void> _bootstrap() async {
-    final docs = await getApplicationDocumentsDirectory();
-    final dbPath = '${docs.path}/$_dbFileName';
-    final dbFile = File(dbPath);
-    if (!await dbFile.exists()) {
-      await _downloadAndExtract(dbPath);
+    try {
+      final docs = await getApplicationDocumentsDirectory();
+      final dbPath = '${docs.path}/$_dbFileName';
+      final dbFile = File(dbPath);
+      if (!await dbFile.exists()) {
+        await _downloadAndExtract(dbPath);
+      }
+      _db = await openReadOnlyDatabase(dbPath);
+    } catch (_) {
+      // ensureReady() is called fire-and-forget from initState, so a failed
+      // ayahinfo download (offline, DNS lookup, CDN down) would surface as an
+      // uncaught async error and crash the app. Swallow it — glyph hit-testing
+      // just no-ops while _db stays null — and clear the cached future so a
+      // later ensureReady() retries the download. The Dio failure is already
+      // breadcrumbed by the shared interceptor.
+      _readyFuture = null;
     }
-    _db = await openReadOnlyDatabase(dbPath);
   }
 
   Future<void> _downloadAndExtract(String dbPath) async {

@@ -32,7 +32,8 @@ class MobileLocationCountriesList extends StatelessWidget {
     if (countries.isEmpty) {
       return _emptyOrOnline(context, l);
     }
-    final isEn = l.localeName == 'en';
+    // Non-Arabic UI (en, fr, …) shows the Latin country name as primary.
+    final isEn = l.localeName != 'ar';
     final ordered = _orderedCountries(countries, currentCountry);
     return ListView.builder(
       key: const ValueKey('countries'),

@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'core/app_colors.dart';
+import 'core/error_reporting/context/route_tracker.dart';
+import 'core/error_reporting/debug/error_test_screen.dart';
 import 'core/font_metrics.dart';
 import 'core/navigation/app_navigator_key.dart';
 import 'core/navigation/app_route_builder.dart';
@@ -105,7 +108,12 @@ class GhasaqApp extends StatelessWidget {
 
     return MaterialApp(
       navigatorKey: appNavigatorKey,
-      navigatorObservers: [observer as NavigatorObserver],
+      navigatorObservers: [
+        observer as NavigatorObserver,
+        // Error-context screen tracking + nav breadcrumbs (fail-soft:
+        // absent when the error-reporting layer failed to register).
+        if (getIt.isRegistered<RouteTracker>()) getIt<RouteTracker>(),
+      ],
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
       locale: Locale(appSettings.locale),
@@ -218,6 +226,13 @@ class GhasaqApp extends StatelessWidget {
                 create: (_) => getIt<NotificationHealthCubit>(),
                 child: const NotificationHealthScreen(),
               ),
+            );
+          // Debug-only error-pipeline verifier; release builds fall through
+          // to the default home route.
+          case '/error_test' when kDebugMode:
+            return buildAppRoute(
+              settings: routeSettings,
+              page: const ErrorTestScreen(),
             );
           case '/tasbih':
             return buildAppRoute(
@@ -333,6 +348,21 @@ class GhasaqApp extends StatelessWidget {
         }
       },
       initialRoute: '/splash',
+      // Flutter's default initial-route handling splits '/splash' into a stack
+      // of ['/', '/splash'], leaving an un-initialized Home ('/') sitting at the
+      // bottom. The splash then replaces itself with onboarding, so pressing
+      // Back during onboarding pops to that phantom Home — shown with default
+      // (Dubai) settings, no prayer data, and a frozen clock, while onboarding
+      // was never completed (markLaunched never ran). Override the factory to
+      // start with the splash ALONE, so Back during onboarding minimizes the
+      // app instead of revealing a broken Home.
+      onGenerateInitialRoutes: (initialRoute) => [
+        buildAppRoute(
+          settings: const RouteSettings(name: '/splash'),
+          page: const SplashScreen(),
+          isInstant: true,
+        ),
+      ],
     );
   }
 }

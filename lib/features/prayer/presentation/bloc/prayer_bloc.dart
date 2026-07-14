@@ -121,7 +121,7 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
   Future<void> _onAdhanStopped(
     PrayerAdhanStopped _,
     Emitter<PrayerState> emit,
-  ) => _runAsync(_engine.stopAdhan, emit);
+  ) => _runAsync(() => _engine.stopAdhan(userSkipped: true), emit);
 
   Future<void> _onDuaStopped(PrayerDuaStopped _, Emitter<PrayerState> emit) =>
       _runAsync(_engine.stopDua, emit);
@@ -129,7 +129,7 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState>
   Future<void> _onIqamaStopped(
     PrayerIqamaStopped _,
     Emitter<PrayerState> emit,
-  ) => _runAsync(_engine.stopIqama, emit);
+  ) => _runAsync(() => _engine.stopIqama(userSkipped: true), emit);
 
   Future<void> _runAsync(
     Future<void> Function() action,

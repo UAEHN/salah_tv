@@ -13,6 +13,20 @@ DateTime adjustedPrayerTime(PrayerEntry p, Map<String, int> adhanOffsets) {
   return p.time.add(Duration(minutes: offsetMin));
 }
 
+/// Drops the sub-second part of [t] so it lands exactly on a whole second.
+///
+/// Every countdown target in the app is whole-second-aligned (prayer times are
+/// whole minutes) EXCEPT the iqama target, which is anchored to the arbitrary
+/// sub-second instant the adhan fired. A countdown shown as `floor(target -
+/// now)` changes value at the target's sub-second fraction; when that fraction
+/// drifts near the 1 Hz tick's firing phase, each tick samples right on the
+/// boundary and the displayed seconds stall a tick then jump by 2 — while the
+/// wall clock (boundary at .000) stays smooth. Flooring the iqama target to a
+/// whole second puts its boundary back on .000 so the countdown steps in
+/// lockstep with the clock's own smooth cadence.
+DateTime floorToSecond(DateTime t) =>
+    DateTime(t.year, t.month, t.day, t.hour, t.minute, t.second);
+
 /// How many seconds *after* a prayer's adjusted time the live trigger may
 /// still fire. The 1 Hz tick can stall for several seconds on slow TV boxes
 /// (GC, video decode, brief system overlays), so a window of only 1–2s could
@@ -58,14 +72,21 @@ bool isWithinAdhanFireWindow(int diffSeconds) =>
 /// Marks all missed prayers in [adhansToday] and returns the latest missed
 /// prayer plus the newly-added set keys.
 ///
-/// A prayer is "missed" if its adjusted time has passed by more than 2 seconds
-/// and it has not yet been recorded in [adhansToday].
+/// A prayer is "missed" if its adjusted time has passed by more than
+/// [missedAfterSeconds] and it has not yet been recorded in [adhansToday].
+///
+/// [missedAfterSeconds] defaults to 2 (the historical "any time past" rule) but
+/// recovery passes [kAdhanRescueCatchUpSeconds]: a prayer still inside the live
+/// rescue window must NOT be pre-marked as missed here, or it would block
+/// [isWithinAdhanFireWindow]'s rescue path from firing its adhan — the exact
+/// case where a device that slept a few seconds past the prayer lost its adhan.
 ({PrayerEntry? missed, List<String> newKeys}) markMissedPrayers(
   List<PrayerEntry> prayers,
   DateTime now,
   Map<String, int> adhanOffsets,
-  Set<String> adhansToday,
-) {
+  Set<String> adhansToday, {
+  int missedAfterSeconds = 2,
+}) {
   PrayerEntry? missed;
   final newKeys = <String>[];
 
@@ -73,7 +94,7 @@ bool isWithinAdhanFireWindow(int diffSeconds) =>
     final key = '${p.key}_${now.day}';
     if (adhansToday.contains(key)) continue;
     final timeSince = now.difference(adjustedPrayerTime(p, adhanOffsets));
-    if (timeSince.inSeconds > 2) {
+    if (timeSince.inSeconds > missedAfterSeconds) {
       newKeys.add(key);
       missed = p; // keep overwriting — ends up as the latest one
     }

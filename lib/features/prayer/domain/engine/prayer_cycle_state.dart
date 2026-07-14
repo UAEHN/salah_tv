@@ -17,6 +17,12 @@ class PrayerCycleState {
   int lastLoadedDay = -1; // Issue 6: date-change detection
   bool needsIqamaRecovery = false;
 
+  /// Whether the app is on screen (foreground). Set by the engine's
+  /// onResumed/onPaused. Telemetry-only — lets overdue detection flag the
+  /// critical "prayer time came while the user was watching, yet no adhan fired"
+  /// case (no suspended-device excuse). Defaults true (app starts visible).
+  bool isAppInForeground = true;
+
   // ── Adhan state ──────────────────────────────────────────────────────────
   bool isAdhanPlaying = false;
   String currentAdhanPrayerKey = '';
@@ -134,7 +140,6 @@ class PrayerCycleState {
   String takbeeratUrl = '';
 
   // ── Pre-alert dedup sets ─────────────────────────────────────────────────
-  final Set<String> preAlertBellPlayed = {};
   final Set<String> preAnnouncementPlayed = {};
 
   // ── Phase 1C.1 diagnostic state ──────────────────────────────────────────

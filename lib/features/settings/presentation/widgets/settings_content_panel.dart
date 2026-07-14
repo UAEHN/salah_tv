@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/error_reporting/debug/error_test_launcher_tile.dart';
 import '../settings_provider.dart';
 import 'adhan_offsets_table.dart';
 import 'adhan_section.dart';
@@ -67,7 +69,11 @@ class SettingsContentPanel extends StatelessWidget {
         const ClockStyleSection(),
       ]),
       _slot([const AdhkarSection()]),
-      _slot([const TvFeedbackSection()]),
+      _slot([
+        const TvFeedbackSection(),
+        // Debug-only error-pipeline test launcher (compiled out in release).
+        if (kDebugMode) const ErrorTestLauncherTile(),
+      ]),
       // id 9 — Features: verses ticker + after-prayer adhkar + (non-mosque)
       // screensaver.
       _slot([

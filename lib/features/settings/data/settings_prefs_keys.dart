@@ -49,6 +49,7 @@ class PrefsKeys {
   static const prayerNotif = '${_p}prayer_notif_enabled';
   static const preAdhanMap = '${_p}pre_adhan_reminder_map';
   static const preAdhanMin = '${_p}pre_adhan_reminder_min';
+  static const preAdhanSoundMap = '${_p}pre_adhan_reminder_sound_map';
   static const iqamaNotif = '${_p}iqama_notif_map';
   static const preIqamaMap = '${_p}pre_iqama_reminder_map';
   static const preIqamaMin = '${_p}pre_iqama_reminder_min';

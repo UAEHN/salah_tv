@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../prayer/domain/i_prayer_audio_port.dart' show NextSurahResolver;
+import 'audio_stream_guard.dart';
 import 'quran_fade_controller.dart';
 
 /// Background Quran streaming from the mp3quran.net CDN. Default mode is
@@ -41,7 +42,23 @@ class QuranAudioService {
   // the user keeps Quran "on" and it resumes when the network returns, instead
   // of dying silently until a manual toggle. Cancelled on any explicit action.
   Timer? _retryTimer; // cancelled in pause/stop/playSurah/restart/dispose
-  static const _retryDelay = Duration(seconds: 8);
+  // Exponential backoff so a permanently-down network never hammers the CDN
+  // (and a 24/7 TV box) every 8s forever: 8s → 16s → 32s … capped at 5 min.
+  // Reset to 0 on a successful load or any explicit play/stop.
+  static const _baseRetryDelay = Duration(seconds: 8);
+  static const _maxRetryDelay = Duration(minutes: 5);
+  int _consecutiveRetries = 0;
+
+  /// Pure backoff schedule for [consecutiveFailures] (0-based): base × 2ⁿ,
+  /// capped at [_maxRetryDelay]. Exposed static so the math is unit-testable.
+  static Duration retryBackoff(int consecutiveFailures) {
+    final n = consecutiveFailures < 0
+        ? 0
+        : (consecutiveFailures > 20 ? 20 : consecutiveFailures);
+    final ms = _baseRetryDelay.inMilliseconds << n;
+    final maxMs = _maxRetryDelay.inMilliseconds;
+    return Duration(milliseconds: ms > maxMs ? maxMs : ms);
+  }
   // Safety net for a mid-stream stall that never surfaces as an explicit error
   // (player sits in buffering forever after the network drops). Longer than
   // [_loadTimeout] so a normal initial load is handled by that path first.
@@ -85,6 +102,14 @@ class QuranAudioService {
       }
       _quranSurahIndex = nextNumber - 1;
       _playCurrentSurah().whenComplete(() => _isTransitioning = false);
+    }, onError: (Object e, StackTrace _) {
+      // Defensive parity with playbackEventStream and every other player: an
+      // async native error can surface on THIS stream too; without onError it
+      // escaped to the zone as an uncaught FATAL of unknown origin (the
+      // "Failed to set source" crashes on weak boxes). Catch, tag it to the
+      // Quran state stream, and clear loading so no false spinner sticks.
+      reportAudioStreamError('quran_state', e);
+      _emitLoading(false);
     });
     // Mid-stream failures (Wi-Fi dropped WHILE a surah is playing) surface as an
     // error on the playback event stream, NOT through _playCurrentSurah's
@@ -119,6 +144,7 @@ class QuranAudioService {
       // setUrl loads on a background thread; timeout guards a hung CDN load.
       await _quranPlayer.setUrl(url).timeout(_loadTimeout);
       _retryTimer?.cancel(); // loaded OK — drop any pending recovery retry
+      _consecutiveRetries = 0; // stream healthy again — reset the backoff
       // play() resolves only when playback ends, so it must not be awaited.
       unawaited(_quranPlayer.play());
       unawaited(_fade.rampTo(1.0));
@@ -130,12 +156,14 @@ class QuranAudioService {
     }
   }
 
-  /// Re-attempts the current surah after [_retryDelay] so a transient network
-  /// outage recovers without a manual toggle. A no-op once Quran is stopped
+  /// Re-attempts the current surah after a [retryBackoff] delay so a transient
+  /// network outage recovers without a manual toggle. A no-op once Quran is stopped
   /// (server URL cleared). Superseded/cancelled by any explicit play/pause/stop.
   void _scheduleRetry() {
     _retryTimer?.cancel();
-    _retryTimer = Timer(_retryDelay, () {
+    final delay = retryBackoff(_consecutiveRetries);
+    _consecutiveRetries++;
+    _retryTimer = Timer(delay, () {
       if (_quranServerUrl.isEmpty) return; // stopped/paused meanwhile
       _emitLoading(true); // show the spinner while the retry loads
       _playCurrentSurah();
@@ -177,6 +205,7 @@ class QuranAudioService {
     if (!_isAllowedQuranUrl(serverUrl)) return;
     if (surahNumber < 1 || surahNumber > 114) return;
     _retryTimer?.cancel(); // explicit play supersedes any pending retry
+    _consecutiveRetries = 0;
     _quranServerUrl = serverUrl;
     _quranSurahIndex = surahNumber - 1;
     _isTransitioning = false;
@@ -241,6 +270,7 @@ class QuranAudioService {
   Future<void> stopQuranPlayer() async {
     try {
       _retryTimer?.cancel(); // user stopped — abandon any pending retry
+      _consecutiveRetries = 0;
       _bufferWatchdog?.cancel();
       _bufferWatchdog = null;
       _isTransitioning = false;

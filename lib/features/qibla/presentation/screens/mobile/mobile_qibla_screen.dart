@@ -107,6 +107,13 @@ class _QiblaBody extends StatelessWidget {
           onAction: () => context.read<QiblaCubit>().start(),
           actionLabel: l.commonRetry,
         ),
+        QiblaSensorUnavailable() => MobileQiblaStatusView(
+          icon: Icons.explore_off_rounded,
+          title: l.qiblaNoSensorTitle,
+          subtitle: l.qiblaNoSensorSubtitle,
+          onAction: () => context.read<QiblaCubit>().start(),
+          actionLabel: l.commonRetry,
+        ),
         QiblaInitial() => const SizedBox.shrink(),
       },
     );

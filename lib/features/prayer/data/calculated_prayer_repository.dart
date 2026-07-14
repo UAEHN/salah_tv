@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import '../../../core/diagnostics/report_fault.dart';
 import '../../../core/error/failures.dart';
 import '../../../core/usecases/success.dart';
 import '../domain/i_prayer_times_repository.dart';
@@ -128,6 +129,13 @@ class CalculatedPrayerRepository implements IPrayerTimesRepository {
           highLatitudeRuleKey: 'middle_of_the_night',
           timeZoneId: _timeZoneId,
           utcOffsetHours: _utcOffsetHours,
+        );
+        // Wrong-time risk: this shows yesterday's times. Was debug-only before —
+        // surface it in release so a high-latitude city with drifting times is
+        // visible, not silent.
+        reportFaultWarning(
+          'prayer_calc_fallback_used',
+          fields: {'lat': _lat, 'lng': _lng, 'date_key': key},
         );
         return Right(yesterday);
       }

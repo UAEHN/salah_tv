@@ -114,6 +114,13 @@ class AppSettings {
   final Map<String, bool> prayerNotificationEnabled;
   final Map<String, bool> preAdhanReminderEnabled;
   final int preAdhanReminderMinutes;
+
+  /// Per-prayer sound for the pre-adhan reminder (the «اقتراب الصلاة» heads-up
+  /// fired [preAdhanReminderMinutes] before each adhan). Values: `'silent'`
+  /// (the default — a soundless notification, i.e. the legacy behaviour) or a
+  /// `custom:<fileName>` key referring to a [customAdhans] entry, so the user
+  /// can attach e.g. «اقتربت صلاة الفجر» to each prayer independently.
+  final Map<String, String> preAdhanReminderSound;
   final Map<String, bool> iqamaNotificationEnabled;
   final Map<String, bool> preIqamaReminderEnabled;
   final int preIqamaReminderMinutes;
@@ -204,6 +211,13 @@ class AppSettings {
       'asr': false,
       'maghrib': false,
       'isha': false,
+    },
+    this.preAdhanReminderSound = const {
+      'fajr': 'silent',
+      'dhuhr': 'silent',
+      'asr': 'silent',
+      'maghrib': 'silent',
+      'isha': 'silent',
     },
     this.iqamaNotificationEnabled = const {
       'fajr': false,

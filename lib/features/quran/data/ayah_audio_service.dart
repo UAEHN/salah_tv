@@ -3,6 +3,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../core/app_config.dart';
+import '../../audio/data/audio_stream_guard.dart';
 import '../domain/i_ayah_audio_cache.dart';
 import '../domain/i_ayah_audio_port.dart';
 
@@ -25,14 +26,27 @@ class AyahAudioService implements IAyahAudioPort {
   bool _appInitiatedStop = false;
 
   AyahAudioService(this._cache) {
-    _player.onPlayerComplete.listen((_) => _emitCompleted());
+    _player.onPlayerComplete.listen(
+      (_) => _emitCompleted(),
+      onError: _onStreamError,
+    );
     // Android may emit `stopped` instead of `completed` when the file ends
     // naturally — same guard as AdhkarAudioService to avoid double events.
-    _player.onPlayerStateChanged.listen((state) {
-      if (state == PlayerState.stopped && _isPlaying && !_appInitiatedStop) {
-        _emitCompleted();
-      }
-    });
+    _player.onPlayerStateChanged.listen(
+      (state) {
+        if (state == PlayerState.stopped && _isPlaying && !_appInitiatedStop) {
+          _emitCompleted();
+        }
+      },
+      onError: _onStreamError,
+    );
+  }
+
+  // A native audioplayers error can arrive asynchronously on these streams;
+  // without onError it escaped as an uncaught FATAL. Catch, tag, and diagnose.
+  void _onStreamError(Object e, StackTrace _) {
+    _isPlaying = false;
+    reportAudioStreamError('ayah', e);
   }
 
   void _emitCompleted() {

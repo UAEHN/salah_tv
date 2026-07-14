@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
+import '../../../../core/error_reporting/health/flow_definitions.dart';
+import '../../../../core/error_reporting/widgets/first_frame_reporter.dart';
 import '../../../../core/localization/prayer_name_localizer.dart';
 import '../../../../core/platform_config.dart';
 import '../bloc/prayer_bloc.dart';
@@ -12,7 +14,6 @@ import '../bloc/prayer_event.dart';
 import '../../../settings/presentation/settings_provider.dart';
 import '../../../takbeerat/presentation/cubit/takbeerat_visibility_cubit.dart';
 import '../widgets/home_main_view.dart';
-import '../widgets/prayer_alert_error_banner.dart';
 import '../widgets/quran_status_banner.dart';
 import '../widgets/tick_error_diagnostic_banner.dart';
 import '../../../audio/presentation/screens/adhan_screen.dart';
@@ -235,7 +236,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Non-silent Quran status overlay: loading spinner (buffering)
                 // or error message; self-hides when playback is healthy.
                 QuranStatusBanner(palette: palette),
-                const PrayerAlertErrorBanner(),
+                // Prayer-alert error banner intentionally NOT shown to the user:
+                // adhan/iqama playback faults are recorded to the Control Room
+                // (markPrayerAlertError telemetry) but must never surface an
+                // error banner on the TV — a silent visual iqama auto-closing,
+                // for one, is not a user-facing failure. (Was PrayerAlertErrorBanner.)
                 // TEST-BUILD diagnostic: shows the exact engine-tick fault on
                 // screen so a tester can screenshot it. Invisible unless a tick
                 // throws. Disable via _kEnabled before a public release.
@@ -270,33 +275,46 @@ class _HomeScreenState extends State<HomeScreen> {
     required bool showScreensaver,
   }) {
     return isAdhanPlaying
-        ? (isMosqueMode
-              ? MosqueAdhanScreen(
-                  prayerName: localizedPrayerName(
-                    context,
-                    currentAdhanPrayerKey,
+        // FirstFrameReporter confirms the adhan takeover actually painted —
+        // the functional-health layer's "screen shown" signal (keyed per
+        // prayer so each run fires once).
+        ? FirstFrameReporter(
+            key: ValueKey('adhan_$currentAdhanPrayerKey'),
+            flow: HealthFlows.adhan,
+            prayerKey: currentAdhanPrayerKey,
+            child: isMosqueMode
+                ? MosqueAdhanScreen(
+                    prayerName: localizedPrayerName(
+                      context,
+                      currentAdhanPrayerKey,
+                    ),
+                    palette: palette,
+                  )
+                : AdhanScreen(
+                    prayerName: localizedPrayerName(
+                      context,
+                      currentAdhanPrayerKey,
+                    ),
+                    palette: palette,
                   ),
-                  palette: palette,
-                )
-              : AdhanScreen(
-                  prayerName: localizedPrayerName(
-                    context,
-                    currentAdhanPrayerKey,
-                  ),
-                  palette: palette,
-                ))
+          )
         : isDuaPlaying
         ? DuaScreen(palette: palette)
         : isIqamaPlaying
-        ? (isMosqueMode
-              ? MosqueIqamaScreen(
-                  prayerName: localizedPrayerName(context, iqamaPrayerKey),
-                  palette: palette,
-                )
-              : IqamaScreen(
-                  prayerName: localizedPrayerName(context, iqamaPrayerKey),
-                  palette: palette,
-                ))
+        ? FirstFrameReporter(
+            key: ValueKey('iqama_$iqamaPrayerKey'),
+            flow: HealthFlows.iqama,
+            prayerKey: iqamaPrayerKey,
+            child: isMosqueMode
+                ? MosqueIqamaScreen(
+                    prayerName: localizedPrayerName(context, iqamaPrayerKey),
+                    palette: palette,
+                  )
+                : IqamaScreen(
+                    prayerName: localizedPrayerName(context, iqamaPrayerKey),
+                    palette: palette,
+                  ),
+          )
         : isSilencePhoneWindow
         ? MosqueSilencePhoneScreen(palette: palette)
         : isAfterPrayerAdhkar

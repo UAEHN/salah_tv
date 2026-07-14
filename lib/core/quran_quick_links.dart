@@ -6,20 +6,26 @@
 ///   * **Whole surah** (e.g. الكهف, الملك) — `ayah` is null. The
 ///     reader jumps to the surah's first page; no flash overlay.
 class QuranQuickLink {
-  final String label;
+  /// Stable key resolved to a localized label via
+  /// `quranQuickLinkLabel` — the chip text follows the app language.
+  final String labelKey;
   final int surah;
   final int? ayah;
 
-  const QuranQuickLink({required this.label, required this.surah, this.ayah});
+  const QuranQuickLink({
+    required this.labelKey,
+    required this.surah,
+    this.ayah,
+  });
 
   bool get isWholeSurah => ayah == null;
 }
 
 const List<QuranQuickLink> kQuranQuickLinks = [
-  QuranQuickLink(label: 'آية الكرسي', surah: 2, ayah: 255),
-  QuranQuickLink(label: 'سورة الكهف', surah: 18),
-  QuranQuickLink(label: 'سورة يس', surah: 36),
-  QuranQuickLink(label: 'سورة الرحمن', surah: 55),
-  QuranQuickLink(label: 'سورة الواقعة', surah: 56),
-  QuranQuickLink(label: 'سورة الملك', surah: 67),
+  QuranQuickLink(labelKey: 'ayatAlKursi', surah: 2, ayah: 255),
+  QuranQuickLink(labelKey: 'surahKahf', surah: 18),
+  QuranQuickLink(labelKey: 'surahYaseen', surah: 36),
+  QuranQuickLink(labelKey: 'surahRahman', surah: 55),
+  QuranQuickLink(labelKey: 'surahWaqiah', surah: 56),
+  QuranQuickLink(labelKey: 'surahMulk', surah: 67),
 ];

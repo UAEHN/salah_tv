@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_ar.dart';
 import 'app_localizations_en.dart';
+import 'app_localizations_fr.dart';
 
 // ignore_for_file: type=lint
 
@@ -96,6 +97,7 @@ abstract class AppLocalizations {
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
     Locale('en'),
+    Locale('fr'),
   ];
 
   /// No description provided for @appTitle.
@@ -115,6 +117,12 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'English'**
   String get languageEnglish;
+
+  /// No description provided for @languageFrench.
+  ///
+  /// In ar, this message translates to:
+  /// **'Français'**
+  String get languageFrench;
 
   /// No description provided for @localeComma.
   ///
@@ -1352,6 +1360,24 @@ abstract class AppLocalizations {
   /// **'تذكير قبل الأذان'**
   String get settingsPreAdhanReminder;
 
+  /// No description provided for @settingsPreAdhanSoundLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'صوت التنبيه'**
+  String get settingsPreAdhanSoundLabel;
+
+  /// No description provided for @settingsChoosePreAdhanSound.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر صوت التنبيه'**
+  String get settingsChoosePreAdhanSound;
+
+  /// No description provided for @settingsPreAdhanSoundSilent.
+  ///
+  /// In ar, this message translates to:
+  /// **'صامت'**
+  String get settingsPreAdhanSoundSilent;
+
   /// No description provided for @settingsAdhanAlert.
   ///
   /// In ar, this message translates to:
@@ -2215,6 +2241,18 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'القبلة غير متوفرة على أجهزة التلفاز'**
   String get qiblaNotAvailableOnTv;
+
+  /// No description provided for @qiblaNoSensorTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد بوصلة في جهازك'**
+  String get qiblaNoSensorTitle;
+
+  /// No description provided for @qiblaNoSensorSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا الجهاز لا يحتوي على حسّاس مغناطيسي، فتعذّر عرض بوصلة القبلة الحيّة'**
+  String get qiblaNoSensorSubtitle;
 
   /// No description provided for @qiblaAlignedStatus.
   ///
@@ -3452,6 +3490,54 @@ abstract class AppLocalizations {
   /// **'سورة'**
   String get mushafSurahPrefix;
 
+  /// No description provided for @mushafIndexSurahs.
+  ///
+  /// In ar, this message translates to:
+  /// **'السور'**
+  String get mushafIndexSurahs;
+
+  /// No description provided for @mushafIndexJuz.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأجزاء'**
+  String get mushafIndexJuz;
+
+  /// No description provided for @mushafQuickAyatAlKursi.
+  ///
+  /// In ar, this message translates to:
+  /// **'آية الكرسي'**
+  String get mushafQuickAyatAlKursi;
+
+  /// No description provided for @mushafQuickSurahKahf.
+  ///
+  /// In ar, this message translates to:
+  /// **'سورة الكهف'**
+  String get mushafQuickSurahKahf;
+
+  /// No description provided for @mushafQuickSurahYaseen.
+  ///
+  /// In ar, this message translates to:
+  /// **'سورة يس'**
+  String get mushafQuickSurahYaseen;
+
+  /// No description provided for @mushafQuickSurahRahman.
+  ///
+  /// In ar, this message translates to:
+  /// **'سورة الرحمن'**
+  String get mushafQuickSurahRahman;
+
+  /// No description provided for @mushafQuickSurahWaqiah.
+  ///
+  /// In ar, this message translates to:
+  /// **'سورة الواقعة'**
+  String get mushafQuickSurahWaqiah;
+
+  /// No description provided for @mushafQuickSurahMulk.
+  ///
+  /// In ar, this message translates to:
+  /// **'سورة الملك'**
+  String get mushafQuickSurahMulk;
+
   /// No description provided for @khatmaTitle.
   ///
   /// In ar, this message translates to:
@@ -3872,7 +3958,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['ar', 'en'].contains(locale.languageCode);
+      <String>['ar', 'en', 'fr'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -3885,6 +3971,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsAr();
     case 'en':
       return AppLocalizationsEn();
+    case 'fr':
+      return AppLocalizationsFr();
   }
 
   throw FlutterError(

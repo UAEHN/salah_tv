@@ -18,8 +18,10 @@ import 'dart:io';
 
 void main(List<String> args) {
   if (args.length != 2) {
-    stderr.writeln('Usage: dart run tool/quran_xml_to_json.dart '
-        '<text.xml> <quran-data.xml>');
+    stderr.writeln(
+      'Usage: dart run tool/quran_xml_to_json.dart '
+      '<text.xml> <quran-data.xml>',
+    );
     exit(64);
   }
 
@@ -32,19 +34,25 @@ void main(List<String> args) {
   final sajdaMarks = _parseSajdaMap(dataXml);
 
   if (pageStarts.length != 604) {
-    stderr.writeln('warning: expected 604 page entries, got '
-        '${pageStarts.length}');
+    stderr.writeln(
+      'warning: expected 604 page entries, got '
+      '${pageStarts.length}',
+    );
   }
   if (juzStarts.length != 30) {
     stderr.writeln('warning: expected 30 juz entries, got ${juzStarts.length}');
   }
   if (quarterMarks.length != 240) {
-    stderr.writeln('warning: expected 240 quarter entries, got '
-        '${quarterMarks.length}');
+    stderr.writeln(
+      'warning: expected 240 quarter entries, got '
+      '${quarterMarks.length}',
+    );
   }
   if (sajdaMarks.length != 15) {
-    stderr.writeln('warning: expected 15 sajda entries, got '
-        '${sajdaMarks.length}');
+    stderr.writeln(
+      'warning: expected 15 sajda entries, got '
+      '${sajdaMarks.length}',
+    );
   }
 
   final ayahs = _parseAyahs(textXml);
@@ -64,10 +72,7 @@ void main(List<String> args) {
   print('Wrote ${ayahs.length} ayahs to ${out.path}');
 }
 
-final _ayaRe = RegExp(
-  r'<aya index="(\d+)" text="([^"]+)"',
-  unicode: true,
-);
+final _ayaRe = RegExp(r'<aya index="(\d+)" text="([^"]+)"', unicode: true);
 final _suraRe = RegExp(r'<sura index="(\d+)"', unicode: true);
 
 List<Map<String, dynamic>> _parseAyahs(String xml) {
@@ -119,8 +124,9 @@ Map<int, int> _parseQuarterMap(String xml) {
   );
   return {
     for (final m in re.allMatches(xml))
-      _key(int.parse(m.group(2)!), int.parse(m.group(3)!)):
-          int.parse(m.group(1)!),
+      _key(int.parse(m.group(2)!), int.parse(m.group(3)!)): int.parse(
+        m.group(1)!,
+      ),
   };
 }
 

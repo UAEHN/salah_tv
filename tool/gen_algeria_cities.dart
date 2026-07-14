@@ -125,9 +125,11 @@ void main() {
 
     if (!existingSlugs.contains(slug)) {
       final coords = Coordinates(lat, lng);
-      for (var d = DateTime.utc(2026, 1, 1);
-          d.year == 2026;
-          d = d.add(const Duration(days: 1))) {
+      for (
+        var d = DateTime.utc(2026, 1, 1);
+        d.year == 2026;
+        d = d.add(const Duration(days: 1))
+      ) {
         final p = PrayerTimes(
           date: d,
           coordinates: coords,
@@ -135,9 +137,11 @@ void main() {
               CalculationMethodParameters.muslimWorldLeague(),
         );
         final date = '${_two(d.day)}/${_two(d.month)}/${d.year}';
-        csvLines.add('$en,$date,${_fmt(p.fajr)},${_fmt(p.sunrise)},'
-            '${_fmt(p.dhuhr)},${_fmt(p.asr)},${_fmt(p.maghrib, addMin: 3)},'
-            '${_fmt(p.isha)}');
+        csvLines.add(
+          '$en,$date,${_fmt(p.fajr)},${_fmt(p.sunrise)},'
+          '${_fmt(p.dhuhr)},${_fmt(p.asr)},${_fmt(p.maghrib, addMin: 3)},'
+          '${_fmt(p.isha)}',
+        );
       }
       generated.add('$en ($slug)');
     }

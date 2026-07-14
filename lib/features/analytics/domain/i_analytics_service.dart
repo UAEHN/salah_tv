@@ -63,11 +63,13 @@ abstract interface class IAnalyticsService {
     required String prayerKey,
     required int durationSeconds,
     required String source,
+    bool stoppedByUser = false,
   });
   void logIqamaCompleted({
     required String prayerKey,
     required int durationSeconds,
     required bool wasNatural,
+    bool stoppedByUser = false,
   });
   void logCycleReset({required String reason});
   void logMissedPrayerDetected({
@@ -113,6 +115,12 @@ abstract interface class IAnalyticsService {
     required int countdownSeconds,
     required bool isCycleActive,
     required bool hasPrayerData,
+    // Freeze-cause context: what background load the tick carried at its last
+    // proof-of-life. A stall on a weak box correlates with these (see
+    // countdown_stall evidence) — Quran/Takbeerat decoding starving a low-RAM CPU.
+    bool quranPlaying = false,
+    bool takbeeratPlaying = false,
+    String cyclePhase = '',
   });
 
   /// Fired once per prayer when its adjusted time has passed by more than
@@ -124,6 +132,7 @@ abstract interface class IAnalyticsService {
     required int overdueSeconds,
     required String adhanMode,
     required bool isMosqueMode,
+    required String cause,
   });
 
   /// Fired when [checkAdhanTrigger] hits an exact prayer time but skips

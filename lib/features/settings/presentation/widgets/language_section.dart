@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ghasaq/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/app_colors.dart';
+import '../../../../core/widgets/language_flag.dart';
 import '../settings_provider.dart';
 import 'tv_format_button.dart';
 
@@ -21,6 +22,7 @@ class LanguageSection extends StatelessWidget {
           label: l.languageArabic,
           isSelected: settings.locale == 'ar',
           palette: palette,
+          leading: const LanguageFlag(locale: 'ar', height: 20),
           onPressed: () => settingsProvider.updateLocale('ar'),
         ),
         const SizedBox(width: 16),
@@ -28,7 +30,16 @@ class LanguageSection extends StatelessWidget {
           label: l.languageEnglish,
           isSelected: settings.locale == 'en',
           palette: palette,
+          leading: const LanguageFlag(locale: 'en', height: 20),
           onPressed: () => settingsProvider.updateLocale('en'),
+        ),
+        const SizedBox(width: 16),
+        TvFormatButton(
+          label: l.languageFrench,
+          isSelected: settings.locale == 'fr',
+          palette: palette,
+          leading: const LanguageFlag(locale: 'fr', height: 20),
+          onPressed: () => settingsProvider.updateLocale('fr'),
         ),
       ],
     );

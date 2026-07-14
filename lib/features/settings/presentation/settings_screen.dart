@@ -24,10 +24,20 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   late int _selectedIndex;
 
+  // A D-pad press in the first frame after this screen is pushed — before its
+  // first layout pass — makes directional focus traversal (`focusInDirection`)
+  // measure a RenderBox that has no size yet ("RenderBox was not laid out").
+  // Gate key handling on the first frame so those too-early presses are dropped
+  // instead of throwing. Same root as the splash ExcludeFocus guard.
+  bool _isFirstFrameReady = false;
+
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _isFirstFrameReady = true;
+    });
   }
 
   late final List<FocusNode> _navFocusNodes = List.generate(
@@ -94,10 +104,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: Focus(
                           canRequestFocus: false,
                           skipTraversal: true,
-                          onKeyEvent: (_, event) => handleSettingsNavKeyEvent(
-                            _contentScopeNode,
-                            event,
-                          ),
+                          onKeyEvent: (_, event) => _isFirstFrameReady
+                              ? handleSettingsNavKeyEvent(
+                                  _contentScopeNode,
+                                  event,
+                                )
+                              : KeyEventResult.handled,
                           child: SettingsNavPanel(
                             categories: visibleCategories,
                             selectedIndex: effectiveIndex,
@@ -117,12 +129,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: Focus(
                             canRequestFocus: false,
                             skipTraversal: true,
-                            onKeyEvent: (_, event) =>
-                                handleSettingsContentKeyEvent(
-                                  _navFocusNodes,
-                                  effectiveIndex,
-                                  event,
-                                ),
+                            onKeyEvent: (_, event) => _isFirstFrameReady
+                                ? handleSettingsContentKeyEvent(
+                                    _navFocusNodes,
+                                    effectiveIndex,
+                                    event,
+                                  )
+                                : KeyEventResult.handled,
                             child: FocusScope(
                               node: _contentScopeNode,
                               child: SettingsContentPanel(

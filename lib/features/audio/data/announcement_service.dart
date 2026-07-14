@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 
+import 'audio_stream_guard.dart';
+
 /// Plays a short prayer-name announcement on an isolated [AudioPlayer].
 /// Completely separate from [AudioService._player] so the state-machine
 /// [onComplete] stream is never triggered by the announcement finishing.
@@ -26,9 +28,17 @@ class AnnouncementService {
       // for hours and contributes to ANR mutex contention on TV boxes.
       await _player.setReleaseMode(ReleaseMode.release);
       final completer = Completer<void>();
-      final sub = _player.onPlayerComplete.listen((_) {
-        if (!completer.isCompleted) completer.complete();
-      });
+      final sub = _player.onPlayerComplete.listen(
+        (_) {
+          if (!completer.isCompleted) completer.complete();
+        },
+        // Catch an async native error instead of leaking it as an uncaught
+        // FATAL, and unblock the await so the announcement never hangs.
+        onError: (Object e, StackTrace _) {
+          reportAudioStreamError('announcement', e);
+          if (!completer.isCompleted) completer.complete();
+        },
+      );
       await _player.play(AssetSource(asset));
       await completer.future.timeout(
         const Duration(seconds: 5),

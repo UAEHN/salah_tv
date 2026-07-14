@@ -52,6 +52,7 @@ AppSettings loadAppSettings(SharedPreferences prefs) => appSettingsFromMap({
   'prayerNotificationEnabled': prefs.getString(PrefsKeys.prayerNotif),
   'preAdhanReminderEnabled': prefs.getString(PrefsKeys.preAdhanMap),
   'preAdhanReminderMinutes': prefs.getInt(PrefsKeys.preAdhanMin),
+  'preAdhanReminderSound': prefs.getString(PrefsKeys.preAdhanSoundMap),
   'iqamaNotificationEnabled': prefs.getString(PrefsKeys.iqamaNotif),
   'preIqamaReminderEnabled': prefs.getString(PrefsKeys.preIqamaMap),
   'preIqamaReminderMinutes': prefs.getInt(PrefsKeys.preIqamaMin),
@@ -141,6 +142,10 @@ Future<void> saveAppSettings(SharedPreferences prefs, AppSettings s) async {
     jsonEncode(s.preAdhanReminderEnabled),
   );
   await prefs.setInt(PrefsKeys.preAdhanMin, s.preAdhanReminderMinutes);
+  await prefs.setString(
+    PrefsKeys.preAdhanSoundMap,
+    jsonEncode(s.preAdhanReminderSound),
+  );
   await prefs.setString(
     PrefsKeys.iqamaNotif,
     jsonEncode(s.iqamaNotificationEnabled),

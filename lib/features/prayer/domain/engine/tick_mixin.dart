@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import '../../../settings/domain/entities/prayer_sound_mode.dart';
 import '../prayer_time_calculator.dart' as calc;
 import 'prayer_cycle_base.dart';
 import 'adhan_cycle_mixin.dart';
+import 'cycle_wedge_guard.dart';
 import 'iqama_mixin.dart';
 import 'recovery_mixin.dart';
 import 'tick_diagnostics.dart';
@@ -52,8 +54,21 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
     final drift = s.now.difference(prev).inSeconds;
     if (drift.abs() > _kTimeJumpThresholdSeconds) {
       analytics?.logTimeJumpDetected(driftSeconds: drift);
-      s.adhansToday.clear();
-      s.sessionAdhkarShownToday.clear();
+      // Only a REAL date change resets the day-scoped "already fired / shown"
+      // sets. A same-day jump — e.g. the repeated small NTP corrections on cheap
+      // TV boxes with no battery RTC (clock jumps every minute) — must NOT wipe
+      // adhansToday: wiping it made every prayer look "never fired", and because
+      // recoverIqamaState bails while a cycle is active the set stayed empty,
+      // spamming false adhan_never_triggered FATALs AND risking a backward jump
+      // re-firing a passed adhan. Catch-up for genuinely-passed prayers is done
+      // by recoverIqamaState / the rescue path, which don't need the wipe.
+      if (s.now.day != s.lastLoadedDay) {
+        s.adhansToday.clear();
+        s.sessionAdhkarShownToday.clear();
+        s.overdueReported.clear();
+        s.skippedReported.clear();
+        s.preAnnouncementPlayed.clear();
+      }
       loadToday();
       recoverIqamaState();
       recoverSessionAdhkar();
@@ -70,7 +85,6 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
       // adhansToday so today's overdue/skipped events can fire fresh.
       s.overdueReported.clear();
       s.skippedReported.clear();
-      s.preAlertBellPlayed.clear();
       s.preAnnouncementPlayed.clear();
       loadToday();
     }
@@ -94,7 +108,9 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
     checkSessionAdhkar();
     updateNextPrayer();
     checkPreAnnouncement();
-    checkPreAlertBell();
+    // Release a wedged cycle BEFORE the trigger check so a freed machine can
+    // fire this tick's due adhan instead of waiting a full second.
+    healWedgedCycleIfStuck();
     checkAdhanTrigger();
     checkIqamaRescue();
     tickIqama();
@@ -202,6 +218,10 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
   /// Mosque mode: muezzin handles the call live — never play the cue.
   void checkPreAnnouncement() {
     if (settings.isMosqueMode) return;
+    // The announcement is a spoken cue for the adhan that is about to sound.
+    // If the adhan is silenced (silent/off), the user asked for no audio — a
+    // spoken prayer-name cue would contradict that. Only play it in sound mode.
+    if (settings.adhanMode != PrayerSoundMode.sound) return;
     if (s.isCycleActive) return;
     final key = '${s.nextPrayerKey}_${s.now.day}';
     if (s.preAnnouncementPlayed.contains(key)) return;
@@ -209,17 +229,6 @@ mixin TickMixin on PrayerCycleBase, AdhanCycleMixin, IqamaMixin, RecoveryMixin {
       s.preAnnouncementPlayed.add(key);
       unawaited(audio.playPrayerAnnouncement(s.nextPrayerKey));
     }
-  }
-
-  /// Play a soft bell once when the countdown enters the 1-minute pre-alert window.
-  /// Mosque mode: muezzin handles the call live — never play the cue.
-  void checkPreAlertBell() {
-    if (settings.isMosqueMode) return;
-    if (!s.isPrePrayerAlert) return;
-    final key = '${s.nextPrayerKey}_${s.now.day}';
-    if (s.preAlertBellPlayed.contains(key)) return;
-    s.preAlertBellPlayed.add(key);
-    audio.playPreAlertBell();
   }
 
   /// Drives the after-prayer adhkar takeover scheduled by [stopIqama]: starts

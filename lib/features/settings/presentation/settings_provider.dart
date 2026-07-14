@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import '../../../core/diagnostics/report_fault.dart';
 import '../../analytics/domain/i_analytics_service.dart';
 import '../../quran/domain/entities/quran_playback_mode.dart';
 import '../domain/entities/app_settings.dart';
@@ -34,6 +35,9 @@ class SettingsProvider extends ChangeNotifier {
     final result = await _save(_settings);
     result.fold((failure) {
       debugPrint('[Settings] persist failed: $failure — rolling back');
+      // The chosen setting silently reverts; name the cause (corrupt prefs /
+      // no disk) so "my settings won't stick" is explainable, not invisible.
+      reportFaultError('settings_persist_failed', fields: {'failure': '$failure'});
       _settings = prev;
       notifyListeners();
     }, (_) => _logSettingsDiff(prev, s));

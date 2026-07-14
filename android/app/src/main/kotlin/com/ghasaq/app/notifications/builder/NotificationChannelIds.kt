@@ -13,6 +13,10 @@ object NotificationChannelIds {
     const val ADHAN_PREFIX = "prayer_times_v5_"
     const val ADHAN_CUSTOM_PREFIX = "prayer_times_v5_custom_"
     const val PRE_ADHAN = "prayer_reminder_v1"
+    // v2 carries a real sound for a custom «اقتراب الصلاة» reminder. The silent
+    // v1 above stays for the 'silent' selection — a channel's sound is
+    // immutable, so the sounded variant is a fresh id (same pattern as IQAMA_V2).
+    const val PRE_ADHAN_CUSTOM_PREFIX = "prayer_reminder_v2_custom_"
     const val IQAMA = "prayer_iqama_v1"
     // v2 carries a real sound (bundled `iqama.mp3` by default, or a custom
     // imported file). A channel's sound is immutable after creation, so the
@@ -40,6 +44,9 @@ object NotificationChannelIds {
 
     fun customIqamaChannelId(fileName: String): String =
         "$IQAMA_CUSTOM_PREFIX${stem(fileName)}"
+
+    fun customPreAdhanChannelId(fileName: String): String =
+        "$PRE_ADHAN_CUSTOM_PREFIX${stem(fileName)}"
 
     private fun stem(fileName: String): String {
         val dot = fileName.lastIndexOf('.')

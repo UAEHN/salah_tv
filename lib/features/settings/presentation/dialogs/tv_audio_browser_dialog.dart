@@ -12,13 +12,17 @@ import '../bloc/device_audio_browser_cubit.dart';
 import '../bloc/device_audio_browser_state.dart';
 import '../widgets/tv/tv_browser_entry_tile.dart';
 
-/// Opens the TV MediaStore audio browser. Resolves to an importable file path
-/// (a cache copy of the picked file), or null if the user backed out.
-Future<String?> showTvAudioBrowser(
+/// A file the user picked in the TV browser: [path] is the importable cache
+/// copy, [name] is the original display name (used to build the sound label).
+typedef PickedAudio = ({String path, String name});
+
+/// Opens the TV MediaStore audio browser. Resolves to the picked file (cache
+/// copy path + original display name), or null if the user backed out.
+Future<PickedAudio?> showTvAudioBrowser(
   BuildContext context,
   AccentPalette palette,
 ) {
-  return showDialog<String>(
+  return showDialog<PickedAudio>(
     context: context,
     builder: (_) => BlocProvider(
       create: (_) =>
@@ -190,7 +194,7 @@ class _TvAudioBrowserDialogState extends State<_TvAudioBrowserDialog> {
       AudioFile(uri: e.uri!, name: e.name),
     );
     if (!ctx.mounted) return;
-    if (path != null) Navigator.pop(ctx, path);
+    if (path != null) Navigator.pop(ctx, (path: path, name: e.name));
   }
 
   Widget _permission(AppLocalizations l, DeviceAudioBrowserCubit cubit) =>
@@ -261,19 +265,21 @@ class _TvAudioBrowserDialogState extends State<_TvAudioBrowserDialog> {
   }
 
   Future<void> _pickViaSystem(BuildContext context) async {
-    String? path;
+    PickedAudio? picked;
     try {
-      final picked = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.platform.pickFiles(
         type: FileType.audio,
         allowMultiple: false,
         withData: false,
       );
-      path = picked?.files.singleOrNull?.path;
+      final file = result?.files.singleOrNull;
+      final path = file?.path;
+      if (path != null) picked = (path: path, name: file!.name);
     } catch (_) {
       // No SAF handler on this box — stay in the MediaStore browser.
-      path = null;
+      picked = null;
     }
     if (!context.mounted) return;
-    if (path != null) Navigator.pop(context, path);
+    if (picked != null) Navigator.pop(context, picked);
   }
 }

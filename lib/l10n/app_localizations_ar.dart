@@ -18,6 +18,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
+  String get languageFrench => 'Français';
+
+  @override
   String get localeComma => '،';
 
   @override
@@ -665,6 +668,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsPreAdhanReminder => 'تذكير قبل الأذان';
 
   @override
+  String get settingsPreAdhanSoundLabel => 'صوت التنبيه';
+
+  @override
+  String get settingsChoosePreAdhanSound => 'اختر صوت التنبيه';
+
+  @override
+  String get settingsPreAdhanSoundSilent => 'صامت';
+
+  @override
   String get settingsAdhanAlert => 'تنبيه الأذان';
 
   @override
@@ -1118,6 +1130,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get qiblaNotAvailableOnTv => 'القبلة غير متوفرة على أجهزة التلفاز';
+
+  @override
+  String get qiblaNoSensorTitle => 'لا توجد بوصلة في جهازك';
+
+  @override
+  String get qiblaNoSensorSubtitle =>
+      'هذا الجهاز لا يحتوي على حسّاس مغناطيسي، فتعذّر عرض بوصلة القبلة الحيّة';
 
   @override
   String get qiblaAlignedStatus => 'أنت تشير باتجاه القبلة';
@@ -1768,6 +1787,30 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get mushafSurahPrefix => 'سورة';
+
+  @override
+  String get mushafIndexSurahs => 'السور';
+
+  @override
+  String get mushafIndexJuz => 'الأجزاء';
+
+  @override
+  String get mushafQuickAyatAlKursi => 'آية الكرسي';
+
+  @override
+  String get mushafQuickSurahKahf => 'سورة الكهف';
+
+  @override
+  String get mushafQuickSurahYaseen => 'سورة يس';
+
+  @override
+  String get mushafQuickSurahRahman => 'سورة الرحمن';
+
+  @override
+  String get mushafQuickSurahWaqiah => 'سورة الواقعة';
+
+  @override
+  String get mushafQuickSurahMulk => 'سورة الملك';
 
   @override
   String get khatmaTitle => 'ختمة القرآن';

@@ -1,6 +1,6 @@
 name: ghasaq
 description: "غسق — مواقيت الصلاة لأجهزة Android TV"
-version: 1.0.10+20
+version: 1.0.11+21
 publish_to: none
 
 environment:
@@ -67,6 +67,10 @@ dependencies:
 
   # Reads installed app version (versionCode / build number) at runtime.
   package_info_plus: ^8.1.0
+
+  # Network transport type (wifi/ethernet) for error reports + the
+  # connectivity-restored trigger that flushes the offline error queue.
+  connectivity_plus: ^6.1.0
 
   dio: ^5.9.2
   flutter_bloc: ^9.1.1
@@ -165,6 +169,8 @@ flutter:
     - assets/noun-wake-up-136790.svg
     # Kaaba image used by the Qibla compass marker + center label.
     - assets/kaaba.png
+    # Language flags (real SVG vectors, not emoji) for the language picker.
+    - assets/flags/
   fonts:
     - family: Cairo
       fonts:

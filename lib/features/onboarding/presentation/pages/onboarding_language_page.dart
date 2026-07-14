@@ -47,6 +47,16 @@ class OnboardingLanguagePage extends StatelessWidget {
           onTap: () => context.read<OnboardingCubit>().selectLanguage('en'),
           entranceAnimation: entranceAnimation,
         ),
+        _LanguageCardWithDelay(
+          delay: 0.2,
+          locale: 'fr',
+          label: l.languageFrench,
+          nativeLabel: 'Français',
+          icon: Icons.translate_rounded,
+          isSelected: selectedLocale == 'fr',
+          onTap: () => context.read<OnboardingCubit>().selectLanguage('fr'),
+          entranceAnimation: entranceAnimation,
+        ),
         const Spacer(),
         OnboardingNextButton(
           label: l.onboardingNext,

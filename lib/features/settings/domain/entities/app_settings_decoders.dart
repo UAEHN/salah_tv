@@ -101,6 +101,18 @@ String validatedIqamaSound(String? key, List<CustomAdhan> customs) {
   return 'default';
 }
 
+/// Pre-adhan reminder variant. The sole built-in is `'silent'` (a soundless
+/// heads-up notification); everything else must be a `custom:<file>` key
+/// resolving to an existing [customs] entry, else falls back to `'silent'`.
+String validatedReminderSound(String? key, List<CustomAdhan> customs) {
+  if (key == null || key == 'silent') return 'silent';
+  final fileName = CustomAdhan.extractFileName(key);
+  if (fileName != null && customs.any((c) => c.fileName == fileName)) {
+    return key;
+  }
+  return 'silent';
+}
+
 const defaultBoolMapTrue = {
   'fajr': true,
   'dhuhr': true,
@@ -115,6 +127,33 @@ const defaultBoolMapFalse = {
   'maghrib': false,
   'isha': false,
 };
+
+const defaultReminderSoundMap = {
+  'fajr': 'silent',
+  'dhuhr': 'silent',
+  'asr': 'silent',
+  'maghrib': 'silent',
+  'isha': 'silent',
+};
+
+/// Decodes the per-prayer pre-adhan reminder sound map, validating every value
+/// against [customs] (a `custom:` key whose file no longer exists degrades to
+/// `'silent'`). Always returns a full 5-prayer map so callers index safely.
+Map<String, String> decodeReminderSoundMap(
+  dynamic raw,
+  List<CustomAdhan> customs,
+) {
+  if (raw == null) return defaultReminderSoundMap;
+  try {
+    final decoded = jsonDecode(raw as String) as Map;
+    return {
+      for (final key in defaultReminderSoundMap.keys)
+        key: validatedReminderSound(decoded[key]?.toString(), customs),
+    };
+  } on Object {
+    return defaultReminderSoundMap;
+  }
+}
 
 /// Decodes the new 3-mode enum, with migration from the legacy 2-mode model.
 /// Old `singleSurah + surahRepeatMode=playlist` becomes [QuranPlaybackMode.playlist].

@@ -12,7 +12,6 @@ import '../../prayer/domain/i_prayer_audio_port.dart';
 import '../../prayer/domain/entities/audio_output_state.dart';
 import 'announcement_service.dart';
 import 'audio_service_quran_mixin.dart';
-import 'bell_player.dart';
 import 'quran_audio_service.dart';
 
 class AudioService
@@ -34,7 +33,6 @@ class AudioService
 
   final AudioPlayer _player = AudioPlayer();
   bool _isPlaying = false;
-  final BellPlayer _bell = BellPlayer();
   final AnnouncementService _announcement = AnnouncementService();
   final QuranAudioService _quranService = QuranAudioService();
   final AppDiagnostics? _diagnostics;
@@ -48,7 +46,7 @@ class AudioService
       _isPlaying = false;
       _diag(diag.DiagnosticLevel.info, 'audio_player_completed');
       _onCompleteController.add(null);
-    });
+    }, onError: _onPlayerStreamError);
     // Issue 5: external interruption detection. If the player reaches
     // PlayerState.stopped while _isPlaying is true and the app did NOT
     // initiate the stop, treat it as a completion so the state machine
@@ -59,7 +57,7 @@ class AudioService
         _diag(diag.DiagnosticLevel.warning, 'audio_player_external_stop');
         _onCompleteController.add(null);
       }
-    });
+    }, onError: _onPlayerStreamError);
   }
 
   @override
@@ -197,6 +195,8 @@ class AudioService
         volume: (map['volume'] as int?) ?? 0,
         maxVolume: (map['maxVolume'] as int?) ?? 0,
         muted: (map['muted'] as bool?) ?? false,
+        route: (map['route'] as String?) ?? '',
+        musicActive: (map['musicActive'] as bool?) ?? false,
       );
     } on MissingPluginException {
       _diag(diag.DiagnosticLevel.warning, 'audio_state_missing_plugin');
@@ -216,8 +216,73 @@ class AudioService
       _playMain(() async => AssetSource('audio/dua.mp3'), 'playDua');
 
   @override
-  Future<bool> playIqama() =>
-      _playMain(() async => AssetSource('audio/iqama.mp3'), 'playIqama');
+  Future<bool> playIqama({String soundKey = 'default'}) async {
+    final success = await _playMain(
+      () => _resolveIqamaSource(soundKey),
+      'playIqama',
+    );
+    if (success || soundKey == 'default') return success;
+    // A custom iqama that failed to start (missing/corrupt file) must never
+    // leave the cycle silent — fall back to the bundled iqama, mirroring
+    // playAdhan's fallback-to-default.
+    _diag(
+      diag.DiagnosticLevel.warning,
+      'iqama_audio_fallback_to_default',
+      fields: {'failed_sound_key': soundKey},
+      forceUpload: true,
+    );
+    return _playMain(
+      () async => AssetSource(kIqamaDefaultAsset),
+      'playIqamaFallback',
+    );
+  }
+
+  /// Resolves the iqama playback source. Mirrors [_resolveAdhanSource] but the
+  /// non-custom fallback is always the single bundled iqama asset (iqama has no
+  /// built-in variants). A `custom:*` key resolves to the user-imported file in
+  /// the shared `custom_adhans/` dir; on TV without the custom repo, or when the
+  /// file is gone, it degrades to the bundled asset.
+  Future<Source> _resolveIqamaSource(String soundKey) async {
+    final fileName = CustomAdhan.extractFileName(soundKey);
+    final repo = _customAdhans;
+    if (fileName != null && repo != null) {
+      final result = await repo.absolutePathOf(fileName);
+      final path = result.fold((_) => null, (p) => p);
+      if (path != null) {
+        _diag(
+          diag.DiagnosticLevel.info,
+          'audio_source_resolved',
+          fields: {
+            'sound_key': soundKey,
+            'source': 'custom_file',
+            'alert': 'iqama',
+          },
+        );
+        return DeviceFileSource(path);
+      }
+      _diag(
+        diag.DiagnosticLevel.error,
+        'custom_audio_source_missing',
+        fields: {
+          'sound_key': soundKey,
+          'file_name': fileName,
+          'alert': 'iqama',
+        },
+        forceUpload: true,
+      );
+    }
+    _diag(
+      diag.DiagnosticLevel.info,
+      'audio_source_resolved',
+      fields: {
+        'sound_key': soundKey,
+        'source': 'asset',
+        'asset': kIqamaDefaultAsset,
+        'alert': 'iqama',
+      },
+    );
+    return AssetSource(kIqamaDefaultAsset);
+  }
 
   Future<Source> _resolveAdhanSource(String soundKey) async {
     final fileName = CustomAdhan.extractFileName(soundKey);
@@ -271,6 +336,22 @@ class AudioService
     _isAppInitiatedStop = false;
   }
 
+  // audioplayers can surface a native MediaPlayer error (e.g. MEDIA_ERROR_SYSTEM
+  // "Failed to set source") asynchronously on the player's event streams, AFTER
+  // the awaited play() already returned. Without an onError those became an
+  // uncaught zone error and crashed the app. Log instead — the _playMain
+  // pipeline has already fallen back, so the cycle keeps advancing.
+  void _onPlayerStreamError(Object e, StackTrace _) {
+    _isPlaying = false;
+    _diag(
+      diag.DiagnosticLevel.error,
+      'audio_event_stream_error',
+      fields: {'error_type': e.runtimeType.toString()},
+      error: e,
+      forceUpload: true,
+    );
+  }
+
   void _diag(
     diag.DiagnosticLevel level,
     String name, {
@@ -294,13 +375,9 @@ class AudioService
   Future<void> playPrayerAnnouncement(String key) => _announcement.play(key);
 
   @override
-  Future<void> playPreAlertBell() => _bell.play();
-
-  @override
   void dispose() {
     _onCompleteController.close();
     _player.dispose();
-    _bell.dispose();
     _announcement.dispose();
     _quranService.dispose();
   }

@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../../../core/diagnostics/report_fault.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/success.dart';
 import '../cancellation_token.dart';
@@ -43,18 +44,29 @@ class DownloadCityUseCase implements IDownloadCityUseCase {
 
         if (cancelToken.isCancelled) return const Left(CancelledFailure());
 
+        // The write/mark step touches the local DB, NOT the network. Guard it
+        // separately so a storage failure (disk full, DB locked/corrupt) is
+        // reported as such — the outer catch would otherwise mislabel it a
+        // "network" failure and tell the user to check their connection while
+        // the real cause (device storage) stays invisible.
         try {
           await _writer.writeCityRows(_db, cityId, payload.rows, cancelToken);
+          await _queries.markCityCached(
+            _db,
+            cityId,
+            DateTime.now().year,
+            payload.hash,
+          );
         } on CancellationException {
           return const Left(CancelledFailure());
+        } catch (e) {
+          reportFaultError(
+            'city_download_write_failed',
+            fields: {'city': cityName, 'country': countryKey},
+            error: e,
+          );
+          return Left(CacheFailure('Failed to store city data: $e'));
         }
-
-        await _queries.markCityCached(
-          _db,
-          cityId,
-          DateTime.now().year,
-          payload.hash,
-        );
         return const Right(Success());
       });
     } on CancellationException {

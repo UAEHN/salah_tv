@@ -24,6 +24,13 @@ class LocationFailure extends Failure {
   const LocationFailure(super.message);
 }
 
+/// No magnetometer/compass sensor on this device (many TV boxes and some
+/// phones) — the live Qibla compass cannot run. Surfaced instead of letting
+/// the sensor stream's PlatformException(NO_SENSOR) crash the app.
+class SensorUnavailableFailure extends Failure {
+  const SensorUnavailableFailure() : super('No compass sensor on this device');
+}
+
 /// Typed exceptions thrown by datasources and caught by repositories.
 class ServerException implements Exception {
   final String message;

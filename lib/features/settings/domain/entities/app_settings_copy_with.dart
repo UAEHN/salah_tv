@@ -52,6 +52,7 @@ extension AppSettingsCopyWith on AppSettings {
     Map<String, bool>? prayerNotificationEnabled,
     Map<String, bool>? preAdhanReminderEnabled,
     int? preAdhanReminderMinutes,
+    Map<String, String>? preAdhanReminderSound,
     Map<String, bool>? iqamaNotificationEnabled,
     Map<String, bool>? preIqamaReminderEnabled,
     int? preIqamaReminderMinutes,
@@ -86,6 +87,9 @@ extension AppSettingsCopyWith on AppSettings {
       ),
       preAdhanReminderEnabled: Map.unmodifiable(
         preAdhanReminderEnabled ?? this.preAdhanReminderEnabled,
+      ),
+      preAdhanReminderSound: Map.unmodifiable(
+        preAdhanReminderSound ?? this.preAdhanReminderSound,
       ),
       iqamaNotificationEnabled: Map.unmodifiable(
         iqamaNotificationEnabled ?? this.iqamaNotificationEnabled,
@@ -191,6 +195,8 @@ extension AppSettingsCopyWith on AppSettings {
           other.prayerNotificationEnabled.toString() &&
       preAdhanReminderEnabled.toString() ==
           other.preAdhanReminderEnabled.toString() &&
+      preAdhanReminderSound.toString() ==
+          other.preAdhanReminderSound.toString() &&
       iqamaNotificationEnabled.toString() ==
           other.iqamaNotificationEnabled.toString() &&
       preIqamaReminderEnabled.toString() ==

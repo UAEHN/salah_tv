@@ -47,6 +47,8 @@ class QiblaCubit extends Cubit<QiblaState> {
       emit(QiblaPermissionDenied());
     } else if (failure is LocationServiceDisabledFailure) {
       emit(QiblaLocationDisabled());
+    } else if (failure is SensorUnavailableFailure) {
+      emit(QiblaSensorUnavailable());
     } else {
       emit(QiblaError(failure.message));
     }

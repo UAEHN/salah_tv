@@ -214,11 +214,13 @@ String countryLabel(String key, {String locale = 'ar'}) {
   final lower = key.toLowerCase();
   final dbLabel = _countryLabels[lower];
   if (dbLabel != null && _dbCountryKeys.contains(lower)) {
-    return locale == 'en' ? dbLabel.en : dbLabel.ar;
+    // Arabic only for the 'ar' locale; every other UI language (en, fr, …)
+    // shows the Latin name — better than Arabic for a French/English reader.
+    return locale == 'ar' ? dbLabel.ar : dbLabel.en;
   }
 
   final normalizedKey = normalizeCountryKey(key);
-  if (locale == 'en') return resolveEnglishCountryName(normalizedKey);
+  if (locale != 'ar') return resolveEnglishCountryName(normalizedKey);
   return _worldCountryArabicByKey[normalizedKey] ?? key;
 }
 
@@ -236,7 +238,9 @@ List<String> citiesForCountry(String countryKey, List<String> availableCities) {
 }
 
 String cityLabel(String cityKey, {String locale = 'ar', String? countryKey}) {
-  if (locale == 'en') {
+  // Latin city names for every non-Arabic UI language (en, fr, …); only the
+  // Arabic locale shows the Arabic city name.
+  if (locale != 'ar') {
     if (countryKey != null) {
       final normalizedCountryKey = normalizeCountryKey(countryKey);
       final worldEnglish =

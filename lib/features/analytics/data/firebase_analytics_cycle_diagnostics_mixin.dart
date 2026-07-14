@@ -14,11 +14,17 @@ mixin CycleDiagnosticsMixin on FirebaseAnalyticsBase
     required int countdownSeconds,
     required bool isCycleActive,
     required bool hasPrayerData,
+    bool quranPlaying = false,
+    bool takbeeratPlaying = false,
+    String cyclePhase = '',
   }) => logEventInternal('tick_heartbeat', {
     'next_prayer_key': nextPrayerKey,
     'countdown_seconds': countdownSeconds,
     'is_cycle_active': isCycleActive.toString(),
     'has_prayer_data': hasPrayerData.toString(),
+    'quran_playing': quranPlaying.toString(),
+    'takbeerat_playing': takbeeratPlaying.toString(),
+    'cycle_phase': cyclePhase,
   });
 
   @override
@@ -27,11 +33,13 @@ mixin CycleDiagnosticsMixin on FirebaseAnalyticsBase
     required int overdueSeconds,
     required String adhanMode,
     required bool isMosqueMode,
+    required String cause,
   }) => logEventInternal('prayer_overdue_no_trigger', {
     'prayer_key': prayerKey,
     'overdue_seconds': overdueSeconds,
     'adhan_mode': adhanMode,
     'is_mosque_mode': isMosqueMode.toString(),
+    'cause': cause,
   });
 
   @override

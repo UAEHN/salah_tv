@@ -11,6 +11,9 @@ import 'app.dart';
 import 'core/app_startup.dart';
 import 'core/diagnostics/app_diagnostics.dart';
 import 'core/diagnostics/diagnostic_level.dart' as diag;
+import 'core/error_reporting/domain/i_error_reporting_service.dart';
+import 'core/error_reporting/global_error_hooks.dart';
+import 'core/error_reporting/widgets/graceful_error_widget.dart';
 import 'core/health/heartbeat_service.dart';
 import 'features/analytics/domain/i_analytics_service.dart';
 import 'features/feedback/domain/i_feedback_repository.dart';
@@ -51,6 +54,9 @@ void main() async {
       FlutterError.onError = (details) {
         _recordFlutterError(details);
       };
+      // Never leave a weak device on a blank/grey box when a screen fails to
+      // render — paint a calm fallback AND record that it happened.
+      ErrorWidget.builder = (details) => GracefulErrorWidget(details: details);
       PlatformDispatcher.instance.onError = (error, stack) {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
         _recordFatal('platform_dispatcher_error', error, stack);
@@ -91,6 +97,13 @@ void _recordFlutterError(FlutterErrorDetails details) {
       error,
       stack,
     );
+    reportUncaught(
+      'flutter_non_fatal_layout_error',
+      error,
+      stack,
+      isFatal: false,
+      isLayout: true,
+    );
     return;
   }
 
@@ -107,6 +120,9 @@ bool _isNonFatalFlutterLayoutError(FlutterErrorDetails details) {
 
 void _recordFatal(String name, Object error, StackTrace stack) {
   _recordDiagnostic(diag.DiagnosticLevel.fatal, name, error, stack);
+  // Full-context error record (fingerprint, breadcrumbs, device state) —
+  // covers the zone / platform-dispatcher / isolate / flutter-fatal hooks.
+  reportUncaught(name, error, stack);
 }
 
 void _recordDiagnostic(
@@ -204,8 +220,32 @@ Widget _buildApp(AppSettings settings, bool isFirstLaunch) {
                 'is_dua_playing': s.isDuaPlaying,
                 'active_cycle_prayer': s.activeCyclePrayerKey,
                 if (s.lastTickError != null) 'last_tick_error': s.lastTickError,
+                // Settings profile — lets the dashboard answer "how is this
+                // device configured?" for support without contacting the user.
+                'adhan_mode': liveSettings.adhanMode.name,
+                'iqama_mode': liveSettings.iqamaMode.name,
+                'is_mosque_mode': liveSettings.isMosqueMode,
+                'is_quran_enabled': liveSettings.isQuranEnabled,
+                'reciter': liveSettings.quranReciterName,
+                'adhan_sound': liveSettings.adhanSound,
+                'iqama_sound': liveSettings.iqamaSound,
+                'calc_method': liveSettings.calculationMethod,
+                'madhab': liveSettings.madhab,
+                'data_source': liveSettings.isCalculatedLocation
+                    ? 'calculated'
+                    : 'downloaded',
+                'layout': liveSettings.layoutStyle,
+                'locale': liveSettings.locale,
+                // The device's own wall clock at beat time — lets the dashboard
+                // show "the user's clock" and spot clock drift.
+                'device_time': DateTime.now().toIso8601String(),
               };
             };
+            // Beat now that the snapshot (city/country) is wired, so the
+            // dashboard shows the device's location on launch instead of waiting
+            // for the 15-min periodic beat (a device reopened before then would
+            // otherwise stay "unknown").
+            getIt<HeartbeatService>().beatNow();
           }
           // Don't start the 1Hz tick / audio engine on first launch. The
           // bundled default city ('Dubai') is non-empty, so an isEmpty check
@@ -264,6 +304,15 @@ class _SettingsBridgeWrapperState extends State<_SettingsBridgeWrapper> {
           'is_mosque_mode': next.isMosqueMode,
         }),
       );
+    }
+    if (getIt.isRegistered<IErrorReportingService>()) {
+      getIt<IErrorReportingService>().setContext({
+        'selected_country': next.selectedCountry,
+        'selected_city': next.selectedCity,
+        'adhan_mode': next.adhanMode.name,
+        'iqama_mode': next.iqamaMode.name,
+        'is_mosque_mode': next.isMosqueMode,
+      });
     }
     context.read<PrayerBloc>().add(PrayerSettingsUpdated(next));
   }

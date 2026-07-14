@@ -7,6 +7,8 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../error_reporting/bus/telemetry_bus.dart';
+import '../error_reporting/bus/telemetry_event.dart';
 import 'diagnostic_event.dart';
 import 'diagnostic_level.dart';
 
@@ -14,14 +16,17 @@ class AppDiagnostics {
   AppDiagnostics({
     FirebaseFirestore? firestore,
     FirebaseCrashlytics? crashlytics,
+    TelemetryBus? bus,
   }) : _firestore = firestore ?? FirebaseFirestore.instance,
-       _crashlytics = crashlytics ?? FirebaseCrashlytics.instance;
+       _crashlytics = crashlytics ?? FirebaseCrashlytics.instance,
+       _bus = bus;
 
   static const _prefsKey = 'diagnostics.events.v1';
   static const _maxEvents = 300;
 
   final FirebaseFirestore _firestore;
   final FirebaseCrashlytics _crashlytics;
+  final TelemetryBus? _bus;
   String? _deviceId;
   String? _installationId;
   String? _userId;
@@ -75,6 +80,15 @@ class AppDiagnostics {
     StackTrace? stack,
     bool forceUpload = false,
   }) async {
+    // Mirror onto the in-process telemetry bus (breadcrumbs / functional
+    // health). Must stay the first SYNCHRONOUS statement: callers use
+    // `unawaited(record(...))`, so anything after an await loses ordering.
+    _bus?.publish(
+      source: TelemetrySource.diag,
+      name: name,
+      level: level.wireName,
+      params: error == null ? fields : {...fields, 'error': error.toString()},
+    );
     final event = DiagnosticEvent(
       level: level,
       name: name,

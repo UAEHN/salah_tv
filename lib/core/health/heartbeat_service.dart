@@ -5,8 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../features/push_notifications/domain/i_install_id_provider.dart';
+import '../error_reporting/context/device_context_channel.dart';
 
-/// TV-only heartbeat. Posts a small document to Firestore every 5 minutes
+/// TV-only heartbeat. Posts a small document to Firestore every 15 minutes
 /// so the dashboard can show which devices are online, what city they are
 /// tuned to, and the running app version. Failures are silent — a flaky
 /// network on a TV box must never crash the cycle (§8 CLAUDE.md).
@@ -20,7 +21,7 @@ class HeartbeatService {
   });
 
   static const _kCollection = 'device_heartbeats';
-  static const _kInterval = Duration(minutes: 5);
+  static const _kInterval = Duration(minutes: 15);
 
   final IInstallIdProvider _installIdProvider;
   final FirebaseFirestore _firestore;
@@ -38,6 +39,8 @@ class HeartbeatService {
   String? _installId;
   String _appVersion = '-';
   String _osVersion = '-';
+  String _deviceModel = '';
+  String _manufacturer = '';
   DateTime? _startedAt;
 
   Future<void> start() async {
@@ -60,6 +63,14 @@ class HeartbeatService {
     try {
       _osVersion = Platform.operatingSystemVersion;
     } catch (_) {}
+    // Read the device model once (heartbeat is flat, so we don't repeat this
+    // per tick). Reuses the same native channel the error reporter uses; fully
+    // fail-soft — an empty model just means the field is omitted.
+    try {
+      final ctx = await DeviceContextChannel().read();
+      _deviceModel = (ctx['model'] as String?) ?? '';
+      _manufacturer = (ctx['manufacturer'] as String?) ?? '';
+    } catch (_) {}
   }
 
   Future<void> _tick() async {
@@ -72,6 +83,9 @@ class HeartbeatService {
         'app_version': _appVersion,
         'os_version': _osVersion,
         'platform': platform,
+        if (_deviceModel.isNotEmpty && _deviceModel != 'unknown')
+          'device_model': _deviceModel,
+        if (_manufacturer.isNotEmpty) 'device_manufacturer': _manufacturer,
         if (_startedAt != null)
           'uptime_seconds': DateTime.now().difference(_startedAt!).inSeconds,
         ...?snapshotProvider?.call(),
@@ -83,6 +97,18 @@ class HeartbeatService {
     } catch (_) {
       // Silent — never let a heartbeat write break the app.
     }
+  }
+
+  /// Sends a heartbeat immediately — call it once the [snapshotProvider] is
+  /// wired so the dashboard gets the device's city/country on launch instead of
+  /// waiting up to 15 min for the next periodic beat (a device reopened before
+  /// then otherwise shows a location-less "unknown" heartbeat forever).
+  /// Fail-soft and idempotent: loads the install id first if start() hasn't.
+  void beatNow() {
+    unawaited(() async {
+      if (_installId == null) await _loadStaticDeviceInfo();
+      await _tick();
+    }());
   }
 
   void dispose() {

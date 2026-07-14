@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Control Room dashboard identity (Firebase Auth, Phase 4). The real
+    // enforcement of who can read observability data lives HERE — the app's
+    // client-side allowlist gate is only a UX convenience on top of this.
+    function isDashboardAdmin() {
+      return request.auth != null
+        && request.auth.token.email == 'boodeuae0909@gmail.com';
+    }
+
+    // ── Pre-existing behavior, preserved verbatim ─────────────────────────
+    match /feedback_tickets/{document} {
+      allow write: if true;
+      allow read: if false;
+    }
+
+    // ── App operational telemetry ─────────────────────────────────────────
+    // The TV app writes with the client SDK and no Firebase Auth, so writes
+    // are open but never client-readable — except the dashboard admin, who
+    // reads heartbeats for the crash-free-devices metric. NOTE: before
+    // 2026-07-03 these collections had NO allow rule at all — every
+    // heartbeat/diagnostics write was silently denied.
+    match /device_heartbeats/{installId} {
+      allow create, update: if true;
+      allow read: if isDashboardAdmin();
+      allow delete: if false;
+    }
+    match /device_diagnostics/{deviceId} {
+      allow create, update: if true;
+      allow read, delete: if false;
+      match /events/{eventId} {
+        allow create: if true;
+        allow read, update, delete: if false;
+      }
+    }
+    match /push_profiles/{installId} {
+      allow create, update: if true;
+      allow read, delete: if false;
+    }
+
+    // ── Error observability ───────────────────────────────────────────────
+    // create AND update: uploads are idempotent doc(event_id).set() — a retry
+    // after a timed-out-but-landed write is an update of the same doc. The
+    // dashboard admin may read for drill-down.
+    match /error_events/{eventId} {
+      allow create, update: if request.resource.data.severity in ['fatal', 'error', 'warning', 'info']
+        && request.resource.data.kind in ['exception', 'silent_failure', 'native_crash']
+        && request.resource.data.stack is string
+        && request.resource.data.stack.size() < 20000;
+      allow read: if isDashboardAdmin();
+      allow delete: if false;
+    }
+
+    // Functional-health flow outcomes — the success-rate numerator/denominator.
+    match /flow_runs/{runId} {
+      allow create: if request.resource.data.flow in ['adhan', 'iqama'];
+      allow read: if isDashboardAdmin();
+      allow update, delete: if false;
+    }
+
+    // Written exclusively by Cloud Functions via the Admin SDK (which bypasses
+    // these rules). Clients: the dashboard admin reads, and may flip ONLY the
+    // triage `status` field (resolve/mute); every other field is server-owned.
+    match /error_groups/{fingerprint} {
+      allow read: if isDashboardAdmin();
+      allow update: if isDashboardAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
+      allow create, delete: if false;
+      match /occurrences/{eventId} {
+        allow read: if isDashboardAdmin();
+        allow write: if false;
+      }
+    }
+
+    // One rollup doc per day, written exclusively by the scheduled Cloud
+    // Function (Admin SDK bypasses rules). The dashboard admin reads history.
+    match /daily_stats/{date} {
+      allow read: if isDashboardAdmin();
+      allow write: if false;
+    }
+  }
+}

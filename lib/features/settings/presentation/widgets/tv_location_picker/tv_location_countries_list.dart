@@ -43,9 +43,9 @@ class TvLocationCountriesList extends StatelessWidget {
             normalizeCountryKey(country.key) ==
             normalizeCountryKey(currentCountryKey);
         return TvLocationOptionTile(
-          title: l.localeName == 'en'
-              ? country.englishName
-              : country.arabicName,
+          title: l.localeName == 'ar'
+              ? country.arabicName
+              : country.englishName,
           isSelected: isSelected,
           isBusy: false,
           autofocus: index == 0,

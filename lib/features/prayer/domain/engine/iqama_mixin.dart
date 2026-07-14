@@ -46,7 +46,7 @@ mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
       }
       s.isIqamaCountdown = false;
       s.iqamaCountdown = Duration.zero;
-      unawaited(triggerIqama());
+      unawaited(guardedTriggerIqama());
       return;
     }
     if (s.iqamaCountdown.inSeconds > 0) {
@@ -54,7 +54,7 @@ mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
       return;
     }
     s.isIqamaCountdown = false;
-    unawaited(triggerIqama());
+    unawaited(guardedTriggerIqama());
   }
 
   void checkIqamaRescue() {
@@ -77,7 +77,30 @@ mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
       },
       forceUpload: true,
     );
-    unawaited(triggerIqama());
+    unawaited(guardedTriggerIqama());
+  }
+
+  /// [triggerIqama] is fired unawaited from the tick / rescue / countdown-elapsed
+  /// paths, so a throw inside it would vanish as an unhandled zone error and
+  /// could leave [isIqamaPlaying] wedged — which keeps the cycle "active" and
+  /// silently blocks every future prayer's adhan. Wrap it so a failure is
+  /// reported; [healWedgedCycleIfStuck] then releases any wedged state.
+  Future<void> guardedTriggerIqama() async {
+    try {
+      await triggerIqama();
+    } catch (e, st) {
+      diag(
+        DiagnosticLevel.error,
+        'iqama_trigger_threw',
+        fields: {
+          'trigger_prayer': s.iqamaPrayerKey,
+          'error_type': e.runtimeType.toString(),
+        },
+        error: e,
+        stack: st,
+        forceUpload: true,
+      );
+    }
   }
 
   // Issue 3: async so we can detect playIqama() failure and skip to Quran
@@ -170,7 +193,7 @@ mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
       );
       return; // visual-only takeover, no audio
     }
-    final success = await audio.playIqama();
+    final success = await audio.playIqama(soundKey: settings.iqamaSound);
     if (!success && s.isIqamaPlaying) {
       telIqamaFail(prayerKey);
       telPrayerAlertJourneyState(
@@ -220,14 +243,66 @@ mixin IqamaMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
         'iqama_audio_start_succeeded',
         fields: {'trigger_prayer': prayerKey},
       );
+      // Mirror the adhan output probe: playIqama() returning true means playback
+      // started, NOT that any sound is audible. Probe the device so a muted /
+      // zero-volume / dead-output (HDMI off) iqama surfaces instead of looking
+      // identical to success in telemetry.
+      final output = await audio.readAudioOutputState();
+      if (output != null && output.isInaudible) {
+        telPrayerAlertJourneyState(
+          alertType: 'iqama',
+          prayerKey: prayerKey,
+          state: AdhanJourneyState.failed,
+          stage: 'audio_output_probe',
+          reason: output.muted ? 'muted' : 'zero_volume',
+        );
+        markPrayerAlertError(
+          alertType: 'iqama',
+          prayerKey: prayerKey,
+          code: output.muted ? 'IQAMA_MUTED' : 'IQAMA_ZERO_VOLUME',
+          detail: 'volume=${output.volume}/${output.maxVolume}',
+        );
+        diag(
+          DiagnosticLevel.error,
+          'iqama_audio_inaudible',
+          fields: {
+            'trigger_prayer': prayerKey,
+            'volume': output.volume,
+            'max_volume': output.maxVolume,
+            'muted': output.muted,
+            'route': output.route,
+            'music_active': output.musicActive,
+          },
+          forceUpload: true,
+        );
+      } else if (output != null) {
+        // route=='none' means NO output device at all — silent no matter the
+        // volume, a case `isInaudible` (muted/volume only) misses. Escalate to a
+        // force-uploaded warning so it surfaces in the Control Room. Telemetry
+        // ONLY — no user banner, no cycle change (parity with the adhan probe).
+        final isDeadOutput = output.route == 'none';
+        diag(
+          isDeadOutput ? DiagnosticLevel.warning : DiagnosticLevel.info,
+          isDeadOutput ? 'iqama_dead_output' : 'iqama_audio_output_state',
+          fields: {
+            'trigger_prayer': prayerKey,
+            'volume': output.volume,
+            'max_volume': output.maxVolume,
+            'muted': output.muted,
+            'route': output.route,
+            'music_active': output.musicActive,
+          },
+          forceUpload: isDeadOutput,
+        );
+      }
     }
   }
 
   // Issue 1: async + await stop() before resuming Quran.
   // Issue 4: entry guard prevents double-call from concurrent onComplete events.
-  Future<void> stopIqama() async {
+  Future<void> stopIqama({bool userSkipped = false}) async {
     if (!s.isIqamaPlaying) return;
-    telIqamaCompletedFromState(s);
+    telIqamaCompletedFromState(s, userSkipped: userSkipped);
     telPrayerAlertJourneyState(
       alertType: 'iqama',
       prayerKey: s.iqamaPrayerKey,

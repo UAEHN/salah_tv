@@ -34,7 +34,8 @@ class _TvOnboardingScreenState extends State<TvOnboardingScreen>
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     _bgController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 8),
+      // Longer period = calmer drift; integer element speeds keep it seamless.
+      duration: const Duration(seconds: 14),
     )..repeat();
     _entranceController = AnimationController(
       vsync: this,

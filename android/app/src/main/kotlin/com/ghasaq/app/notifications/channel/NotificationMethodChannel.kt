@@ -113,8 +113,13 @@ class NotificationMethodChannel(
                 }
                 else -> result.notImplemented()
             }
-        } catch (e: Exception) {
-            result.error("ENGINE_ERROR", e.message, null)
+        } catch (t: Throwable) {
+            // Throwable, not Exception: fake-ROM TV boxes throw NoSuchMethodError
+            // (a LinkageError) from framework methods that are missing despite a
+            // high SDK_INT. Convert any such fault into a MethodChannel error so
+            // the app degrades gracefully instead of crashing (§8 platform-
+            // channel resilience).
+            result.error("ENGINE_ERROR", t.message, null)
         }
     }
 

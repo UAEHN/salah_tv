@@ -45,6 +45,35 @@ extension PrayerDiagnostics on PrayerCycleBase {
     notify();
   }
 
+  /// Unified "the adhan did NOT audibly sound for [prayerKey] today" signal.
+  /// One event name so the Control Room shows every no-sound case in a single
+  /// filter instead of three differently-named ones (overdue / recovery-skip /
+  /// silent-rescue). [cause] tells them apart; [iqamaWillFire] flags the benign
+  /// case where the prayer is still served (the mistimed call is suppressed but
+  /// its iqama fires on time); [critical] escalates to FATAL for the worst case
+  /// — a prayer that never fired while the user was watching. Always
+  /// force-uploaded so a missed call is visible without waiting for the export.
+  void diagAdhanNotSounded({
+    required String prayerKey,
+    required String cause,
+    required bool iqamaWillFire,
+    required int lateSeconds,
+    bool critical = false,
+  }) {
+    diag(
+      critical ? DiagnosticLevel.fatal : DiagnosticLevel.warning,
+      'adhan_not_sounded',
+      fields: {
+        'missed_prayer': prayerKey,
+        'cause': cause,
+        'iqama_will_fire': iqamaWillFire,
+        'is_foreground': s.isAppInForeground,
+        'late_seconds': lateSeconds,
+      },
+      forceUpload: true,
+    );
+  }
+
   void diag(
     DiagnosticLevel level,
     String name, {

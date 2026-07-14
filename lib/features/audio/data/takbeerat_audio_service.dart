@@ -4,6 +4,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../prayer/domain/i_takbeerat_audio_port.dart';
+import 'audio_stream_guard.dart';
 
 /// Standalone player for the Eid Takbeerat track. Owns its own
 /// [AudioPlayer] so it never collides with the adhan/dua/iqama pipeline or
@@ -15,14 +16,22 @@ import '../../prayer/domain/i_takbeerat_audio_port.dart';
 class TakbeeratAudioService implements ITakbeeratAudioPort {
   TakbeeratAudioService() {
     _player.setReleaseMode(ReleaseMode.loop);
-    _player.onPlayerStateChanged.listen((state) {
-      // Track app-visible playing state. The native player can transition
-      // through paused/stopped on focus loss — keep [_isPlaying] in sync.
-      if (state == PlayerState.playing) _isPlaying = true;
-      if (state == PlayerState.stopped || state == PlayerState.completed) {
+    _player.onPlayerStateChanged.listen(
+      (state) {
+        // Track app-visible playing state. The native player can transition
+        // through paused/stopped on focus loss — keep [_isPlaying] in sync.
+        if (state == PlayerState.playing) _isPlaying = true;
+        if (state == PlayerState.stopped || state == PlayerState.completed) {
+          _isPlaying = false;
+        }
+      },
+      // A native audioplayers error can arrive asynchronously here; without
+      // onError it escaped as an uncaught FATAL. Catch, tag, and diagnose.
+      onError: (Object e, StackTrace _) {
         _isPlaying = false;
-      }
-    });
+        reportAudioStreamError('takbeerat', e);
+      },
+    );
   }
 
   final AudioPlayer _player = AudioPlayer();

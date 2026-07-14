@@ -130,9 +130,9 @@ class AccentPalette {
 
 const Map<String, AccentPalette> kThemePalettes = {
   'red': AccentPalette(
-    primary: Color(0xFFE11D48), // vivid ruby-rose — elegant, premium on dark TV
-    secondary: Color(0xFF9F1239), // deep garnet for a rich jewel gradient
-    glow: Color(0x40E11D48),
+    primary: Color(0xFFC0392B), // warm brick-crimson — refined, calmer on 24/7 TV
+    secondary: Color(0xFF8E2A20), // deep wine-maroon for a rich, muted gradient
+    glow: Color(0x40C0392B),
   ),
   'teal': AccentPalette(
     primary: Color(0xFF14B8A6),

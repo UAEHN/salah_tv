@@ -20,6 +20,8 @@ import android.view.WindowManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import com.ghasaq.app.error.DeviceContextReader
+import com.ghasaq.app.error.NativeCrashMarkerHandler
 import com.ghasaq.app.notifications.channel.NotificationMethodChannel
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -40,6 +42,10 @@ class MainActivity : FlutterActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Capture JVM-level crashes that never reach Dart. Installed after
+        // Firebase/Crashlytics' own handler so we run first and delegate down
+        // the chain — Crashlytics still reports. Consumed next boot by Dart.
+        NativeCrashMarkerHandler.install(applicationContext)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         // Keep the display alive AND force it on. FLAG_KEEP_SCREEN_ON alone is
         // revoked by some TV boxes after hours, letting the display sleep and
@@ -143,6 +149,10 @@ class MainActivity : FlutterActivity() {
         ).setMethodCallHandler { call, result ->
             when (call.method) {
                 "isTV" -> result.success(isTvDevice())
+                "getDeviceContext" ->
+                    result.success(DeviceContextReader(applicationContext).read())
+                "consumeNativeCrashMarker" ->
+                    result.success(NativeCrashMarkerHandler.consume(applicationContext))
                 "openUrl" -> {
                     val url = call.argument<String>("url")
                     if (url != null) {
@@ -194,6 +204,11 @@ class MainActivity : FlutterActivity() {
                             "volume" to volume,
                             "maxVolume" to am.getStreamMaxVolume(stream),
                             "muted" to (muted || volume <= 0),
+                            // Where the audio would actually go. A high volume
+                            // routed to a dead/absent output (HDMI off) reads as
+                            // "audible" here but is silent — this exposes it.
+                            "route" to audioOutputRoute(am),
+                            "musicActive" to am.isMusicActive,
                         ),
                     )
                 }
@@ -452,6 +467,39 @@ class MainActivity : FlutterActivity() {
             type = "audio/*"
         }
         return intent.resolveActivity(packageManager) != null
+    }
+
+    /**
+     * A compact summary of the active audio OUTPUT devices (e.g.
+     * "speaker,hdmi"). "none" means no output device at all — an adhan there is
+     * silent no matter the volume. Diagnostic only; never throws.
+     */
+    private fun audioOutputRoute(am: android.media.AudioManager): String {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return "unknown"
+        return try {
+            am.getDevices(android.media.AudioManager.GET_DEVICES_OUTPUTS)
+                .map { audioDeviceTypeName(it.type) }
+                .distinct()
+                .joinToString(",")
+                .ifEmpty { "none" }
+        } catch (t: Throwable) {
+            "error"
+        }
+    }
+
+    private fun audioDeviceTypeName(type: Int): String = when (type) {
+        android.media.AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> "speaker"
+        android.media.AudioDeviceInfo.TYPE_HDMI -> "hdmi"
+        android.media.AudioDeviceInfo.TYPE_HDMI_ARC -> "hdmi_arc"
+        android.media.AudioDeviceInfo.TYPE_BLUETOOTH_A2DP -> "bt_a2dp"
+        android.media.AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> "bt_sco"
+        android.media.AudioDeviceInfo.TYPE_WIRED_HEADPHONES -> "wired_hp"
+        android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET -> "wired_hs"
+        android.media.AudioDeviceInfo.TYPE_USB_DEVICE -> "usb"
+        android.media.AudioDeviceInfo.TYPE_USB_HEADSET -> "usb_hs"
+        android.media.AudioDeviceInfo.TYPE_AUX_LINE -> "aux"
+        android.media.AudioDeviceInfo.TYPE_LINE_ANALOG -> "line_analog"
+        else -> "type_$type"
     }
 
     /**

@@ -29,9 +29,24 @@ class NotificationSerializer {
     final l = lookupAppLocalizations(Locale(settings.locale));
     final adhan = _channels.resolveAdhan(settings);
     final iqama = _channels.resolveIqama(settings);
+    // Pre-adhan sound is per-prayer, so resolve one channel per prayer up
+    // front and hand the map to the factory (mirrors adhan/iqama tuples).
+    final preAdhan = {
+      for (final key in NotificationPayloadFactory.prayerKeys)
+        key: _channels.resolvePreAdhan(settings, key),
+    };
     final notifications = <Map<String, Object?>>[];
     for (var i = 0; i < days.length; i++) {
-      _factory.addForDay(notifications, days[i], i, settings, l, adhan, iqama);
+      _factory.addForDay(
+        notifications,
+        days[i],
+        i,
+        settings,
+        l,
+        adhan,
+        iqama,
+        preAdhan,
+      );
     }
     return jsonEncode({
       'notifications': notifications,

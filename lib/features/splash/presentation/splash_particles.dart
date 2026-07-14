@@ -32,7 +32,9 @@ class _ParticlePainter extends CustomPainter {
       (_) => _P(
         x0: r.nextDouble() * 0.5 + 0.25,
         y0: r.nextDouble(),
-        speed: 0.08 + r.nextDouble() * 0.15,
+        // Integer full-height loops per period so the upward drift wraps
+        // seamlessly at t=1 instead of snapping back to the start.
+        speed: (r.nextInt(2) + 1).toDouble(),
         radius: 0.4 + r.nextDouble() * 1.0,
         phase: r.nextDouble() * pi * 2,
         drift: 0.008 + r.nextDouble() * 0.012,

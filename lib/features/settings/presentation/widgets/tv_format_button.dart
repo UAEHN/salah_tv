@@ -11,11 +11,15 @@ class TvFormatButton extends StatefulWidget {
   final AccentPalette palette;
   final VoidCallback onPressed;
 
+  /// Optional leading widget (e.g. a language flag) shown before the label.
+  final Widget? leading;
+
   const TvFormatButton({
     required this.label,
     required this.isSelected,
     required this.palette,
     required this.onPressed,
+    this.leading,
     super.key,
   });
 
@@ -82,13 +86,22 @@ class _TvFormatButtonState extends State<TvFormatButton> {
                     ]
                   : null,
             ),
-            child: Text(
-              widget.label,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: isActive ? Colors.white : tc.textMuted,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.leading != null) ...[
+                  widget.leading!,
+                  const SizedBox(width: 10),
+                ],
+                Text(
+                  widget.label,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: isActive ? Colors.white : tc.textMuted,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

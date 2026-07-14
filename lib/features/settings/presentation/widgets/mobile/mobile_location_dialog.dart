@@ -186,7 +186,8 @@ class _MobileLocationDialogState extends State<MobileLocationDialog> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final k = _selectedCountryKey;
-    final isEn = l.localeName == 'en';
+    // Non-Arabic UI (en, fr, …) uses the Latin country name.
+    final isEn = l.localeName != 'ar';
     final matched = k != null
         ? _allCountries.cast<UnifiedCountry?>().firstWhere(
             (c) => c!.key == k,

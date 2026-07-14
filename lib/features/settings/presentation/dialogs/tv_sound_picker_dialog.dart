@@ -210,9 +210,13 @@ class TvSoundPickerDialog extends StatelessWidget {
 
   Future<void> _addFromDevice(BuildContext context) async {
     final cubit = context.read<CustomAdhanCubit>();
-    final path = await showTvAudioBrowser(context, palette);
-    if (path == null) return;
-    await cubit.importFromDevicePath(path, isIqama: isIqama);
+    final picked = await showTvAudioBrowser(context, palette);
+    if (picked == null) return;
+    await cubit.importFromDevicePath(
+      picked.path,
+      isIqama: isIqama,
+      displayName: picked.name,
+    );
   }
 
   void _confirmDelete(BuildContext context, AppLocalizations l, CustomAdhan c) {

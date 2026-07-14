@@ -16,6 +16,7 @@ import 'mobile_notification_master_toggle.dart';
 import 'mobile_notification_settings_header.dart';
 import 'mobile_prayer_notification_list.dart';
 import 'mobile_pre_adhan_duration_dialog.dart';
+import 'mobile_pre_adhan_sound_dialog.dart';
 import 'mobile_settings_section_title.dart';
 import 'mobile_settings_tile.dart';
 
@@ -85,6 +86,8 @@ class MobileNotificationSettingsList extends StatelessWidget {
                     _showDurationPicker(context, sp, 'adhan'),
                 onPreIqamaDurationTap: () =>
                     _showDurationPicker(context, sp, 'iqama'),
+                onPreAdhanSoundTap: (prayerKey) =>
+                    _showPreAdhanSoundPicker(context, sp, prayerKey),
               ),
             ],
           ),
@@ -144,6 +147,35 @@ class MobileNotificationSettingsList extends StatelessWidget {
         child: MobileIqamaSoundDialog(
           currentSound: current,
           onSave: (key) => sp.updateIqamaSound(key),
+        ),
+      ),
+    );
+  }
+
+  void _showPreAdhanSoundPicker(
+    BuildContext context,
+    SettingsProvider sp,
+    String prayerKey,
+  ) {
+    final current = sp.settings.preAdhanReminderSound[prayerKey] ?? 'silent';
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => getIt<AdhanPreviewCubit>()),
+          BlocProvider(
+            create: (_) => CustomAdhanCubit(
+              import: getIt(),
+              delete: getIt(),
+              settings: sp,
+            ),
+          ),
+        ],
+        child: MobilePreAdhanSoundDialog(
+          currentSound: current,
+          onSave: (key) => sp.updatePreAdhanReminderSound(prayerKey, key),
         ),
       ),
     );

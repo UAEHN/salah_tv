@@ -35,7 +35,9 @@ class _StarPainter extends CustomPainter {
         y: r.nextDouble(),
         radius: base * 1.8 + 0.4,
         phase: r.nextDouble() * pi * 2,
-        speed: r.nextDouble() * 0.6 + 0.4,
+        // Integer twinkle cycles per loop: sin() returns to its start value at
+        // t=1, so the repeating background loops seamlessly (no hard jump).
+        speed: (r.nextInt(3) + 1).toDouble(),
         isGlow: base > 0.85,
       );
     });

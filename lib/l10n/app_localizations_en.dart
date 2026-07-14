@@ -18,6 +18,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
+  String get languageFrench => 'Français';
+
+  @override
   String get localeComma => ',';
 
   @override
@@ -667,6 +670,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsPreAdhanReminder => 'Reminder before adhan';
 
   @override
+  String get settingsPreAdhanSoundLabel => 'Reminder sound';
+
+  @override
+  String get settingsChoosePreAdhanSound => 'Choose reminder sound';
+
+  @override
+  String get settingsPreAdhanSoundSilent => 'Silent';
+
+  @override
   String get settingsAdhanAlert => 'Adhan alert';
 
   @override
@@ -1123,6 +1135,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qiblaNotAvailableOnTv => 'Qibla is not available on TV devices';
+
+  @override
+  String get qiblaNoSensorTitle => 'No compass on your device';
+
+  @override
+  String get qiblaNoSensorSubtitle =>
+      'This device has no magnetometer sensor, so the live Qibla compass can\'t run';
 
   @override
   String get qiblaAlignedStatus => 'You are facing the Qibla';
@@ -1777,6 +1796,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mushafSurahPrefix => 'Surah';
+
+  @override
+  String get mushafIndexSurahs => 'Surahs';
+
+  @override
+  String get mushafIndexJuz => 'Juz';
+
+  @override
+  String get mushafQuickAyatAlKursi => 'Ayat al-Kursi';
+
+  @override
+  String get mushafQuickSurahKahf => 'Al-Kahf';
+
+  @override
+  String get mushafQuickSurahYaseen => 'Ya-Sin';
+
+  @override
+  String get mushafQuickSurahRahman => 'Ar-Rahman';
+
+  @override
+  String get mushafQuickSurahWaqiah => 'Al-Waqi\'ah';
+
+  @override
+  String get mushafQuickSurahMulk => 'Al-Mulk';
 
   @override
   String get khatmaTitle => 'Quran Khatma';

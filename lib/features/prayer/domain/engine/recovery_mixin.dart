@@ -1,7 +1,11 @@
+import '../../../../core/diagnostics/diagnostic_level.dart';
 import '../../../settings/domain/entities/prayer_sound_mode.dart';
 import '../entities/daily_prayer_times.dart';
 import '../prayer_time_calculator.dart' as calc;
 import 'prayer_cycle_base.dart';
+import 'prayer_diagnostics_extension.dart';
+import 'quran_mixin.dart';
+import 'takbeerat_mixin.dart';
 
 /// Delay from app-open before the recovered session adhkar takeover appears.
 /// Short, so the user sees the adhkar shortly after opening, but not instantly
@@ -14,35 +18,46 @@ const Duration _kEveningWindowEndBeforeMaghrib = Duration(minutes: 15);
 
 /// Handles iqama recovery when the app resumes after missing a prayer trigger.
 /// Issue 8: marks all missed prayers to prevent duplicate adhan fires.
-mixin RecoveryMixin on PrayerCycleBase {
+mixin RecoveryMixin on PrayerCycleBase, QuranMixin, TakbeeratMixin {
   /// Checks if we are in the iqama-countdown window for a prayer whose
   /// adhan trigger was missed (app was killed or suspended at prayer time).
   /// If so, starts the countdown with the remaining seconds.
   void recoverIqamaState() {
     if (s.todayPrayers == null) return;
     // Do not interfere if a cycle is already in progress
-    if (s.isCycleActive) return;
+    if (s.isCycleActive) {
+      _diagRecovery('skip_cycle_active');
+      return;
+    }
 
     final missed = markMissedPrayers();
-    if (missed == null) return;
+    if (missed == null) {
+      _diagRecovery('skip_no_missed');
+      return;
+    }
 
     // Adhan fully off (and not in mosque mode) — live triggers skip the
     // cycle entirely, so recovery has nothing to surface either.
     if (settings.adhanMode == PrayerSoundMode.off && !settings.isMosqueMode) {
+      _diagRecovery('skip_adhan_off', {'prayer_key': missed.key});
       return;
     }
     // Iqama fully off (and not in mosque mode) — nothing to recover for the
     // iqama phase.
     if (settings.iqamaMode == PrayerSoundMode.off && !settings.isMosqueMode) {
+      _diagRecovery('skip_iqama_off', {'prayer_key': missed.key});
       return;
     }
 
     final iqamaDelayMin = settings.iqamaDelays[missed.key] ?? 0;
 
-    // Iqama target = adjusted prayer time + iqama delay
-    final iqamaAt = calc
-        .adjustedPrayerTime(missed, settings.adhanOffsets)
-        .add(Duration(minutes: iqamaDelayMin));
+    // Iqama target = adjusted prayer time + iqama delay. Floored to a whole
+    // second (already whole-minute here) so every iqamaDueAt set-site holds the
+    // same invariant and the countdown steps in lockstep with the clock.
+    final prayerAt = calc.adjustedPrayerTime(missed, settings.adhanOffsets);
+    final iqamaAt = calc.floorToSecond(
+      prayerAt.add(Duration(minutes: iqamaDelayMin)),
+    );
     final remaining = iqamaAt.difference(s.now);
 
     if (remaining.inSeconds > 0) {
@@ -57,8 +72,54 @@ mixin RecoveryMixin on PrayerCycleBase {
       s.iqamaPrayerKey = missed.key;
       s.currentAdhanPrayerKey = missed.key;
       s.activeCyclePrayerKey = missed.key; // lock card highlight on recovery
+      // Store the anchor + delay so a later iqama-delay change recomputes this
+      // recovered countdown too — SettingsMixin.updateSettings guards its
+      // recalculation on adhanTriggerTime != null, matching the live adhan path.
+      s.adhanTriggerTime = prayerAt;
+      s.currentIqamaDelayMin = iqamaDelayMin;
+      // Pause background audio for the recovered cycle, exactly as the live
+      // adhan does. The app missed the adhan while the engine was suspended, so
+      // pauseQuranForAdhan was never reached — without this the Quran/Takbeerat
+      // keep playing UNDER the recovered iqama and its call overlaps them.
+      pauseQuranForAdhan();
+      pauseTakbeeratForCycle();
+      _diagRecovery('applied', {
+        'prayer_key': missed.key,
+        'remaining_sec': remaining.inSeconds,
+        'iqama_delay_min': iqamaDelayMin,
+      });
+    } else {
+      // Iqama window already closed — nothing to show, cycle drops to next.
+      _diagRecovery('skip_window_closed', {
+        'prayer_key': missed.key,
+        'over_sec': -remaining.inSeconds,
+        'iqama_delay_min': iqamaDelayMin,
+      });
+      // The prayer is fully skipped (no adhan, no iqama) — surface it in the
+      // unified no-sound signal. Not critical: reaching here means the engine
+      // was suspended/jumped past the whole 5-min rescue + iqama window (a
+      // background/frozen box waking late), not a live ticking failure.
+      final overSec = s.now.difference(prayerAt).inSeconds;
+      diagAdhanNotSounded(
+        prayerKey: missed.key,
+        cause: 'recovery_window_closed',
+        iqamaWillFire: false,
+        lateSeconds: overSec,
+      );
     }
-    // If remaining <= 0 the iqama window has already closed — nothing to show
+  }
+
+  // TEMP DIAGNOSTIC — remove after the background iqama-drop is root-caused.
+  // Force-uploads exactly which recovery branch ran on resume so the silent
+  // iqama-drop culprit is visible in the Control Room trail (this whole path
+  // emitted nothing before). See project-bg-adhan-cycle-cascade.
+  void _diagRecovery(String outcome, [Map<String, Object?> extra = const {}]) {
+    diag(
+      DiagnosticLevel.info,
+      'iqama_recovery_$outcome',
+      fields: extra,
+      forceUpload: true,
+    );
   }
 
   /// Loads today's persisted "session adhkar shown" categories into the
@@ -137,14 +198,20 @@ mixin RecoveryMixin on PrayerCycleBase {
     return '';
   }
 
-  /// Issue 8: mark ALL missed prayers in adhansToday so checkAdhanTrigger
-  /// never re-fires any of them. Returns the latest missed prayer, or null.
+  /// Issue 8: mark missed prayers in adhansToday so checkAdhanTrigger never
+  /// re-fires a stale one. Returns the latest missed prayer, or null.
+  ///
+  /// Only prayers past the live rescue window ([calc.kAdhanRescueCatchUpSeconds])
+  /// are "missed": a prayer still inside it (e.g. the device stalled a few
+  /// seconds past the moment, tripping the time-jump reload) is left for the
+  /// live rescue path to fire, instead of being silently suppressed here.
   PrayerEntry? markMissedPrayers() {
     final result = calc.markMissedPrayers(
       s.todayPrayers!.prayersOnly,
       s.now,
       settings.adhanOffsets,
       s.adhansToday,
+      missedAfterSeconds: calc.kAdhanRescueCatchUpSeconds,
     );
     s.adhansToday.addAll(result.newKeys);
     final m = result.missed;

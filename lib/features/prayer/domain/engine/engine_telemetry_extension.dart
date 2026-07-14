@@ -27,14 +27,15 @@ extension EngineTelemetry on PrayerCycleBase {
     muted: muted,
   );
 
-  void telAdhanCompletedFromState(PrayerCycleState s) {
+  void telAdhanCompletedFromState(PrayerCycleState s, {bool userSkipped = false}) {
     final d = s.adhanTriggerTime == null
         ? 0
         : s.now.difference(s.adhanTriggerTime!).inSeconds;
     analytics?.logAdhanCompleted(
       prayerKey: s.currentAdhanPrayerKey,
       durationSeconds: d,
-      source: 'time',
+      source: userSkipped ? 'user' : 'time',
+      stoppedByUser: userSkipped,
     );
   }
 
@@ -57,7 +58,7 @@ extension EngineTelemetry on PrayerCycleBase {
     errorType: 'play_returned_false',
   );
 
-  void telIqamaCompletedFromState(PrayerCycleState s) {
+  void telIqamaCompletedFromState(PrayerCycleState s, {bool userSkipped = false}) {
     final d = s.iqamaTriggerTime == null
         ? 0
         : s.now.difference(s.iqamaTriggerTime!).inSeconds;
@@ -65,6 +66,7 @@ extension EngineTelemetry on PrayerCycleBase {
       prayerKey: s.iqamaPrayerKey,
       durationSeconds: d,
       wasNatural: s.iqamaWasNaturalCompletion,
+      stoppedByUser: userSkipped,
     );
   }
 
@@ -74,11 +76,17 @@ extension EngineTelemetry on PrayerCycleBase {
     required int countdownSeconds,
     required bool isCycleActive,
     required bool hasPrayerData,
+    bool quranPlaying = false,
+    bool takbeeratPlaying = false,
+    String cyclePhase = '',
   }) => analytics?.logTickHeartbeat(
     nextPrayerKey: nextPrayerKey,
     countdownSeconds: countdownSeconds,
     isCycleActive: isCycleActive,
     hasPrayerData: hasPrayerData,
+    quranPlaying: quranPlaying,
+    takbeeratPlaying: takbeeratPlaying,
+    cyclePhase: cyclePhase,
   );
 
   void telPrayerOverdue(
@@ -86,11 +94,13 @@ extension EngineTelemetry on PrayerCycleBase {
     int overdueSec,
     String adhanMode,
     bool mosque,
+    String cause,
   ) => analytics?.logPrayerOverdueNoTrigger(
     prayerKey: prayerKey,
     overdueSeconds: overdueSec,
     adhanMode: adhanMode,
     isMosqueMode: mosque,
+    cause: cause,
   );
 
   void telAdhanSkipped(String prayerKey, String reason) =>

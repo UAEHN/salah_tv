@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
+import '../../audio/data/audio_stream_guard.dart';
 import '../domain/i_adhkar_audio_port.dart';
 
 /// Dedicated audio player for adhkar.
@@ -23,19 +24,32 @@ class AdhkarAudioService implements IAdhkarAudioPort {
   bool _isPlaying = false;
 
   AdhkarAudioService() {
-    _player.onPlayerComplete.listen((_) {
-      _isPlaying = false;
-      _onCompleteCtrl.add(null);
-    });
+    _player.onPlayerComplete.listen(
+      (_) {
+        _isPlaying = false;
+        _onCompleteCtrl.add(null);
+      },
+      onError: _onStreamError,
+    );
     // Android TV emits PlayerState.stopped instead of PlayerState.completed
     // when audio ends naturally. The _isPlaying guard ensures only ONE
     // completion event reaches the cubit regardless of which event fires first.
-    _player.onPlayerStateChanged.listen((state) {
-      if (state == PlayerState.stopped && _isPlaying && !_appInitiatedStop) {
-        _isPlaying = false;
-        _onCompleteCtrl.add(null);
-      }
-    });
+    _player.onPlayerStateChanged.listen(
+      (state) {
+        if (state == PlayerState.stopped && _isPlaying && !_appInitiatedStop) {
+          _isPlaying = false;
+          _onCompleteCtrl.add(null);
+        }
+      },
+      onError: _onStreamError,
+    );
+  }
+
+  // A native audioplayers error can arrive asynchronously on these streams;
+  // without onError it escaped as an uncaught FATAL. Catch, tag, and diagnose.
+  void _onStreamError(Object e, StackTrace _) {
+    _isPlaying = false;
+    reportAudioStreamError('adhkar', e);
   }
 
   @override

@@ -113,7 +113,11 @@ mixin SettingsMixin
       final newDelay = settings.iqamaDelays[s.activeCyclePrayerKey] ?? 0;
       if (newDelay != s.currentIqamaDelayMin) {
         s.currentIqamaDelayMin = newDelay;
-        final dueAt = s.adhanTriggerTime!.add(Duration(minutes: newDelay));
+        // Whole-second target — keeps the recomputed iqama countdown stepping in
+        // lockstep with the clock (see calc.floorToSecond).
+        final dueAt = calc.floorToSecond(
+          s.adhanTriggerTime!.add(Duration(minutes: newDelay)),
+        );
         s.iqamaDueAt = dueAt;
         final remaining = dueAt.difference(s.now);
         if (remaining.inSeconds > 0) {

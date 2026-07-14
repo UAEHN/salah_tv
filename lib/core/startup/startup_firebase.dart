@@ -7,6 +7,7 @@ import '../../features/analytics/data/firebase_analytics_service.dart';
 import '../../features/analytics/domain/i_analytics_service.dart';
 import '../../firebase_options.dart';
 import '../app_config.dart';
+import '../error_reporting/bus/telemetry_bus.dart';
 import '../../injection.dart';
 
 /// Initializes Firebase for both TV and mobile platforms, and primes
@@ -29,6 +30,9 @@ Future<void> initializeFirebase() async {
 Future<void> initializeAnalytics({required bool isTV}) async {
   final service = FirebaseAnalyticsService();
   await service.initialize(isTV: isTV);
+  if (getIt.isRegistered<TelemetryBus>()) {
+    service.telemetryBus = getIt<TelemetryBus>();
+  }
   getIt.registerSingleton<IAnalyticsService>(service);
 }
 

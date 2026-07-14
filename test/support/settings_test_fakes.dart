@@ -22,8 +22,7 @@ class FakeDownloadCityUseCase implements IDownloadCityUseCase {
     required String countryKey,
     required String cityName,
     required CancellationToken cancelToken,
-  }) async =>
-      const Right(Success());
+  }) async => const Right(Success());
 }
 
 /// Creates a real in-memory [CompositePrayerRepository] for widget tests.

@@ -53,6 +53,13 @@ class TvOnboardingLanguagePage extends StatelessWidget {
               locale: 'en',
               isSelected: selected == 'en',
             ),
+            const SizedBox(width: 24),
+            TvOnboardingLangCard(
+              label: 'Français',
+              sublabel: 'French',
+              locale: 'fr',
+              isSelected: selected == 'fr',
+            ),
           ],
         ),
       ],

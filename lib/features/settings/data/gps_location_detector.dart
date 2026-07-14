@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../../core/diagnostics/report_fault.dart';
 import '../../../core/error/failures.dart';
 import '../domain/entities/world_city.dart';
 import '../domain/entities/detected_location.dart';
@@ -61,22 +62,36 @@ class GpsLocationDetector implements ILocationDetector {
   Future<Either<Failure, DetectedLocation>> _detectLocation({
     String? locale,
   }) async {
-    final failure = await _ensurePermission();
-    if (failure != null) return Left(failure);
+    try {
+      final failure = await _ensurePermission();
+      if (failure != null) return Left(failure);
 
-    final position = await _resolvePosition();
-    if (position == null) {
+      final position = await _resolvePosition();
+      if (position == null) {
+        return const Left(LocationFailure('Unable to determine location'));
+      }
+
+      // Primary path — Nominatim reverse. Same data source as manual search,
+      // so GPS produces identical results to typing the city name.
+      final nominatim = await _tryNominatimReverse(position, locale: locale);
+      if (nominatim != null) return Right(nominatim);
+
+      // Fallback — native reverse geocoder. May produce "Unknown" for small
+      // places the OS doesn't know; still better than a hard failure.
+      return _detectViaNativeGeocoder(position, locale: locale);
+    } catch (e) {
+      // Geolocator / Play Services calls (getLastKnownPosition, the permission
+      // checks, native geocoder) can throw PlatformException(IO_ERROR,
+      // … UNAVAILABLE) when Google Play services are unavailable or outdated.
+      // detectLocation is awaited fire-and-forget from onboarding, so a raw
+      // throw becomes an uncaught async crash. Always resolve to a Failure so
+      // the user falls back to manual city pick (CLAUDE §8/§11).
+      debugPrint('[Location] detectLocation failed: $e');
+      // Root cause (Play-Services UNAVAILABLE, geocoder IO, permission) was
+      // debug-only before — name it so we see WHY auto-location degraded.
+      reportFaultError('location_detect_failed', error: e);
       return const Left(LocationFailure('Unable to determine location'));
     }
-
-    // Primary path — Nominatim reverse. Same data source as manual search,
-    // so GPS produces identical results to typing the city name.
-    final nominatim = await _tryNominatimReverse(position, locale: locale);
-    if (nominatim != null) return Right(nominatim);
-
-    // Fallback — native reverse geocoder. May produce "Unknown" for small
-    // places the OS doesn't know; still better than a hard failure.
-    return _detectViaNativeGeocoder(position, locale: locale);
   }
 
   Future<DetectedLocation?> _tryNominatimReverse(
@@ -189,6 +204,7 @@ class GpsLocationDetector implements ILocationDetector {
       return placemarkFromCoordinates(position.latitude, position.longitude);
     } catch (e) {
       debugPrint('[Location] reverse geocode failed: $e');
+      reportFaultWarning('location_reverse_geocode_failed', error: e);
       return const [];
     }
   }
@@ -217,6 +233,7 @@ class GpsLocationDetector implements ILocationDetector {
       );
     } catch (e) {
       debugPrint('[Location] fresh position failed: $e');
+      reportFaultWarning('location_fresh_position_failed', error: e);
       return null;
     }
   }

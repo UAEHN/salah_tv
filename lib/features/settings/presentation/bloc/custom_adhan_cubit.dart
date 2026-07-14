@@ -75,12 +75,23 @@ class CustomAdhanCubit extends Cubit<CustomAdhanState> {
   /// (no [FilePicker]). [isIqama] routes the result to the iqama list/selection
   /// instead of the adhan one. The new sound is auto-selected so the user hears
   /// it on the next cycle without a second step.
+  ///
+  /// [displayName] is the file's original name as shown in the browser; the
+  /// label is derived from it. Falls back to the temp path's basename only if
+  /// no display name was provided — the temp file is prefixed `import_<ts>_`
+  /// and strips non-ASCII (Arabic) chars, so it must never drive the label.
   Future<void> importFromDevicePath(
     String path, {
     required bool isIqama,
+    String? displayName,
   }) async {
     emit(const CustomAdhanBusy());
-    final result = await _import(path, _deriveLabel(p.basename(path)));
+    final label = _deriveLabel(
+      (displayName != null && displayName.trim().isNotEmpty)
+          ? displayName
+          : p.basename(path),
+    );
+    final result = await _import(path, label);
     result.fold((failure) => emit(CustomAdhanError(failure.message)), (
       custom,
     ) async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/mobile_theme.dart';
 
@@ -18,6 +19,7 @@ class MobileMushafIndexToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = MobileColors.isDark(context);
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -29,12 +31,12 @@ class MobileMushafIndexToggle extends StatelessWidget {
       child: Row(
         children: [
           _Segment(
-            label: 'السور',
+            label: l.mushafIndexSurahs,
             selected: mode == MushafIndexMode.surahs,
             onTap: () => onChanged(MushafIndexMode.surahs),
           ),
           _Segment(
-            label: 'الأجزاء',
+            label: l.mushafIndexJuz,
             selected: mode == MushafIndexMode.juz,
             onTap: () => onChanged(MushafIndexMode.juz),
           ),

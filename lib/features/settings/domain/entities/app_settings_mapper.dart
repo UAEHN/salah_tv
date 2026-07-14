@@ -47,6 +47,7 @@ extension AppSettingsMapper on AppSettings {
     'prayerNotificationEnabled': jsonEncode(prayerNotificationEnabled),
     'preAdhanReminderEnabled': jsonEncode(preAdhanReminderEnabled),
     'preAdhanReminderMinutes': preAdhanReminderMinutes,
+    'preAdhanReminderSound': jsonEncode(preAdhanReminderSound),
     'iqamaNotificationEnabled': jsonEncode(iqamaNotificationEnabled),
     'preIqamaReminderEnabled': jsonEncode(preIqamaReminderEnabled),
     'preIqamaReminderMinutes': preIqamaReminderMinutes,
@@ -110,6 +111,10 @@ AppSettings appSettingsFromMap(Map<String, dynamic> map) {
     preAdhanReminderEnabled: decodeBoolMap(
       map['preAdhanReminderEnabled'],
       defaultBoolMapFalse,
+    ),
+    preAdhanReminderSound: decodeReminderSoundMap(
+      map['preAdhanReminderSound'],
+      customAdhans,
     ),
     iqamaNotificationEnabled: decodeBoolMap(
       map['iqamaNotificationEnabled'],

@@ -12,10 +12,20 @@ class AudioOutputState {
   /// True when the media stream is explicitly muted.
   final bool muted;
 
+  /// Active audio output route (e.g. `speaker`, `hdmi`, `bt_a2dp`, or `none`
+  /// when there is no output device at all). Diagnostic only — surfaces an
+  /// adhan routed to a dead/absent output that volume alone reads as audible.
+  final String route;
+
+  /// Whether the OS reports media audio actively playing at probe time.
+  final bool musicActive;
+
   const AudioOutputState({
     required this.volume,
     required this.maxVolume,
     required this.muted,
+    this.route = '',
+    this.musicActive = false,
   });
 
   /// True when the adhan would play but produce no audible sound.

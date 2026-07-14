@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/brand_colors.dart';
+import '../../../../core/widgets/language_flag.dart';
 import '../onboarding_cubit.dart';
 
 /// A focusable language selection card for TV onboarding.
@@ -85,13 +86,7 @@ class _TvOnboardingLangCardState extends State<TvOnboardingLangCard> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.translate_rounded,
-                size: 36,
-                color: isHighlighted
-                    ? brandGold
-                    : Colors.white.withValues(alpha: 0.4),
-              ),
+              LanguageFlag(locale: widget.locale, height: 40),
               const SizedBox(height: 12),
               Text(
                 widget.label,

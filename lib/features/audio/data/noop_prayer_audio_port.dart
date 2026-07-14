@@ -29,16 +29,13 @@ class NoOpPrayerAudioPort implements IPrayerAudioPort {
   }
 
   @override
-  Future<bool> playIqama() async {
+  Future<bool> playIqama({String soundKey = 'default'}) async {
     _fireComplete();
     return true;
   }
 
   @override
   Future<AudioOutputState?> readAudioOutputState() async => null;
-
-  @override
-  Future<void> playPreAlertBell() async {}
 
   @override
   Future<void> playPrayerAnnouncement(String prayerKey) async {}

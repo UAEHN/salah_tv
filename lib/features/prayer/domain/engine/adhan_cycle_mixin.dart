@@ -3,6 +3,7 @@ import 'dart:async';
 import '../../../../core/diagnostics/adhan_journey_state.dart';
 import '../../../../core/diagnostics/diagnostic_level.dart';
 import '../../../settings/domain/entities/prayer_sound_mode.dart';
+import '../entities/daily_prayer_times.dart';
 import '../prayer_time_calculator.dart' as calc;
 import 'engine_telemetry_extension.dart';
 import 'prayer_cycle_base.dart';
@@ -71,8 +72,96 @@ mixin AdhanCycleMixin
           );
           continue;
         }
-        unawaited(triggerAdhan(p.key));
+        if (isRescueWindow) {
+          // The adhan is a FIXED-INSTANT call to prayer. Past its 30s live
+          // window it must NEVER be sounded late — that would call people to a
+          // time that already entered. Restore the cycle silently instead of
+          // replaying a stale adhan/dua.
+          // Benign no-sound: the adhan audio is intentionally suppressed but the
+          // prayer is still served (iqama fires on time), so it joins the
+          // unified signal flagged iqama_will_fire — distinct from a full skip.
+          diagAdhanNotSounded(
+            prayerKey: p.key,
+            cause: 'rescue_silent',
+            iqamaWillFire: true,
+            lateSeconds: diff.inSeconds,
+          );
+          _enterIqamaCountdownForMissedAdhan(p);
+        } else {
+          unawaited(_guardedTriggerAdhan(p.key));
+        }
       }
+    }
+  }
+
+  /// Enters the iqama phase for a prayer whose adhan window was missed by more
+  /// than [calc.kAdhanCatchUpSeconds] (30s). The adhan is a fixed-instant call,
+  /// so it is never sounded late; instead the cycle is restored SILENTLY from
+  /// the prayer's REAL time — Quran/Takbeerat pause exactly as in the live flow,
+  /// and the iqama still fires at its own correct instant (prayer + delay) via
+  /// [_setupIqamaCountdown]. The prayer is never dropped; only the mis-timed
+  /// call is suppressed.
+  void _enterIqamaCountdownForMissedAdhan(PrayerEntry p) {
+    s.currentAdhanPrayerKey = p.key;
+    s.activeCyclePrayerKey = p.key;
+    s.currentIqamaDelayMin = settings.iqamaDelays[p.key] ?? 0; // Issue 9 parity
+    // Anchor to the real prayer time (NOT now) so iqama lands at prayer + delay.
+    s.adhanTriggerTime = calc.adjustedPrayerTime(p, settings.adhanOffsets);
+    s.isAdhanPlaying = false;
+    s.isDuaPlaying = false;
+    pauseQuranForAdhan();
+    pauseTakbeeratForCycle();
+    _setupIqamaCountdown();
+  }
+
+  /// Called by the engine's onResumed when returning to the app tore down an
+  /// adhan/dua that had frozen in the background. recoverIqamaState CANNOT
+  /// rebuild the iqama (the prayer is already in adhansToday from the background
+  /// fire) — which silently DROPPED it (the iqama vanished mid-countdown, the
+  /// card stuck on the fired prayer while the countdown jumped to the next).
+  /// The adhan anchor is still set, so advance the cycle straight to its iqama
+  /// countdown from that anchor — no dropped iqama, no stale card, no wedged
+  /// Quran. Falls back to a clean release if there is no anchor to advance from.
+  void advanceToIqamaAfterInterruptedAdhan() {
+    if (s.adhanTriggerTime == null) {
+      s.activeCyclePrayerKey = '';
+      s.currentAdhanPrayerKey = '';
+      resumeQuranAfterAdhan();
+      resumeTakbeeratAfterCycle();
+      return;
+    }
+    // Close the adhan's health-flow tracker: it reached AUDIO_STARTED and is now
+    // waiting for AUDIO_COMPLETED — without this it times out at 5.5 min and
+    // FALSELY reports "adhan audio started but did not finish". The adhan DID
+    // fire/show/play; the resume teardown is expected, so resolve it as done.
+    telAdhanJourneyState(
+      s.currentAdhanPrayerKey,
+      AdhanJourneyState.audioCompleted,
+      'adhan_interrupted_on_resume',
+    );
+    _setupIqamaCountdown();
+  }
+
+  /// [triggerAdhan] is fired unawaited from the tick, so a throw inside it would
+  /// vanish as an unhandled zone error with no prayer context — and could leave
+  /// the cycle half-set. Wrap it so a failure surfaces named to the exact prayer
+  /// instead of disappearing. The wedge guard ([healWedgedCycleIfStuck]) is the
+  /// second net that releases any half-set state so it can't block later adhans.
+  Future<void> _guardedTriggerAdhan(String prayerKey) async {
+    try {
+      await triggerAdhan(prayerKey);
+    } catch (e, st) {
+      diag(
+        DiagnosticLevel.error,
+        'adhan_trigger_threw',
+        fields: {
+          'trigger_prayer': prayerKey,
+          'error_type': e.runtimeType.toString(),
+        },
+        error: e,
+        stack: st,
+        forceUpload: true,
+      );
     }
   }
 
@@ -116,16 +205,33 @@ mixin AdhanCycleMixin
           'fallback_timeout',
           reason: 'playback_window_expired',
         );
-        markPrayerAlertError(
-          alertType: 'adhan',
-          prayerKey: prayerKey,
-          code: 'ADHAN_TIMEOUT',
-          detail: 'fallback_window=${window.inSeconds}s',
-        );
+        // No user-facing banner here: by the time this fallback fires the adhan
+        // audio has ALREADY started — a genuinely failed/inaudible start is
+        // caught inline below in triggerAdhan with its own accurate banner
+        // (ADHAN_AUDIO_START_FAILED / ADHAN_MUTED), and silent/mosque mode has no
+        // audio at all. Showing "تعذّر تشغيل الأذان" here would be misleading — the
+        // call to prayer did sound; we simply never detected its end. The fallback
+        // still advances the cycle via stopAdhan.
+        //
+        // But a SOUND-mode adhan that never signalled completion WHILE the app was
+        // on screen is a real failure the user could witness (the takeover hung
+        // then jumped on) — escalate that one to a FATAL foreground alert so it
+        // never escapes. Silent/mosque mode uses this same timer as its normal
+        // advance, and a background miss is expected, so those stay a quiet warning.
+        final isIncompleteInForeground = !isSilent && s.isAppInForeground;
         diag(
-          DiagnosticLevel.warning,
-          'adhan_fallback_triggered',
-          fields: {'trigger_prayer': prayerKey, 'after_sec': window.inSeconds},
+          isIncompleteInForeground
+              ? DiagnosticLevel.fatal
+              : DiagnosticLevel.warning,
+          isIncompleteInForeground
+              ? 'adhan_incomplete_in_foreground'
+              : 'adhan_fallback_triggered',
+          fields: {
+            'trigger_prayer': prayerKey,
+            'after_sec': window.inSeconds,
+            'is_foreground': s.isAppInForeground,
+            'silent': isSilent,
+          },
           forceUpload: true,
         );
         stopAdhan();
@@ -249,28 +355,40 @@ mixin AdhanCycleMixin
             'volume': output.volume,
             'max_volume': output.maxVolume,
             'muted': output.muted,
+            'route': output.route,
+            'music_active': output.musicActive,
           },
           forceUpload: true,
         );
       } else if (output != null) {
+        // route=='none' means the OS reports NO output device at all — the adhan
+        // is silent no matter the volume, a case `isInaudible` (muted/volume only)
+        // misses. Escalate to a force-uploaded warning so this "played but nobody
+        // heard it" surfaces in the Control Room. Telemetry ONLY — no user banner,
+        // no cycle change: a dead-output TV has no viewer to alert, and a probe
+        // reading must never risk blocking the cycle.
+        final isDeadOutput = output.route == 'none';
         diag(
-          DiagnosticLevel.info,
-          'adhan_audio_output_state',
+          isDeadOutput ? DiagnosticLevel.warning : DiagnosticLevel.info,
+          isDeadOutput ? 'adhan_dead_output' : 'adhan_audio_output_state',
           fields: {
             'trigger_prayer': prayerKey,
             'volume': output.volume,
             'max_volume': output.maxVolume,
             'muted': output.muted,
+            'route': output.route,
+            'music_active': output.musicActive,
           },
+          forceUpload: isDeadOutput,
         );
       }
     }
   }
 
   // Issues 1 + 4: await stop() + entry guard. Mosque mode skips dua entirely.
-  Future<void> stopAdhan() async {
+  Future<void> stopAdhan({bool userSkipped = false}) async {
     if (!s.isAdhanPlaying) return;
-    telAdhanCompletedFromState(s);
+    telAdhanCompletedFromState(s, userSkipped: userSkipped);
     telAdhanJourneyState(
       s.currentAdhanPrayerKey,
       AdhanJourneyState.audioCompleted,
@@ -356,7 +474,11 @@ mixin AdhanCycleMixin
     final delay = s.currentIqamaDelayMin;
     s.iqamaPrayerKey = s.currentAdhanPrayerKey;
     final anchor = s.adhanTriggerTime ?? s.now;
-    final dueAt = anchor.add(Duration(minutes: delay));
+    // Whole-second target so the countdown steps at .000 in lockstep with the
+    // on-screen clock. The anchor carries adhan's sub-second fraction, which
+    // otherwise made the shown seconds stall a tick then jump 2 (see
+    // calc.floorToSecond).
+    final dueAt = calc.floorToSecond(anchor.add(Duration(minutes: delay)));
     s.iqamaDueAt = dueAt;
     if (delay > 0) {
       final remaining = dueAt.difference(s.now);
@@ -379,7 +501,7 @@ mixin AdhanCycleMixin
           'iqama_countdown_elapsed_immediately',
           fields: {'delay_min': delay},
         );
-        unawaited(triggerIqama());
+        unawaited(guardedTriggerIqama());
       }
     } else {
       diag(
@@ -387,7 +509,7 @@ mixin AdhanCycleMixin
         'iqama_countdown_elapsed_immediately',
         fields: {'delay_min': delay, 'reason': 'zero_delay'},
       );
-      unawaited(triggerIqama());
+      unawaited(guardedTriggerIqama());
     }
     notify();
   }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:ghasaq/l10n/app_localizations.dart';
 
 import '../../../../../core/mobile_theme.dart';
 import '../../../../../core/quran_quick_links.dart';
+import '../../logic/quran_quick_link_l10n.dart';
 
 /// Horizontal pill row of quick navigation shortcuts. Pure-text
 /// chips with a neutral hairline border — no icons, no tinted
@@ -13,6 +15,7 @@ class MobileMushafQuickLinksRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return SizedBox(
       height: 38,
       child: ListView.separated(
@@ -22,7 +25,10 @@ class MobileMushafQuickLinksRow extends StatelessWidget {
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (_, i) {
           final link = kQuranQuickLinks[i];
-          return _Chip(label: link.label, onTap: () => onTap(link));
+          return _Chip(
+            label: quranQuickLinkLabel(l, link.labelKey),
+            onTap: () => onTap(link),
+          );
         },
       ),
     );

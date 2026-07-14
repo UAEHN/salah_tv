@@ -13,14 +13,13 @@ abstract class IPrayerAudioPort {
 
   Future<bool> playAdhan({String soundKey = 'default'});
   Future<bool> playDua();
-  Future<bool> playIqama();
+  Future<bool> playIqama({String soundKey = 'default'});
 
   /// Reads the current media-output state so the engine can flag a played-but-
   /// inaudible adhan (muted / zero volume). Returns null when the platform
   /// can't report it (e.g. the mobile no-op port, where sound is carried by
   /// native notifications instead).
   Future<AudioOutputState?> readAudioOutputState();
-  Future<void> playPreAlertBell();
   Future<void> playPrayerAnnouncement(String prayerKey);
   Future<void> stop();
 

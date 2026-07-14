@@ -10,6 +10,8 @@ class QiblaPermissionDenied extends QiblaState {}
 
 class QiblaLocationDisabled extends QiblaState {}
 
+class QiblaSensorUnavailable extends QiblaState {}
+
 class QiblaError extends QiblaState {
   final String message;
   QiblaError(this.message);

@@ -1,5 +1,7 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 
+import '../../../core/error_reporting/bus/telemetry_bus.dart';
+import '../../../core/error_reporting/bus/telemetry_event.dart';
 import '../domain/i_analytics_service.dart';
 
 /// Base for [FirebaseAnalyticsService] — wires Firebase SDK access plus the
@@ -14,6 +16,10 @@ abstract class FirebaseAnalyticsBase implements IAnalyticsService {
   );
   String? _installationId;
   String? _userId;
+
+  /// In-process mirror for breadcrumbs / functional health — injected by
+  /// startup after registration; null-safe on every use.
+  TelemetryBus? telemetryBus;
 
   @override
   Future<void> initialize({required bool isTV}) async {
@@ -64,6 +70,11 @@ abstract class FirebaseAnalyticsBase implements IAnalyticsService {
       if (params != null) {
         eventParams.addAll(params);
       }
+      telemetryBus?.publish(
+        source: TelemetrySource.analytics,
+        name: name,
+        params: eventParams,
+      );
       analytics.logEvent(name: name, parameters: eventParams);
     } catch (_) {}
   }

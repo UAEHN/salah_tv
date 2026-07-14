@@ -26,7 +26,7 @@ class TvOnboardingCountryList extends StatelessWidget {
       itemCount: countries.length,
       itemBuilder: (_, i) {
         final country = countries[i];
-        final label = locale == 'en' ? country.englishName : country.arabicName;
+        final label = locale == 'ar' ? country.arabicName : country.englishName;
         return TvOnboardingListItem(
           title: label,
           isSelected: country.key == selectedKey,

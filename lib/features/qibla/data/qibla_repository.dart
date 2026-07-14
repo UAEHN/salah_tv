@@ -64,14 +64,34 @@ class QiblaRepository implements IQiblaRepository {
       return;
     }
 
-    _accSub = accelerometerEventStream().listen((e) {
-      _lastAcc = e;
-      _tryEmit();
-    });
-    _magSub = magnetometerEventStream().listen((e) {
-      _lastMag = e;
-      _tryEmit();
-    });
+    _attachSensors();
+  }
+
+  void _attachSensors() {
+    _accSub = accelerometerEventStream().listen(
+      (e) {
+        _lastAcc = e;
+        _tryEmit();
+      },
+      onError: _onSensorError,
+    );
+    _magSub = magnetometerEventStream().listen(
+      (e) {
+        _lastMag = e;
+        _tryEmit();
+      },
+      onError: _onSensorError,
+    );
+  }
+
+  /// No magnetometer (many TV boxes + some phones) → the sensor stream emits
+  /// PlatformException(NO_SENSOR). Surface it as a Failure, never crash.
+  void _onSensorError(Object error, StackTrace _) {
+    _accSub?.cancel();
+    _magSub?.cancel();
+    _accSub = null;
+    _magSub = null;
+    _controller?.add(const Left(SensorUnavailableFailure()));
   }
 
   void _tryEmit() {
@@ -168,14 +188,7 @@ class QiblaRepository implements IQiblaRepository {
       _start();
       return;
     }
-    _accSub = accelerometerEventStream().listen((e) {
-      _lastAcc = e;
-      _tryEmit();
-    });
-    _magSub = magnetometerEventStream().listen((e) {
-      _lastMag = e;
-      _tryEmit();
-    });
+    _attachSensors();
   }
 
   @override

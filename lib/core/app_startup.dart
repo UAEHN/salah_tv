@@ -6,8 +6,11 @@ import 'package:flutter/foundation.dart';
 import 'city_translations.dart';
 import 'diagnostics/app_diagnostics.dart';
 import 'diagnostics/diagnostic_level.dart' as diag;
+import 'error_reporting/bus/telemetry_bus.dart';
+import 'error_reporting/domain/i_error_reporting_service.dart';
 import 'health/heartbeat_service.dart';
 import 'startup/startup_city_catalog.dart';
+import 'startup/startup_error_reporting.dart';
 import '../features/analytics/domain/i_analytics_service.dart';
 import '../features/push_notifications/domain/i_install_id_provider.dart';
 import '../features/settings/domain/entities/app_settings.dart';
@@ -33,6 +36,8 @@ Future<AppSettings> initDependencies() async {
   // data pipeline must not pre-load/download the bundled default city.
   final isFirstLaunch = await settingsRepo.isFirstLaunch();
   await initializeFirebase();
+  // Error observability first so diagnostics + analytics can tap its bus.
+  await registerErrorReporting(isTV: platformConfig.isTV, settings: settings);
   await _registerDiagnostics(platformConfig.isTV, settings);
   await initializeAnalytics(isTV: platformConfig.isTV);
   await registerPrayerServices(
@@ -60,7 +65,9 @@ Future<AppSettings> initDependencies() async {
 }
 
 Future<void> _registerDiagnostics(bool isTV, AppSettings settings) async {
-  final diagnostics = AppDiagnostics();
+  final diagnostics = AppDiagnostics(
+    bus: getIt.isRegistered<TelemetryBus>() ? getIt<TelemetryBus>() : null,
+  );
   await diagnostics.initialize(platform: isTV ? 'tv' : 'mobile');
   await diagnostics.setContext({
     'selected_country': settings.selectedCountry,
@@ -94,6 +101,9 @@ Future<void> _attachAnalyticsDeviceId() async {
       await getIt<IAnalyticsService>().setDeviceId(value);
       if (getIt.isRegistered<AppDiagnostics>()) {
         await getIt<AppDiagnostics>().setDeviceId(value);
+      }
+      if (getIt.isRegistered<IErrorReportingService>()) {
+        getIt<IErrorReportingService>().setDeviceId(value);
       }
     });
   } catch (_) {}
