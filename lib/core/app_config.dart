@@ -44,6 +44,16 @@ abstract class AppConfig {
   /// Update this on every release alongside the Gist JSON.
   static const String kCurrentAppVersion = '0.9.9';
 
+  // ─── Prayer notification scheduling ────────────────────────────────────────
+  /// Days ahead that prayer times are cached AND notifications are scheduled.
+  /// The prayer caches (CalculatedPrayerCache / SqlitePrayerCache) and the
+  /// notification HorizonBuilder MUST all use this single value: if the horizon
+  /// exceeds the cache depth the extra days silently return null and the horizon
+  /// collapses (the bug that limited coverage to 3 days). Kept moderate so
+  /// server-side prayer-time corrections reach users within a week, while the
+  /// native AlarmScheduler caps the resulting alarms under Android's 500 limit.
+  static const int prayerScheduleDays = 7;
+
   // ─── Firebase Remote Config — version gating ───────────────────────────────
   /// Latest published versionCode (build number). Clients < this see optional
   /// update; clients < [rcKeyMinSupported] see forced update.

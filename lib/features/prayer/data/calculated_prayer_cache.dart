@@ -1,8 +1,10 @@
+import '../../../core/app_config.dart';
 import '../domain/entities/daily_prayer_times.dart';
 import '../domain/prayer_time_zone.dart';
 import 'adhan_calculation_source.dart';
 
-/// 3-day rolling in-memory cache for calculated (adhan_dart) prayer times.
+/// Rolling in-memory cache for calculated (adhan_dart) prayer times, holding
+/// AppConfig.prayerScheduleDays days so it also backs the notification horizon.
 ///
 /// Mirrors [SqlitePrayerCache] structure but uses [AdhanCalculationSource]
 /// instead of SQLite queries.
@@ -36,7 +38,7 @@ class CalculatedPrayerCache {
     _cachedDateKey = '';
   }
 
-  /// Recalculates today and the next two days into the cache.
+  /// Recalculates today + the next (AppConfig.prayerScheduleDays - 1) days.
   void refresh(
     AdhanCalculationSource source,
     double lat,
@@ -52,7 +54,7 @@ class CalculatedPrayerCache {
       timeZoneId: timeZoneId,
       utcOffsetHours: utcOffsetHours,
     );
-    for (var offset = 0; offset < 3; offset++) {
+    for (var offset = 0; offset < AppConfig.prayerScheduleDays; offset++) {
       final date = now.add(Duration(days: offset));
       final key = _dateKey(date);
       newCache[key] = source.calculateForDate(

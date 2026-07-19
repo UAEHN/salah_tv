@@ -1,3 +1,4 @@
+import '../../../core/app_config.dart';
 import '../../prayer/domain/entities/daily_prayer_times.dart';
 import '../../prayer/domain/i_prayer_times_repository.dart';
 import '../../prayer/domain/prayer_time_calculator.dart' as calc;
@@ -13,7 +14,7 @@ class HorizonBuilder {
   final IPrayerTimesRepository _repo;
   final int horizonDays;
 
-  HorizonBuilder(this._repo, {this.horizonDays = 7});
+  HorizonBuilder(this._repo, {this.horizonDays = AppConfig.prayerScheduleDays});
 
   /// Returns up to [horizonDays] consecutive [DailyPrayerTimes], starting
   /// from today. Days the cache cannot serve are skipped silently — the
