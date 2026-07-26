@@ -237,19 +237,6 @@ List<String> citiesForCountry(String countryKey, List<String> availableCities) {
   return availableCities;
 }
 
-/// Latin labels for city keys that shipped misspelled. The key doubles as the
-/// published data-file slug (`<slug>.json`) and as the value persisted in the
-/// user's settings, so correcting the *key* would introduce a second city
-/// rather than rename the existing one — the picker would then list the same
-/// town twice on every install still carrying the old key. Correct the label
-/// instead: key stays, display changes. Key → corrected Latin label.
-const _latinCityLabels = {
-  // Ghardaïa, Algeria — key shipped as 'Metilti Chamba'; the town is Metlili
-  // Chamba / «متليلي الشعانبة» (reported by a resident). Arabic label is fixed
-  // at its source in assets/db_countries.json.
-  'Metilti Chamba': 'Metlili Chamba',
-};
-
 String cityLabel(String cityKey, {String locale = 'ar', String? countryKey}) {
   // Latin city names for every non-Arabic UI language (en, fr, …); only the
   // Arabic locale shows the Arabic city name.
@@ -263,7 +250,7 @@ String cityLabel(String cityKey, {String locale = 'ar', String? countryKey}) {
           )];
       if (worldEnglish != null) return worldEnglish;
     }
-    return _latinCityLabels[cityKey] ?? cityKey;
+    return cityKey;
   }
 
   final dbArabic = _cityArabic[cityKey];
