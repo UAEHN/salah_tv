@@ -153,9 +153,17 @@ void registerDbCountries(Map<String, List<String>> countryToCities) {
 /// Merges a remotely-published [catalog] over the bundled city lists so newly
 /// published cities appear in the picker without an APK update.
 ///
-/// ADDITIVE and safe by design:
+/// ADDITIVE for the city *list*, authoritative for *names*:
 /// - Never removes a bundled city (a bad publish can't wipe the catalog).
-/// - Fills a *missing* Arabic name only — never overrides curated bundled ones.
+/// - A published Arabic name wins over the bundled one. The catalog is
+///   generated from assets/db_countries.json by tool/csv_to_json.dart on every
+///   publish, so it is never older than the APK's copy — this is what lets a
+///   *corrected* city name reach users without an APK update. Filling only the
+///   missing names (the rule until 2026-07) meant a stale bundled name always
+///   won, so a correction could only ship with a release.
+/// - Exception: the catalog publishes `ar == en` for a city that has no Arabic
+///   name yet. That placeholder must never overwrite a curated bundled name, so
+///   it still only fills a gap.
 /// - Registers countries the catalog introduces with their labels.
 /// City lists are re-sorted by English name to match bundled ordering.
 void mergeRemoteCatalog(RemoteCityCatalog catalog) {
@@ -174,7 +182,13 @@ void mergeRemoteCatalog(RemoteCityCatalog catalog) {
     );
     for (final city in country.cities) {
       if (!list.contains(city.englishName)) list.add(city.englishName);
-      arabic.putIfAbsent(city.englishName, () => city.arabicName);
+      final isTranslated =
+          city.arabicName.isNotEmpty && city.arabicName != city.englishName;
+      if (isTranslated) {
+        arabic[city.englishName] = city.arabicName;
+      } else {
+        arabic.putIfAbsent(city.englishName, () => city.arabicName);
+      }
     }
     list.sort();
   }

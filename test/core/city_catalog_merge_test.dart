@@ -58,6 +58,84 @@ void main() {
       expect(qatar.cities, contains('Doha'));
     });
 
+    test('a published name correction overrides the bundled one', () {
+      // Bundled name (what an installed APK carries).
+      mergeRemoteCatalog(
+        const RemoteCityCatalog(
+          version: 1,
+          countries: [
+            RemoteCatalogCountry(
+              key: 'oman',
+              arabicName: 'عُمان',
+              englishName: 'Oman',
+              cities: [
+                RemoteCatalogCity(englishName: 'Muscat', arabicName: 'مسقت'),
+              ],
+            ),
+          ],
+        ),
+      );
+      expect(cityLabel('Muscat'), 'مسقت');
+
+      // Corrected name published later — must win without an APK update.
+      mergeRemoteCatalog(
+        const RemoteCityCatalog(
+          version: 1,
+          countries: [
+            RemoteCatalogCountry(
+              key: 'oman',
+              arabicName: 'عُمان',
+              englishName: 'Oman',
+              cities: [
+                RemoteCatalogCity(englishName: 'Muscat', arabicName: 'مسقط'),
+              ],
+            ),
+          ],
+        ),
+      );
+      expect(cityLabel('Muscat'), 'مسقط');
+    });
+
+    test('an untranslated placeholder never overwrites a known name', () {
+      mergeRemoteCatalog(
+        const RemoteCityCatalog(
+          version: 1,
+          countries: [
+            RemoteCatalogCountry(
+              key: 'oman',
+              arabicName: 'عُمان',
+              englishName: 'Oman',
+              cities: [
+                RemoteCatalogCity(englishName: 'Salalah', arabicName: 'صلالة'),
+              ],
+            ),
+          ],
+        ),
+      );
+      expect(cityLabel('Salalah'), 'صلالة');
+
+      // csv_to_json publishes ar == en when a city has no Arabic name yet.
+      mergeRemoteCatalog(
+        const RemoteCityCatalog(
+          version: 1,
+          countries: [
+            RemoteCatalogCountry(
+              key: 'oman',
+              arabicName: 'عُمان',
+              englishName: 'Oman',
+              cities: [
+                RemoteCatalogCity(
+                  englishName: 'Salalah',
+                  arabicName: 'Salalah',
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+      expect(cityLabel('Salalah'), 'صلالة');
+    });
+
     test(
       'is additive — never removes a bundled city absent from the catalog',
       () {
