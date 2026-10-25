@@ -191,6 +191,11 @@
       "ar": "المجر",
       "en": "Hungary"
     },
+    "IC": {
+      "dbKey": "canary_islands",
+      "ar": "جزر الكناري (جدول مؤقت)",
+      "en": "Canary Islands (temporary)"
+    },
     "ID": {
       "dbKey": null,
       "ar": "إندونيسيا",
