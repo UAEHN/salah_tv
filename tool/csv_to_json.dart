@@ -132,8 +132,14 @@ Future<void> main() async {
     final cities = catalog[countryKey]!.values.toList()
       ..sort((a, b) => a['slug']!.compareTo(b['slug']!));
     catalogCountries[countryKey] = {
-      'ar': translations.countryArabic[countryKey] ?? countryKey,
-      'en': translations.countryEnglish[countryKey] ?? countryKey,
+      // A standalone city table uses its translated city name as the picker
+      // section instead of inventing a second country entry.
+      'ar':
+          translations.countryArabic[countryKey] ??
+          (cities.length == 1 ? cities.single['ar'] : countryKey),
+      'en':
+          translations.countryEnglish[countryKey] ??
+          (cities.length == 1 ? cities.single['en'] : countryKey),
       'cities': cities,
     };
   }

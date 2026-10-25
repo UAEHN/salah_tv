@@ -3,8 +3,11 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:ghasaq/core/app_config.dart';
 import 'package:ghasaq/core/city_translations.dart';
 import 'package:ghasaq/core/error/failures.dart';
+import 'package:ghasaq/core/platform_config.dart';
 import 'package:ghasaq/features/prayer/data/adhan_calculation_source.dart';
 import 'package:ghasaq/features/prayer/data/downloaded_prayer_repository.dart';
 import 'package:ghasaq/features/prayer/data/prayer_cache_db_initializer.dart';
@@ -15,17 +18,22 @@ import 'package:ghasaq/features/prayer/domain/cancellation_token.dart';
 import 'package:ghasaq/features/prayer/domain/i_prayer_city_downloader.dart';
 import 'package:ghasaq/features/prayer/domain/usecases/download_city_use_case.dart';
 import 'package:ghasaq/features/settings/data/datasources/city_catalog_remote_data_source.dart';
+import 'package:ghasaq/features/settings/data/world_city_json_repository.dart';
 import 'package:ghasaq/features/settings/presentation/logic/location_picker_logic.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-const _region = 'spain';
-const _city = 'Pajara - Fuerteventura';
-const _slug = 'pajara_-_fuerteventura';
+const _region = 'pajara';
+const _city = 'Pájara';
+const _slug = 'pájara';
 
 String _read(String path) => File('out/prayer_data/$path').readAsStringSync();
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() {
+    GetIt.I.registerSingleton<PlatformConfig>(PlatformConfig());
+  });
+  tearDownAll(() => GetIt.I.unregister<PlatformConfig>());
 
   test(
     'published table covers 2026 and matches the existing app calculator',
@@ -93,10 +101,16 @@ void main() {
       expect(kDbCountryKeys, isNot(contains(_region)));
       final catalog = CityCatalogRemoteDataSource.parse(_read('catalog.json'));
       final region = catalog.countries.singleWhere((c) => c.key == _region);
-      expect(region.arabicName, 'إسبانيا');
-      expect(region.englishName, 'Spain');
-      expect(catalog.countries.any((c) => c.key == 'canary_islands'), isFalse);
+      expect(region.arabicName, 'باخارا');
+      expect(region.englishName, 'Pájara');
+      expect(
+        catalog.countries.any(
+          (c) => c.key == 'canary_islands' || c.key == 'spain',
+        ),
+        isFalse,
+      );
       expect(region.cities.single.englishName, _city);
+      expect(region.cities.single.arabicName, 'باخارا');
       mergeRemoteCatalog(catalog);
       final country = buildUnifiedCountries(
         null,
@@ -105,14 +119,32 @@ void main() {
       final choice = buildCountryChoices(country, null).single;
       expect(choice.isDb, isTrue);
       expect(choice.cityName, _city);
+      final world = WorldCityJsonRepository();
+      await world.initialize();
+      final choices = buildUnifiedCountries(world);
+      expect(
+        choices.where((c) => c.key == 'ES' || c.key == 'spain'),
+        hasLength(1),
+      );
+      expect(choices.singleWhere((c) => c.key == 'ES').isInDb, isFalse);
     },
   );
 
   test('previous Canary download remains valid for existing selections', () {
-    final previous = parseCityJson(_read('canary_islands/$_slug.json'));
     final current = parseCityJson(_read('$_region/$_slug.json'));
-    expect(current.rows, previous.rows);
-    expect(current.hash, previous.hash);
+    for (final region in ['canary_islands', 'spain']) {
+      final previous = parseCityJson(
+        _read('$region/pajara_-_fuerteventura.json'),
+      );
+      expect(current.rows, previous.rows);
+      expect(current.hash, previous.hash);
+    }
+  });
+
+  test('Spanish accented city name is encoded correctly in download URLs', () {
+    final uri = Uri.parse(AppConfig.prayerCityUrl(_region, _slug));
+    expect(uri.toString(), contains('p%C3%A1jara.json'));
+    expect(uri.pathSegments.last, 'pájara.json');
   });
 
   test(

@@ -12,7 +12,7 @@ import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
 const canaryTableCities = [
-  (name: 'Pajara - Fuerteventura', lat: 28.35039, lng: -14.1076, id: 2513026),
+  (name: 'Pájara', lat: 28.35039, lng: -14.1076, id: 2513026),
 ];
 
 void main() {
@@ -65,7 +65,7 @@ void main() {
     }
   }
   File(
-    'assets/csv/spain_prayer_times_2026.csv',
+    'assets/csv/pajara_prayer_times_2026.csv',
   ).writeAsStringSync(output.toString());
   stdout.writeln('Generated $count calculated Canary city-days for 2026.');
 }

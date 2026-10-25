@@ -1,14 +1,12 @@
-# Pajara prayer table under Spain
+# Pájara prayer table
 
 Published on 25 October 2026 to provide correct local prayer times to existing
 clients while the calculated-location timezone correction awaits an app update.
-The remote catalog lists this table under **Spain** / **إسبانيا**, with the city
-**Pajara - Fuerteventura** / **باخارا - فويرتيفنتورا**. The former separate
-Canary category has been removed from the published catalog. Choose the Spain
-list containing this downloaded table. Older mobile clients can also display
-their bundled calculated Spain list; updating the remote catalog does not modify
-that bundled list. Restart after the refreshed catalog has been cached if the
-previous Canary category is still visible during the first refresh session.
+The remote catalog lists the section and city as **Pájara** in Spanish/Latin
+and **باخارا** in Arabic. The extra Spain download section and the former
+Canary section have been removed from the published catalog. The original
+calculated Spain list remains available. Restart after the refreshed catalog has
+been cached if an earlier section is still visible during the first session.
 
 These are calculated schedules, not an official mosque timetable. They use the
 app's existing adhan_dart 1.2.0 Muslim World League/Shafi convention, with no
@@ -35,7 +33,9 @@ workflow. Spain's existing `ES` country mapping and calculated city catalog are
 preserved. Country display names come from the existing Spain translation.
 The previous `canary_islands/pajara_-_fuerteventura.json` URL remains available
 for users who already downloaded it; its prayer rows are identical. New location
-choices download `spain/pajara_-_fuerteventura.json`.
+choices download `pajara/p%C3%A1jara.json`. The previous Spain URL
+`spain/pajara_-_fuerteventura.json` also remains available. Both previous URLs
+contain identical prayer rows and do not add entries to the current catalog.
 
 Retain these downloads while users rely on them. After the app correction is
 released, users may return to their precise calculated location. If still needed
