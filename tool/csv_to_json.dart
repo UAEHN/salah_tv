@@ -116,7 +116,7 @@ Future<void> main() async {
       fileCount++;
     });
 
-    print('  OK  $fname → ${cityRows.length} cities');
+    stdout.writeln('  OK  $fname → ${cityRows.length} cities');
   }
 
   // Write manifest.json.
@@ -144,11 +144,11 @@ Future<void> main() async {
   });
   File('out/prayer_data/catalog.json').writeAsStringSync(catalogJson);
 
-  print(
+  stdout.writeln(
     '\nDone: $fileCount city files + manifest.json + catalog.json written to out/prayer_data/',
   );
-  print('Upload the contents of out/prayer_data/ to:');
-  print('  https://uaehn.github.io/salah_tv/prayer_data/');
+  stdout.writeln('Upload the contents of out/prayer_data/ to:');
+  stdout.writeln('  https://uaehn.github.io/salah_tv/prayer_data/');
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -172,7 +172,11 @@ _Translations _loadTranslations() {
         jsonDecode(countriesFile.readAsStringSync()) as Map<String, dynamic>;
     (cdata['countries'] as Map<String, dynamic>?)?.forEach((iso, v) {
       final m = v as Map<String, dynamic>;
-      final dbKey = (m['dbKey'] as String?)?.toLowerCase();
+      // Downloadable tables can be published for a calculated-only country
+      // without changing the runtime ISO-to-DB mapping in older clients.
+      final dbKey =
+          (m['dbKey'] as String?)?.toLowerCase() ??
+          (m['en'] as String?)?.toLowerCase().replaceAll(' ', '_');
       if (dbKey == null) return;
       countryArabic[dbKey] = (m['ar'] as String?) ?? dbKey;
       countryEnglish[dbKey] = (m['en'] as String?) ?? dbKey;

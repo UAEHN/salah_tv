@@ -1,11 +1,14 @@
-# Temporary Canary Islands prayer tables
+# Pajara prayer table under Spain
 
 Published on 25 October 2026 to provide correct local prayer times to existing
 clients while the calculated-location timezone correction awaits an app update.
-The remote catalog labels this region **Canary Islands (temporary)** /
-**جزر الكناري (جدول مؤقت)**. Select the island and named city in the location
-picker: **Pajara - Fuerteventura** / **باخارا - فويرتيفنتورا**. Selecting the
-existing calculated Spain entry does not use this table.
+The remote catalog lists this table under **Spain** / **إسبانيا**, with the city
+**Pajara - Fuerteventura** / **باخارا - فويرتيفنتورا**. The former separate
+Canary category has been removed from the published catalog. Choose the Spain
+list containing this downloaded table. Older mobile clients can also display
+their bundled calculated Spain list; updating the remote catalog does not modify
+that bundled list. Restart after the refreshed catalog has been cached if the
+previous Canary category is still visible during the first refresh session.
 
 These are calculated schedules, not an official mosque timetable. They use the
 app's existing adhan_dart 1.2.0 Muslim World League/Shafi convention, with no
@@ -28,8 +31,11 @@ sets the 2026 winter transition to 25 October.
 
 Regenerate with `dart run tool/build_canary_temporary_tables.dart` followed by
 `dart run tool/csv_to_json.dart`. Publish through the existing prayer-data
-workflow. The `IC` label entry identifies the Canary region without changing
-Spain's existing `ES` country mapping or its calculated city catalog.
+workflow. Spain's existing `ES` country mapping and calculated city catalog are
+preserved. Country display names come from the existing Spain translation.
+The previous `canary_islands/pajara_-_fuerteventura.json` URL remains available
+for users who already downloaded it; its prayer rows are identical. New location
+choices download `spain/pajara_-_fuerteventura.json`.
 
 Retain these downloads while users rely on them. After the app correction is
 released, users may return to their precise calculated location. If still needed

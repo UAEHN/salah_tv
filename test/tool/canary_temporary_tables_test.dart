@@ -18,7 +18,7 @@ import 'package:ghasaq/features/settings/data/datasources/city_catalog_remote_da
 import 'package:ghasaq/features/settings/presentation/logic/location_picker_logic.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-const _region = 'canary_islands';
+const _region = 'spain';
 const _city = 'Pajara - Fuerteventura';
 const _slug = 'pajara_-_fuerteventura';
 
@@ -93,7 +93,9 @@ void main() {
       expect(kDbCountryKeys, isNot(contains(_region)));
       final catalog = CityCatalogRemoteDataSource.parse(_read('catalog.json'));
       final region = catalog.countries.singleWhere((c) => c.key == _region);
-      expect(region.arabicName, 'جزر الكناري (جدول مؤقت)');
+      expect(region.arabicName, 'إسبانيا');
+      expect(region.englishName, 'Spain');
+      expect(catalog.countries.any((c) => c.key == 'canary_islands'), isFalse);
       expect(region.cities.single.englishName, _city);
       mergeRemoteCatalog(catalog);
       final country = buildUnifiedCountries(
@@ -105,6 +107,13 @@ void main() {
       expect(choice.cityName, _city);
     },
   );
+
+  test('previous Canary download remains valid for existing selections', () {
+    final previous = parseCityJson(_read('canary_islands/$_slug.json'));
+    final current = parseCityJson(_read('$_region/$_slug.json'));
+    expect(current.rows, previous.rows);
+    expect(current.hash, previous.hash);
+  });
 
   test(
     'existing downloader writes the table and repository reads winter time',

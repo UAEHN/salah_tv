@@ -65,7 +65,7 @@ void main() {
     }
   }
   File(
-    'assets/csv/canary_islands_prayer_times_2026.csv',
+    'assets/csv/spain_prayer_times_2026.csv',
   ).writeAsStringSync(output.toString());
   stdout.writeln('Generated $count calculated Canary city-days for 2026.');
 }
