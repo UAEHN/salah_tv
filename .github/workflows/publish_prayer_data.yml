@@ -6,7 +6,10 @@ on:
     paths:
       - 'assets/csv/**'
       - 'assets/db_countries.json'
+      - 'assets/countries.json'
+      - 'assets/city_catalog_overrides.json'
       - 'tool/csv_to_json.dart'
+      - 'tool/city_catalog_overrides.dart'
   workflow_dispatch:
 
 permissions:

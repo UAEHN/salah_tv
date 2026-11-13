@@ -28,6 +28,7 @@
 
 import 'dart:io';
 import 'dart:convert';
+import 'city_catalog_overrides.dart';
 
 Future<void> main() async {
   final csvDir = Directory('assets/csv');
@@ -146,7 +147,7 @@ Future<void> main() async {
   final catalogJson = jsonEncode({
     'v': 1,
     'generated': DateTime.now().toIso8601String().substring(0, 10),
-    'countries': catalogCountries,
+    'countries': applyCityCatalogOverrides(catalogCountries),
   });
   File('out/prayer_data/catalog.json').writeAsStringSync(catalogJson);
 

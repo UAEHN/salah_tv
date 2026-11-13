@@ -1,0 +1,25 @@
+{
+  "countries": {
+    "new_zealand": {
+      "iso": "NZ",
+      "ar": "غريموث – نيوزيلندا",
+      "en": "Greymouth – New Zealand",
+      "countryAr": "نيوزيلندا",
+      "countryEn": "New Zealand",
+      "cities": [
+        {
+          "id": "greymouth",
+          "en": "Greymouth",
+          "method": "north_america",
+          "madhab": "hanafi",
+          "timeZoneId": "Pacific/Auckland"
+        }
+      ]
+    },
+    "pajara": {
+      "iso": "ES",
+      "countryAr": "إسبانيا",
+      "countryEn": "Spain"
+    }
+  }
+}

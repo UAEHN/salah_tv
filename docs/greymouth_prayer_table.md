@@ -1,10 +1,19 @@
 # Greymouth annual prayer timetable
 
-The remote city catalog lists **New Zealand / نيوزيلندا → Greymouth / غريموث**.
+For existing apps, the remote city catalog temporarily lists the section as
+**Greymouth – New Zealand / غريموث – نيوزيلندا**. This distinguishes the supplied
+table from the bundled calculated New Zealand section. The original New Zealand
+country and its other cities remain available. The next app update can use the
+section's `iso: NZ` and canonical country labels to merge them in one country.
 The downloadable table is `new_zealand/greymouth.json`, generated from
 `assets/csv/new_zealand_prayer_times_2027.csv` by the existing prayer-data workflow.
 Clients with remote city-catalog support discover it when the catalog refreshes;
 they do not need a new APK to download the table.
+
+The temporary section title is configured in `assets/city_catalog_overrides.json`.
+The download identity and URL stay unchanged, preserving existing selections.
+Existing apps can retain the old country title for the current session; restart
+after the fresh catalog has been cached to load the revised title.
 
 All 365 dates from 1 January through 31 December 2027 are copied from the supplied
 `Greymouth_Prayer_Timetable_2027_ISNA_Hanafi.xlsx`. The six columns are Fajr,
