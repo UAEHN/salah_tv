@@ -127,23 +127,9 @@ class _TodayBody extends StatelessWidget {
             // sibling, so we replace that anchor with a SizedBox here.
             TodayStaggeredEntry(
               delay: stagger * 1,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: occasion != null
-                    ? IntrinsicHeight(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const Expanded(flex: 7, child: BentoPrayerTile()),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              flex: 4,
-                              child: BentoOccasionTile(occasion: occasion),
-                            ),
-                          ],
-                        ),
-                      )
-                    : const BentoPrayerTile(isExpanded: true),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: BentoPrayerTile(isExpanded: true),
               ),
             ),
             // Row 2 — verse of the day, full width.
