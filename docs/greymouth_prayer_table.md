@@ -16,16 +16,24 @@ Existing apps can retain the old country title for the current session; restart
 after the fresh catalog has been cached to load the revised title.
 
 All 365 dates from 1 January through 31 December 2027 are copied from the supplied
-`Greymouth_Prayer_Timetable_2027_ISNA_Hanafi.xlsx`. The six columns are Fajr,
+`Greymouth_Prayer_Timetable_2027_ISNA_Shafii.xlsx`. The six columns are Fajr,
 sunrise, Dhuhr, Asr, Maghrib and Isha. Times are rounded from Excel day fractions
 to their original whole minutes; no prayer is recalculated or shifted.
 
-The source convention is **ISNA / North America, Hanafi Asr**, with local
+The source convention is **ISNA / North America, Shafii Asr**, with local
 **Pacific/Auckland** clock times. North America names the calculation method;
 it is not the city's timezone. The table already includes the one-hour changes
-on 4 April and 26 September 2027. Do not apply another DST or Hanafi correction.
+on 4 April and 26 September 2027. Do not apply another DST correction.
 The published client reads downloaded table rows unchanged. Devices using this
 table should have their system clock/timezone set correctly for New Zealand.
+
+The corrected workbook received on 25 November 2026 replaces the earlier Hanafi
+workbook. Only Asr changes, on all 365 dates. Fajr, sunrise, Dhuhr, Maghrib and
+Isha are identical. For example, 1 January Asr is now 17:42 instead of 18:55.
+Keep the same download URL and publish a new data hash so installed clients can
+refresh their existing city without adding another location or requiring an APK.
+The catalog's `madhab` is `shafi`; the next app version also uses that convention
+for the bundled exact calendar and new Greymouth selections.
 
 This is a supplied calculated timetable, not a claim of approval by a local mosque.
 It covers 2027. The client's month/day fallback outside the stored year does not
